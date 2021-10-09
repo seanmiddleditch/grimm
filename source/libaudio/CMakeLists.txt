@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 project(audio VERSION 0.1 LANGUAGES CXX)
 
 find_package(SDL2 REQUIRED)
