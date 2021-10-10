@@ -48,6 +48,11 @@ jobs:
         uses: Trass3r/setup-cpp@v1
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@v3
+      - name: Cache source dependencies
+        uses: actions/cache@v2
+        with:
+          path: deps
+          key: ${{ runner.os }}-${{ hashFiles('external/config.cmake') }}
       - name: Configure
         run: |
           mkdir -p build
