@@ -47,6 +47,10 @@ target_sources(potato_spud_test PRIVATE
     "tests/test_zstring_view.cpp"
 )
 
+target_link_libraries(potato_spud INTERFACE
+    nanofmt::nanofmt
+)
+
 up_set_common_properties(potato_spud_test)
 
 target_link_libraries(potato_spud_test PRIVATE

@@ -7,7 +7,6 @@
 #include "recon_messages_schema.h"
 #include "recon_queue.h"
 
-#include "potato/format/format.h"
 #include "potato/recon/recon_protocol.h"
 #include "potato/recon/recon_server.h"
 #include "potato/runtime/concurrent_queue.h"
@@ -27,6 +26,27 @@
 up::recon::ReconApp::ReconApp() : _programName("recon"), _logger("recon"), _server(_logger) {}
 
 up::recon::ReconApp::~ReconApp() = default;
+
+namespace {
+    class CasPath {
+    public:
+        inline /*implicit*/ CasPath(up::uint64 contentHash);
+
+        explicit operator up::string_view() const { return _buffer; }
+
+    private:
+        char _buffer[64] = {};
+    };
+
+    CasPath::CasPath(up::uint64 contentHash) {
+        nanofmt::format_to(
+            _buffer,
+            "{:02X}/{:04X}/{:016X}.bin",
+            (contentHash >> 56) & 0xFF,
+            (contentHash >> 40) & 0XFFFF,
+            contentHash);
+    }
+} // namespace
 
 bool up::recon::ReconApp::run(span<char const*> args) {
     zstring_view const configFile = "recon.config.json";
@@ -332,8 +352,10 @@ auto up::recon::ReconApp::_importFile(zstring_view file, bool force) -> ReconImp
         }
     }
 
-    string_writer importedName;
-    format_append(importedName, "{{{}} {} ({})", metaFile.uuid, file, importer->name());
+    char importedNameBuffer[256] = {};
+    char const* const importedNameEnd =
+        nanofmt::format_to(importedNameBuffer, "{{{}} {} ({})", metaFile.uuid, file, importer->name());
+    string_view const importedName{importedNameBuffer, importedNameEnd};
 
     bool const dirty =
         !upToDate || !hasMeta || importerChange || importerSettingsChange || dependenciesDirty || outputsDirty;
@@ -396,12 +418,8 @@ auto up::recon::ReconApp::_importFile(zstring_view file, bool force) -> ReconImp
         auto outputOsPath = path::join(path::Separator::Native, _temporaryOutputPath, output.path);
         output.contentHash = _hashes.hashAssetAtPath(outputOsPath);
 
-        char casPathBuffer[64] = {};
-        auto casOsPath = path::join(
-            path::Separator::Native,
-            _project->libraryPath(),
-            "cache",
-            _makeCasPath(casPathBuffer, output.contentHash));
+        auto casOsPath =
+            path::join(path::Separator::Native, _project->libraryPath(), "cache", CasPath{output.contentHash});
         auto casOsFolder = string{path::parent(casOsPath)};
 
         if (auto const rs = fs::createDirectories(casOsFolder); rs != IOResult::Success) {
@@ -460,9 +478,7 @@ bool up::recon::ReconApp::_isUpToDate(zstring_view assetPath, uint64 contentHash
 }
 
 bool up::recon::ReconApp::_isCasUpToDate(uint64 contentHash) {
-    char buffer[64] = {};
-    auto casOsPath =
-        path::join(path::Separator::Native, _project->libraryPath(), "cache", _makeCasPath(buffer, contentHash));
+    auto casOsPath = path::join(path::Separator::Native, _project->libraryPath(), "cache", CasPath(contentHash));
     return contentHash == _hashes.hashAssetAtPath(casOsPath.c_str());
 }
 
@@ -488,15 +504,6 @@ auto up::recon::ReconApp::_makeMetaFilename(zstring_view basePath, bool director
     metaFilePath.append(basePath);
     metaFilePath.append(".meta");
     return metaFilePath.to_string();
-}
-
-auto up::recon::ReconApp::_makeCasPath(span<char> buffer, uint64 contentHash) -> zstring_view {
-    return format_append(
-        buffer,
-        "{:02X}/{:04X}/{:016X}.bin",
-        (contentHash >> 56) & 0xFF,
-        (contentHash >> 40) & 0XFFFF,
-        contentHash);
 }
 
 void up::recon::ReconApp::_collectSourceFiles(bool forceUpdate) {

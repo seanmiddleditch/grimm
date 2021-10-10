@@ -1,8 +1,6 @@
 #pragma once
 
-#include <potato/format/format.h>
-#include <potato/format/std_string.h>
-
+#include <nanofmt/format.h>
 #include <iosfwd>
 #include <string_view>
 #include <unordered_map>
@@ -37,7 +35,11 @@ protected:
 
     template <typename... ArgsT>
     void fail(std::string_view format_str, ArgsT const&... args) {
-        fail(up::format_as<std::string>({format_str.data(), format_str.size()}, args...));
+        char buffer[1024] = {
+            0,
+        };
+        nanofmt::format_to(buffer, {format_str.data(), format_str.size()}, args...);
+        fail(buffer);
     }
 
     std::string_view config(std::string const& key) const noexcept {

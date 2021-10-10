@@ -6,6 +6,7 @@
 
 #include "potato/spud/delegate.h"
 #include "potato/spud/span.h"
+#include "potato/spud/utility.h"
 #include "potato/spud/zstring_view.h"
 
 struct uv_loop_s;

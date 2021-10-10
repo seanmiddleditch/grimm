@@ -9,6 +9,7 @@
 #include "potato/spud/string_view.h"
 #include "potato/spud/zstring_view.h"
 
+#include <nanofmt/format.h>
 #include <cstring>
 
 namespace up {
@@ -52,6 +53,10 @@ namespace up {
         inline void append(value_type ch);
         inline void append(const_pointer data, size_type length);
         void append(string_view str) { append(str.data(), str.size()); }
+
+        template <typename... Args>
+        void format(nanofmt::format_string format, Args const&... args);
+        inline void vformat(nanofmt::format_string format, nanofmt::format_args&& args);
 
         // for back_inserter support
         void push_back(value_type ch) { append(ch); }
@@ -98,6 +103,19 @@ void up::string_writer::append(const_pointer data, size_type length) {
     std::memmove(_ptr + _size, data, length);
     _size += length;
     _ptr[_size] = '\0';
+}
+
+template <typename... Args>
+void up::string_writer::format(nanofmt::format_string format, Args const&... args) {
+    return vformat(format, nanofmt::make_format_args(args...));
+}
+
+void up::string_writer::vformat(nanofmt::format_string format, nanofmt::format_args&& args) {
+    char buffer[1024] = {
+        '\0',
+    };
+    char const* const end = nanofmt::format_to(buffer, format, std::move(args));
+    append(buffer, end - buffer);
 }
 
 void up::string_writer::reserve(size_type capacity) {

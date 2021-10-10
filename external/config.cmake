@@ -63,3 +63,8 @@ FetchContent_Declare(libuv
     GIT_TAG v1.41.0
     GIT_SHALLOW ON
 )
+FetchContent_Declare(nanofmt
+    GIT_REPOSITORY https://github.com/seanmiddleditch/nanofmt.git
+    GIT_TAG main #v1.0.0
+    #GIT_SHALLOW ON
+)

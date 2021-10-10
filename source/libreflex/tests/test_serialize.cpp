@@ -3,6 +3,7 @@
 #include "reflex_test_schema.h"
 
 #include "potato/reflex/serialize.h"
+#include "potato/runtime/json.h"
 
 #include <catch2/catch.hpp>
 #include <nlohmann/json.hpp>

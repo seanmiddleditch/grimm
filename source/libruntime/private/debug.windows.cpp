@@ -6,7 +6,8 @@
 
 #include "potato/spud/fixed_string_writer.h"
 #include "potato/spud/platform_windows.h"
-#include "potato/spud/string_format.h"
+
+#include <nanofmt/format.h>
 
 namespace {
     struct DialogData {
@@ -18,24 +19,25 @@ namespace {
 
     void CopyToClipboard(DialogData const& data) noexcept {
         constexpr int clipboard_size_bytes = 1024;
+        char clipboard_buffer[clipboard_size_bytes] = {};
 
         // copy into clipboard
         if (OpenClipboard(nullptr) == TRUE) {
             EmptyClipboard();
 
-            up::fixed_string_writer<clipboard_size_bytes> buffer;
-            up::format_append(
-                buffer,
+            char const* const end = nanofmt::format_to(
+                clipboard_buffer,
                 "ASSERTION FAILED: {}\r\n{}\r\n{}\r\n{}",
                 data.condition,
                 data.message,
                 data.location,
                 data.callstack);
+            size_t const length = end - clipboard_buffer;
 
-            if (HANDLE handle = GlobalAlloc(GMEM_MOVEABLE, buffer.size() + 1)) {
+            if (HANDLE handle = GlobalAlloc(GMEM_MOVEABLE, length + 1)) {
                 void* lockedData = GlobalLock(handle);
                 if (lockedData != nullptr) {
-                    std::memcpy(lockedData, buffer.data(), buffer.size());
+                    std::memcpy(lockedData, clipboard_buffer, length);
                     GlobalUnlock(handle);
 
                     SetClipboardData(CF_TEXT, handle);
@@ -106,13 +108,13 @@ namespace up::_detail {
         char const* messageText,
         char const* callstackText) -> FatalErrorAction {
         constexpr int location_buffer_bytes = 128;
-        fixed_string_writer<location_buffer_bytes> location_buffer;
-        format_append(location_buffer, "{}({})", file, line);
+        char location_buffer[location_buffer_bytes] = {};
+        nanofmt::format_to(location_buffer, "{}({})", file, line);
 
         DialogData data;
         data.message = messageText;
         data.condition = failedConditionText;
-        data.location = location_buffer.c_str();
+        data.location = location_buffer;
         data.callstack = callstackText;
 
         // display dialog

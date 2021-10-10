@@ -29,7 +29,6 @@
 #include "imgui_backend.h"
 
 #include "potato/spud/numeric_util.h"
-#include "potato/spud/string_format.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include <glm/vec3.hpp>
@@ -189,7 +188,7 @@ bool ImGui::BeginIconMenu(const char* label, bool enabled) {
     char menuId[32] = {
         0,
     };
-    up::format_to(menuId, "##menu_{}", GetID(label));
+    nanofmt::format_to(menuId, "##menu_{}", GetID(label));
 
     bool const open = BeginMenu(menuId, enabled);
 
