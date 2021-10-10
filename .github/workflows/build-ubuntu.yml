@@ -64,11 +64,11 @@ jobs:
         run: |
           mkdir -p build
           cmake -S . -B build -G Ninja -DUP_CXXFLAGS:STRING="${{ matrix.warnings }}" -DBUILD_SHARED_LIBS=OFF "-DCMAKE_BUILD_TYPE:STRING=${{ matrix.config }}" ..
-      #- name: Build
-      #  run: cmake --build build --parallel -- -k 0 -v
-      #- name: Test
-      #  run: |
-      #    cd build
-      #    ctest -T test -R potato --verbose
-      #- name: Build Resources
-      #  run: cmake --build build --target potato_convert_all
+      - name: Build
+        run: cmake --build build --parallel -- -k 0 -v
+      - name: Test
+        run: |
+          cd build
+          ctest -T test -R potato --verbose
+      - name: Build Resources
+        run: cmake --build build --target potato_convert_all
