@@ -46,7 +46,7 @@ function(up_compile_sap TARGET)
         SET(DEP_FILE "gen/sap/${FILE_NAME}.json.d")
 
         SET(GENERATED_SOURCE_FILE "gen/src/${FILE_NAME}_gen.cpp")
-        SET(GENERATED_HEADER_FILE "gen/src/${FILE_NAME}_schema.h")
+        SET(GENERATED_HEADER_FILE "gen/inc/${FILE_NAME}_schema.h")
 
         target_sources(${TARGET} PRIVATE "${JSON_FILE}" "${GENERATED_SOURCE_FILE}" "${GENERATED_HEADER_FILE}")
 
