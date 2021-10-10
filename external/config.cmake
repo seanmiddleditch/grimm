@@ -62,5 +62,5 @@ FetchContent_Declare(libuv
 )
 FetchContent_Declare(nanofmt
     GIT_REPOSITORY git://github.com/seanmiddleditch/nanofmt.git
-    GIT_TAG ecff9a0c50bf00bfc177b4247bb95e9fe05ac678
+    GIT_TAG b979434328e1f0ec5e6ef977bc59a251c4bc9dfc
 )
