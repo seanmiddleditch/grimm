@@ -51,6 +51,11 @@ jobs:
         if: matrix.config == 'Debug'
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@v3
+      - name: Cache source dependencies
+        uses: actions/cache@v2
+        with:
+          path: deps
+          key: ${{ runner.os }}-${{ hashFiles('external/config.cmake') }}
       - name: Configure
         env:
           CXXFLAGS: '${{ matrix.cxxflags }}'
