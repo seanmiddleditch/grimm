@@ -352,7 +352,7 @@ auto up::recon::ReconApp::_importFile(zstring_view file, bool force) -> ReconImp
         }
     }
 
-    char importedNameBuffer[256] = {};
+    char importedNameBuffer[256];
     char const* const importedNameEnd =
         nanofmt::format_to(importedNameBuffer, "{{{}} {} ({})", metaFile.uuid, file, importer->name());
     string_view const importedName{importedNameBuffer, importedNameEnd};

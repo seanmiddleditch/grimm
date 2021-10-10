@@ -52,6 +52,10 @@ void up::DefaultLogSink::log(
     }
 
 #if defined(UP_PLATFORM_WINDOWS)
+    if (end == buffer + sizeof buffer)
+        --end;
+    *end = '\0';
+
     OutputDebugStringA(buffer);
 #endif
 }

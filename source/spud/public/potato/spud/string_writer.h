@@ -56,7 +56,7 @@ namespace up {
 
         template <typename... Args>
         void format(nanofmt::format_string format, Args const&... args);
-        inline void vformat(nanofmt::format_string format, nanofmt::format_args&& args);
+        inline void vformat(nanofmt::format_string format, nanofmt::format_args args);
 
         // for back_inserter support
         void push_back(value_type ch) { append(ch); }
@@ -110,12 +110,11 @@ void up::string_writer::format(nanofmt::format_string format, Args const&... arg
     return vformat(format, nanofmt::make_format_args(args...));
 }
 
-void up::string_writer::vformat(nanofmt::format_string format, nanofmt::format_args&& args) {
-    char buffer[1024] = {
-        '\0',
-    };
-    char const* const end = nanofmt::format_to(buffer, format, std::move(args));
-    append(buffer, end - buffer);
+void up::string_writer::vformat(nanofmt::format_string format, nanofmt::format_args args) {
+    size_t const length = nanofmt::vformat_length(format, args);
+    reserve(capacity() + length);
+    char* const end = nanofmt::vformat_to_n(_ptr + _size, _capacity - _size, format, args);
+    *end = '\0';
 }
 
 void up::string_writer::reserve(size_type capacity) {

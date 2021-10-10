@@ -21,7 +21,7 @@ auto up::_detail::raiseFatalError(char const* file, int line, char const* failed
     -> FatalErrorAction {
     constexpr int num_addresses = 64;
 
-    char buffer[2048] = {};
+    char buffer[2048];
     char* end = nanofmt::format_to(buffer, "{}({}): ***ASSERTION FAILED*** {}\r\n", file, line, failedConditionText);
 
     if (messageText != nullptr && *messageText != '\0') {

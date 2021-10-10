@@ -35,9 +35,7 @@ protected:
 
     template <typename... ArgsT>
     void fail(std::string_view format_str, ArgsT const&... args) {
-        char buffer[1024] = {
-            0,
-        };
+        char buffer[1024];
         nanofmt::format_to(buffer, {format_str.data(), format_str.size()}, args...);
         fail(buffer);
     }

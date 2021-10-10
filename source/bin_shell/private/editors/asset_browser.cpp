@@ -407,12 +407,8 @@ void up::shell::AssetBrowser::_showNewAssetDialog() {
                     _newAssetType = info.typeHash;
                     if (_nameBuffer[0] != '\0' && !info.extension.empty()) {
                         auto const base = path::filebasename(_nameBuffer);
-                        char* const end = nanofmt::format_to_n(
-                            _nameBuffer + base.size(),
-                            sizeof _nameBuffer - base.size() - 1 /*NUL*/,
-                            "{}",
-                            info.extension);
-                        *end = '\0';
+                        _nameBuffer[base.size()] = '\0';
+                        nanofmt::format_append_to(_nameBuffer, "{}", info.extension);
                     }
                 }
                 if (selected) {

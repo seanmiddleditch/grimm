@@ -217,7 +217,7 @@ void up::AssetDatabase::generateManifest(string_writer& writer) {
         ResourceManifest::columnContentHash,
         ResourceManifest::columnDebugName);
 
-    char fullName[1024] = {};
+    char fullName[1024];
 
     for (auto const& [uuid, filename, assetType] :
          _db.query<zstring_view, zstring_view, zstring_view>("SELECT uuid, path, asset_type FROM source_assets")) {
@@ -229,11 +229,9 @@ void up::AssetDatabase::generateManifest(string_writer& writer) {
              _db.query<AssetId, zstring_view, zstring_view, uint64>(
                  "SELECT id, name, type, hash FROM imported_assets WHERE uuid=?",
                  uuid)) {
-            if (logicalName.empty()) {
-                nanofmt::format_to(fullName, "{}", filename);
-            }
-            else {
-                nanofmt::format_to(fullName, "{}:{}", filename, logicalName);
+            nanofmt::format_to(fullName, "{}", filename);
+            if (!logicalName.empty()) {
+                nanofmt::format_append_to(fullName, ":{}", logicalName);
             }
 
             writer.format(
