@@ -55,7 +55,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: build/deps
-          key: ${{ runner.os }}-${{ hashFiles('cmake/config.cmake') }}
+          key: ${{ runner.os }}-${{ hashFiles('external/config.cmake') }}
       - name: Configure
         env:
           CXXFLAGS: '${{ matrix.cxxflags }}'
