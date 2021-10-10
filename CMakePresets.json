@@ -14,15 +14,16 @@
     {
       "name": "msvc",
       "hidden": true,
-      "cacheVariables": {
-        "UP_CXXFLAGS": "/W3 /WX /w34295 /w34189"
+      "environment": {
+        "UP_CXXFLAGS": "/W3 /WX /w34295 /w34189",
+        "CXXFLAGS": "/FC /Zi"
       }
     },
     {
       "name": "msvc-debug",
       "hidden": true,
       "inherits": [ "msvc" ],
-      "cacheVariables": {
+      "environment": {
         "CXXFLAGS": "$penv{CXXFLAGS} /Od /Ob1 /FC /Zi"
       }
     },
@@ -31,7 +32,7 @@
       "hidden": true,
       "inherits": [ "msvc" ],
       "environment": {
-        "CXXFLAGS": "$penv{CXXFLAGS} /O2 /Ob3 /DNDEBUG /FC /Zi"
+        "CXXFLAGS": "$penv{CXXFLAGS} /O2 /Ob3 /DNDEBUG"
       }
     },
     {
