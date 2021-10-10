@@ -54,7 +54,7 @@ jobs:
       - name: Cache source dependencies
         uses: actions/cache@v2
         with:
-          path: build/deps
+          path: deps
           key: ${{ runner.os }}-${{ hashFiles('external/config.cmake') }}
       - name: Configure
         env:
