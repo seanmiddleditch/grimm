@@ -25,6 +25,9 @@
       "inherits": [ "msvc" ],
       "environment": {
         "CXXFLAGS": "$penv{CXXFLAGS} /Od /Ob1 /FC /Zi"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_DEBUG": "$env{CXXFLAGS}"
       }
     },
     {
@@ -32,7 +35,8 @@
       "hidden": true,
       "inherits": [ "msvc" ],
       "environment": {
-        "CXXFLAGS": "$penv{CXXFLAGS} /O2 /Ob3 /DNDEBUG"
+        "CXXFLAGS": "$penv{CXXFLAGS} /O2 /Ob3 /DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "$env{CXXFLAGS}"
       }
     },
     {
