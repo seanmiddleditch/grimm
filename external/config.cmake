@@ -6,9 +6,8 @@ FetchContent_Declare(catch2
     GIT_SHALLOW ON
 )
 FetchContent_Declare(imgui
-    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_REPOSITORY git://github.com/ocornut/imgui.git
     GIT_TAG d5a4d5300055c1222585a5f6758a232bb9d22d3f
-    GIT_SHALLOW OFF
 )
 FetchContent_Declare(glm
     GIT_REPOSITORY https://github.com/g-truc/glm.git
@@ -16,9 +15,8 @@ FetchContent_Declare(glm
     GIT_SHALLOW ON
 )
 FetchContent_Declare(stb
-    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_REPOSITORY git://github.com/nothings/stb.git
     GIT_TAG b42009b3b9d4ca35bc703f5310eedc74f584be58
-    GIT_SHALLOW OFF
 )
 FetchContent_Declare(json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -49,9 +47,8 @@ FetchContent_Declare(nfd
     GIT_SHALLOW ON
 )
 FetchContent_Declare(sapc
-    GIT_REPOSITORY https://github.com/potatoengine/sapc.git
+    GIT_REPOSITORY git://github.com/potatoengine/sapc.git
     GIT_TAG cfc3bb6d44e67d87d38d6c7406710bd26c1e2cb3 #v0.16
-    #GIT_SHALLOW ON
 )
 FetchContent_Declare(tracy
     GIT_REPOSITORY https://github.com/wolfpld/tracy.git
@@ -64,7 +61,6 @@ FetchContent_Declare(libuv
     GIT_SHALLOW ON
 )
 FetchContent_Declare(nanofmt
-    GIT_REPOSITORY https://github.com/seanmiddleditch/nanofmt.git
+    GIT_REPOSITORY git://github.com/seanmiddleditch/nanofmt.git
     GIT_TAG ecff9a0c50bf00bfc177b4247bb95e9fe05ac678
-    #GIT_SHALLOW ON
 )
