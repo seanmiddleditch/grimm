@@ -34,9 +34,9 @@ protected:
     void fail(std::string_view message);
 
     template <typename... ArgsT>
-    void fail(std::string_view format_str, ArgsT const&... args) {
+    void fail(nanofmt::format_string format, ArgsT const&... args) {
         char buffer[1024];
-        nanofmt::format_to(buffer, {format_str.data(), format_str.size()}, args...);
+        nanofmt::format_to(buffer, format, args...);
         fail(buffer);
     }
 

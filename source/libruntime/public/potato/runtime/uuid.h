@@ -64,29 +64,31 @@ namespace up {
 
 } // namespace up
 
-template <>
-struct nanofmt::formatter<up::UUID> : nanofmt::formatter<char const*> {
-    void format(up::UUID const& uuid, format_output& out) {
-        // format 9554084e-4100-4098-b470-2125f5eed133
-        up::byte const* const bytes = uuid.bytes();
-        format_to(
-            out,
-            "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-            bytes[0],
-            bytes[1],
-            bytes[2],
-            bytes[3],
-            bytes[4],
-            bytes[5],
-            bytes[6],
-            bytes[7],
-            bytes[8],
-            bytes[9],
-            bytes[10],
-            bytes[11],
-            bytes[12],
-            bytes[13],
-            bytes[14],
-            bytes[15]);
-    }
-};
+namespace nanofmt {
+    template <>
+    struct formatter<up::UUID> : nanofmt::formatter<char const*> {
+        void format(up::UUID const& uuid, format_output& out) {
+            // format 9554084e-4100-4098-b470-2125f5eed133
+            up::byte const* const bytes = uuid.bytes();
+            format_to(
+                out,
+                "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
+                bytes[0],
+                bytes[1],
+                bytes[2],
+                bytes[3],
+                bytes[4],
+                bytes[5],
+                bytes[6],
+                bytes[7],
+                bytes[8],
+                bytes[9],
+                bytes[10],
+                bytes[11],
+                bytes[12],
+                bytes[13],
+                bytes[14],
+                bytes[15]);
+        }
+    };
+} // namespace nanofmt
