@@ -16,7 +16,6 @@
 #include "potato/spud/numeric_util.h"
 #include "potato/spud/sequence.h"
 #include "potato/spud/string.h"
-#include "potato/spud/string_format.h"
 #include "potato/spud/vector.h"
 
 #include <imgui.h>
@@ -161,8 +160,8 @@ void up::shell::AssetBrowser::_showAsset(Entry const& asset) {
             ImGui::SetClipboardText(asset.osPath.c_str());
         }
         if (ImGui::IconMenuItem("Copy UUID")) {
-            char buf[UUID::strLength] = {0};
-            format_to(buf, "{}", asset.uuid);
+            char buf[UUID::strLength];
+            nanofmt::format_to(buf, "{}", asset.uuid);
             ImGui::SetClipboardText(buf);
         }
         if (ImGui::IconMenuItem("Show in Explorer", ICON_FA_FOLDER_OPEN)) {
@@ -408,8 +407,12 @@ void up::shell::AssetBrowser::_showNewAssetDialog() {
                     _newAssetType = info.typeHash;
                     if (_nameBuffer[0] != '\0' && !info.extension.empty()) {
                         auto const base = path::filebasename(_nameBuffer);
-                        _nameBuffer[base.size()] = '\0';
-                        format_append(_nameBuffer, "{}", info.extension);
+                        char* const end = nanofmt::format_to_n(
+                            _nameBuffer + base.size(),
+                            sizeof _nameBuffer - base.size() - 1 /*NUL*/,
+                            "{}",
+                            info.extension);
+                        *end = '\0';
                     }
                 }
                 if (selected) {
@@ -665,8 +668,8 @@ void up::shell::AssetBrowser::_executeCommand() {
             if (_selection.size() == 1) {
                 for (Entry const& entry : _entries) {
                     if (_selection.selected(entry.id)) {
-                        format_to(_nameBuffer, "{}", entry.name);
-                        format_to(_renameBuffer, "{}", entry.name);
+                        nanofmt::format_to(_nameBuffer, "{}", entry.name);
+                        nanofmt::format_to(_renameBuffer, "{}", entry.name);
                         break;
                     }
                 }
@@ -679,7 +682,7 @@ void up::shell::AssetBrowser::_executeCommand() {
             ImGui::OpenPopup(assetBrowserNewFolderDialogName.c_str());
             break;
         case Command::ShowNewAssetDialog:
-            format_to(_nameBuffer, "new.scene");
+            nanofmt::format_to(_nameBuffer, "new.scene");
             _newAssetType = hash_value("potato.asset.scene");
             ImGui::OpenPopup(assetBrowserNewAssetDialogName.c_str());
             break;

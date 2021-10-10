@@ -37,6 +37,10 @@ void up::DefaultLogSink::log(
         loggerName,
         message);
 
+    if (end == buffer + sizeof buffer)
+        --end;
+    *end = '\0';
+
     {
         std::ostream& os = severity == LogSeverity::Error ? std::cerr : std::cout;
 

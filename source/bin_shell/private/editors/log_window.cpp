@@ -4,6 +4,7 @@
 #include "log_history.h"
 
 #include "potato/editor/imgui_ext.h"
+#include "potato/spud/utility.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>

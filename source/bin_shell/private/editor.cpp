@@ -2,9 +2,9 @@
 
 #include "editor.h"
 
-#include "potato/format/format.h"
 #include "potato/spud/sequence.h"
 #include "potato/spud/string_writer.h"
+#include "potato/spud/utility.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -29,8 +29,8 @@ bool up::shell::Editor::updateUi() {
         0,
     };
 
-    format_to(editorTitle, "{}##{}", displayName(), this);
-    format_to(contentTitle, "Document##{}", this);
+    nanofmt::format_to(editorTitle, "{}##{}", displayName(), this);
+    nanofmt::format_to(contentTitle, "Document##{}", this);
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
     if (isClosable()) {
@@ -98,19 +98,18 @@ auto up::shell::Editor::addPanel(string title, PanelUpdate update) -> PanelId {
     panel->title = std::move(title);
     panel->update = std::move(update);
 
-    string_writer tmp;
-    format_append(tmp, "{}##{}", panel->title, panel.get());
-    panel->imguiLabel = tmp.to_string();
+    char tmp[128] = {};
+    nanofmt::format_to(tmp, "{}##{}", panel->title, panel.get());
+    panel->imguiLabel = tmp;
 
     auto const id = panel->id = ImGui::GetID(panel.get());
 
     panel->dockId = _dockId;
 
-    tmp.clear();
-    format_append(tmp, "View\\Panels\\{}", panel->title);
+    nanofmt::format_to(tmp, "View\\Panels\\{}", panel->title);
 
     _actions.addAction(
-        {.menu = tmp.to_string(),
+        {.menu = tmp,
          .group = "5_panels"_s,
          .checked = [ptr = panel.get()] { return ptr->open; },
          .action =

@@ -470,9 +470,9 @@ void up::shell::ShellApp::_updateTitle() {
         return;
     }
 
-    string_writer title;
-    format_append(title, "{} [{}]", appName, _projectName);
-    SDL_SetWindowTitle(_window.get(), title.c_str());
+    char title[128] = {};
+    nanofmt::format_to(title, "{} [{}]", appName, _projectName);
+    SDL_SetWindowTitle(_window.get(), title);
 }
 
 void up::shell::ShellApp::_processEvents() {
@@ -618,11 +618,11 @@ void up::shell::ShellApp::_displayMainMenu() {
         {
             auto micro = std::chrono::duration_cast<std::chrono::microseconds>(_lastFrameDuration).count();
 
-            fixed_string_writer<128> buffer;
-            format_append(buffer, "{}us | FPS {}", micro, static_cast<int>(1.f / _lastFrameTime));
-            auto const textWidth = ImGui::CalcTextSize(buffer.c_str()).x;
+            char buffer[128] = {};
+            nanofmt::format_to(buffer, "{}us | FPS {}", micro, static_cast<int>(1.f / _lastFrameTime));
+            auto const textWidth = ImGui::CalcTextSize(buffer).x;
             ImGui::SameLine(ImGui::GetWindowSize().x - textWidth - 2 * ImGui::GetStyle().FramePadding.x);
-            ImGui::Text("%s", buffer.c_str());
+            ImGui::Text("%s", buffer);
         }
 
         ImGui::EndMainMenuBar();
