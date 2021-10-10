@@ -43,7 +43,7 @@ jobs:
           version: 12
           components: clang clang-tidy libc++
       - name: Install libraries
-        run: sudo apt-get -yq install uuid-dev libsdl2-dev libassimp-dev libuv1-dev
+        run: sudo apt-get -yq install uuid-dev libsdl2-dev libassimp-dev libuv1-dev libunwind-dev
       - name: Install Problem Matchers
         uses: Trass3r/setup-cpp@v1
       - name: Install Ninja
