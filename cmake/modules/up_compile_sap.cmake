@@ -1,6 +1,13 @@
 include(up_utility)
 include(up_target_shortname)
 
+cmake_policy(PUSH)
+
+# CMP0116 must be explicitly set to disable warnings (as of CMake 3.21)
+# https://cmake.org/cmake/help/v3.20/policy/CMP0116.html
+#
+cmake_policy(SET CMP0116 NEW)
+
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 set(SAP_SCHEMA_COMPILE_DIR "${UP_ROOT_DIR}/scripts/build")
@@ -92,7 +99,7 @@ function(up_compile_sap TARGET)
         add_dependencies(${GEN_TGT} ${JSON_FILES})
     endif()
 
-    cmake_policy(SET CMP0079 NEW)
     add_dependencies(${TARGET} ${GEN_TGT})
 endfunction()
 
+cmake_policy(POP)
