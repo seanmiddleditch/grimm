@@ -6,6 +6,8 @@
 #include "potato/runtime/json.h"
 #include "potato/spud/find.h"
 
+#include <charconv>
+
 static constexpr up::string_view headerMessageType{"Message-Type"};
 static constexpr up::string_view headerContentLength{"Content-Length"};
 
