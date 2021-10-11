@@ -54,7 +54,6 @@ up_compile_sap(potato_shell SCHEMAS
 target_link_libraries(potato_shell PRIVATE
     potato::libruntime
     potato::spud
-    potato::libformat
     potato::librender
     potato::libecs
     potato::libreflex
@@ -62,6 +61,7 @@ target_link_libraries(potato_shell PRIVATE
     potato::libtools
     potato::libeditor
     potato::librecon
+    nanofmt::nanofmt
     glm
     SDL2
     SDL2main

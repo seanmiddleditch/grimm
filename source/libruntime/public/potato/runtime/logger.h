@@ -9,7 +9,6 @@
 #include "potato/spud/fixed_string_writer.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/string.h"
-#include "potato/spud/string_format.h"
 #include "potato/spud/string_view.h"
 #include "potato/spud/vector.h"
 #include "potato/spud/zstring_view.h"
@@ -116,17 +115,17 @@ namespace up {
         UP_RUNTIME_API bool isEnabledFor(LogSeverity severity) const noexcept;
 
         template <typename... T>
-        void log(LogSeverity severity, string_view format, T const&... args);
+        void log(LogSeverity severity, nanofmt::format_string format, T const&... args);
         UP_RUNTIME_API void log(LogSeverity severity, string_view message) noexcept;
 
         template <typename... T>
-        void info(string_view format, T const&... args) {
+        void info(nanofmt::format_string format, T const&... args) {
             log(LogSeverity::Info, format, args...);
         }
         void info(string_view message) noexcept { log(LogSeverity::Info, message); }
 
         template <typename... T>
-        void error(string_view format, T const&... args) {
+        void error(nanofmt::format_string format, T const&... args) {
             log(LogSeverity::Error, format, args...);
         }
         void error(string_view message) noexcept { log(LogSeverity::Error, message); }
@@ -152,14 +151,14 @@ namespace up {
     };
 
     template <typename... T>
-    void Logger::log(LogSeverity severity, string_view format, T const&... args) {
+    void Logger::log(LogSeverity severity, nanofmt::format_string format, T const&... args) {
         if (!isEnabledFor(severity)) {
             return;
         }
 
-        fixed_string_writer<log_length> writer;
-        format_append(writer, format, args...);
+        char buffer[log_length] = {};
+        nanofmt::format_to(buffer, format, args...);
 
-        log(severity, writer);
+        log(severity, buffer);
     }
 } // namespace up

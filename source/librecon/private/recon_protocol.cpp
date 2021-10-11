@@ -6,6 +6,8 @@
 #include "potato/runtime/json.h"
 #include "potato/spud/find.h"
 
+#include <charconv>
+
 static constexpr up::string_view headerMessageType{"Message-Type"};
 static constexpr up::string_view headerContentLength{"Content-Length"};
 
@@ -66,7 +68,7 @@ bool up::ReconProtocol::receive(view<char> data) {
                     }
 
                     if (headerName == headerMessageType) {
-                        format_to(_headerMessageType, "{}", headerData);
+                        nanofmt::format_to(_headerMessageType, "{}", headerData);
                     }
                     else if (headerName == headerContentLength) {
                         std::from_chars(headerData.data(), headerData.data() + headerData.size(), _headerContentLength);
@@ -112,12 +114,12 @@ bool up::ReconProtocol::_send(string_view name, reflex::Schema const& schema, vo
     auto const str = doc.dump();
 
     char headersBuf[128] = {0};
-    auto const headersText =
-        format_to(headersBuf, "{}: {}\n{}: {}\n\n", headerMessageType, name, headerContentLength, str.size());
+    char const* const headersEnd =
+        nanofmt::format_to(headersBuf, "{}: {}\n{}: {}\n\n", headerMessageType, name, headerContentLength, str.size());
 
     IOStream& ioSink = sink();
 
-    ioSink.write({headersText.data(), headersText.size()});
+    ioSink.write({headersBuf, static_cast<size_t>(headersEnd - headersBuf)});
     ioSink.write({str.data(), str.size()});
     ioSink.write({"\n", 1});
     return true;

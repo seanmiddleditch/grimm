@@ -9,6 +9,7 @@
 #include "potato/spud/concepts.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/typelist.h"
+#include "potato/spud/utility.h"
 #include "potato/spud/zstring_view.h"
 
 #include <tuple>

@@ -5,7 +5,6 @@
 #include "_export.h"
 #include "uuid.h"
 
-#include "potato/format/erased.h"
 #include "potato/spud/int_types.h"
 #include "potato/spud/string.h"
 #include "potato/spud/vector.h"

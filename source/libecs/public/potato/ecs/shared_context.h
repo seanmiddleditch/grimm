@@ -10,6 +10,7 @@
 #include "potato/spud/int_types.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/span.h"
+#include "potato/spud/utility.h"
 #include "potato/spud/vector.h"
 
 namespace up {

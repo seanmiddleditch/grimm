@@ -72,7 +72,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(potato_libruntime
     PUBLIC
         potato::spud
-        potato::libformat
+        nanofmt::nanofmt
         ${UP_UUID_LIBRARY}
         Threads::Threads
         nlohmann_json::nlohmann_json

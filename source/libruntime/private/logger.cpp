@@ -6,6 +6,7 @@
 #    include "potato/spud/platform_windows.h"
 #endif
 
+#include <nanofmt/format.h>
 #include <iostream>
 
 void up::DefaultLogSink::log(
@@ -16,17 +17,35 @@ void up::DefaultLogSink::log(
     char buffer[2048] = {
         0,
     };
+    char* end = buffer;
 
     if (location.file) {
-        format_append(buffer, "{}({}): <{}> ", location.file, location.line, location.function);
+        end = nanofmt::format_to_n(
+            buffer,
+            sizeof buffer - (end - buffer),
+            "{}({}): <{}> ",
+            location.file,
+            location.line,
+            location.function);
     }
 
-    format_append(buffer, "[{}] {} :: {}\n", toString(severity), loggerName, message);
+    end = nanofmt::format_to_n(
+        buffer,
+        sizeof buffer - (end - buffer),
+        "[{}] {} :: {}\n",
+        toString(severity),
+        loggerName,
+        message);
+
+    if (end == buffer + sizeof buffer) {
+        --end;
+    }
+    *end = '\0';
 
     {
         std::ostream& os = severity == LogSeverity::Error ? std::cerr : std::cout;
 
-        os << buffer;
+        os.write(buffer, end - buffer);
 
         if (severity != LogSeverity::Info) {
             os.flush();
@@ -34,6 +53,10 @@ void up::DefaultLogSink::log(
     }
 
 #if defined(UP_PLATFORM_WINDOWS)
+    if (end == buffer + sizeof buffer)
+        --end;
+    *end = '\0';
+
     OutputDebugStringA(buffer);
 #endif
 }

@@ -7,6 +7,7 @@
 #include "potato/runtime/assertion.h"
 #include "potato/runtime/asset.h"
 #include "potato/runtime/json.h"
+#include "potato/spud/utility.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>
@@ -118,7 +119,7 @@ bool up::reflex::_detail::encodeUuid(nlohmann::json& json, Schema const& schema,
     char buf[UUID::strLength] = {
         0,
     };
-    format_to(buf, "{}", uuid);
+    nanofmt::format_to(buf, "{}", uuid);
 
     json = buf;
     return true;

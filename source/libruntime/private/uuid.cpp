@@ -6,6 +6,8 @@
 #include "potato/spud/ascii.h"
 #include "potato/spud/string_writer.h"
 
+#include <nanofmt/format.h>
+
 up::UUID::UUID(up::byte const* bytes, size_t length) noexcept : _data{HighLow{}} {
     UP_ASSERT(length == octects);
     for (unsigned i = 0; i != octects; ++i) {
@@ -18,9 +20,9 @@ constexpr char byteToString(up::byte byte) noexcept {
 }
 
 auto up::UUID::toString() const -> string {
-    string_writer buffer;
-    format_append(buffer, "{}", *this);
-    return buffer.c_str();
+    char chars[strLength] = {};
+    nanofmt::format_to(chars, "{}", *this);
+    return chars;
 }
 
 auto up::UUID::fromString(string_view id) noexcept -> UUID {

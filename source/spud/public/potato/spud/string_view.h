@@ -5,6 +5,7 @@
 #include "numeric_util.h"
 #include "string_util.h"
 
+#include <nanofmt/forward.h>
 #include <compare>
 #include <type_traits>
 #include <utility>
@@ -160,3 +161,15 @@ void up::hash_append(HashAlgorithm& hasher, string_view const& string) {
 constexpr auto up::operator"" _sv(char const* str, size_t size) noexcept -> string_view {
     return {str, size};
 }
+
+namespace nanofmt {
+    template <>
+    struct formatter<up::string_view> {
+        constexpr char const* parse(char const* in, char const*) noexcept { return in; }
+
+        template <typename OutputT>
+        void format(up::string_view str, OutputT& output) noexcept {
+            output.append(str.data(), str.size());
+        }
+    };
+} // namespace nanofmt

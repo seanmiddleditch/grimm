@@ -7,8 +7,8 @@
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/path.h"
 #include "potato/runtime/resource_manifest.h"
-#include "potato/spud/string_format.h"
 
+#include <nanofmt/format.h>
 #include <imgui.h>
 
 bool up::assetBrowserPopup(zstring_view id, AssetId& inout_asset, string_view type, AssetLoader& assetLoader) {
@@ -34,7 +34,7 @@ bool up::assetBrowserPopup(zstring_view id, AssetId& inout_asset, string_view ty
                     continue;
                 }
 
-                format_to(filename, "{}", path::filename(asset.filename));
+                nanofmt::format_to(filename, "{}", path::filename(asset.filename));
 
                 if (ImGui::IconGridItem(static_cast<ImGuiID>(hash_value(asset.uuid)), filename, ICON_FA_FILE)) {
                     inout_asset = static_cast<AssetId>(asset.logicalId);
