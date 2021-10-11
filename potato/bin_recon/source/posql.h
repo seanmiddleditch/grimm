@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "_export.h"
-
 #include "potato/runtime/assertion.h"
 #include "potato/runtime/uuid.h"
 #include "potato/spud/concepts.h"
@@ -24,18 +22,18 @@ namespace up {
         enum class SqlResult { Ok = 0, Error };
 
         namespace sqlutil {
-            [[nodiscard]] UP_POSQL_API sqlite3_stmt* compile(sqlite3* db, string_view sql);
-            [[nodiscard]] UP_POSQL_API bool isComplete(sqlite3_stmt* stmt) noexcept;
-            UP_POSQL_API void nextRow(sqlite3_stmt* stmt) noexcept;
-            UP_POSQL_API void reset(sqlite3_stmt* stmt) noexcept;
-            UP_POSQL_API void destroy(sqlite3_stmt* stmt) noexcept;
+            [[nodiscard]] sqlite3_stmt* compile(sqlite3* db, string_view sql);
+            [[nodiscard]] bool isComplete(sqlite3_stmt* stmt) noexcept;
+            void nextRow(sqlite3_stmt* stmt) noexcept;
+            void reset(sqlite3_stmt* stmt) noexcept;
+            void destroy(sqlite3_stmt* stmt) noexcept;
 
-            [[nodiscard]] UP_POSQL_API int64 fetchColumnI64(sqlite3_stmt* stmt, int index) noexcept;
-            [[nodiscard]] UP_POSQL_API zstring_view fetchColumnString(sqlite3_stmt* stmt, int index) noexcept;
+            [[nodiscard]] int64 fetchColumnI64(sqlite3_stmt* stmt, int index) noexcept;
+            [[nodiscard]] zstring_view fetchColumnString(sqlite3_stmt* stmt, int index) noexcept;
 
-            UP_POSQL_API void bindParam(sqlite3_stmt* stmt, int index, int64 value) noexcept;
-            UP_POSQL_API void bindParam(sqlite3_stmt* stmt, int index, string_view value) noexcept;
-            UP_POSQL_API void bindParam(sqlite3_stmt* stmt, int index, UUID const& value) noexcept;
+            void bindParam(sqlite3_stmt* stmt, int index, int64 value) noexcept;
+            void bindParam(sqlite3_stmt* stmt, int index, string_view value) noexcept;
+            void bindParam(sqlite3_stmt* stmt, int index, UUID const& value) noexcept;
             template <enumeration E>
             void bindParam(sqlite3_stmt* stmt, int index, E value) noexcept {
                 bindParam(stmt, index, to_underlying(value));
@@ -125,8 +123,8 @@ namespace up {
             Database(Database const&) = delete;
             Database& operator=(Database const&) = delete;
 
-            [[nodiscard]] UP_POSQL_API SqlResult open(zstring_view file_name) noexcept;
-            UP_POSQL_API void close() noexcept;
+            [[nodiscard]] SqlResult open(zstring_view file_name) noexcept;
+            void close() noexcept;
 
             [[nodiscard]] bool empty() const noexcept { return _conn == nullptr; }
             [[nodiscard]] explicit operator bool() const noexcept { return _conn != nullptr; }
@@ -156,7 +154,7 @@ namespace up {
                 return rs;
             }
 
-            [[nodiscard]] UP_POSQL_API Transaction begin() noexcept;
+            [[nodiscard]] Transaction begin() noexcept;
 
         private:
             template <typename... T>
@@ -184,8 +182,8 @@ namespace up {
                 return *this;
             }
 
-            UP_POSQL_API void commit();
-            UP_POSQL_API void rollback();
+            void commit();
+            void rollback();
 
         private:
             explicit Transaction(sqlite3* conn) noexcept : _conn(conn) {}
@@ -201,7 +199,7 @@ namespace up {
             explicit Statement(rc<sqlutil::Stmt> stmt) noexcept : _stmt(std::move(stmt)) {}
 
             Statement(Statement&& rhs) noexcept : _stmt(std::move(rhs._stmt)) { rhs._stmt = nullptr; }
-            UP_POSQL_API Statement& operator=(Statement&& rhs) noexcept;
+            Statement& operator=(Statement&& rhs) noexcept;
 
             [[nodiscard]] bool empty() const noexcept { return _stmt == nullptr; }
             [[nodiscard]] explicit operator bool() const noexcept { return _stmt != nullptr; }

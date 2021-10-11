@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "potato/posql/posql.h"
+#include "posql.h"
+
 #include "potato/runtime/stream.h"
 #include "potato/spud/box.h"
 #include "potato/spud/hash.h"
