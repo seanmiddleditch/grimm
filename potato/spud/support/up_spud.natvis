@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <!--
+    up::box<T>
+    include/potato/spud/box.h
+   -->
+  <Type Name="up::box&lt;*&gt;">
+    <DisplayString Condition="_ptr == nullptr">empty</DisplayString>
+    <DisplayString>{_ptr}</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="_ptr != nullptr">_ptr</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <!--
+    up::rc<T>
+    include/potato/spud/rc.h
+   -->
+  <Type Name="up::rc&lt;*&gt;">
+    <DisplayString Condition="_ptr == nullptr">empty</DisplayString>
+    <DisplayString>{_ptr}</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="_ptr != nullptr">_ptr</ExpandedItem>
+    </Expand>
+  </Type>
+  
+  <!--
+    up::shared<Derived>
+    include/potato/spud/rc.h
+   -->
+  <Type Name="up::shared&lt;*&gt;">
+    <DisplayString>{{ refs={_refs} }}</DisplayString>
+  </Type>
+
+  <!--
+    up::span<T>
+    include/potato/spud/span.h
+   -->
+  <Type Name="up::span&lt;*&gt;">
+    <DisplayString Condition="_begin == _end">empty</DisplayString>
+    <DisplayString>{{ size={_end - _begin} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_end - _begin</Item>
+      <ArrayItems>
+        <Size>_end - _begin</Size>
+        <ValuePointer>_begin</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <!--
+    up::vector<T>
+    include/potato/spud/vector.h
+   -->
+  <Type Name="up::vector&lt;*&gt;">
+    <DisplayString Condition="_first == _last">empty</DisplayString>
+    <DisplayString>{{ size={_last - _first} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_last - _first</Item>
+      <Item Name="[capacity]" ExcludeView="simple">_sentinel - _first</Item>
+      <ArrayItems>
+        <Size>_last - _first</Size>
+        <ValuePointer>_first</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <!--
+    up::string_view
+    include/potato/spud/string_view.h
+   -->
+  <Type Name="up::string_view">
+    <DisplayString Condition="_size == 0">empty</DisplayString>
+    <DisplayString>{_data,[_size]s8}</DisplayString>
+    <StringView>_data,[_size]s8</StringView>
+  </Type>
+
+  <!--
+    up::zstring_view
+    include/potato/spud/zstring_view.h
+   -->
+  <Type Name="up::zstring_view">
+    <DisplayString Condition="_str == nullptr || *_str == 0">empty</DisplayString>
+    <DisplayString>{_str,s8}</DisplayString>
+    <StringView>_str,s8</StringView>
+  </Type>
+
+  <!--
+    up::fixed_string
+    include/potato/spud/fixed_string.h
+   -->
+  <Type Name="up::fixed_string&lt;*&gt;">
+    <DisplayString Condition="_size == 0">empty</DisplayString>
+    <DisplayString>{_buffer,[_size]s8}</DisplayString>
+    <StringView>_buffer,[_size]s8</StringView>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_size</Item>
+      <Item Name="[capacity]" ExcludeView="simple">$T1</Item>
+    </Expand>
+  </Type>
+
+  <!--
+    up::string
+    include/potato/spud/string.h
+   -->
+  <Type Name="up::string">
+    <DisplayString Condition="_size == 0">empty</DisplayString>
+    <DisplayString>{_data,[_size]s8}</DisplayString>
+    <StringView>_data,[_size]s8</StringView>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_size</Item>
+    </Expand>
+  </Type>
+
+  <!--
+    up::string_writer
+    include/potato/spud/string_writer.h
+   -->
+  <Type Name="up::string_writer">
+    <DisplayString Condition="_size == 0">empty</DisplayString>
+    <DisplayString>{_ptr,[_size]s8}</DisplayString>
+    <StringView>_ptr,[_size]s8</StringView>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_size</Item>
+      <Item Name="[capacity]" ExcludeView="simple">_capacity</Item>
+    </Expand>
+  </Type>
+
+  <!--
+    up::fixed_string_writer
+    include/potato/spud/fixed_string_writer.h
+   -->
+  <Type Name="up::fixed_string_writer&lt;*&gt;">
+    <DisplayString Condition="_size == 0">empty</DisplayString>
+    <DisplayString>{_buffer,[_size]s8}</DisplayString>
+    <StringView>_buffer,[_size]s8</StringView>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">_size</Item>
+      <Item Name="[capacity]" ExcludeView="simple">$T1 - 1</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>

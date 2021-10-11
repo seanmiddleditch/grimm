@@ -156,7 +156,7 @@ function(up_set_common_properties TARGET)
             $<INSTALL_INTERFACE:schema>
         )
         target_include_directories(${TARGET} ${PUBLIC_INTERFACE}
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/public>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/schema>
         )
     endif()
@@ -165,7 +165,7 @@ function(up_set_common_properties TARGET)
     #
     if(NOT IS_INTERFACE AND NOT IS_TEST)
         target_include_directories(${TARGET} PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/public/potato/${SHORT_NAME}
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/potato/${SHORT_NAME}
         )
     endif()
 

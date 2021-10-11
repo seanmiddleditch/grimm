@@ -8,7 +8,7 @@ if(UP_BUILD_DOCS)
     set(UP_DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
     set(UP_DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
     
-    file(GLOB_RECURSE UP_PUBLIC_HEADERS ${UP_DOXYGEN_SOURCE_DIR}/*/*/public/potato/*/*.h)
+    file(GLOB_RECURSE UP_PUBLIC_HEADERS ${UP_DOXYGEN_SOURCE_DIR}/*/*/include/potato/*/*.h)
  
     configure_file(${UP_DOXYFILE_IN} ${UP_DOXYFILE} @ONLY)
     add_custom_command(

@@ -5,7 +5,7 @@ add_library(potato_@NAME@)
 add_library(potato::@NAME@ ALIAS potato_@NAME@)
 
 target_sources(potato_@NAME@ PRIVATE
-    "private/@SHORTNAME@.cpp"
+    "source/@SHORTNAME@.cpp"
 )
 
 include(up_set_common_properties)

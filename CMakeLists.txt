@@ -46,7 +46,7 @@ endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 include(GNUInstallDirs)
 
 add_subdirectory(external)
-add_subdirectory(source)
+add_subdirectory(potato)
 add_subdirectory(documentation)
 
 configure_file(
