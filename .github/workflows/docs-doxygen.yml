@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: html-docs
-          path: build/documentation/doxygen/html
+          path: build/docs/doxygen/html
 
   deply-doxygen:
     name: Deploy Docs
