@@ -1,5 +1,23 @@
 include(FetchContent)
 
+set(UP_DEPENDENCIES
+    assimp_win64
+    catch2
+    imgui
+    glm
+    stb
+    json
+    flatbuffers
+    sdl2_vc
+    soloud
+    nfd
+    sapc
+    sqlite_source
+    tracy
+    libuv
+    nanofmt
+)
+
 FetchContent_Declare(sqlite_source
     URL https://www.sqlite.org/2021/sqlite-amalgamation-3360000.zip
     URL_HASH SHA3_256=d25609210ec93b3c8c7da66a03cf82e2c9868cfbd2d7d866982861855e96f972

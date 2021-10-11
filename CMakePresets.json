@@ -6,7 +6,9 @@
       "hidden": true,
       "cacheVariables": {
         "UP_OUTPUT_DIR": "${sourceDir}/out",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps",
+        "FETCHCONTENT_QUIET": true
       },
       "binaryDir": "${sourceDir}/out/${presetName}",
       "generator": "Ninja"

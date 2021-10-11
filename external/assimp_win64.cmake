@@ -1,5 +1,3 @@
-include(config.cmake)
-
 if(WIN32)
     find_package(Assimp QUIET)
 

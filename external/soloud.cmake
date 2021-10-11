@@ -1,8 +1,6 @@
-include(config.cmake)
-
 FetchContent_Populate(soloud)
 
-add_library(soloud STATIC)
+add_library(soloud STATIC EXCLUDE_FROM_ALL)
 target_include_directories(soloud PUBLIC "${soloud_SOURCE_DIR}/include")
 target_compile_definitions(soloud
     PRIVATE

@@ -1,8 +1,6 @@
-include(config.cmake)
-
 FetchContent_Populate(sqlite_source)
 
-add_library(sqlite3 STATIC
+add_library(sqlite3 STATIC EXCLUDE_FROM_ALL
     "${sqlite_source_SOURCE_DIR}/sqlite3.c"
     "${sqlite_source_SOURCE_DIR}/sqlite3.h"
     "${sqlite_source_SOURCE_DIR}/sqlite3ext.h"

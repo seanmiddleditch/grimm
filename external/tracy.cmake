@@ -1,7 +1,5 @@
-include(config.cmake)
-
 FetchContent_Populate(tracy)
-add_library(tracy SHARED)
+add_library(tracy SHARED EXCLUDE_FROM_ALL)
 target_sources(tracy PRIVATE
     "${tracy_SOURCE_DIR}/TracyClient.cpp"
     "${tracy_SOURCE_DIR}/Tracy.hpp"

@@ -1,5 +1,3 @@
-include(config.cmake)
-
 FetchContent_Populate(glm)
 set(GLM_QUIET ON CACHE BOOL "quiet glm build")
 set(GLM_TEST_ENABLE OFF CACHE BOOL "disable glm tests")

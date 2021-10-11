@@ -30,7 +30,6 @@ include(Dart)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(FETCHCONTENT_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps" CACHE PATH "Dependency cache directory")
 set(UP_TEST_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -44,6 +43,8 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
 endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
 include(GNUInstallDirs)
+
+include(depends.cmake)
 
 add_subdirectory(external)
 add_subdirectory(potato)
