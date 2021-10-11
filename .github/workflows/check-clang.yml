@@ -18,7 +18,7 @@ jobs:
         run: sudo apt-get -yq install clang-format-11 # Match VS2019's version
       - uses: actions/checkout@master
       - name: Check Format
-        run: python3 ./scripts/tools/run-clang-format.py -r --clang-format-executable clang-format-11 --exclude ./external --extensions h,cpp,cc ./source
+        run: python3 ./scripts/tools/run-clang-format.py -r --clang-format-executable clang-format-11 --exclude ./external --extensions h,cpp,cc ./potato
 
   check-clang-tidy:
     name: 'Clang Tidy'
