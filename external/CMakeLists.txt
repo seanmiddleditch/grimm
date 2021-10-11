@@ -16,7 +16,7 @@ set(EXTERNALS
     soloud
     nfd
     sapc
-    sqlite
+    sqlite_source
     tracy
     libuv
     nanofmt

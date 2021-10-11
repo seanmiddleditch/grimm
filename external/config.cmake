@@ -1,5 +1,9 @@
 include(FetchContent)
 
+FetchContent_Declare(sqlite_source
+    URL https://www.sqlite.org/2021/sqlite-amalgamation-3360000.zip
+    URL_HASH SHA3_256=d25609210ec93b3c8c7da66a03cf82e2c9868cfbd2d7d866982861855e96f972
+)
 FetchContent_Declare(catch2
     GIT_REPOSITORY git://github.com/catchorg/Catch2.git
     GIT_TAG c4e3767e265808590986d5db6ca1b5532a7f3d13 #v2.13.7
