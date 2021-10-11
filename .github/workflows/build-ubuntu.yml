@@ -54,8 +54,8 @@ jobs:
       - name: Cache source dependencies
         uses: actions/cache@v2
         with:
-          path: deps
-          key: ${{ runner.os }}-${{ hashFiles('external/config.cmake') }}
+          path: ${{ github.workspace }}/deps
+          key: ${{ runner.os }}-${{ hashFiles('depends.cmake') }}
       - name: Configure
         env:
           CXXFLAGS: '${{ matrix.cxxflags }}'
@@ -63,7 +63,7 @@ jobs:
           CC: '${{ matrix.cc }}'
         run: |
           mkdir -p build
-          cmake -S . -B build -G Ninja -DUP_CXXFLAGS:STRING="${{ matrix.warnings }}" -DBUILD_SHARED_LIBS=OFF "-DCMAKE_BUILD_TYPE:STRING=${{ matrix.config }}" ..
+          cmake -S . -B build -G Ninja -DUP_CXXFLAGS:STRING="${{ matrix.warnings }}" -DBUILD_SHARED_LIBS=OFF "-DCMAKE_BUILD_TYPE:STRING=${{ matrix.config }}" "-DFETCHCONTENT_BASE_DIR:PATH=${{ github.workspace }}/deps" ..
       - name: Build
         run: cmake --build build --parallel -- -k 0 -v
       - name: Test

@@ -18,7 +18,7 @@ jobs:
         run: sudo apt-get -yq install clang-format-11 # Match VS2019's version
       - uses: actions/checkout@master
       - name: Check Format
-        run: python3 ./scripts/tools/run-clang-format.py -r --clang-format-executable clang-format-11 --exclude ./external --extensions h,cpp,cc ./source
+        run: python3 ./scripts/tools/run-clang-format.py -r --clang-format-executable clang-format-11 --exclude ./external --extensions h,cpp,cc ./potato
 
   check-clang-tidy:
     name: 'Clang Tidy'
@@ -51,11 +51,11 @@ jobs:
       - name: Cache source dependencies
         uses: actions/cache@v2
         with:
-          path: deps
-          key: ${{ runner.os }}-${{ hashFiles('external/config.cmake') }}
+          path: ${{ github.workspace }}/deps
+          key: ${{ runner.os }}-${{ hashFiles('depends.cmake') }}
       - name: Configure
         run: |
           mkdir -p build
-          cmake -S . -B build -G Ninja "-DUP_CXXFLAGS:STRING=${{ env.UP_CXXFLAGS }}" "-DBUILD_SHARED_LIBS=${{ env.SHARED }}" "-DUP_CLANG_TIDY:PATH=${{ env.TIDY }}" "-DCMAKE_BUILD_TYPE:STRING=${{ env.CONFIG }}"
+          cmake -S . -B build -G Ninja "-DUP_CXXFLAGS:STRING=${{ env.UP_CXXFLAGS }}" "-DBUILD_SHARED_LIBS=${{ env.SHARED }}" "-DUP_CLANG_TIDY:PATH=${{ env.TIDY }}" "-DCMAKE_BUILD_TYPE:STRING=${{ env.CONFIG }}" "-DFETCHCONTENT_BASE_DIR:PATH=${{ github.workspace }}/deps"
       - name: Build
         run: cmake --build build --parallel -- -k 0 -v

@@ -1,7 +1,7 @@
 The Game Engine Formerly Known as Grimm <br>
 Possibly Known as UnderPotatoes
 
-<img title="Powered by a Potato" src="./documentation/images/potato.svg" width="128"/>
+<img title="Powered by a Potato" src="./docs/images/potato.svg" width="128"/>
 
 About
 -----
@@ -11,8 +11,8 @@ This is a hobby project by a few friends and colleagues. This isn't (yet) a seri
 Documentation
 -------------
 
-- [Getting Started](./documentation/getting-started.md)
-- [Coding Guidelines](./documentation/coding-style.md)
+- [Getting Started](./docs/getting-started.md)
+- [Coding Guidelines](./docs/coding-style.md)
 
 Status
 ------

@@ -1,5 +1,3 @@
-include(config.cmake)
-
 find_library(libuv_LIBRARY NAMES uv libuv)
 mark_as_advanced(libuv_LIBRARY)
 
