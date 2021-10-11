@@ -37,8 +37,9 @@ void up::DefaultLogSink::log(
         loggerName,
         message);
 
-    if (end == buffer + sizeof buffer)
+    if (end == buffer + sizeof buffer) {
         --end;
+    }
     *end = '\0';
 
     {

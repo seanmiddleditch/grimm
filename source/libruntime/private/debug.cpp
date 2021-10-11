@@ -58,8 +58,9 @@ auto up::_detail::raiseFatalError(char const* file, int line, char const* failed
 
     std::cerr.write(buffer, end - buffer).flush();
 
-    if (end == buffer + sizeof buffer)
+    if (end == buffer + sizeof buffer) {
         --end;
+    }
     *end = '\0';
 
     return _detail::handleFatalError(file, line, failedConditionText, messageText, buffer);
