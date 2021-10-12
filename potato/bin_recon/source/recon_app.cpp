@@ -64,10 +64,11 @@ bool up::recon::ReconApp::run(span<char const*> args) {
         Logger::root().attach(new_shared<ReconProtocolLogSink>(_server));
     }
 
-    if (_config.path.empty())
+    if (_config.path.empty()) {
         _resourcesPath = fs::currentWorkingDirectory();
-    else
+    } else {
         _resourcesPath = _config.path;
+    }
 
     _libraryPath = path::join(path::Separator::Native, _config.path, ".library");
 
