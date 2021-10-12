@@ -11,7 +11,7 @@
 namespace up {
     class Project {
     public:
-        [[nodiscard]] UP_TOOLS_API static box<Project> loadFromFile(zstring_view filename);
+        [[nodiscard]] UP_EDITOR_API static box<Project> loadFromFile(zstring_view filename);
 
         auto projectFilePath() noexcept -> zstring_view { return _projectFilePath; }
         auto resourceRootPath() noexcept -> zstring_view { return _resourceRootPath; }

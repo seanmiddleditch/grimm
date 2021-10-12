@@ -15,7 +15,6 @@ up_set_common_properties(potato_recon)
 target_link_libraries(potato_recon PRIVATE
     potato::librecon
     potato::libruntime
-    potato::libtools
     potato::libreflex
     potato::libimport
     sqlite3

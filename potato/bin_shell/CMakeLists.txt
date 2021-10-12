@@ -58,7 +58,6 @@ target_link_libraries(potato_shell PRIVATE
     potato::libecs
     potato::libreflex
     potato::libaudio
-    potato::libtools
     potato::libeditor
     potato::librecon
     nanofmt::nanofmt

@@ -15,8 +15,10 @@
 #include "potato/audio/sound_resource.h"
 #include "potato/ecs/query.h"
 #include "potato/ecs/world.h"
+#include "potato/editor/desktop.h"
 #include "potato/editor/imgui_backend.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/editor/project.h"
 #include "potato/render/camera.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
@@ -29,8 +31,6 @@
 #include "potato/render/material.h"
 #include "potato/render/renderer.h"
 #include "potato/render/shader.h"
-#include "potato/tools/desktop.h"
-#include "potato/tools/project.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"
 #include "potato/runtime/path.h"
@@ -339,7 +339,7 @@ bool up::shell::ShellApp::_loadProject(zstring_view path) {
     _openEditor(AssetBrowser::editorName);
     _updateTitle();
 
-    if (!_reconClient.start(_ioLoop, _project->projectFilePath())) {
+    if (!_reconClient.start(_ioLoop, _project->resourceRootPath())) {
         _logger.error("Failed to start recon");
     }
     _reconClient.on<ReconManifestMessage>([this](auto const&) { _loadManifest(); });
