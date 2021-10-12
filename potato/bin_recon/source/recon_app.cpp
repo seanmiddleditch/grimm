@@ -66,7 +66,8 @@ bool up::recon::ReconApp::run(span<char const*> args) {
 
     if (_config.path.empty()) {
         _resourcesPath = fs::currentWorkingDirectory();
-    } else {
+    }
+    else {
         _resourcesPath = _config.path;
     }
 
