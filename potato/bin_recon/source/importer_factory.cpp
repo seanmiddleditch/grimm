@@ -1,14 +1,14 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "importer_factory.h"
-#include "copy_importer.h"
-#include "folder_importer.h"
-#include "hlsl_importer.h"
-#include "ignore_importer.h"
 #include "importer_configs_schema.h"
-#include "json_importer.h"
-#include "material_importer.h"
-#include "model_importer.h"
+#include "importers/copy_importer.h"
+#include "importers/folder_importer.h"
+#include "importers/hlsl_importer.h"
+#include "importers/ignore_importer.h"
+#include "importers/json_importer.h"
+#include "importers/material_importer.h"
+#include "importers/model_importer.h"
 
 #include "potato/reflex/serialize.h"
 #include "potato/runtime/assertion.h"

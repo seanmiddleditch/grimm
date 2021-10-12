@@ -152,7 +152,7 @@ function(up_set_common_properties TARGET)
     #
     if(NOT IS_TEST)
         target_include_directories(${TARGET} ${PUBLIC_INTERFACE}
-            $<INSTALL_INTERFACE:public>
+            $<INSTALL_INTERFACE:include>
             $<INSTALL_INTERFACE:schema>
         )
         target_include_directories(${TARGET} ${PUBLIC_INTERFACE}
@@ -165,6 +165,7 @@ function(up_set_common_properties TARGET)
     #
     if(NOT IS_INTERFACE AND NOT IS_TEST)
         target_include_directories(${TARGET} PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/source
             ${CMAKE_CURRENT_SOURCE_DIR}/include/potato/${SHORT_NAME}
         )
     endif()

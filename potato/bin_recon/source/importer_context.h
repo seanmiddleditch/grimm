@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "_export.h"
-
 #include "potato/runtime/uuid.h"
 #include "potato/spud/box.h"
 #include "potato/spud/concepts.h"
@@ -28,7 +26,7 @@ namespace up {
             uint64 contentHash = 0;
         };
 
-        UP_IMPORT_API ImporterContext(
+        ImporterContext(
             UUID const& uuid,
             zstring_view sourceFilePath,
             zstring_view sourceFolderPath,
@@ -47,7 +45,7 @@ namespace up {
         auto sourceFolderPath() const noexcept { return _sourceFolderPath; }
         auto destinationFolderPath() const noexcept { return _destinationFolderPath; }
 
-        UP_IMPORT_API void addSourceDependency(zstring_view path);
+        void addSourceDependency(zstring_view path);
         void addOutput(string logicalAsset, string path, string type);
         void addMainOutput(string path, string type);
 
@@ -55,7 +53,7 @@ namespace up {
         UUID const& uuid() const noexcept { return _uuid; }
         Logger& logger() noexcept { return _logger; }
 
-        UP_IMPORT_API ImporterConfig const& config() const noexcept;
+        ImporterConfig const& config() const noexcept;
         template <derived_from<ImporterConfig> ImporterConfigT>
         ImporterConfigT const& config() const noexcept {
             return static_cast<ImporterConfigT const&>(config());
