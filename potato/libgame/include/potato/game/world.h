@@ -22,8 +22,8 @@ namespace up {
     ///
     class World {
     public:
-        UP_ECS_API explicit World(rc<EcsSharedContext> context);
-        UP_ECS_API ~World();
+        UP_GAME_API explicit World(rc<EcsSharedContext> context);
+        UP_GAME_API ~World();
 
         World(World&&) = delete;
         World& operator=(World&&) = delete;
@@ -32,7 +32,7 @@ namespace up {
         ///
         /// @returns nullptr if the ArchetypeId is invalid
         ///
-        UP_ECS_API auto chunksOf(ArchetypeId archetype) const noexcept -> view<Chunk*>;
+        UP_GAME_API auto chunksOf(ArchetypeId archetype) const noexcept -> view<Chunk*>;
 
         /// @brief View of all chunks allocated in the world.
         /// @return all chunks in the world.
@@ -45,7 +45,7 @@ namespace up {
 
         /// Deletes an existing Entity
         ///
-        UP_ECS_API void deleteEntity(EntityId entity) noexcept;
+        UP_GAME_API void deleteEntity(EntityId entity) noexcept;
 
         /// Adds a new Component to an existing Entity.
         ///
@@ -58,13 +58,13 @@ namespace up {
         /// @param entity The entity to add the componet to.
         /// @param typeInfo Metadata for the to-be-added component.
         /// @returns unsafe raw pointer to the created component.
-        UP_ECS_API void* addComponentDefault(EntityId entity, reflex::TypeInfo const& typeInfo);
+        UP_GAME_API void* addComponentDefault(EntityId entity, reflex::TypeInfo const& typeInfo);
 
         /// Removes a Component from an existing Entity.
         ///
         /// Changes the Entity's Archetype and home Chunk
         ///
-        UP_ECS_API void removeComponent(EntityId entityId, ComponentId componentId) noexcept;
+        UP_GAME_API void removeComponent(EntityId entityId, ComponentId componentId) noexcept;
 
         /// @brief Removes a component from an entity.
         /// @tparam Component Component type to remove.
@@ -88,7 +88,7 @@ namespace up {
         ///
         /// This is a type-unsafe variant of getComponentSlow.
         ///
-        UP_ECS_API void* getComponentSlowUnsafe(EntityId entity, ComponentId component) noexcept;
+        UP_GAME_API void* getComponentSlowUnsafe(EntityId entity, ComponentId component) noexcept;
 
         /// Interrogate an entity and enumerate all of its components.
         ///
@@ -130,8 +130,8 @@ namespace up {
 
         static constexpr uint64 freeEntityIndex = ~0ULL;
 
-        UP_ECS_API EntityId _createEntityRaw(view<reflex::TypeInfo const*> components, view<void const*> data);
-        UP_ECS_API void _addComponentRaw(
+        UP_GAME_API EntityId _createEntityRaw(view<reflex::TypeInfo const*> components, view<void const*> data);
+        UP_GAME_API void _addComponentRaw(
             EntityId entityId,
             reflex::TypeInfo const& typeInfo,
             void const* componentData) noexcept;
@@ -141,7 +141,7 @@ namespace up {
         auto _allocateEntityId(ArchetypeId archetype, uint16 chunk, uint16 index) -> EntityId;
         void _recycleEntityId(EntityId entity) noexcept;
 
-        UP_ECS_API auto _parseEntityId(EntityId entity) const noexcept -> EntityLocation;
+        UP_GAME_API auto _parseEntityId(EntityId entity) const noexcept -> EntityLocation;
         void _remapEntityId(EntityId entity, ArchetypeId newArchetype, uint16 newChunk, uint16 newIndex) noexcept;
 
         void _moveTo(
@@ -163,7 +163,7 @@ namespace up {
 
         auto _addChunk(ArchetypeId archetype, Chunk* chunk) -> uint16;
         void _removeChunk(ArchetypeId archetype, int chunkIndex) noexcept;
-        UP_ECS_API auto _getChunk(ArchetypeId archetype, int chunkIndex) const noexcept -> Chunk*;
+        UP_GAME_API auto _getChunk(ArchetypeId archetype, int chunkIndex) const noexcept -> Chunk*;
 
         vector<ArchetypeChunkRange> _archetypeChunkRanges;
         vector<Chunk*> _chunks;

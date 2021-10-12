@@ -55,7 +55,7 @@ target_link_libraries(potato_shell PRIVATE
     potato::libruntime
     potato::spud
     potato::librender
-    potato::libecs
+    potato::libgame
     potato::libreflex
     potato::libaudio
     potato::libeditor

@@ -3,7 +3,7 @@
 #include "scene_doc.h"
 #include "components_schema.h"
 
-#include "potato/ecs/world.h"
+#include "potato/game/world.h"
 #include "potato/reflex/serialize.h"
 #include "potato/render/mesh.h"
 #include "potato/runtime/asset_loader.h"
