@@ -4,22 +4,7 @@ project(recon VERSION 0.1 LANGUAGES CXX)
 add_executable(potato_recon)
 add_executable(potato::recon ALIAS potato_recon)
 
-target_sources(potato_recon PRIVATE
-    "source/asset_database.cpp"
-    "source/asset_database.h"
-    "source/file_hash_cache.cpp"
-    "source/file_hash_cache.h"
-    "source/main.cpp"
-    "source/meta_file.cpp"
-    "source/meta_file.h"
-    "source/recon_app.cpp"
-    "source/recon_app.h"
-    "source/recon_config.cpp"
-    "source/recon_config.h"
-    "source/recon_log_sink.cpp"
-    "source/recon_log_sink.h"
-    "source/recon_queue.h"
-)
+add_subdirectory(source)
 
 set_target_properties(potato_recon PROPERTIES
     OUTPUT_NAME recon
@@ -33,7 +18,7 @@ target_link_libraries(potato_recon PRIVATE
     potato::libtools
     potato::libreflex
     potato::libimport
-    potato::libposql
+    sqlite3
     uv
 )
 

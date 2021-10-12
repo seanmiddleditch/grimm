@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "potato/posql/posql.h"
+#include "posql.h"
+
 #include "potato/runtime/asset.h"
 #include "potato/runtime/uuid.h"
 #include "potato/spud/generator.h"
