@@ -15,7 +15,7 @@ namespace up {
         UP_RECON_API ReconClient();
         ~ReconClient() { stop(); }
 
-        bool UP_RECON_API start(IOLoop& loop, zstring_view projectPath);
+        bool UP_RECON_API start(IOLoop& loop, zstring_view resourcesPath);
         void UP_RECON_API stop();
 
     private:

@@ -339,7 +339,7 @@ bool up::shell::ShellApp::_loadProject(zstring_view path) {
     _openEditor(AssetBrowser::editorName);
     _updateTitle();
 
-    if (!_reconClient.start(_ioLoop, _project->projectFilePath())) {
+    if (!_reconClient.start(_ioLoop, _project->resourceRootPath())) {
         _logger.error("Failed to start recon");
     }
     _reconClient.on<ReconManifestMessage>([this](auto const&) { _loadManifest(); });

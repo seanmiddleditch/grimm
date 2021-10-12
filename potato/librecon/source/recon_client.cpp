@@ -13,10 +13,10 @@ up::ReconClient::ReconClient() {
     on<ReconLogMessage>([](schema::ReconLogMessage const& msg) { s_logger.log(msg.severity, msg.message); });
 }
 
-bool up::ReconClient::start(IOLoop& loop, zstring_view projectPath) {
-    UP_ASSERT(!projectPath.empty());
+bool up::ReconClient::start(IOLoop& loop, zstring_view resourcesPath) {
+    UP_ASSERT(!resourcesPath.empty());
 
-    const char* const args[] = {"recon", "-project", projectPath.c_str(), "-server", nullptr};
+    const char* const args[] = {"recon", "-path", resourcesPath.c_str(), "-server", nullptr};
 
     _sink = loop.createPipe();
     _source = loop.createPipe();
