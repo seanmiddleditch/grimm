@@ -3,6 +3,12 @@ target_sources(potato_recon PRIVATE
     "asset_database.h"
     "file_hash_cache.cpp"
     "file_hash_cache.h"
+    "importer.cpp"
+    "importer.h"
+    "importer_context.cpp"
+    "importer_context.h"
+    "importer_factory.cpp"
+    "importer_factory.h"
     "main.cpp"
     "meta_file.cpp"
     "meta_file.h"
@@ -17,3 +23,4 @@ target_sources(potato_recon PRIVATE
     "recon_queue.h"
 )
 
+add_subdirectory(importers)

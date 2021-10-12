@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "_export.h"
-
 #include "potato/spud/box.h"
 #include "potato/spud/string_view.h"
 #include "potato/spud/vector.h"
@@ -16,19 +14,19 @@ namespace up {
 
     class ImporterFactory {
     public:
-        UP_IMPORT_API ImporterFactory();
-        UP_IMPORT_API ~ImporterFactory();
+        ImporterFactory();
+        ~ImporterFactory();
 
         ImporterFactory(ImporterFactory const&) = delete;
         ImporterFactory& operator=(ImporterFactory const&) = delete;
 
-        UP_IMPORT_API Importer* findImporterByName(string_view name) const noexcept;
+        Importer* findImporterByName(string_view name) const noexcept;
 
-        UP_IMPORT_API void registerImporter(box<Importer> importer);
+        void registerImporter(box<Importer> importer);
 
-        UP_IMPORT_API void registerDefaultImporters();
+        void registerDefaultImporters();
 
-        UP_IMPORT_API box<ImporterConfig> parseConfig(Importer const& importer, nlohmann::json const& config) const;
+        box<ImporterConfig> parseConfig(Importer const& importer, nlohmann::json const& config) const;
 
     private:
         vector<box<Importer>> _importers;

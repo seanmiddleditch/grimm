@@ -8,17 +8,6 @@ cmake_policy(PUSH)
 #
 cmake_policy(SET CMP0116 NEW)
 
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
-
-set(SAP_SCHEMA_COMPILE_DIR "${UP_ROOT_DIR}/scripts/build")
-set(SAP_SCHEMA_COMPILE_ENTRY "${SAP_SCHEMA_COMPILE_DIR}/compile_schema.py")
-
-# find all the Python scripts used in the compiler
-file(GLOB SAP_SCHEMA_COMPILE_FILES
-    LIST_DIRECTORIES FALSE
-    "${SAP_SCHEMA_COMPILE_DIR}/*.py"
-)
-
 function(up_compile_sap TARGET)
     cmake_parse_arguments(ARG "" "" "SCHEMAS" ${ARGN})
 

@@ -2,7 +2,7 @@ module importer_configs;
 
 import common;
 
-[cxximport("up::ImporterConfig", "potato/import/importer.h")]
+[cxximport("up::ImporterConfig", "importer.h")]
 using ImporterConfig;
 
 struct JsonImporterConfig : ImporterConfig {
