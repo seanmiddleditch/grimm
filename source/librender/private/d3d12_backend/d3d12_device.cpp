@@ -289,7 +289,7 @@ void up::d3d12::DeviceD3D12::endResourceCreation() {
 }
 
 void up::d3d12::DeviceD3D12::clearCommandList() {
-    execute(false);
+    execute(true);
     //_mainCmdList->start(nullptr);
 }
 

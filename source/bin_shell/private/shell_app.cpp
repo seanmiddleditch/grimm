@@ -462,10 +462,10 @@ void up::shell::ShellApp::_onWindowSizeChanged() {
     int width = 0;
     int height = 0;
     SDL_GetWindowSize(_window.get(), &width, &height);
-  //  _renderer->clearCommandList();
-  //  _uiRenderCamera->setRenderTarget(nullptr);
-  //  _swapChain->resizeBuffers(_renderer->device(), width, height);
-  //  _uiRenderCamera->setRenderTarget(std::move(_swapChain->getRenderTargetView()));
+    _renderer->clearCommandList();
+    _uiRenderCamera->setRenderTarget(nullptr);
+    _swapChain->resizeBuffers(_renderer->device(), width, height);
+    _uiRenderCamera->setRenderTarget(std::move(_swapChain->getRenderTargetView()));
 
     _logger.info("Window resized: {}x{}", width, height);
 }
