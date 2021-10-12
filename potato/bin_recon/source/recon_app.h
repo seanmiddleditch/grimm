@@ -10,7 +10,6 @@
 #include "potato/import/importer.h"
 #include "potato/import/importer_factory.h"
 #include "potato/recon/recon_server.h"
-#include "potato/tools/project.h"
 #include "potato/runtime/io_loop.h"
 #include "potato/runtime/logger.h"
 #include "potato/spud/box.h"
@@ -63,8 +62,9 @@ namespace up::recon {
 
         auto _findConverterMapping(string_view path, bool isFolder) const -> Mapping const*;
 
-        box<Project> _project;
         string_view _programName;
+        string _resourcesPath;
+        string _libraryPath;
         string _temporaryOutputPath;
         string _manifestPath;
         vector<Mapping> _importers;

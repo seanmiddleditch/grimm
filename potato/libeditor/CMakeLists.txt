@@ -12,14 +12,18 @@ target_sources(potato_libeditor PRIVATE
     "source/imgui_ext.cpp"
     "source/imgui_fonts.cpp"
     "source/property_grid.cpp"
+    "source/project.cpp"
     "include/potato/editor/asset_browser_popup.h"
     "include/potato/editor/asset_edit_service.h"
+    "include/potato/editor/desktop.h"
     "include/potato/editor/hotkeys.h"
     "include/potato/editor/icons.h"
     "include/potato/editor/imgui_backend.h"
     "include/potato/editor/imgui_ext.h"
     "include/potato/editor/imgui_fonts.h"
     "include/potato/editor/property_grid.h"
+    $<$<BOOL:${UNIX}>:source/desktop.posix.cpp>
+    $<$<PLATFORM_ID:Windows>:source/desktop.windows.cpp>
 )
 
 include(up_headerify)

@@ -64,30 +64,31 @@ bool up::recon::ReconApp::run(span<char const*> args) {
         Logger::root().attach(new_shared<ReconProtocolLogSink>(_server));
     }
 
-    _project = Project::loadFromFile(_config.project);
-    if (_project == nullptr) {
-        _logger.error("Failed to load project file `{}`", _config.project);
+    if (_config.path.empty())
+        _resourcesPath = fs::currentWorkingDirectory();
+    else
+        _resourcesPath = _config.path;
+
+    _libraryPath = path::join(path::Separator::Native, _config.path, ".library");
+
+    _manifestPath = path::join(path::Separator::Native, _libraryPath, "manifest.txt");
+
+    if (auto const rs = fs::createDirectories(_libraryPath); rs != IOResult::Success) {
+        _logger.error("Failed to create library folder `{}`: {}", _libraryPath, rs);
         return false;
     }
 
-    _manifestPath = path::join(path::Separator::Native, _project->libraryPath(), "manifest.txt");
-
-    if (auto const rs = fs::createDirectories(_project->libraryPath()); rs != IOResult::Success) {
-        _logger.error("Failed to create library folder `{}`: {}", _project->libraryPath(), rs);
-        return false;
-    }
-
-    _temporaryOutputPath = path::join(path::Separator::Native, _project->libraryPath(), "temp");
+    _temporaryOutputPath = path::join(path::Separator::Native, _libraryPath, "temp");
 
     _registerImporters();
 
-    auto libraryPath = path::join(path::Separator::Native, _project->libraryPath(), "assets.db");
+    auto libraryPath = path::join(path::Separator::Native, _libraryPath, "assets.db");
     if (!_library.open(libraryPath)) {
         _logger.error("Failed to open asset library `{}'", libraryPath);
     }
     _logger.info("Opened asset library `{}'", libraryPath);
 
-    auto hashCachePath = path::join(path::Separator::Native, _project->libraryPath(), "hash_cache.db");
+    auto hashCachePath = path::join(path::Separator::Native, _libraryPath, "hash_cache.db");
     if (!_hashes.open(hashCachePath)) {
         _logger.error("Failed to open hash cache `{}'", hashCachePath);
     }
@@ -125,7 +126,7 @@ bool up::recon::ReconApp::_runServer() {
     _collectSourceFiles();
     _collectMissingFiles();
 
-    IOWatch watch = _loop.createWatch(_project->resourceRootPath(), [this](zstring_view filename, IOWatchEvent event) {
+    IOWatch watch = _loop.createWatch(_resourcesPath, [this](zstring_view filename, IOWatchEvent event) {
         // ignore dot files (except .meta files)
         if (filename != ".meta"_sv && (filename.empty() || filename.front() == '.')) {
             return;
@@ -236,7 +237,7 @@ bool up::recon::ReconApp::_processQueue() {
                 if (zstring_view const sourcePath = _library.uuidToPath(cmd.uuid); !sourcePath.empty()) {
                     _logger.info("Delete: {}", sourcePath);
 
-                    (void)fs::remove(path::join(path::Separator::Native, _project->resourceRootPath(), sourcePath));
+                    (void)fs::remove(path::join(path::Separator::Native, _resourcesPath, sourcePath));
                     _forgetFile(sourcePath);
                 }
                 break;
@@ -287,7 +288,7 @@ namespace up::recon {
 } // namespace up::recon
 
 auto up::recon::ReconApp::_importFile(zstring_view file, bool force) -> ReconImportResult {
-    auto osPath = path::join(path::Separator::Native, _project->resourceRootPath(), file.c_str());
+    auto osPath = path::join(path::Separator::Native, _resourcesPath, file.c_str());
 
     auto const [statRs, stat] = fs::fileStat(osPath);
     if (statRs != IOResult::Success) {
@@ -302,7 +303,7 @@ auto up::recon::ReconApp::_importFile(zstring_view file, bool force) -> ReconImp
     }
 
     auto metaPath = _makeMetaFilename(file, isFolder);
-    string metaOsPath = path::join(path::Separator::Native, _project->resourceRootPath(), metaPath);
+    string metaOsPath = path::join(path::Separator::Native, _resourcesPath, metaPath);
 
     MetaFile metaFile;
     bool metaDirty = false;
@@ -372,7 +373,7 @@ auto up::recon::ReconApp::_importFile(zstring_view file, bool force) -> ReconImp
     ImporterContext context(
         metaFile.uuid,
         file,
-        _project->resourceRootPath(),
+        _resourcesPath,
         _temporaryOutputPath,
         importer,
         *mapping->config,
@@ -418,8 +419,7 @@ auto up::recon::ReconApp::_importFile(zstring_view file, bool force) -> ReconImp
         auto outputOsPath = path::join(path::Separator::Native, _temporaryOutputPath, output.path);
         output.contentHash = _hashes.hashAssetAtPath(outputOsPath);
 
-        auto casOsPath =
-            path::join(path::Separator::Native, _project->libraryPath(), "cache", CasPath{output.contentHash});
+        auto casOsPath = path::join(path::Separator::Native, _libraryPath, "cache", CasPath{output.contentHash});
         auto casOsFolder = string{path::parent(casOsPath)};
 
         if (auto const rs = fs::createDirectories(casOsFolder); rs != IOResult::Success) {
@@ -438,7 +438,7 @@ auto up::recon::ReconApp::_importFile(zstring_view file, bool force) -> ReconImp
         _library.finishAssetImport(metaFile.uuid, true);
 
         for (auto const& sourceDepPath : dependencies) {
-            auto osPath = path::join(path::Separator::Native, _project->resourceRootPath(), sourceDepPath.c_str());
+            auto osPath = path::join(path::Separator::Native, _resourcesPath, sourceDepPath.c_str());
             auto const contentHash = _hashes.hashAssetAtPath(osPath.c_str());
             _library.addImportDependency(context.uuid(), sourceDepPath, contentHash);
         }
@@ -466,19 +466,19 @@ bool up::recon::ReconApp::_forgetFile(zstring_view file) {
     // we don't need to do this for a directory, since they could only be deleted
     // if the .meta file is deleted too
     auto metaPath = _makeMetaFilename(file, false);
-    auto metaOsPath = path::join(path::Separator::Native, _project->resourceRootPath(), metaPath);
+    auto metaOsPath = path::join(path::Separator::Native, _resourcesPath, metaPath);
     (void)fs::remove(metaOsPath);
 
     return true;
 }
 
 bool up::recon::ReconApp::_isUpToDate(zstring_view assetPath, uint64 contentHash) {
-    auto osPath = path::join(path::Separator::Native, _project->resourceRootPath(), assetPath);
+    auto osPath = path::join(path::Separator::Native, _resourcesPath, assetPath);
     return contentHash == _hashes.hashAssetAtPath(osPath.c_str());
 }
 
 bool up::recon::ReconApp::_isCasUpToDate(uint64 contentHash) {
-    auto casOsPath = path::join(path::Separator::Native, _project->libraryPath(), "cache", CasPath(contentHash));
+    auto casOsPath = path::join(path::Separator::Native, _libraryPath, "cache", CasPath(contentHash));
     return contentHash == _hashes.hashAssetAtPath(casOsPath.c_str());
 }
 
@@ -507,8 +507,8 @@ auto up::recon::ReconApp::_makeMetaFilename(zstring_view basePath, bool director
 }
 
 void up::recon::ReconApp::_collectSourceFiles(bool forceUpdate) {
-    if (!fs::directoryExists(_project->resourceRootPath())) {
-        _logger.error("`{}' does not exist or is not a directory", _project->resourceRootPath());
+    if (!fs::directoryExists(_resourcesPath)) {
+        _logger.error("`{}' does not exist or is not a directory", _resourcesPath);
         return;
     }
 
@@ -530,12 +530,12 @@ void up::recon::ReconApp::_collectSourceFiles(bool forceUpdate) {
         return fs::recurse;
     };
 
-    (void)fs::enumerate(_project->resourceRootPath(), cb);
+    (void)fs::enumerate(_resourcesPath, cb);
 };
 
 void up::recon::ReconApp::_collectMissingFiles() {
     for (zstring_view filename : _library.findSourceAssets()) {
-        string osPath = path::join(path::Separator::Native, _project->resourceRootPath(), filename);
+        string osPath = path::join(path::Separator::Native, _resourcesPath, filename);
 
         auto const [rs, _] = fs::fileStat(osPath);
         if (rs == IOResult::FileNotFound) {

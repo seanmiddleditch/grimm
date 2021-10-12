@@ -22,7 +22,7 @@ bool up::recon::parseArguments(ReconConfig& config, span<char const*> args, Logg
 
     enum {
         ArgNone,
-        ArgProject,
+        ArgPath,
         ArgConfig,
     } argMode = ArgNone;
 
@@ -34,8 +34,8 @@ bool up::recon::parseArguments(ReconConfig& config, span<char const*> args, Logg
             }
 
             auto name = arg.substr(1);
-            if (name == "project") {
-                argMode = ArgProject;
+            if (name == "path") {
+                argMode = ArgPath;
             }
             else if (name == "config") {
                 argMode = ArgConfig;
@@ -54,8 +54,8 @@ bool up::recon::parseArguments(ReconConfig& config, span<char const*> args, Logg
             case ArgNone:
                 logger.error("Unexpected value: {}", arg.c_str());
                 return false;
-            case ArgProject:
-                config.project = string(arg);
+            case ArgPath:
+                config.path = string(arg);
                 argMode = ArgNone;
                 break;
             case ArgConfig:
@@ -70,8 +70,8 @@ bool up::recon::parseArguments(ReconConfig& config, span<char const*> args, Logg
     switch (argMode) {
         case ArgNone:
             return true;
-        case ArgProject:
-            logger.error("No value provided after `-project' argument");
+        case ArgPath:
+            logger.error("No value provided after `-path' argument");
             return false;
         case ArgConfig:
             logger.error("No value provided after `-config' argument");
@@ -105,8 +105,8 @@ bool up::recon::parseConfigString(ReconConfig& config, string_view json, zstring
         return false;
     }
 
-    if (jsonRoot.contains("project") && jsonRoot["project"].is_string()) {
-        config.project = jsonRoot["project"].get<string>();
+    if (jsonRoot.contains("path") && jsonRoot["path"].is_string()) {
+        config.path = jsonRoot["path"].get<string>();
     }
 
     if (jsonRoot.contains("server") && jsonRoot["server"].is_boolean()) {

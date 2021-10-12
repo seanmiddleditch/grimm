@@ -20,7 +20,7 @@ namespace up::recon {
     };
 
     struct ReconConfig {
-        string project;
+        string path;
         vector<ReconConfigImportMapping> mapping;
         bool server = false;
     };
