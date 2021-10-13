@@ -5,7 +5,7 @@
 #include "scene.h"
 
 #include "potato/audio/sound_resource.h"
-#include "potato/ecs/common.h"
+#include "potato/game/common.h"
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/spud/sequence.h"

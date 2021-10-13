@@ -4,8 +4,8 @@
 #include "components_schema.h"
 
 #include "potato/audio/audio_engine.h"
-#include "potato/ecs/query.h"
-#include "potato/ecs/world.h"
+#include "potato/game/query.h"
+#include "potato/game/world.h"
 #include "potato/render/mesh.h"
 #include "potato/runtime/json.h"
 

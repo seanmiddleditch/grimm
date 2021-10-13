@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "potato/ecs/query.h"
-#include "potato/ecs/universe.h"
+#include "potato/game/query.h"
+#include "potato/game/universe.h"
 #include "potato/runtime/stream.h"
 #include "potato/spud/box.h"
 #include "potato/spud/rc.h"

@@ -42,8 +42,8 @@ namespace up {
             view<reflex::TypeInfo const*> include,
             view<reflex::TypeInfo const*> exclude) -> ArchetypeId;
 
-        UP_ECS_API auto _findComponentByTypeHash(uint64 typeHash) const noexcept -> reflex::TypeInfo const*;
-        UP_ECS_API auto _bindArchetypeOffets(ArchetypeId archetype, view<ComponentId> componentIds, span<int> offsets)
+        UP_GAME_API auto _findComponentByTypeHash(uint64 typeHash) const noexcept -> reflex::TypeInfo const*;
+        UP_GAME_API auto _bindArchetypeOffets(ArchetypeId archetype, view<ComponentId> componentIds, span<int> offsets)
             const noexcept -> bool;
 
         vector<reflex::TypeInfo const*> components;
