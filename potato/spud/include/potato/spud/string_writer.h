@@ -112,9 +112,9 @@ void up::string_writer::format(nanofmt::format_string format, Args const&... arg
 
 void up::string_writer::vformat(nanofmt::format_string format, nanofmt::format_args args) {
     size_t const length = nanofmt::vformat_length(format, args);
-    reserve(capacity() + length);
-    char* const end = nanofmt::vformat_to_n(_ptr + _size, _capacity - _size, format, args);
-    *end = '\0';
+    auto buffer = acquire(length);
+    char* const end = nanofmt::vformat_to_n(buffer.data(), buffer.size(), format, args);
+    commit(buffer.subspan(0, end - buffer.data()));
 }
 
 void up::string_writer::reserve(size_type capacity) {
