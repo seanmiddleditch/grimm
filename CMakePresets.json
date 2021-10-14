@@ -90,7 +90,8 @@
       "inherits": [ "common", "linux" ],
       "environment": {
         "CXX": "clang++-12",
-        "CC": "clang-12"
+        "CC": "clang-12",
+        "CXXFLAGS": "-stdlib=libc++ -fdiagnostics-absolute-paths"
       },
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
