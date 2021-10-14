@@ -15,6 +15,8 @@ set(UP_ROOT_DIR "${UP_DEFAULT_ROOT_DIR}" CACHE PATH "Root source directory")
 set(UP_OUTPUT_DIR "${UP_DEFAULT_OUTPUT_DIR}" CACHE PATH "Output directory")
 set(UP_CXXFLAGS "$ENV{UP_CXXFLAGS}" CACHE PATH "CXXFLAGS for Potato libraries and applications (not dependencies)")
 
+set_property(GLOBAL PROPERTY UP_DEPENDENCY_LIST)
+
 file(TO_CMAKE_PATH "${UP_ROOT_DIR}" UP_ROOT_DIR)
 file(TO_CMAKE_PATH "${UP_OUTPUT_DIR}" UP_OUTPUT_DIR)
 
