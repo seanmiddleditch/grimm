@@ -95,6 +95,18 @@
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
       }
+    },
+    {
+      "name": "wsl-gcc-debug-static",
+      "displayName": "WSL-GCC Release Static",
+      "inherits": [ "common", "linux" ],
+      "environment": {
+        "CXX": "g++-11",
+        "CC": "gcc-11"
+      },
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": false
+      }
     }
   ]
 }
