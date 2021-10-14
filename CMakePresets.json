@@ -89,8 +89,8 @@
       "displayName": "WSL-Clang Release Static",
       "inherits": [ "common", "linux" ],
       "environment": {
-        "CXX": "clang++",
-        "CC": "clang"
+        "CXX": "clang++-12",
+        "CC": "clang-12"
       },
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
