@@ -22,6 +22,8 @@ namespace {
         void writeAnnotations(std::string_view unique, schema::Annotations const& annotations);
         void writeSchema();
 
+        void writeObjectSchema(schema::TypeAggregate const& type);
+
         bool allowType(schema::TypeBase const& type) const noexcept;
         bool allowAttribute(schema::TypeAggregate const& attribute) const noexcept;
     };
@@ -130,24 +132,6 @@ void SchemaSourceGenerator::writeAnnotations(std::string_view unique, schema::An
     _output << "  };\n\n";
 }
 
-//        elif type.has_annotation('AssetReference'):
-//            ctx.print(f'''
-//        using Type = {qual_name};
-//        using AssetType = typename Type::AssetType;
-//        static SchemaOperations const operations = {{
-//            .pointerDeref = [](void const* ptr) -> void const* {
-//    { return static_cast<Type const*>(ptr)->asset(); }},
-//            .pointerMutableDeref = [](void* ptr) -> void* {
-//    { return static_cast<Type const*>(ptr)->asset(); }},
-//            .pointerAssign = [](void* ptr,
-//                                void* object) {
-//    { *static_cast<Type*>(ptr) = Type{{rc{{static_cast<AssetType*>(object)}}}}; }},
-//        }};
-//''')
-//            ctx.print(f'    static const Schema schema = {{.name = "{type.name}"_zsv, .primitive =
-//            up::reflex::SchemaPrimitive::AssetRef, .baseSchema = base, .operations = &operations, .annotations =
-//            {type.name}_annotations}};\n')
-
 void SchemaSourceGenerator::writeSchema() {
     using namespace schema;
 
@@ -166,6 +150,7 @@ void SchemaSourceGenerator::writeSchema() {
 
         _output << "up::reflex::Schema const& up::reflex::SchemaHolder<" << cxx::Type{*type} << ">::get() noexcept {\n";
         _output << "  using namespace up::schema;\n\n";
+        _output << "  using Type = " << cxx::Type{*type} << ";\n\n";
 
         writeAnnotations("type_annotations", type->annotations);
 
@@ -190,42 +175,10 @@ void SchemaSourceGenerator::writeSchema() {
                 break;
             case TypeKind::Struct:
             case TypeKind::Attribute:
+                writeObjectSchema(static_cast<TypeAggregate const&>(*type));
+                break;
             case TypeKind::Specialized:
-                if (type->kind == TypeKind::Specialized) {
-                    type = static_cast<TypeSpecialized const*>(type)->ref;
-                }
-
-                if (!static_cast<TypeAggregate const&>(*type).fields.empty()) {
-                    for (auto const* const field : static_cast<TypeAggregate const&>(*type).fields) {
-                        writeAnnotations("field_annotations_" + field->name, field->annotations);
-                    }
-
-                    _output << "  static SchemaField const fields[] = {\n";
-                    for (auto const* const field : static_cast<TypeAggregate const&>(*type).fields) {
-                        _output << "    SchemaField{\n";
-                        _output << "      .name = \"" << field->name << "\",\n";
-                        _output << "      .schema = &getSchema<" << cxx::Type{*field->type} << ">(),\n";
-                        _output << "      .offset = offsetof(" << cxx::Type{*type} << ", " << cxx::Ident{field->name}
-                                << "),\n";
-                        _output << "      .annotations = field_annotations_" << cxx::Ident{field->name} << "\n";
-                        _output << "    },\n";
-                    }
-                    _output << "  };\n\n";
-                }
-                else {
-                    _output << "  up::view<SchemaField> const fields;\n\n";
-                }
-
-                _output << "  static Schema const schema = {\n";
-                _output << "    .name = \"" << type->name << "\",\n";
-                _output << "    .primitive = up::reflex::SchemaPrimitive::Object,\n";
-                if (static_cast<TypeAggregate const&>(*type).baseType != nullptr) {
-                    _output << "    .baseSchema = &getSchema<"
-                            << cxx::Type{*static_cast<TypeAggregate const&>(*type).baseType} << ">(),\n";
-                }
-                _output << "    .fields = fields,\n";
-                _output << "    .annotations = type_annotations\n";
-                _output << "  };\n\n";
+                writeObjectSchema(static_cast<TypeAggregate const&>(*static_cast<TypeSpecialized const*>(type)->ref));
                 break;
             case TypeKind::Alias:
                 _output << "  static Schema const schema = {\n";
@@ -247,6 +200,57 @@ void SchemaSourceGenerator::writeSchema() {
         _output << "  return schema;\n";
         _output << "}\n\n";
     }
+}
+
+void SchemaSourceGenerator::writeObjectSchema(schema::TypeAggregate const& type) {
+    using namespace schema;
+
+    bool const isAssetRef = hasAnnotation(type.annotations, "AssetReference");
+
+    if (!static_cast<TypeAggregate const&>(type).fields.empty()) {
+        for (auto const* const field : type.fields) {
+            writeAnnotations("field_annotations_" + field->name, field->annotations);
+        }
+
+        _output << "  static SchemaField const fields[] = {\n";
+        for (auto const* const field : type.fields) {
+            _output << "    SchemaField{\n";
+            _output << "      .name = \"" << field->name << "\",\n";
+            _output << "      .schema = &getSchema<" << cxx::Type{*field->type} << ">(),\n";
+            _output << "      .offset = offsetof(" << cxx::Type{type} << ", " << cxx::Ident{field->name} << "),\n";
+            _output << "      .annotations = field_annotations_" << cxx::Ident{field->name} << "\n";
+            _output << "    },\n";
+        }
+        _output << "  };\n\n";
+    }
+    else {
+        _output << "  static up::view<SchemaField> const fields;\n\n";
+    }
+
+    if (isAssetRef) {
+        _output << "  using AssetType = typename Type::AssetType;\n\n";
+        _output << "  static SchemaOperations const operations = {\n";
+        _output << "    .pointerDeref = [](void const* ptr) -> void const* {\n";
+        _output << "      return static_cast<Type const*>(ptr)->asset(); },\n";
+        _output << "    .pointerMutableDeref = [](void* ptr) -> void* {\n";
+        _output << "      return static_cast<Type const*>(ptr)->asset(); },\n";
+        _output << "    .pointerAssign = [](void* ptr, void* object) {\n";
+        _output << "      *static_cast<Type*>(ptr) = Type{rc{static_cast<AssetType*>(object)}}; },\n";
+        _output << "  };\n";
+    }
+
+    _output << "  static Schema const schema = {\n";
+    _output << "    .name = \"" << type.name << "\",\n";
+    _output << "    .primitive = up::reflex::SchemaPrimitive::" << (isAssetRef ? "AssetRef" : "Object") << ",\n";
+    if (type.baseType != nullptr) {
+        _output << "    .baseSchema = &getSchema<" << cxx::Type{*type.baseType} << ">(),\n";
+    }
+    if (isAssetRef) {
+        _output << "    .operations = &operations,\n";
+    }
+    _output << "    .fields = fields,\n";
+    _output << "    .annotations = type_annotations,\n";
+    _output << "  };\n\n";
 }
 
 bool SchemaSourceGenerator::allowType(schema::TypeBase const& type) const noexcept {

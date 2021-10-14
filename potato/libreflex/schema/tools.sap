@@ -7,6 +7,8 @@ attribute Hidden;
 attribute Flatten;
 attribute Tooltip { string text; }
 attribute AssetType { string assetType; }
+attribute AssetReference;
 
 [cxximport("up::AssetHandle<$AssetT>", "potato/runtime/asset.h")]
+[AssetReference]
 struct AssetRef<AssetT> { }
