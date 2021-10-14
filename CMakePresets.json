@@ -41,6 +41,24 @@
       }
     },
     {
+      "name": "clang",
+      "hidden": true,
+      "environment": {
+        "CXXFLAGS": "$penv{CXXFLAGS} -stdlib=libc++ -fdiagnostics-absolute-paths -mssse3 -Wno-deprecated-volatile -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
+        "CXX": "clang++-12",
+        "CC": "clang-12"
+      }
+    },
+    {
+      "name": "gcc",
+      "hidden": true,
+      "environment": {
+        "CXXFLAGS": "$penv{CXXFLAGS} -fcoroutines -mssse3 -Wno-volatile -Wno-maybe-uninitialized -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
+        "CXX": "g++-11",
+        "CC": "gcc-11"
+      }
+    },
+    {
       "name": "msvc-debug",
       "hidden": true,
       "inherits": [ "msvc" ],
@@ -87,12 +105,7 @@
     {
       "name": "wsl-clang-debug-static",
       "displayName": "WSL-Clang Release Static",
-      "inherits": [ "common", "linux" ],
-      "environment": {
-        "CXX": "clang++-12",
-        "CC": "clang-12",
-        "CXXFLAGS": "$penv{CXXFLAGS} -stdlib=libc++ -fdiagnostics-absolute-paths -mssse3"
-      },
+      "inherits": [ "common", "linux", "clang" ],
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
       }
@@ -100,12 +113,7 @@
     {
       "name": "wsl-gcc-debug-static",
       "displayName": "WSL-GCC Release Static",
-      "inherits": [ "common", "linux" ],
-      "environment": {
-        "CXX": "g++-11",
-        "CC": "gcc-11",
-        "CXXFLAGS": "$penv{CXXFLAGS} -fcoroutines -mssse3"
-      },
+      "inherits": [ "common", "linux", "gcc" ],
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
       }
