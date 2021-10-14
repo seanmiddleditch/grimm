@@ -7,7 +7,6 @@
       "cacheVariables": {
         "UP_OUTPUT_DIR": "${sourceDir}/out",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps",
         "FETCHCONTENT_QUIET": true
       },
       "binaryDir": "${sourceDir}/out/${presetName}",
@@ -19,6 +18,26 @@
       "environment": {
         "UP_CXXFLAGS": "/W3 /WX /w34295 /w34189",
         "CXXFLAGS": "/FC /Zi"
+      },
+      "cacheVariables": {
+        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/windows"
+      },
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": "Windows" } }
+    },
+    {
+      "name": "linux",
+      "hidden": true,
+      "environment": {
+        "UP_CXXFLAGS": "-Wall -Werror"
+      },
+      "cacheVariables": {
+        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/linux"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": "Linux",
+          "intelliSenseMode": "linux-gcc-x64"
+        }
       }
     },
     {
@@ -61,6 +80,18 @@
       "name": "msvc-release-static",
       "displayName": "Microsoft Release Static",
       "inherits": [ "common", "msvc-release" ],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": false
+      }
+    },
+    {
+      "name": "wsl-clang-debug-static",
+      "displayName": "WSL-Clang Release Static",
+      "inherits": [ "common", "linux" ],
+      "environment": {
+        "CXX": "clang++",
+        "CC": "clang"
+      },
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
       }
