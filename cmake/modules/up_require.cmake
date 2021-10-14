@@ -22,7 +22,7 @@ function(up_require)
         FetchContent_Declare(${NAME}
             URL "${ARG_URL}"
             URL_HASH "${ARG_URL_HASH}"
-            SUBBUILD_DIR "${SUBBUILD_DIR}"
+            #SUBBUILD_DIR "${SUBBUILD_DIR}"
             BINARY_DIR "${BINARY_DIR}"
         )
         set_property(GLOBAL PROPERTY "${DESCRIPTION_PROPERTY}" "URL ${ARG_URL}")
@@ -30,7 +30,7 @@ function(up_require)
         FetchContent_Declare(${NAME}
             GIT_REPOSITORY "${ARG_GIT_REPOSITORY}"
             GIT_TAG "${ARG_GIT_COMMIT}"
-            SUBBUILD_DIR "${SUBBUILD_DIR}"
+            #SUBBUILD_DIR "${SUBBUILD_DIR}"
             BINARY_DIR "${BINARY_DIR}"
         )
         if(ARG_GIT_TAG)
@@ -42,7 +42,7 @@ function(up_require)
         FetchContent_Declare(${NAME}
             GIT_REPOSITORY "${ARG_GIT_REPOSITORY}"
             GIT_TAG "${ARG_GIT_TAG}"
-            SUBBUILD_DIR "${SUBBUILD_DIR}"
+            #SUBBUILD_DIR "${SUBBUILD_DIR}"
             BINARY_DIR "${BINARY_DIR}"
         )
         set_property(GLOBAL PROPERTY "${DESCRIPTION_PROPERTY}" "${ARG_GIT_REPOSITORY} ${ARG_GIT_TAG}")
