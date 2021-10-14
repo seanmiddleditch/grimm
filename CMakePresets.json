@@ -91,7 +91,7 @@
       "environment": {
         "CXX": "clang++-12",
         "CC": "clang-12",
-        "CXXFLAGS": "-stdlib=libc++ -fdiagnostics-absolute-paths"
+        "CXXFLAGS": "-stdlib=libc++ -fdiagnostics-absolute-paths -mssse3"
       },
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
@@ -103,7 +103,8 @@
       "inherits": [ "common", "linux" ],
       "environment": {
         "CXX": "g++-11",
-        "CC": "gcc-11"
+        "CC": "gcc-11",
+        "CXXFLAGS": "-fcoroutines -mssse3"
       },
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
