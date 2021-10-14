@@ -51,6 +51,8 @@ void SchemaSourceGenerator::writeFileHeader() {
     _output << "#ifdef __GNUC__\n"
                "#pragma GCC diagnostic push\n"
                "#pragma GCC diagnostic ignored \"-Winvalid-offsetof\"\n"
+               "#pragma GCC diagnostic ignored \"-Wunused-local-typedef\"\n" // clang spelling
+               "#pragma GCC diagnostic ignored \"-Wunused-local-typedefs\"\n" // gcc spelling
                "#endif\n\n";
 }
 
