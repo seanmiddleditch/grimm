@@ -49,16 +49,19 @@ void SchemaSourceGenerator::writeFileHeader() {
                "//\n\n";
 
     _output << "#ifdef __GNUC__\n"
-               "#pragma GCC diagnostic push\n"
-               "#pragma GCC diagnostic ignored \"-Winvalid-offsetof\"\n"
-               "#pragma GCC diagnostic ignored \"-Wunused-local-typedef\"\n" // clang spelling
-               "#pragma GCC diagnostic ignored \"-Wunused-local-typedefs\"\n" // gcc spelling
+               "#  pragma GCC diagnostic push\n"
+               "#  pragma GCC diagnostic ignored \"-Winvalid-offsetof\"\n"
+               "#  ifdef __clang__\n"
+               "#    pragma GCC diagnostic ignored \"-Wunused-local-typedef\"\n" // clang spelling
+               "#  else\n"
+               "#    pragma GCC diagnostic ignored \"-Wunused-local-typedefs\"\n" // gcc spelling
+               "#  endif\n"
                "#endif\n\n";
 }
 
 void SchemaSourceGenerator::writeFileFooter() {
     _output << "#ifdef __GNUC__\n"
-               "#    pragma GCC diagnostic pop\n"
+               "#  pragma GCC diagnostic pop\n"
                "#endif\n\n";
 }
 
