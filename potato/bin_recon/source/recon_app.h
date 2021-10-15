@@ -78,6 +78,6 @@ namespace up::recon {
         ReconServer _server;
         ReconQueue _queue;
         ImporterFactory _importerFactory;
-        bool _manifestDirty = false;
+        bool _manifestDirty = true;
     };
 } // namespace up::recon
