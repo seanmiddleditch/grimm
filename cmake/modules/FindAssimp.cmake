@@ -95,7 +95,7 @@ function(FindAssimp)
             )
         endif (assimp_INCLUDE_DIRS AND assimp_LIBRARIES)
 
-        FIND_PACKAGE_HANDLE_STANDARD_ARGS(assimp REQUIRED_VARS assimp_INCLUDE_DIRS assimp_LIBRARIES)
+        FIND_PACKAGE_HANDLE_STANDARD_ARGS(Assimp REQUIRED_VARS assimp_INCLUDE_DIRS assimp_LIBRARIES)
     
     endif(WIN32)
 endfunction(FindAssimp)
