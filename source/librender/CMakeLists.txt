@@ -65,6 +65,7 @@ set(UP_GPU_D3D12_SOURCES
     "private/d3d12_backend/d3d12_swap_chain.cpp"
     "private/d3d12_backend/d3d12_platform.cpp"
     "private/d3d12_backend/d3d12_pipeline_state.cpp"
+    "private/d3d12_backend/d3d12_root_signature.cpp"
     "private/d3d12_backend/d3d12_texture.cpp"
     "private/d3d12_backend/d3d12_renderable.cpp"
     "private/d3d12_backend/d3d12_desc_heap.cpp"

@@ -5,15 +5,16 @@
 #include "d3d12_buffer.h"
 #include "d3d12_command_list.h"
 #include "d3d12_context.h"
+#include "d3d12_desc_heap.h"
 #include "d3d12_pipeline_state.h"
 #include "d3d12_platform.h"
 #include "d3d12_renderable.h"
 #include "d3d12_resource_view.h"
+#include "d3d12_root_signature.h"
 #include "d3d12_sampler.h"
 #include "d3d12_swap_chain.h"
 #include "d3d12_texture.h"
 #include "d3d12_utils.h"
-#include "d3d12_desc_heap.h"
 
 #include "potato/runtime/assertion.h"
 #include "potato/runtime/com_ptr.h"
@@ -38,8 +39,10 @@ up::d3d12::DeviceD3D12::DeviceD3D12(IDXGIFactoryPtr factory, IDXGIAdapterPtr ada
 up::d3d12::DeviceD3D12::~DeviceD3D12() {
     waitForFrame();
 
+    RootSignatureD3D12::destroySignatures();
+
     _rtvHeap.reset();
-//    _srvUavHeap.reset();
+    //    _srvUavHeap.reset();
     _samplerHeap.reset();
     _allocator.reset();
     _device.reset();
@@ -65,7 +68,11 @@ bool up::d3d12::DeviceD3D12::create() {
     // allocate different descriptor heaps for resource views
     _rtvHeap = new_box<DescriptorHeapD3D12>(_device.get(), 2, D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     _dsvHeap = new_box<DescriptorHeapD3D12>(_device.get(), 2, D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-    _samplerHeap = new_box<DescriptorHeapD3D12>(_device.get(),1,D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+    _samplerHeap = new_box<DescriptorHeapD3D12>(
+        _device.get(),
+        1,
+        D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
+        D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
     //#dx12 #todo: for now we will create a single Sampler for the app but in a future we should probably make it more
     // data driven or move to static sampler definitions in root signatures
@@ -82,8 +89,10 @@ bool up::d3d12::DeviceD3D12::create() {
     createAllocator();
     createFrameSync();
 
+    RootSignatureD3D12::initializeSignatures(_device.get());
+
     _mainCmdList = CommandListD3D12::createCommandList(_device.get(), nullptr, D3D12_COMMAND_LIST_TYPE_DIRECT);
-    _uploadCmdList = CommandListD3D12::createCommandList(_device.get(), nullptr, D3D12_COMMAND_LIST_TYPE_COPY); 
+    _uploadCmdList = CommandListD3D12::createCommandList(_device.get(), nullptr, D3D12_COMMAND_LIST_TYPE_COPY);
 
     return true;
 }
@@ -96,7 +105,12 @@ auto up::d3d12::DeviceD3D12::createRenderable(IRenderable* pInterface) -> box<Gp
 auto up::d3d12::DeviceD3D12::createSwapChain(void* nativeWindow) -> rc<GpuSwapChain> {
     UP_ASSERT(nativeWindow != nullptr);
 
-    return SwapChainD3D12::createSwapChain(_factory.get(), _device.get(), _commandQueue.get(), _rtvHeap.get(), nativeWindow);
+    return SwapChainD3D12::createSwapChain(
+        _factory.get(),
+        _device.get(),
+        _commandQueue.get(),
+        _rtvHeap.get(),
+        nativeWindow);
 }
 
 auto up::d3d12::DeviceD3D12::createCommandList(GpuPipelineState* pipelineState) -> box<GpuCommandList> {
@@ -106,15 +120,15 @@ auto up::d3d12::DeviceD3D12::createCommandList(GpuPipelineState* pipelineState) 
 auto up::d3d12::DeviceD3D12::createRenderTarget(GpuTextureDesc const& desc, GpuSwapChain* swapChain) -> rc<GpuTexture> {
     UP_ASSERT(swapChain != nullptr);
 
-   /* D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = {_rtvHeap->get_cpu(0)};
+    /* D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = {_rtvHeap->get_cpu(0)};
 
-     auto rt = static_cast<SwapChainD3D12*>(swapChain)->getBuffer(0);
-     _device->CreateRenderTargetView(rt.get(), nullptr, rtvHandle);*/
-    
+      auto rt = static_cast<SwapChainD3D12*>(swapChain)->getBuffer(0);
+      _device->CreateRenderTargetView(rt.get(), nullptr, rtvHandle);*/
+
     return new_shared<TextureD3D12>();
 }
 auto up::d3d12::DeviceD3D12::createPipelineState(GpuPipelineStateDesc const& desc) -> box<GpuPipelineState> {
-    auto pipeline =  PipelineStateD3D12::createGraphicsPipelineState(_device.get(), desc);
+    auto pipeline = PipelineStateD3D12::createGraphicsPipelineState(_device.get(), desc);
     pipeline->setHeaps(nullptr, _samplerHeap->heap(), _rtvHeap->heap());
     return pipeline;
 }
@@ -144,14 +158,15 @@ auto up::d3d12::DeviceD3D12::createSampler() -> box<GpuSampler> {
     return sampler;
 }
 
-auto up::d3d12::DeviceD3D12::createShaderResourceView(GpuPipelineState* pipeline, GpuTexture* resource) -> box<GpuResourceView> {
+auto up::d3d12::DeviceD3D12::createShaderResourceView(GpuPipelineState* pipeline, GpuTexture* resource)
+    -> box<GpuResourceView> {
     UP_ASSERT(resource != nullptr);
 
     auto texture = static_cast<TextureD3D12*>(resource);
     auto ps = static_cast<PipelineStateD3D12*>(pipeline);
     auto desc_heap = ps->descHeap();
 
-     // Describe and create a SRV for the texture.
+    // Describe and create a SRV for the texture.
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srvDesc.Format = toNative(texture->format());
@@ -163,15 +178,14 @@ auto up::d3d12::DeviceD3D12::createShaderResourceView(GpuPipelineState* pipeline
         &srvDesc,
         desc_heap->heap()->GetCPUDescriptorHandleForHeapStart());
 
-    static uint32 __srvcount = 0; 
+    static uint32 __srvcount = 0;
     auto srv = new_box<ResourceViewD3D12>(GpuViewType::SRV);
     srv->create(desc_heap, __srvcount++);
 
     return srv;
 }
 
-auto up::d3d12::DeviceD3D12::createRenderTargetView(GpuTexture* resource) 
-    -> box<GpuResourceView> {
+auto up::d3d12::DeviceD3D12::createRenderTargetView(GpuTexture* resource) -> box<GpuResourceView> {
     UP_ASSERT(resource != nullptr);
 
     uint32 __rtvcount = 0;
@@ -181,8 +195,7 @@ auto up::d3d12::DeviceD3D12::createRenderTargetView(GpuTexture* resource)
     return rtv;
 }
 
-auto up::d3d12::DeviceD3D12::createDepthStencilView(GpuTexture* resource)
-    -> box<GpuResourceView> {
+auto up::d3d12::DeviceD3D12::createDepthStencilView(GpuTexture* resource) -> box<GpuResourceView> {
     UP_ASSERT(resource != nullptr);
 
     auto texture = static_cast<TextureD3D12*>(resource);
@@ -202,7 +215,6 @@ auto up::d3d12::DeviceD3D12::createDepthStencilView(GpuTexture* resource)
 }
 
 void up::d3d12::DeviceD3D12::createDefaultSampler() {
-
     D3D12_SAMPLER_DESC desc = {};
     desc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
     desc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -212,7 +224,7 @@ void up::d3d12::DeviceD3D12::createDefaultSampler() {
     desc.MaxAnisotropy = 1;
     desc.MaxLOD = 0;
     desc.MinLOD = 0;
-    
+
     _device->CreateSampler(&desc, _samplerHeap->get_cpu(0));
 }
 
@@ -246,7 +258,6 @@ void up::d3d12::DeviceD3D12::createAllocator() {
 }
 
 void up::d3d12::DeviceD3D12::createFrameSync() {
-
     _device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __uuidof(ID3D12Fence), out_ptr(_fence));
     _fenceValue = 1;
 
@@ -257,7 +268,6 @@ void up::d3d12::DeviceD3D12::createFrameSync() {
 }
 
 void up::d3d12::DeviceD3D12::waitForFrame() {
-
     const UINT64 fence = _fenceValue;
     _commandQueue->Signal(_fence.get(), fence);
     _fenceValue++;
@@ -270,7 +280,6 @@ void up::d3d12::DeviceD3D12::waitForFrame() {
 }
 
 void up::d3d12::DeviceD3D12::beginFrame(GpuSwapChain* swapChain) {
-
     _mainCmdList->start(nullptr);
 
     swapChain->bind(_mainCmdList.get());
@@ -303,7 +312,6 @@ void up::d3d12::DeviceD3D12::execute(bool quitting) {
     UP_ASSERT(_commandQueue != nullptr);
 
     if (!quitting) {
-
         // Close the command list and execute it to begin the initial GPU setup.
         //_uploadCmdList->finish();
         _mainCmdList->finish();

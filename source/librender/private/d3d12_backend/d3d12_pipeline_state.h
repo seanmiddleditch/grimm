@@ -6,12 +6,14 @@
 #include "gpu_pipeline_state.h"
 
 #include "potato/runtime/com_ptr.h"
+#include "potato/spud/rc.h"
 #include "potato/spud/box.h"
 
 namespace up::d3d12 {
 
     class CommandListD3D12;
     class DescriptorHeapD3D12;
+    class RootSignatureD3D12; 
 
     class PipelineStateD3D12 : public GpuPipelineState {
     public:
@@ -39,14 +41,11 @@ namespace up::d3d12 {
         ID3D12PipelineState* state() const { return _state.get(); }
 
         DescriptorHeapD3D12* descHeap() const { return _srvHeap.get(); }
-    private:
-
-        bool createRootSignature(ID3D12Device* device);
 
     private:
 
         ID3DPipelineStatePtr _state;
-        ID3DRootSignaturePtr _signature;
+        rc<RootSignatureD3D12> _signature;
 
         // pipeline owned descriptor heap for shader resources
         box<DescriptorHeapD3D12> _srvHeap;
