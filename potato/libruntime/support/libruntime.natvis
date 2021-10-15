@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="up::UUID">
+    <DisplayString>{{{_data.ub[0],nvoxb}{_data.ub[1],nvoxb}{_data.ub[2],nvoxb}{_data.ub[3],nvoxb}-{_data.ub[4],nvoxb}{_data.ub[5],nvoxb}-{_data.ub[6],nvoxb}{_data.ub[7],nvoxb}-{_data.ub[8],nvoxb}{_data.ub[9],nvoxb}-{_data.ub[10],nvoxb}{_data.ub[11],nvoxb}{_data.ub[12],nvoxb}{_data.ub[13],nvoxb}{_data.ub[14],nvoxb}{_data.ub[15],nvoxb}}}</DisplayString>
+    <Expand>
+      <Item Name="[bytes]" ExcludeView="simple">_data.ub,nvou</Item>
+      <Item Name="[qwords]" ExcludeView="simple">_data.u64,u</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>
