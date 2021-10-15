@@ -18,11 +18,11 @@ function(up_target_natvis TARGET_NAME NATVIS)
         # for MSVC since CMake doesn't do it automatically
         #
         target_link_options("${TARGET_NAME}" "${visibility}" "/NATVIS:${NATVIS}")
-    else()
-        # For MSVC with MSBuild generator, we can just add the .natvis as a source;
-        # for other platforms and toolsets, this doesn't hurt anything so we don't
-        # need additional checks
-        #
-        target_sources("${TARGET_NAME}" "${visibility}" "$<BUILD_INTERFACE:${NATVIS}>")
     endif()
+
+    # For MSVC with MSBuild generator, we can just add the .natvis as a source;
+    # for other platforms and toolsets, this doesn't hurt anything so we don't
+    # need additional checks
+    #
+    target_sources("${TARGET_NAME}" "${visibility}" "$<BUILD_INTERFACE:${NATVIS}>")
 endfunction()

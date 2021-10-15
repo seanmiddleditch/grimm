@@ -4,53 +4,14 @@ project(runtime VERSION 0.1 LANGUAGES CXX)
 add_library(potato_libruntime)
 add_library(potato::libruntime ALIAS potato_libruntime)
 
-target_sources(potato_libruntime PRIVATE
-    # Callstack implementations
-    #
-    $<$<NOT:$<PLATFORM_ID:Windows>>:source/callstack.posix.cpp>
-    $<$<PLATFORM_ID:Windows>:source/callstack.windows.cpp>
-
-    # Debug handling implementations
-    #
-    $<$<NOT:$<PLATFORM_ID:Windows>>:source/debug.posix.cpp>
-    $<$<PLATFORM_ID:Windows>:source/debug.windows.cpp>
-    $<$<PLATFORM_ID:Windows>:source/debug.windows.h>
-    $<$<PLATFORM_ID:Windows>:source/debug.windows.rc>
-
-    # Threading backends
-    #
-    $<$<PLATFORM_ID:Darwin>:source/thread_util.darwin.cpp>
-    $<$<PLATFORM_ID:Linux>:source/thread_util.linux.cpp>
-    $<$<PLATFORM_ID:Windows>:source/thread_util.windows.cpp>
-
-    # UUID generation
-    #
-    $<$<PLATFORM_ID:Darwin>:source/uuid.darwin.cpp>
-    $<$<PLATFORM_ID:Linux>:source/uuid.linux.cpp>
-    $<$<PLATFORM_ID:Windows>:source/uuid.windows.cpp>
-
-    # General runtime code
-    #
-    "source/asset_loader.cpp"
-    "source/filesystem.cpp"
-    "source/io_loop.cpp"
-    "source/resource_manifest.cpp"
-    "include/potato/runtime/asset.h"
-    "include/potato/runtime/asset_loader.h"
-    "include/potato/runtime/io_loop.h"
-    "include/potato/runtime/resource_manifest.h"
-    source/debug.cpp
-    source/json.cpp
-    source/logger.cpp
-    source/path.cpp
-    source/stream.cpp
-    source/task_worker.cpp
-    source/thread_util.cpp
-    source/uuid.cpp
- )
+add_subdirectory(include/potato/runtime)
+add_subdirectory(source)
 
 include(up_set_common_properties)
 up_set_common_properties(potato_libruntime)
+
+include(up_target_natvis)
+up_target_natvis(potato_libruntime "support/libruntime.natvis")
 
 # setup uuid libs for different oses
 if (WIN32)
@@ -87,33 +48,4 @@ target_compile_definitions(potato_libruntime
     PUBLIC    UP_SPUD_ASSERT=UP_ASSERT
 )
 
-add_executable(potato_libruntime_test)
-target_sources(potato_libruntime_test PRIVATE
-    "tests/main.cpp"
-    "tests/test_callstack.cpp"
-    "tests/test_concurrent_queue.cpp"
-    "tests/test_filesystem.cpp"
-    "tests/test_path_util.cpp"
-    "tests/test_lock_free_queue.cpp"
-    "tests/test_rwlock.cpp"
-    "tests/test_task_worker.cpp"
-    "tests/test_thread_util.cpp"
-    "tests/test_uuid.cpp"
-    "tests/test_resource_manifest.cpp"
-)
-
-up_set_common_properties(potato_libruntime_test)
-
-target_link_libraries(potato_libruntime_test PRIVATE
-    potato::libruntime
-    Catch2::Catch2
-)
-
-include(Catch)
-catch_discover_tests(potato_libruntime_test
-    # for filesystem tests
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures"
-
-    # because concurrency tests can deadlock (which is a test failure)
-    PROPERTIES TIMEOUT 10
-)
+add_subdirectory(tests)
