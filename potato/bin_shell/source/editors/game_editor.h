@@ -11,10 +11,14 @@
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
 
+namespace up {
+    class Space;
+}
+
 namespace up::shell {
     class GameEditor : public Editor {
     public:
-        explicit GameEditor(rc<Scene> scene)
+        explicit GameEditor(box<Scene> scene)
             : Editor("GameEditor"_zsv)
             , _scene(std::move(scene))
             , _cameraController(_camera) {
@@ -34,7 +38,7 @@ namespace up::shell {
     private:
         void _resize(GpuDevice& device, glm::ivec2 size);
 
-        rc<Scene> _scene;
+        box<Scene> _scene;
         rc<GpuTexture> _buffer;
         box<GpuResourceView> _bufferView;
         box<RenderCamera> _renderCamera;
@@ -45,5 +49,5 @@ namespace up::shell {
         bool _wantPlaying = true;
     };
 
-    auto createGameEditor(rc<Scene> scene) -> box<Editor>;
+    auto createGameEditor(box<Scene> scene) -> box<Editor>;
 } // namespace up::shell

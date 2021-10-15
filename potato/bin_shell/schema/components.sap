@@ -5,25 +5,11 @@ import ecs;
 import tools;
 import constraint;
 import material;
-
-// sap bug: use directives aren't imported
-[cxxnamespace("up::components")]
-use component : struct;
-
-[cxximport("up::SoundResource", "potato/audio/sound_resource.h")]
-[AssetType("potato.asset.sound")]
-using SoundAsset;
-
-using SoundRef = AssetRef<SoundAsset>;
+import resource;
 
 component Transform {
-    [DisplayName("Pos")]
     vec3 position;
-
-    [DisplayName("Rot")]
     quat rotation;
-
-    [Hidden]
     mat4x4 transform;
 }
 
@@ -43,7 +29,6 @@ component Spin {
 
 component Ding {
     float period = 1;
-    [FloatRange(0, 3600)]
     float time = 0;
     SoundRef sound;
 }

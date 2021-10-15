@@ -11,7 +11,8 @@ namespace up {
     template <typename>
     class box;
     template <typename T, typename... Args>
-    auto new_box(Args&&... args) -> box<T> requires std::is_constructible_v<T, Args&&...>;
+    auto new_box(Args&&... args) -> box<T>
+    requires std::is_constructible_v<T, Args&&...>;
 
     namespace _detail {
         template <typename>
@@ -24,7 +25,15 @@ struct up::_detail::box_traits {
     using pointer = T*;
     using reference = T&;
 
-    static void _deallocate(T* ptr) { delete ptr; }
+    static void _deallocate(pointer ptr) { delete ptr; }
+};
+
+template <>
+struct up::_detail::box_traits<void> {
+    using pointer = void*;
+    using reference = void;
+
+    static void _deallocate(pointer ptr) { delete ptr; }
 };
 
 /// <summary> An owning non-copyable pointer to a heap-allocated object, analogous to std::unique_ptr but without custom
@@ -112,8 +121,7 @@ private:
 
 template <typename T>
 void up::box<T>::reset(pointer ptr) noexcept {
-    // NOLINTNEXTLINE(bugprone-sizeof-expression)
-    static_assert(sizeof(T) > 0, "box can not delete incomplete type");
+    static_assert(is_type_complete_v<T>, "box can not delete incomplete type");
     this->_deallocate(_ptr);
     _ptr = ptr;
 }
@@ -123,6 +131,7 @@ void up::box<T>::reset(pointer ptr) noexcept {
 /// <param name="args"> Parameters to pass to the constructor. </param>
 /// <returns> A box containing a new instance of the requested object. </returns>
 template <typename T, typename... Args>
-auto up::new_box(Args&&... args) -> box<T> requires std::is_constructible_v<T, Args&&...> {
+auto up::new_box(Args&&... args) -> box<T>
+requires std::is_constructible_v<T, Args&&...> {
     return box<T>(new T(std::forward<Args>(args)...));
 }

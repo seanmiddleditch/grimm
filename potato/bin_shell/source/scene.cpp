@@ -29,7 +29,7 @@ up::Scene::Scene(Universe& universe, AudioEngine& audioEngine)
 
 up::Scene::~Scene() = default;
 
-void up::Scene::tick(float frameTime) {
+void up::Scene::update(float frameTime) {
     if (!_playing) {
         return;
     }

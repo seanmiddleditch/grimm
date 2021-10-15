@@ -6,9 +6,9 @@
 
 namespace {
     struct TestCounted {
-        void addRef() noexcept { ++refs; }
-        void removeRef() noexcept { --refs; }
-        int refs = 1;
+        void addRef() const noexcept { ++refs; }
+        void removeRef() const noexcept { --refs; }
+        mutable int refs = 1;
     };
 
     struct TestShared : up::shared<TestShared> {

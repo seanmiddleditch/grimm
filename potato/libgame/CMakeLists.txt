@@ -8,6 +8,7 @@ include(up_compile_sap)
 include(up_set_common_properties)
 up_set_common_properties(potato_libgame)
 
+add_subdirectory(include/potato/game)
 add_subdirectory(source)
 
 up_compile_sap(potato_libgame
@@ -23,24 +24,4 @@ target_link_libraries(potato_libgame
         glm
 )
 
-add_executable(potato_libgame_test)
-target_sources(potato_libgame_test PRIVATE
-    "tests/main.cpp"
-    "tests/test_query.cpp"
-    "tests/test_world.cpp"
-)
-
-up_compile_sap(potato_libgame_test
-    SCHEMAS
-        tests/test_components.sap
-)
-
-up_set_common_properties(potato_libgame_test)
-
-target_link_libraries(potato_libgame_test PRIVATE
-    potato::libgame
-    Catch2::Catch2
-)
-
-include(Catch)
-catch_discover_tests(potato_libgame_test)
+add_subdirectory(tests)

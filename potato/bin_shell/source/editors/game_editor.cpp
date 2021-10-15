@@ -20,7 +20,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-auto up::shell::createGameEditor(rc<Scene> scene) -> box<Editor> {
+auto up::shell::createGameEditor(box<Scene> scene) -> box<Editor> {
     return new_box<GameEditor>(std::move(scene));
 }
 

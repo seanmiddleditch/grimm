@@ -25,6 +25,15 @@ namespace up {
         };
     } // namespace _detail
 
+    template <typename, typename = void>
+    constexpr bool is_type_complete_v = false;
+
+    template <>
+    constexpr bool is_type_complete_v<void, void> = true;
+
+    template <typename T>
+    constexpr bool is_type_complete_v<T, std::void_t<decltype(sizeof(T))>> = true;
+
     template <typename T>
     struct is_contiguous {
         static constexpr bool value = std::is_integral_v<T> || std::is_enum_v<T> || std::is_pointer_v<T>;
