@@ -162,7 +162,7 @@ void up::SceneDocument::createTestObjects(
 
     auto addComponentData = [this]<typename ComponentT>(SceneEntityId entityId, ComponentT&& component) {
         auto comp = _database.createByName(reflex::getTypeInfo<ComponentT>().name);
-        *static_cast<ComponentT*>(comp->data.get()) = std::move(component);
+        *static_cast<ComponentT*>(comp->data.get()) = std::forward<ComponentT>(component);
     };
 
     auto const rootId = createEntity("Root");
@@ -212,7 +212,7 @@ void up::SceneDocument::syncPreview(Scene& scene) {
                     component->state = SceneComponent::State::Idle;
                     break;
                 case SceneComponent::State::Removed:
-                    component->info->syncUpdate(scene, entity.previewId, *component);
+                    component->info->syncRemove(scene, entity.previewId, *component);
                     component->state = SceneComponent::State::Idle;
                     break;
             }
