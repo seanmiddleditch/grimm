@@ -10,7 +10,12 @@
         "FETCHCONTENT_QUIET": true
       },
       "binaryDir": "${sourceDir}/out/${presetName}",
-      "generator": "Ninja"
+      "generator": "Ninja",
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "enableClangTidyCodeAnalysis": true
+        }
+      }
     },
     {
       "name": "msvc",
