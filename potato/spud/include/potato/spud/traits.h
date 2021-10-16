@@ -29,7 +29,7 @@ namespace up {
     constexpr bool is_type_complete_v = false;
 
     template <>
-    constexpr bool is_type_complete_v<void, void> = true;
+    inline constexpr bool is_type_complete_v<void, void> = true;
 
     template <typename T>
     constexpr bool is_type_complete_v<T, std::void_t<decltype(sizeof(T))>> = true;
