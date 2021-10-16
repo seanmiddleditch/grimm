@@ -17,8 +17,6 @@ add_subdirectory(source)
 
 include(up_compile_sap)
 up_compile_sap(potato_shell SCHEMAS
-    "schema/components.sap"
-    "schema/resource.sap"
     "schema/scene.sap"
     "schema/settings.sap"
 )

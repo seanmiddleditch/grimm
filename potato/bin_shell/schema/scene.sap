@@ -4,7 +4,7 @@ import common;
 import constraint;
 import tools;
 import material;
-import resource;
+import sound;
 
 [cxxnamespace("up::scene::components")]
 use scene_component : struct;

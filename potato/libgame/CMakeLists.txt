@@ -13,13 +13,16 @@ add_subdirectory(source)
 
 up_compile_sap(potato_libgame
     SCHEMAS
-        schema/ecs.sap
+        "schema/ecs.sap"
+        "schema/components.sap"
 )
 
 target_link_libraries(potato_libgame
     PUBLIC
         potato::libruntime
+        potato::libaudio
         potato::libreflex
+        potato::librender
         potato::spud
         glm
 )
