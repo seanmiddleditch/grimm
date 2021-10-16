@@ -322,7 +322,9 @@ void up::shell::SceneEditor::_inspector() {
         }
 
         if (open && component != nullptr) {
-            _propertyGrid.editObjectRaw(*component->info->typeInfo().schema, component->data.get());
+            if (_propertyGrid.editObjectRaw(*component->info->typeInfo().schema, component->data.get())) {
+                component->state = SceneComponent::State::Pending;
+            }
             _propertyGrid.endItem();
         }
 
