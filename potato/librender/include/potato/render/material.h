@@ -29,7 +29,7 @@ namespace up {
             Shader::Handle vertexShader,
             Shader::Handle pixelShader,
             vector<Texture::Handle> textures);
-        UP_RENDER_API ~Material() override;
+        UP_RENDER_API ~Material();
 
         static UP_RENDER_API auto createFromBuffer(AssetKey key, view<byte> buffer, AssetLoader& assetLoader)
             -> rc<Material>;

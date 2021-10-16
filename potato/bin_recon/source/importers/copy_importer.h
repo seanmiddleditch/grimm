@@ -11,7 +11,7 @@ namespace up {
     class CopyImporter : public Importer {
     public:
         explicit CopyImporter();
-        ~CopyImporter() override;
+        ~CopyImporter();
 
         bool import(ImporterContext& ctx) override;
         string_view assetType(ImporterContext& ctx) const noexcept override;

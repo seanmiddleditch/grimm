@@ -8,7 +8,7 @@ namespace up {
     class ModelImporter : public Importer {
     public:
         ModelImporter();
-        ~ModelImporter() override;
+        ~ModelImporter();
 
         bool import(ImporterContext& ctx) override;
 

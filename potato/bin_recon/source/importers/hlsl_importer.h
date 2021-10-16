@@ -8,7 +8,7 @@ namespace up {
     class HlslImporter : public Importer {
     public:
         HlslImporter();
-        ~HlslImporter() override;
+        ~HlslImporter();
 
         bool import(ImporterContext& ctx) override;
 
