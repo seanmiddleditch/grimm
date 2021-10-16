@@ -1,0 +1,37 @@
+module scene;
+
+import common;
+import constraint;
+import tools;
+import material;
+import resource;
+
+[cxxnamespace("up::scene::components")]
+use scene_component : struct;
+
+scene_component Transform {
+    [DisplayName("Pos")]
+    vec3 position;
+
+    [DisplayName("Rot")]
+    quat rotation;
+}
+
+scene_component Mesh {
+    MeshRef mesh;
+    MaterialRef material;
+}
+
+scene_component Wave {
+    float offset;
+}
+
+scene_component Spin {
+    float radians;
+}
+
+scene_component Ding {
+    [FloatRange(0, 3600)]
+    float period = 1;
+    SoundRef sound;
+}

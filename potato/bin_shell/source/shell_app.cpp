@@ -4,8 +4,10 @@
 #include "camera.h"
 #include "camera_controller.h"
 #include "components_schema.h"
+#include "edit_components.h"
 #include "recon_messages_schema.h"
 #include "scene.h"
+#include "scene_schema.h"
 #include "editors/asset_browser.h"
 #include "editors/game_editor.h"
 #include "editors/log_window.h"
@@ -278,16 +280,22 @@ int up::shell::ShellApp::initialize() {
     _universe->registerComponent<components::Ding>("Ding");
     _universe->registerComponent<components::Test>("Test");
 
+    _sceneDatabase.registerComponent<TransformEditComponent>();
+    _sceneDatabase.registerComponent<MeshEditComponent>();
+    _sceneDatabase.registerComponent<WaveEditComponent>();
+    _sceneDatabase.registerComponent<SpinEditComponent>();
+    _sceneDatabase.registerComponent<DingEditComponent>();
+
     _editorFactories.push_back(
         AssetBrowser::createFactory(_assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
             _openAssetEditor(uuid);
         }));
-    _editorFactories.push_back(SceneEditor::createFactory(
-        *_audio,
-        *_universe,
-        _assetLoader,
-        [this] { return _universe->components(); },
-        [this](rc<Scene> scene) { _createGame(std::move(scene)); }));
+    _editorFactories.push_back(
+        SceneEditor::createFactory(*_audio, *_universe, _sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
+            auto scene = new_box<Scene>(*_universe, *_audio);
+            doc.syncGame(*scene);
+            _createGame(std::move(scene));
+        }));
     _editorFactories.push_back(MaterialEditor::createFactory(_assetLoader));
     _editorFactories.push_back(LogWindow::createFactory(_logHistory));
 
@@ -688,7 +696,7 @@ void up::shell::ShellApp::_createScene() {
     _openEditor(SceneEditor::editorName);
 }
 
-void up::shell::ShellApp::_createGame(rc<Scene> scene) {
+void up::shell::ShellApp::_createGame(box<Scene> scene) {
     _editors.open(createGameEditor(std::move(scene)));
 }
 

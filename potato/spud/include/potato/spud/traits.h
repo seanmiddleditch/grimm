@@ -25,6 +25,15 @@ namespace up {
         };
     } // namespace _detail
 
+    template <typename, typename = void>
+    constexpr bool is_type_complete_v = false;
+
+    template <>
+    inline constexpr bool is_type_complete_v<void, void> = true;
+
+    template <typename T>
+    constexpr bool is_type_complete_v<T, std::void_t<decltype(sizeof(T))>> = true;
+
     template <typename T>
     struct is_contiguous {
         static constexpr bool value = std::is_integral_v<T> || std::is_enum_v<T> || std::is_pointer_v<T>;
@@ -39,6 +48,14 @@ namespace up {
     struct function_params;
     template <typename S>
     struct function_result;
+
+    template <typename...>
+    constexpr bool always_false_v = false;
+
+    template <typename T>
+    std::add_rvalue_reference_t<T> declval() {
+        static_assert(always_false_v<T>, "declval may only be used in unevaluated contexts");
+    }
 
     template <typename F>
     using signature_t = typename signature<F>::type;

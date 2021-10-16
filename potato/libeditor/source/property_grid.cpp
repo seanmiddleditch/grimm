@@ -39,58 +39,62 @@ bool up::editor::PropertyGrid::beginItem(char const* label) {
 
 void up::editor::PropertyGrid::endItem() {}
 
-void up::editor::PropertyGrid::_editField(
+bool up::editor::PropertyGrid::_editField(
     reflex::SchemaField const& field,
     reflex::Schema const& schema,
     void* object) {
     ImGui::PushID(object);
 
+    bool edit = false;
+
     switch (schema.primitive) {
         case reflex::SchemaPrimitive::Int16:
-            _editIntegerField(field, *static_cast<int16*>(object));
+            edit = _editIntegerField(field, *static_cast<int16*>(object));
             break;
         case reflex::SchemaPrimitive::Int32:
-            _editIntegerField(field, *static_cast<int32*>(object));
+            edit = _editIntegerField(field, *static_cast<int32*>(object));
             break;
         case reflex::SchemaPrimitive::Int64:
-            _editIntegerField(field, *static_cast<int64*>(object));
+            edit = _editIntegerField(field, *static_cast<int64*>(object));
             break;
         case reflex::SchemaPrimitive::Float:
-            _editFloatField(field, *static_cast<float*>(object));
+            edit = _editFloatField(field, *static_cast<float*>(object));
             break;
         case reflex::SchemaPrimitive::Double:
-            _editFloatField(field, *static_cast<double*>(object));
+            edit = _editFloatField(field, *static_cast<double*>(object));
             break;
         case reflex::SchemaPrimitive::Vec3:
-            _editVec3Field(field, *static_cast<glm::vec3*>(object));
+            edit = _editVec3Field(field, *static_cast<glm::vec3*>(object));
             break;
         case reflex::SchemaPrimitive::Mat4x4:
-            _editMat4x4Field(field, *static_cast<glm::mat4x4*>(object));
+            edit = _editMat4x4Field(field, *static_cast<glm::mat4x4*>(object));
             break;
         case reflex::SchemaPrimitive::Quat:
-            _editQuatField(field, *static_cast<glm::quat*>(object));
+            edit = _editQuatField(field, *static_cast<glm::quat*>(object));
             break;
         case reflex::SchemaPrimitive::String:
-            _editStringField(field, *static_cast<string*>(object));
+            edit = _editStringField(field, *static_cast<string*>(object));
             break;
         case reflex::SchemaPrimitive::Pointer:
             if (schema.operations->pointerMutableDeref != nullptr) {
                 if (void* pointee = schema.operations->pointerMutableDeref(object)) {
-                    _editField(field, *schema.elementType, pointee);
+                    edit = _editField(field, *schema.elementType, pointee);
+                    break;
                 }
             }
+            edit = false;
             break;
         case reflex::SchemaPrimitive::Array:
-            _editArrayField(field, schema, object);
+            edit = _editArrayField(field, schema, object);
             break;
         case reflex::SchemaPrimitive::Object:
-            _drawObjectEditor(schema, object);
+            edit = _drawObjectEditor(schema, object);
             break;
         case reflex::SchemaPrimitive::AssetRef:
-            _editAssetField(field, schema, object);
+            edit = _editAssetField(field, schema, object);
             break;
         case reflex::SchemaPrimitive::Uuid:
-            _editUuidField(field, *static_cast<UUID*>(object));
+            edit = _editUuidField(field, *static_cast<UUID*>(object));
             break;
         default:
             ImGui::Text("Unsupported primitive type for schema `%s`", schema.name.c_str());
@@ -98,26 +102,28 @@ void up::editor::PropertyGrid::_editField(
     }
 
     ImGui::PopID();
+
+    return edit;
 }
 
-void up::editor::PropertyGrid::_drawObjectEditor(reflex::Schema const& schema, void* object) {
+bool up::editor::PropertyGrid::_drawObjectEditor(reflex::Schema const& schema, void* object) {
     ImGui::TextDisabled("%s", schema.name.c_str());
 
-    _editProperties(schema, object);
+    return _editProperties(schema, object);
 }
 
-void up::editor::PropertyGrid::_editArrayField(
+bool up::editor::PropertyGrid::_editArrayField(
     reflex::SchemaField const& field,
     reflex::Schema const& schema,
     void* object) {
     if (schema.operations == nullptr) {
         ImGui::TextDisabled("Unsupported type");
-        return;
+        return false;
     }
 
     if (schema.operations->arrayGetSize == nullptr || schema.operations->arrayElementAt == nullptr) {
         ImGui::TextDisabled("Unsupported type");
-        return;
+        return false;
     }
 
     size_t const size = schema.operations->arrayGetSize(object);
@@ -127,6 +133,8 @@ void up::editor::PropertyGrid::_editArrayField(
     size_t eraseIndex = size;
     size_t swapFirst = size;
     size_t swapSecond = size;
+
+    bool edit = false;
 
     for (size_t index = 0; index != size; ++index) {
         void* element = schema.operations->arrayMutableElementAt(object, index);
@@ -176,7 +184,7 @@ void up::editor::PropertyGrid::_editArrayField(
 
         ImGui::TableSetColumnIndex(1);
         ImGui::AlignTextToFramePadding();
-        _editField(field, *schema.elementType, element);
+        edit |= _editField(field, *schema.elementType, element);
         ImGui::PopID();
     }
 
@@ -190,6 +198,7 @@ void up::editor::PropertyGrid::_editArrayField(
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + adjustWidth);
         if (ImGui::IconButton("##add", ICON_FA_PLUS)) {
             schema.operations->arrayInsertAt(object, size);
+            edit = true;
         }
 
         ImGui::TableSetColumnIndex(1);
@@ -199,10 +208,14 @@ void up::editor::PropertyGrid::_editArrayField(
 
     if (eraseIndex < size) {
         schema.operations->arrayEraseAt(object, eraseIndex);
+        edit = true;
     }
     else if (swapFirst < size) {
         schema.operations->arraySwapIndices(object, swapFirst, swapSecond);
+        edit = true;
     }
+
+    return edit;
 }
 
 bool up::editor::PropertyGrid::_beginProperty(reflex::SchemaField const& field, void* object) {
@@ -251,93 +264,97 @@ void up::editor::PropertyGrid::_endProperty() {
     ImGui::TreePop();
 }
 
-void up::editor::PropertyGrid::_editProperties(reflex::Schema const& schema, void* object) {
+bool up::editor::PropertyGrid::_editProperties(reflex::Schema const& schema, void* object) {
     UP_ASSERT(schema.primitive == reflex::SchemaPrimitive::Object);
+
+    bool edits = false;
 
     for (reflex::SchemaField const& field : schema.fields) {
         if (field.schema->primitive == reflex::SchemaPrimitive::Object &&
             queryAnnotation<schema::Flatten>(field) != nullptr) {
             void* const member = static_cast<char*>(object) + field.offset;
-            _editProperties(*field.schema, member);
+            edits |= _editProperties(*field.schema, member);
             continue;
         }
 
         if (_beginProperty(field, object)) {
-            _editProperty(field, object);
+            edits |= _editProperty(field, object);
             _endProperty();
         }
     }
+
+    return edits;
 }
 
-void up::editor::PropertyGrid::_editProperty(reflex::SchemaField const& field, void* object) {
+bool up::editor::PropertyGrid::_editProperty(reflex::SchemaField const& field, void* object) {
     void* const member = static_cast<char*>(object) + field.offset;
 
     ImGui::TableSetColumnIndex(1);
     ImGui::AlignTextToFramePadding();
 
-    _editField(field, *field.schema, member);
+    return _editField(field, *field.schema, member);
 }
 
-void up::editor::PropertyGrid::_editIntegerField(reflex::SchemaField const& field, int& value) noexcept {
+bool up::editor::PropertyGrid::_editIntegerField(reflex::SchemaField const& field, int& value) noexcept {
     ImGui::SetNextItemWidth(-1.f);
 
     auto const* const rangeAnnotation = queryAnnotation<up::schema::IntRange>(field);
     if (rangeAnnotation != nullptr) {
-        ImGui::SliderInt("##int", &value, rangeAnnotation->min, rangeAnnotation->max);
+        return ImGui::SliderInt("##int", &value, rangeAnnotation->min, rangeAnnotation->max);
     }
-    else {
-        ImGui::InputInt("##int", &value);
-    }
+
+    return ImGui::InputInt("##int", &value);
 }
 
-void up::editor::PropertyGrid::_editFloatField(reflex::SchemaField const& field, float& value) noexcept {
+bool up::editor::PropertyGrid::_editFloatField(reflex::SchemaField const& field, float& value) noexcept {
     ImGui::SetNextItemWidth(-1.f);
 
     auto const* const rangeAnnotation = queryAnnotation<up::schema::FloatRange>(field);
     if (rangeAnnotation != nullptr) {
-        ImGui::SliderFloat("##float", &value, rangeAnnotation->min, rangeAnnotation->max);
+        return ImGui::SliderFloat("##float", &value, rangeAnnotation->min, rangeAnnotation->max);
     }
-    else {
-        ImGui::InputFloat("##float", &value);
-    }
+
+    return ImGui::InputFloat("##float", &value);
 }
 
-void up::editor::PropertyGrid::_editFloatField(
+bool up::editor::PropertyGrid::_editFloatField(
     [[maybe_unused]] reflex::SchemaField const& field,
     double& value) noexcept {
     ImGui::SetNextItemWidth(-1.f);
 
-    ImGui::InputDouble("##double", &value);
+    return ImGui::InputDouble("##double", &value);
 }
 
-void up::editor::PropertyGrid::_editVec3Field(
+bool up::editor::PropertyGrid::_editVec3Field(
     [[maybe_unused]] reflex::SchemaField const& field,
     glm::vec3& value) noexcept {
     ImGui::SetNextItemWidth(-1.f);
-    ImGui::InputVec3("##vec3", value);
+    return ImGui::InputVec3("##vec3", value);
 }
 
-void up::editor::PropertyGrid::_editMat4x4Field(
+bool up::editor::PropertyGrid::_editMat4x4Field(
     [[maybe_unused]] reflex::SchemaField const& field,
     glm::mat4x4& value) noexcept {
+    bool edit = false;
     ImGui::SetNextItemWidth(-1.f);
-    ImGui::InputFloat4("##a", &value[0].x);
+    edit |= ImGui::InputFloat4("##a", &value[0].x);
     ImGui::SetNextItemWidth(-1.f);
-    ImGui::InputFloat4("##b", &value[1].x);
+    edit |= ImGui::InputFloat4("##b", &value[1].x);
     ImGui::SetNextItemWidth(-1.f);
-    ImGui::InputFloat4("##c", &value[2].x);
+    edit |= ImGui::InputFloat4("##c", &value[2].x);
     ImGui::SetNextItemWidth(-1.f);
-    ImGui::InputFloat4("##d", &value[3].x);
+    edit |= ImGui::InputFloat4("##d", &value[3].x);
+    return edit;
 }
 
-void up::editor::PropertyGrid::_editQuatField(
+bool up::editor::PropertyGrid::_editQuatField(
     [[maybe_unused]] reflex::SchemaField const& field,
     glm::quat& value) noexcept {
     ImGui::SetNextItemWidth(-1.f);
-    ImGui::InputQuat("##quat", value);
+    return ImGui::InputQuat("##quat", value);
 }
 
-void up::editor::PropertyGrid::_editStringField(
+bool up::editor::PropertyGrid::_editStringField(
     [[maybe_unused]] reflex::SchemaField const& field,
     string& value) noexcept {
     ImGui::SetNextItemWidth(-1.f);
@@ -352,10 +369,13 @@ void up::editor::PropertyGrid::_editStringField(
 
     if (ImGui::InputText("##string", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
         value = string(buffer);
+        return true;
     }
+
+    return false;
 }
 
-void up::editor::PropertyGrid::_editAssetField(
+bool up::editor::PropertyGrid::_editAssetField(
     reflex::SchemaField const& field,
     reflex::Schema const& schema,
     void* object) {
@@ -375,10 +395,13 @@ void up::editor::PropertyGrid::_editAssetField(
         displayName = _assetLoader->debugName(assetId);
     }
 
+    bool edit = false;
+
     ImGui::Text("%s", displayName.c_str());
     ImGui::SameLine();
     if (ImGui::IconButton("##clear", ICON_FA_TRASH) && schema.operations->pointerAssign != nullptr) {
         schema.operations->pointerAssign(object, nullptr);
+        edit = true;
     }
     ImGui::SameLine();
 
@@ -395,13 +418,16 @@ void up::editor::PropertyGrid::_editAssetField(
         AssetId targetAssetId = assetId;
         if (up::assetBrowserPopup(browserId, targetAssetId, assetType, *_assetLoader) && targetAssetId != assetId) {
             *handle = _assetLoader->loadAssetSync(targetAssetId, assetType);
+            edit = true;
         }
     }
 
     ImGui::EndGroup();
+
+    return edit;
 }
 
-void up::editor::PropertyGrid::_editUuidField([[maybe_unused]] reflex::SchemaField const& field, UUID& value) noexcept {
+bool up::editor::PropertyGrid::_editUuidField([[maybe_unused]] reflex::SchemaField const& field, UUID& value) noexcept {
     ImGui::SetNextItemWidth(-1.f);
 
     // FIXME:
@@ -419,5 +445,8 @@ void up::editor::PropertyGrid::_editUuidField([[maybe_unused]] reflex::SchemaFie
             ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsHexadecimal |
                 ImGuiInputTextFlags_CharsDecimal /* for dash */)) {
         value = UUID::fromString(buffer);
+        return true;
     }
+
+    return false;
 }

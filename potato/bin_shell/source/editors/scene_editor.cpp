@@ -24,6 +24,7 @@
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/spud/delegate.h"
+#include "potato/spud/erase.h"
 #include "potato/spud/fixed_string_writer.h"
 
 #include <glm/glm.hpp>
@@ -38,13 +39,13 @@ namespace up::shell {
             SceneEditorFactory(
                 AudioEngine& audioEngine,
                 Universe& universe,
+                SceneDatabase& database,
                 AssetLoader& assetLoader,
-                SceneEditor::EnumerateComponents components,
                 SceneEditor::HandlePlayClicked onPlayClicked)
                 : _audioEngine(audioEngine)
                 , _universe(universe)
+                , _database(database)
                 , _assetLoader(assetLoader)
-                , _components(std::move(components))
                 , _onPlayClicked(std::move(onPlayClicked)) {}
 
             zstring_view editorName() const noexcept override { return SceneEditor::editorName; }
@@ -52,8 +53,8 @@ namespace up::shell {
             box<Editor> createEditor() override { return nullptr; }
 
             box<Editor> createEditorForDocument(zstring_view filename) override {
-                auto scene = new_shared<Scene>(_universe, _audioEngine);
-                auto doc = new_box<SceneDocument>(string(filename), std::move(scene));
+                auto scene = new_box<Scene>(_universe, _audioEngine);
+                auto doc = new_box<SceneDocument>(string(filename), _database);
 
 #if 0
                 auto material = _assetLoader.loadAssetSync<Material>(
@@ -82,14 +83,14 @@ namespace up::shell {
                 }
 #endif
 
-                return new_box<SceneEditor>(std::move(doc), _assetLoader, _components, _onPlayClicked);
+                return new_box<SceneEditor>(std::move(doc), std::move(scene), _database, _assetLoader, _onPlayClicked);
             }
 
         private:
             AudioEngine& _audioEngine;
             Universe& _universe;
+            SceneDatabase& _database;
             AssetLoader& _assetLoader;
-            SceneEditor::EnumerateComponents _components;
             SceneEditor::HandlePlayClicked _onPlayClicked;
         };
     } // namespace
@@ -98,20 +99,17 @@ namespace up::shell {
 auto up::shell::SceneEditor::createFactory(
     AudioEngine& audioEngine,
     Universe& universe,
+    SceneDatabase& database,
     AssetLoader& assetLoader,
-    SceneEditor::EnumerateComponents components,
     SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
-    return new_box<SceneEditorFactory>(
-        audioEngine,
-        universe,
-        assetLoader,
-        std::move(components),
-        std::move(onPlayClicked));
+    return new_box<SceneEditorFactory>(audioEngine, universe, database, assetLoader, std::move(onPlayClicked));
 }
 
 void up::shell::SceneEditor::tick(float deltaTime) {
-    _doc->scene()->tick(deltaTime);
-    _doc->scene()->flush();
+    _doc->syncPreview(*_previewScene);
+
+    _previewScene->update(deltaTime);
+    _previewScene->flush();
 }
 
 void up::shell::SceneEditor::configure() {
@@ -128,7 +126,7 @@ void up::shell::SceneEditor::configure() {
          .enabled = [this] { return isActive(); },
          .action =
              [this]() {
-                 _onPlayClicked(_doc->scene());
+                 _onPlayClicked(*_doc);
              }});
     addAction(
         {.name = "potato.editors.scene.options.grid.toggle",
@@ -153,7 +151,7 @@ void up::shell::SceneEditor::content() {
 
     ImGui::BeginGroup();
     if (ImGui::IconButton("Play", ICON_FA_PLAY)) {
-        _onPlayClicked(_doc->scene());
+        _onPlayClicked(*_doc);
     }
     ImGui::SameLine();
     if (ImGui::IconButton("Save", ICON_FA_SAVE)) {
@@ -230,9 +228,7 @@ void up::shell::SceneEditor::render(Renderer& renderer, float deltaTime) {
             _drawGrid();
         }
         _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
-        if (_doc->scene() != nullptr) {
-            _doc->scene()->render(ctx);
-        }
+        _previewScene->render(ctx);
         renderer.flushDebugDraw(deltaTime);
         renderer.endFrame(deltaTime);
     }
@@ -274,17 +270,11 @@ void up::shell::SceneEditor::_resize(GpuDevice& device, glm::ivec2 size) {
 }
 
 void up::shell::SceneEditor::_inspector() {
-    ComponentId deletedComponent = ComponentId::Unknown;
-
-    if (_doc->scene() == nullptr) {
-        return;
-    }
-
     if (_selection.empty()) {
         return;
     }
 
-    EntityId const selectedId = static_cast<EntityId>(_selection.selected().front());
+    SceneEntityId const selectedId = static_cast<SceneEntityId>(_selection.selected().front());
 
     int const index = _doc->indexOf(selectedId);
     if (index == -1) {
@@ -311,42 +301,39 @@ void up::shell::SceneEditor::_inspector() {
 
     _propertyGrid.bindResourceLoader(&_assetLoader);
 
-    _doc->scene()->world().interrogateEntityUnsafe(
-        selectedId,
-        [&](EntityId entity, ArchetypeId archetype, reflex::TypeInfo const* typeInfo, auto* data) {
-            ImGui::PushID(data);
+    SceneEntity& entity = _doc->entityAt(index);
+    for (auto& component : entity.components) {
+        ImGui::PushID(component.get());
 
-            const bool open = _propertyGrid.beginItem(typeInfo->name.c_str());
+        const bool open = _propertyGrid.beginItem(component->name.c_str());
 
-            if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
-                ImGui::OpenPopup("##component_context_menu");
+        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
+            ImGui::OpenPopup("##component_context_menu");
+        }
+
+        if (ImGui::BeginPopupContextItem("##component_context_menu")) {
+            if (ImGui::IconMenuItem("Add", ICON_FA_PLUS_CIRCLE)) {
+                ImGui::OpenPopupEx(addComponentId);
             }
-
-            if (ImGui::BeginPopupContextItem("##component_context_menu")) {
-                if (ImGui::IconMenuItem("Add", ICON_FA_PLUS_CIRCLE)) {
-                    ImGui::OpenPopupEx(addComponentId);
-                }
-                if (ImGui::IconMenuItem("Remove", ICON_FA_TRASH)) {
-                    deletedComponent = static_cast<ComponentId>(typeInfo->hash);
-                }
-                ImGui::EndPopup();
+            if (ImGui::IconMenuItem("Remove", ICON_FA_TRASH)) {
+                component = nullptr;
             }
+            ImGui::EndPopup();
+        }
 
-            if (open) {
-                if (typeInfo->schema != nullptr) {
-                    _propertyGrid.editObjectRaw(*typeInfo->schema, data);
-                }
-                _propertyGrid.endItem();
+        if (open && component != nullptr) {
+            if (_propertyGrid.editObjectRaw(*component->info->typeInfo().schema, component->data.get())) {
+                component->state = SceneComponent::State::Pending;
             }
+            _propertyGrid.endItem();
+        }
 
-            ImGui::PopID();
-        });
+        ImGui::PopID();
+    }
 
     ImGui::EndTable();
 
-    if (deletedComponent != ComponentId::Unknown) {
-        _doc->scene()->world().removeComponent(selectedId, deletedComponent);
-    }
+    erase(entity.components, nullptr);
 
     if (ImGui::IconButton("Add Component", ICON_FA_PLUS_CIRCLE)) {
         ImGui::OpenPopupEx(addComponentId);
@@ -356,12 +343,9 @@ void up::shell::SceneEditor::_inspector() {
             addComponentId,
             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings |
                 ImGuiWindowFlags_NoMove)) {
-        for (reflex::TypeInfo const* typeInfo : _components()) {
-            if (_doc->scene()->world().getComponentSlowUnsafe(selectedId, static_cast<ComponentId>(typeInfo->hash)) ==
-                nullptr) {
-                if (ImGui::IconMenuItem(typeInfo->name.c_str())) {
-                    _doc->scene()->world().addComponentDefault(selectedId, *typeInfo);
-                }
+        for (EditComponent const& component : _database.components()) {
+            if (ImGui::IconMenuItem(component.name().c_str())) {
+                _doc->addNewComponent(selectedId, component);
             }
         }
         ImGui::EndPopup();
@@ -372,7 +356,7 @@ void up::shell::SceneEditor::_hierarchy() {
     unsigned const flags = ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick |
         ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_DefaultOpen;
     bool const open = ImGui::TreeNodeEx("Scene", flags);
-    _hierarchyContext(EntityId::None);
+    _hierarchyContext(SceneEntityId::None);
     if (open) {
         for (int index : _doc->indices()) {
             if (_doc->entityAt(index).parent == -1) {
@@ -385,12 +369,12 @@ void up::shell::SceneEditor::_hierarchy() {
     if (_create) {
         _create = false;
         _doc->createEntity("New Entity", _targetId);
-        _targetId = EntityId::None;
+        _targetId = SceneEntityId::None;
     }
     if (_delete) {
         _delete = false;
         _doc->deleteEntity(_targetId);
-        _targetId = EntityId::None;
+        _targetId = SceneEntityId::None;
     }
 }
 
@@ -399,10 +383,10 @@ void up::shell::SceneEditor::_hierarchyShowIndex(int index) {
 
     SceneEntity const& ent = _doc->entityAt(index);
 
-    nanofmt::format_to(label, "{} (#{})", !ent.name.empty() ? ent.name.c_str() : "Entity", ent.id);
+    nanofmt::format_to(label, "{} (#{})", !ent.name.empty() ? ent.name.c_str() : "Entity", ent.sceneId);
 
     bool const hasChildren = ent.firstChild != -1;
-    bool const selected = _selection.selected(to_underlying(ent.id));
+    bool const selected = _selection.selected(to_underlying(ent.sceneId));
 
     int flags =
         ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -419,9 +403,9 @@ void up::shell::SceneEditor::_hierarchyShowIndex(int index) {
     ImGui::PushID(index);
     bool const open = ImGui::TreeNodeEx(label, flags);
     if (ImGui::IsItemClicked()) {
-        _selection.click(to_underlying(ent.id), ImGui::IsModifierDown(ImGuiKeyModFlags_Ctrl));
+        _selection.click(to_underlying(ent.sceneId), ImGui::IsModifierDown(ImGuiKeyModFlags_Ctrl));
     }
-    _hierarchyContext(ent.id);
+    _hierarchyContext(ent.sceneId);
 
     if (selected) {
         ImGui::SetItemDefaultFocus();
@@ -436,13 +420,13 @@ void up::shell::SceneEditor::_hierarchyShowIndex(int index) {
     ImGui::PopID();
 }
 
-void up::shell::SceneEditor::_hierarchyContext(EntityId id) {
+void up::shell::SceneEditor::_hierarchyContext(SceneEntityId id) {
     if (ImGui::BeginPopupContextItem()) {
         if (ImGui::IconMenuItem("New Entity", ICON_FA_PLUS)) {
             _targetId = id;
             _create = true;
         }
-        if (ImGui::IconMenuItem("Delete", ICON_FA_TRASH, nullptr, false, id != EntityId::None)) {
+        if (ImGui::IconMenuItem("Delete", ICON_FA_TRASH, nullptr, false, id != SceneEntityId::None)) {
             _targetId = id;
             _delete = true;
         }

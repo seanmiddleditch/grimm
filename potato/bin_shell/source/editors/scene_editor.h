@@ -28,26 +28,27 @@ namespace up::shell {
     public:
         static constexpr zstring_view editorName = "potato.editor.scene"_zsv;
 
-        using EnumerateComponents = delegate<view<reflex::TypeInfo const*>()>;
-        using HandlePlayClicked = delegate<void(rc<Scene>)>;
+        using HandlePlayClicked = delegate<void(SceneDocument const& doc)>;
 
         static auto createFactory(
             AudioEngine& audioEngine,
             Universe& universe,
+            SceneDatabase& database,
             AssetLoader& assetLoader,
-            SceneEditor::EnumerateComponents components,
             SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory>;
 
         explicit SceneEditor(
             box<SceneDocument> sceneDoc,
+            box<Scene> previewScene,
+            SceneDatabase& database,
             AssetLoader& assetLoader,
-            EnumerateComponents& components,
             HandlePlayClicked& onPlayClicked)
             : Editor("SceneEditor"_zsv)
+            , _previewScene(std::move(previewScene))
             , _doc(std::move(sceneDoc))
             , _cameraController(_camera)
-            , _components(std::move(components))
             , _onPlayClicked(std::move(onPlayClicked))
+            , _database(database)
             , _assetLoader(assetLoader) {
             _camera.lookAt({0, 10, 15}, {0, 0, 0}, {0, 1, 0});
         }
@@ -69,24 +70,25 @@ namespace up::shell {
         void _inspector();
         void _hierarchy();
         void _hierarchyShowIndex(int index);
-        void _hierarchyContext(EntityId id);
+        void _hierarchyContext(SceneEntityId id);
         void _save();
 
         rc<GpuTexture> _buffer;
+        box<Scene> _previewScene;
         box<SceneDocument> _doc;
         box<GpuResourceView> _bufferView;
         box<RenderCamera> _renderCamera;
         Camera _camera;
         ArcBallCameraController _cameraController;
         SelectionState _selection;
-        EnumerateComponents _components;
         PropertyGrid _propertyGrid;
         HandlePlayClicked _onPlayClicked;
         glm::ivec2 _sceneDimensions = {0, 0};
         bool _enableGrid = true;
         bool _create = false;
         bool _delete = false;
-        EntityId _targetId = EntityId::None;
+        SceneEntityId _targetId = SceneEntityId::None;
+        SceneDatabase& _database;
         AssetLoader& _assetLoader;
     };
 } // namespace up::shell

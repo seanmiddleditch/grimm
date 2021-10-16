@@ -24,16 +24,6 @@ namespace up {
         shared(shared&&) noexcept {}
         shared& operator=(shared&&) noexcept { return *this; }
 
-    protected:
-        shared() noexcept = default;
-
-        // explicitly not virtual, since nobody can delete via shared<T>
-        ~shared() = default;
-
-    private:
-        template <typename U>
-        friend class rc;
-
         void addRef() const noexcept { ++_refs; }
         void removeRef() const noexcept {
             if (--_refs == 0) {
@@ -41,6 +31,13 @@ namespace up {
             }
         }
 
+    protected:
+        shared() noexcept = default;
+
+        // explicitly not virtual, since nobody can delete via shared<T>
+        ~shared() = default;
+
+    private:
         mutable std::atomic<int> _refs = 1;
     };
 
