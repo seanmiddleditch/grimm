@@ -27,6 +27,10 @@ bool up::TransformEditComponent::syncRemove(Scene& scene, EntityId entityId, Sce
     return true;
 }
 
+bool up::TransformEditComponent::syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const {
+    return syncAdd(scene, entityId, component);
+}
+
 auto up::MeshEditComponent::data(SceneComponent const& component) noexcept -> scene::components::Mesh& {
     return *static_cast<scene::components::Mesh*>(component.data.get());
 }
@@ -47,4 +51,20 @@ bool up::MeshEditComponent::syncUpdate(Scene& scene, EntityId entityId, SceneCom
 bool up::MeshEditComponent::syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const {
     scene.world().removeComponent<components::Mesh>(entityId);
     return true;
+}
+
+bool up::MeshEditComponent::syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const {
+    return syncAdd(scene, entityId, component);
+}
+
+auto up::WaveEditComponent::createFrom(scene::components::Wave const& sceneComponent) const -> components::Wave {
+    return {.time = 0, .offset = sceneComponent.offset};
+}
+
+auto up::SpinEditComponent::createFrom(scene::components::Spin const& sceneComponent) const -> components::Spin {
+    return {.radians = sceneComponent.radians};
+}
+
+auto up::DingEditComponent::createFrom(scene::components::Ding const& sceneComponent) const -> components::Ding {
+    return {.period = sceneComponent.period, .time = 0, .sound = sceneComponent.sound};
 }

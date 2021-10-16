@@ -106,7 +106,7 @@ auto up::shell::SceneEditor::createFactory(
 }
 
 void up::shell::SceneEditor::tick(float deltaTime) {
-    _doc->sync(*_previewScene);
+    _doc->syncPreview(*_previewScene);
 
     _previewScene->update(deltaTime);
     _previewScene->flush();

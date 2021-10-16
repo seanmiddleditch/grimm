@@ -4,20 +4,32 @@
 
 #include "components_schema.h"
 #include "scene.h"
+#include "scene_doc.h"
 #include "scene_schema.h"
 #include "scene/edit_component.h"
 
 namespace up {
     struct SceneComponent;
 
-    template <typename T>
+    template <typename SceneComponentT, typename GameComponentT>
     class SimpleEditComponent : public EditComponent {
     public:
         zstring_view name() const noexcept override final { return typeInfo().name; }
-        reflex::TypeInfo const& typeInfo() const noexcept override final { return reflex::getTypeInfo<T>(); }
+        reflex::TypeInfo const& typeInfo() const noexcept override final {
+            return reflex::getTypeInfo<SceneComponentT>();
+        }
         bool syncAdd(Scene&, EntityId, SceneComponent const&) const override final { return false; }
         bool syncUpdate(Scene&, EntityId, SceneComponent const&) const override final { return false; }
         bool syncRemove(Scene&, EntityId, SceneComponent const&) const override final { return false; }
+
+        bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const override final {
+            scene.world().addComponent<GameComponentT>(
+                entityId,
+                createFrom(*static_cast<SceneComponentT*>(component.data.get())));
+            return true;
+        }
+
+        virtual GameComponentT createFrom(SceneComponentT const& sceneComponent) const = 0;
     };
 
     class TransformEditComponent : public EditComponent {
@@ -32,6 +44,7 @@ namespace up {
         bool syncAdd(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
         bool syncUpdate(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
         bool syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
     };
 
     class MeshEditComponent : public EditComponent {
@@ -46,9 +59,18 @@ namespace up {
         bool syncAdd(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
         bool syncUpdate(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
         bool syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
     };
 
-    class WaveEditComponent : public SimpleEditComponent<scene::components::Wave> {};
-    class SpinEditComponent : public SimpleEditComponent<scene::components::Spin> {};
-    class DingEditComponent : public SimpleEditComponent<scene::components::Ding> {};
+    class WaveEditComponent final : public SimpleEditComponent<scene::components::Wave, components::Wave> {
+        components::Wave createFrom(scene::components::Wave const& sceneComponent) const override;
+    };
+
+    class SpinEditComponent final : public SimpleEditComponent<scene::components::Spin, components::Spin> {
+        components::Spin createFrom(scene::components::Spin const& sceneComponent) const override;
+    };
+
+    class DingEditComponent final : public SimpleEditComponent<scene::components::Ding, components::Ding> {
+        components::Ding createFrom(scene::components::Ding const& sceneComponent) const override;
+    };
 } // namespace up

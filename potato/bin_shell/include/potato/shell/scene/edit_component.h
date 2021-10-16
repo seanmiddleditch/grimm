@@ -20,5 +20,7 @@ namespace up {
         virtual bool syncAdd(Scene& scene, EntityId entityId, SceneComponent const& component) const = 0;
         virtual bool syncUpdate(Scene& scene, EntityId entityId, SceneComponent const& component) const = 0;
         virtual bool syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const = 0;
+
+        virtual bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const = 0;
     };
 } // namespace up
