@@ -51,8 +51,9 @@ namespace up::inline editor {
         template <integral T>
         bool _editIntegerField(reflex::SchemaField const& field, T& value) noexcept {
             int tmp = static_cast<int>(value);
-            _editIntegerField(field, tmp);
+            bool const edit = _editIntegerField(field, tmp);
             value = static_cast<T>(tmp);
+            return edit;
         }
         bool _editFloatField(reflex::SchemaField const& field, float& value) noexcept;
         bool _editFloatField(reflex::SchemaField const& field, double& value) noexcept;
