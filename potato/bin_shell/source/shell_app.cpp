@@ -291,7 +291,9 @@ int up::shell::ShellApp::initialize() {
             _openAssetEditor(uuid);
         }));
     _editorFactories.push_back(
-        SceneEditor::createFactory(*_audio, *_universe, _sceneDatabase, _assetLoader, [this](box<Scene> scene) {
+        SceneEditor::createFactory(*_audio, *_universe, _sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
+            auto scene = new_box<Scene>(*_universe, *_audio);
+            doc.syncPlay(*scene);
             _createGame(std::move(scene));
         }));
     _editorFactories.push_back(MaterialEditor::createFactory(_assetLoader));

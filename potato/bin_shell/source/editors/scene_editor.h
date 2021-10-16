@@ -28,7 +28,7 @@ namespace up::shell {
     public:
         static constexpr zstring_view editorName = "potato.editor.scene"_zsv;
 
-        using HandlePlayClicked = delegate<void(box<Scene>)>;
+        using HandlePlayClicked = delegate<void(SceneDocument const& doc)>;
 
         static auto createFactory(
             AudioEngine& audioEngine,

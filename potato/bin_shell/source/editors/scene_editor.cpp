@@ -126,7 +126,7 @@ void up::shell::SceneEditor::configure() {
          .enabled = [this] { return isActive(); },
          .action =
              [this]() {
-                 // FIXME _onPlayClicked(_doc->scene());
+                 _onPlayClicked(*_doc);
              }});
     addAction(
         {.name = "potato.editors.scene.options.grid.toggle",
@@ -151,7 +151,7 @@ void up::shell::SceneEditor::content() {
 
     ImGui::BeginGroup();
     if (ImGui::IconButton("Play", ICON_FA_PLAY)) {
-        // FIXME _onPlayClicked(_doc->scene());
+        _onPlayClicked(*_doc);
     }
     ImGui::SameLine();
     if (ImGui::IconButton("Save", ICON_FA_SAVE)) {

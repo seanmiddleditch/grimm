@@ -111,6 +111,10 @@ void up::shell::GameEditor::content() {
     ImGui::EndChild();
 }
 
+void up::shell::GameEditor::tick(float deltaTime) {
+    _scene->update(deltaTime);
+}
+
 void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
     if (_sceneDimensions.x == 0 || _sceneDimensions.y == 0) {
         return;
@@ -132,6 +136,7 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
         _renderCamera->resetBackBuffer(_buffer);
         _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
         if (_scene != nullptr) {
+            _scene->flush();
             _scene->render(ctx);
         }
         renderer.flushDebugDraw(deltaTime);

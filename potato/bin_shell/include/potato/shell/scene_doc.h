@@ -112,6 +112,7 @@ namespace up {
 
         void createTestObjects(Mesh::Handle const& cube, Material::Handle const& mat, SoundHandle const& ding);
         void sync(Scene& scene);
+        void syncPlay(Scene& scene) const;
 
         void toJson(nlohmann::json& doc) const;
         void fromJson(nlohmann::json const& doc, AssetLoader& assetLoader);

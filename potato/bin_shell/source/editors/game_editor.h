@@ -32,6 +32,7 @@ namespace up::shell {
     protected:
         void configure() override;
         void content() override;
+        void tick(float deltaTime) override;
         void render(Renderer& renderer, float deltaTime) override;
         bool hasMenu() override { return true; }
 

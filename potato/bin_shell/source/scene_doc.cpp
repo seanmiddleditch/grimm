@@ -220,6 +220,16 @@ void up::SceneDocument::sync(Scene& scene) {
     }
 }
 
+void up::SceneDocument::syncPlay(Scene& scene) const {
+    for (auto& entity : _entities) {
+        EntityId entityId = scene.world().createEntity();
+
+        for (auto& component : entity.components) {
+            component->info->syncAdd(scene, entityId, *component);
+        }
+    }
+}
+
 void up::SceneDocument::toJson(nlohmann::json& doc) const {
     doc = nlohmann::json::object();
     doc["$type"] = "potato.document.scene";
