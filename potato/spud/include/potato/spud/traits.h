@@ -49,6 +49,14 @@ namespace up {
     template <typename S>
     struct function_result;
 
+    template <typename...>
+    constexpr bool always_false_v = false;
+
+    template <typename T>
+    std::add_rvalue_reference_t<T> declval() {
+        static_assert(always_false_v<T>, "declval may only be used in unevaluated contexts");
+    }
+
     template <typename F>
     using signature_t = typename signature<F>::type;
 
