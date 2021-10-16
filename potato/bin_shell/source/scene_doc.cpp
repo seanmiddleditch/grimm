@@ -172,7 +172,7 @@ void up::SceneDocument::createTestObjects(
         centerId,
         scene::components::Transform{.position = {0, 5, 0}, .rotation = glm::identity<glm::quat>()});
     addComponentData(centerId, scene::components::Mesh{.mesh = cube, .material = mat});
-    addComponentData(centerId, scene::components::Ding{.period = 2, .time = 0, .sound = {ding}});
+    addComponentData(centerId, scene::components::Ding{.period = 2, .sound = {ding}});
 
     auto const ringId = createEntity("Ring", rootId);
     for (size_t i = 0; i <= numObjects; ++i) {
@@ -188,7 +188,7 @@ void up::SceneDocument::createTestObjects(
                      (20 + glm::sin(r) * 10.f) * glm::cos(r)},
                 .rotation = glm::identity<glm::quat>()});
         addComponentData(id, scene::components::Mesh{.mesh = cube, .material = mat});
-        addComponentData(id, scene::components::Wave{.time = 0, .offset = r});
+        addComponentData(id, scene::components::Wave{.offset = r});
         addComponentData(id, scene::components::Spin{.radians = glm::sin(r) * 2.f - 1.f});
     }
 }

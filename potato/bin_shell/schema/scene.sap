@@ -15,9 +15,6 @@ scene_component Transform {
 
     [DisplayName("Rot")]
     quat rotation;
-
-    [Hidden]
-    mat4x4 transform;
 }
 
 scene_component Mesh {
@@ -26,7 +23,6 @@ scene_component Mesh {
 }
 
 scene_component Wave {
-    float time;
     float offset;
 }
 
@@ -35,8 +31,7 @@ scene_component Spin {
 }
 
 scene_component Ding {
-    float period = 1;
     [FloatRange(0, 3600)]
-    float time = 0;
+    float period = 1;
     SoundRef sound;
 }
