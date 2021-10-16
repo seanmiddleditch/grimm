@@ -32,7 +32,7 @@ struct up::_detail::box_traits<void> {
     using pointer = void*;
     using reference = void;
 
-    static void _deallocate(pointer ptr) { delete ptr; }
+    static void _deallocate(pointer ptr) { operator delete(ptr); }
 };
 
 /// <summary> An owning non-copyable pointer to a heap-allocated object, analogous to std::unique_ptr but without custom
