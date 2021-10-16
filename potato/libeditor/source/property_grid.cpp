@@ -302,9 +302,8 @@ bool up::editor::PropertyGrid::_editIntegerField(reflex::SchemaField const& fiel
     if (rangeAnnotation != nullptr) {
         return ImGui::SliderInt("##int", &value, rangeAnnotation->min, rangeAnnotation->max);
     }
-    else {
-        return ImGui::InputInt("##int", &value);
-    }
+
+    return ImGui::InputInt("##int", &value);
 }
 
 bool up::editor::PropertyGrid::_editFloatField(reflex::SchemaField const& field, float& value) noexcept {
@@ -314,9 +313,8 @@ bool up::editor::PropertyGrid::_editFloatField(reflex::SchemaField const& field,
     if (rangeAnnotation != nullptr) {
         return ImGui::SliderFloat("##float", &value, rangeAnnotation->min, rangeAnnotation->max);
     }
-    else {
-        return ImGui::InputFloat("##float", &value);
-    }
+
+    return ImGui::InputFloat("##float", &value);
 }
 
 bool up::editor::PropertyGrid::_editFloatField(
