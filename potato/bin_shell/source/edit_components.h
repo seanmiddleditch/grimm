@@ -14,15 +14,13 @@ namespace up {
     template <typename SceneComponentT, typename GameComponentT>
     class SimpleEditComponent : public EditComponent {
     public:
-        zstring_view name() const noexcept override final { return typeInfo().name; }
-        reflex::TypeInfo const& typeInfo() const noexcept override final {
-            return reflex::getTypeInfo<SceneComponentT>();
-        }
-        bool syncAdd(Scene&, EntityId, SceneComponent const&) const override final { return false; }
-        bool syncUpdate(Scene&, EntityId, SceneComponent const&) const override final { return false; }
-        bool syncRemove(Scene&, EntityId, SceneComponent const&) const override final { return false; }
+        zstring_view name() const noexcept final { return typeInfo().name; }
+        reflex::TypeInfo const& typeInfo() const noexcept final { return reflex::getTypeInfo<SceneComponentT>(); }
+        bool syncAdd(Scene&, EntityId, SceneComponent const&) const final { return false; }
+        bool syncUpdate(Scene&, EntityId, SceneComponent const&) const final { return false; }
+        bool syncRemove(Scene&, EntityId, SceneComponent const&) const final { return false; }
 
-        bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const override final {
+        bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const final {
             scene.world().addComponent<GameComponentT>(
                 entityId,
                 createFrom(*static_cast<SceneComponentT*>(component.data.get())));

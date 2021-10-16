@@ -11,7 +11,7 @@ namespace up {
     class JsonImporter : public Importer {
     public:
         JsonImporter();
-        ~JsonImporter() override;
+        ~JsonImporter();
 
         bool import(ImporterContext& ctx) override;
         string_view assetType(ImporterContext& ctx) const noexcept override;
