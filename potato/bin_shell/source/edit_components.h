@@ -15,9 +15,7 @@ namespace up {
     class SimpleEditComponent : public EditComponent {
     public:
         zstring_view name() const noexcept final { return typeInfo().name; }
-        reflex::TypeInfo const& typeInfo() const noexcept final {
-            return reflex::getTypeInfo<SceneComponentT>();
-        }
+        reflex::TypeInfo const& typeInfo() const noexcept final { return reflex::getTypeInfo<SceneComponentT>(); }
         bool syncAdd(Scene&, EntityId, SceneComponent const&) const final { return false; }
         bool syncUpdate(Scene&, EntityId, SceneComponent const&) const final { return false; }
         bool syncRemove(Scene&, EntityId, SceneComponent const&) const final { return false; }
