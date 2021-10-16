@@ -56,5 +56,8 @@ Checks: >-
     -readability-uppercase-literal-suffix,
     -readability-use-anyofallof,
     -bugprone-reserved-identifier,
+CheckOptions:
+    - key:      modernize-use-override.IgnoreDestructors
+      value:    false
 HeaderFilterRegex: "(source/.*|include/potato/.*)"
 WarningsAsErrors: "*"
