@@ -5,7 +5,7 @@ import ecs;
 import tools;
 import constraint;
 import material;
-import resource;
+import sound;
 
 component Transform {
     vec3 position;

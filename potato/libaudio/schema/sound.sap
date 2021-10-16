@@ -1,4 +1,4 @@
-module resource;
+module sound;
 
 import common;
 import tools;
