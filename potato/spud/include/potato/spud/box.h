@@ -11,8 +11,7 @@ namespace up {
     template <typename>
     class box;
     template <typename T, typename... Args>
-    auto new_box(Args&&... args) -> box<T>
-    requires std::is_constructible_v<T, Args&&...>;
+    auto new_box(Args&&... args) -> box<T> requires std::is_constructible_v<T, Args&&...>;
 
     namespace _detail {
         template <typename>
@@ -131,7 +130,6 @@ void up::box<T>::reset(pointer ptr) noexcept {
 /// <param name="args"> Parameters to pass to the constructor. </param>
 /// <returns> A box containing a new instance of the requested object. </returns>
 template <typename T, typename... Args>
-auto up::new_box(Args&&... args) -> box<T>
-requires std::is_constructible_v<T, Args&&...> {
+auto up::new_box(Args&&... args) -> box<T> requires std::is_constructible_v<T, Args&&...> {
     return box<T>(new T(std::forward<Args>(args)...));
 }
