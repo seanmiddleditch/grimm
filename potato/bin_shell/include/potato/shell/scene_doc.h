@@ -67,7 +67,7 @@ namespace up {
         };
 
         template <typename RangeT>
-        constexpr deref_span(RangeT&& range) noexcept : _first(range.data())
+        constexpr deref_span(RangeT const& range) noexcept : _first(range.data())
                                                       , _last(_first + range.size()) {}
 
         constexpr iterator begin() const noexcept { return iterator(_first); }
