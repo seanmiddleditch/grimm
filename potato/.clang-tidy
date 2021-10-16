@@ -58,6 +58,6 @@ Checks: >-
     -bugprone-reserved-identifier,
 CheckOptions:
     - key:      modernize-use-override.IgnoreDestructors
-      value:    false
+      value:    1
 HeaderFilterRegex: "(source/.*|include/potato/.*)"
 WarningsAsErrors: "*"
