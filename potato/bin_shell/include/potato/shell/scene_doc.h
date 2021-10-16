@@ -11,6 +11,7 @@
 #include "potato/render/mesh.h"
 #include "potato/spud/sequence.h"
 #include "potato/spud/string.h"
+#include "potato/spud/traits.h"
 #include "potato/spud/vector.h"
 
 #include <nlohmann/json_fwd.hpp>
@@ -42,7 +43,7 @@ namespace up {
         box<void> data;
     };
 
-    template <typename PointerT, typename ValueT = decltype(**static_cast<PointerT*>(nullptr))>
+    template <typename PointerT, typename ValueT = decltype(*declval<PointerT>())>
     class deref_span {
     public:
         using value_type = ValueT;
