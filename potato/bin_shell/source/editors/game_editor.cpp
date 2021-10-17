@@ -26,7 +26,7 @@ auto up::shell::createGameEditor(box<Scene> scene) -> box<Editor> {
 
 void up::shell::GameEditor::configure() {
     addAction({.command = "Play / Pause", .menu = "Actions\\Play/Pause", .hotKey = "F5", .action = [this] {
-                   _wantPlaying = !_wantPlaying;
+                   _paused = !_paused;
                }});
 }
 
@@ -36,31 +36,27 @@ void up::shell::GameEditor::content() {
     auto const& io = ImGui::GetIO();
 
     if (ImGui::BeginMenuBar()) {
-        auto const icon = _scene->playing() ? ICON_FA_STOP : ICON_FA_PLAY;
-        auto const text = _scene->playing() ? "Pause" : "Play";
+        auto const icon = _paused ? ICON_FA_PLAY : ICON_FA_STOP;
+        auto const text = _paused ? "Play" : "Pause";
         auto const xPos =
             ImGui::GetWindowSize().x * 0.5f - ImGui::CalcTextSize(text).x * 0.5f - ImGui::GetStyle().ItemInnerSpacing.x;
         ImGui::SetCursorPosX(xPos);
         if (ImGui::IconMenuItem(text, icon, "F5")) {
-            _wantPlaying = !_wantPlaying;
+            _paused = !_paused;
         }
         ImGui::TextColored(ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled), "Shift-ESC to release input");
         ImGui::EndMenuBar();
     }
 
     if (ImGui::IsKeyPressed(SDL_SCANCODE_F5, false)) {
-        _wantPlaying = !_wantPlaying;
-    }
-
-    if (_wantPlaying != _scene->playing()) {
-        _scene->playing(_wantPlaying);
+        _paused = !_paused;
     }
 
     if (ImGui::IsKeyPressed(SDL_SCANCODE_ESCAPE) && io.KeyShift) {
         _isInputBound = false;
     }
 
-    _isInputBound = _isInputBound && _scene->playing();
+    _isInputBound = _isInputBound && !_paused;
 
     if (_isInputBound) {
         ImGui::SetActiveID(contentId, ctx->CurrentWindow);
@@ -104,7 +100,7 @@ void up::shell::GameEditor::content() {
         }
         ImGui::SetCursorPos(pos);
         ImGui::InvisibleButton("GameContent", contentSize);
-        if (ImGui::IsItemActive() && _scene != nullptr && _scene->playing()) {
+        if (ImGui::IsItemActive() && _scene != nullptr && !_paused) {
             _isInputBound = true;
         }
     }

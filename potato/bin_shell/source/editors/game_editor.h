@@ -47,7 +47,7 @@ namespace up::shell {
         FlyCameraController _cameraController;
         glm::ivec2 _sceneDimensions = {0, 0};
         bool _isInputBound = false;
-        bool _wantPlaying = true;
+        bool _paused = false;
     };
 
     auto createGameEditor(box<Scene> scene) -> box<Editor>;
