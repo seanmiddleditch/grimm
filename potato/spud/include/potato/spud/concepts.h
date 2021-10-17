@@ -18,14 +18,12 @@ namespace up {
 
     template <typename T, typename U>
     concept equality_comparable_with = requires(T t, U u) {
-        { t == u }
-        ->convertible_to<bool>;
+        { t == u } -> convertible_to<bool>;
     };
 
     template <typename T, typename U>
     concept less_than_comparable_with = requires(T t, U u) {
-        { t < u }
-        ->convertible_to<bool>;
+        { t < u } -> convertible_to<bool>;
     };
 
     template <typename F, typename... Args>
@@ -54,6 +52,5 @@ namespace up {
     template <typename P, typename T>
     concept projection = callable<P, T> || requires(T const& v, P p) {
         v.*p;
-    }
-    || requires(T const* v, P p) { v->*p; };
+    } || requires(T const* v, P p) { v->*p; };
 } // namespace up

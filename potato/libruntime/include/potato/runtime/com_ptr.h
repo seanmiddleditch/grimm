@@ -16,8 +16,8 @@ namespace up {
         com_ptr() = default;
         ~com_ptr() { _decRef(); }
 
-        explicit com_ptr(T* ptr) noexcept : _ptr(ptr) {}
-        com_ptr(std::nullptr_t) noexcept {}
+        explicit com_ptr(T* ptr) noexcept : _ptr(ptr) { }
+        com_ptr(std::nullptr_t) noexcept { }
 
         com_ptr(com_ptr const& rhs) : _ptr(rhs._ptr) { _addRef(); }
         com_ptr(com_ptr&& rhs) noexcept : _ptr(rhs._ptr) { rhs._ptr = nullptr; }

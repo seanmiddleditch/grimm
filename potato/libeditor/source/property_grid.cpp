@@ -37,7 +37,7 @@ bool up::editor::PropertyGrid::beginItem(char const* label) {
     return open;
 }
 
-void up::editor::PropertyGrid::endItem() {}
+void up::editor::PropertyGrid::endItem() { }
 
 bool up::editor::PropertyGrid::_editField(
     reflex::SchemaField const& field,

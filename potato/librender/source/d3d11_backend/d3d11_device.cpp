@@ -283,4 +283,4 @@ auto up::d3d11::DeviceD3D11::getDebugShader(GpuShaderStage stage) -> view<unsign
     }
 }
 
-void up::d3d11::DeviceD3D11::registerAssetBackends(AssetLoader& assetLoader) {}
+void up::d3d11::DeviceD3D11::registerAssetBackends(AssetLoader& assetLoader) { }

@@ -66,11 +66,11 @@ namespace up::shell {
         bool updateUi();
 
         /// @brief Renders the ui for the Document.
-        virtual void render(Renderer& renderer, float deltaTime) {}
+        virtual void render(Renderer& renderer, float deltaTime) { }
 
-        virtual void tick(float deltaTime) {}
+        virtual void tick(float deltaTime) { }
 
-        virtual void handleCommand(string_view command) {}
+        virtual void handleCommand(string_view command) { }
 
         bool isClosed() const noexcept { return _closed; }
         virtual bool isClosable() { return true; }

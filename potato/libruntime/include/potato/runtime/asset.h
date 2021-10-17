@@ -36,7 +36,7 @@ namespace up {
 
     class Asset : public shared<Asset> {
     public:
-        explicit Asset(AssetKey key) noexcept : _key(std::move(key)) {}
+        explicit Asset(AssetKey key) noexcept : _key(std::move(key)) { }
         inline virtual ~Asset();
 
         virtual zstring_view assetType() const noexcept = 0;
@@ -73,7 +73,7 @@ namespace up {
     class UntypedAssetHandle {
     public:
         UntypedAssetHandle() = default;
-        explicit UntypedAssetHandle(AssetKey key) noexcept : _key(std::move(key)) {}
+        explicit UntypedAssetHandle(AssetKey key) noexcept : _key(std::move(key)) { }
         explicit UntypedAssetHandle(rc<Asset> asset) noexcept : _asset(std::move(asset)) {
             if (_asset != nullptr) {
                 _key = _asset->assetKey();
@@ -109,8 +109,8 @@ namespace up {
 
         AssetHandle() = default;
         // NOLINTNEXTLINE(performance-unnecessary-value-param) -- clang-tidy false-positive
-        AssetHandle(AssetKey key, rc<AssetT> asset) noexcept : UntypedAssetHandle(std::move(key), std::move(asset)) {}
-        explicit AssetHandle(rc<AssetT> asset) noexcept : UntypedAssetHandle(std::move(asset)) {}
+        AssetHandle(AssetKey key, rc<AssetT> asset) noexcept : UntypedAssetHandle(std::move(key), std::move(asset)) { }
+        explicit AssetHandle(rc<AssetT> asset) noexcept : UntypedAssetHandle(std::move(asset)) { }
 
         zstring_view typeName() const noexcept { return AssetT::assetTypeName; }
 

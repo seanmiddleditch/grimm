@@ -6,7 +6,7 @@
 
 namespace up {
     template <typename... T>
-    struct typelist {};
+    struct typelist { };
 
     namespace _detail {
         template <typename U>

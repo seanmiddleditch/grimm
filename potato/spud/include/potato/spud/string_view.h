@@ -40,13 +40,13 @@ public:
 
     /*implicit*/ constexpr string_view(pointer zstr) noexcept
         : _data(zstr)
-        , _size(zstr != nullptr ? stringLength(zstr) : 0) {}
-    /*implicit*/ constexpr string_view(pointer data, size_type size) noexcept : _data(data), _size(size) {}
-    /*implicit*/ constexpr string_view(pointer begin, pointer end) noexcept : _data(begin), _size(end - begin) {}
+        , _size(zstr != nullptr ? stringLength(zstr) : 0) { }
+    /*implicit*/ constexpr string_view(pointer data, size_type size) noexcept : _data(data), _size(size) { }
+    /*implicit*/ constexpr string_view(pointer begin, pointer end) noexcept : _data(begin), _size(end - begin) { }
     template <typename StringT>
     /*implicit*/ constexpr string_view(StringT const& str) noexcept requires has_c_str<StringT>
         : _data(str.c_str())
-        , _size(str.size()) {}
+        , _size(str.size()) { }
 
     constexpr string_view& operator=(string_view const&) noexcept = default;
     constexpr string_view& operator=(string_view&&) noexcept = default;

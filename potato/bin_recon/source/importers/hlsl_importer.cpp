@@ -19,7 +19,7 @@
 
 namespace {
     struct ReconIncludeHandler : public ID3DInclude {
-        ReconIncludeHandler(up::ImporterContext& ctx, up::string_view folder) : _ctx(ctx), _folder(folder) {}
+        ReconIncludeHandler(up::ImporterContext& ctx, up::string_view folder) : _ctx(ctx), _folder(folder) { }
 
         HRESULT __stdcall Open(
             D3D_INCLUDE_TYPE IncludeType,

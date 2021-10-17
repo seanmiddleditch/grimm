@@ -17,7 +17,7 @@ class up::out_ptr_t {
 public:
     using pointer = P;
 
-    out_ptr_t(S& out) noexcept : _out(out) {}
+    out_ptr_t(S& out) noexcept : _out(out) { }
     ~out_ptr_t() noexcept(noexcept(_out.reset(_ptr))) { _out.reset(_ptr); }
 
     out_ptr_t(out_ptr_t const&) = delete;

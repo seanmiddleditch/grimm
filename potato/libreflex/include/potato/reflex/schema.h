@@ -25,7 +25,7 @@ namespace up::reflex {
     struct SchemaType;
     struct Schema;
 
-    struct SchemaAttribute {};
+    struct SchemaAttribute { };
 
     template <typename T>
     struct TypeHolder;

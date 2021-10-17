@@ -11,7 +11,7 @@
 namespace up {
     namespace {
         struct NativeStreamBackend final : public Stream::Backend {
-            explicit NativeStreamBackend(std::ifstream stream) : _stream(std::move(stream)) {}
+            explicit NativeStreamBackend(std::ifstream stream) : _stream(std::move(stream)) { }
 
             bool isOpen() const noexcept override { return _stream.is_open(); }
             bool isEof() const noexcept override { return _stream.eof(); }
@@ -58,7 +58,7 @@ namespace up {
         };
 
         struct NativeOutputBackend final : public Stream::Backend {
-            explicit NativeOutputBackend(std::ofstream stream) : _stream(std::move(stream)) {}
+            explicit NativeOutputBackend(std::ofstream stream) : _stream(std::move(stream)) { }
 
             bool isOpen() const noexcept override { return _stream.is_open(); }
             bool isEof() const noexcept override { return _stream.eof(); }

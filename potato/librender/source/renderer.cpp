@@ -168,7 +168,7 @@ namespace up {
 
         class TextureAssetLoaderBackend : public AssetLoaderBackend {
         public:
-            TextureAssetLoaderBackend(Renderer& renderer) : _renderer(renderer) {}
+            TextureAssetLoaderBackend(Renderer& renderer) : _renderer(renderer) { }
 
             zstring_view typeName() const noexcept override { return Texture::assetTypeName; }
             rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {

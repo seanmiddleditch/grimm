@@ -10,10 +10,10 @@
 namespace up {
     namespace _detail {
         template <typename V, template <typename...> class C, typename... A>
-        struct detector : std::false_type {};
+        struct detector : std::false_type { };
 
         template <template <typename...> class C, typename... A>
-        struct detector<std::void_t<C<A...>>, C, A...> : std::true_type {};
+        struct detector<std::void_t<C<A...>>, C, A...> : std::true_type { };
 
         template <typename T>
         struct range_value {

@@ -10,7 +10,7 @@ namespace up {
     template <typename T>
     class sequence {
     public:
-        struct sentinel {};
+        struct sentinel { };
 
         class iterator {
         public:
@@ -45,7 +45,7 @@ namespace up {
             friend constexpr bool operator==(sentinel, iterator const& rhs) noexcept { return rhs._value == rhs._end; }
 
         private:
-            constexpr iterator(T value, T end) noexcept : _value(value), _end(end) {}
+            constexpr iterator(T value, T end) noexcept : _value(value), _end(end) { }
 
             friend sequence;
 
@@ -55,8 +55,8 @@ namespace up {
 
         using value_type = T;
 
-        constexpr explicit sequence(T end) noexcept : _end(end) {}
-        constexpr sequence(T start, T end) noexcept : _start(start), _end(end) {}
+        constexpr explicit sequence(T end) noexcept : _end(end) { }
+        constexpr sequence(T start, T end) noexcept : _start(start), _end(end) { }
 
         constexpr auto begin() const noexcept -> iterator { return iterator{_start, _end}; }
         constexpr auto end() const noexcept -> sentinel { return {}; }

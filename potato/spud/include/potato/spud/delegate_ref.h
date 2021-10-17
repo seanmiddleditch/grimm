@@ -59,7 +59,7 @@ public:
     template <callable_r<ReturnType, ParamTypes...> Functor>
     // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
     /*implicit*/ delegate_ref(Functor&& functor) noexcept requires(!same_as<Functor, delegate_ref>)
-        : _holder(std::forward<Functor>(functor)) {}
+        : _holder(std::forward<Functor>(functor)) { }
 
     template <callable_r<ReturnType, ParamTypes...> Functor>
     // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)

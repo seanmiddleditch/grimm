@@ -13,8 +13,8 @@
 #include <tuple>
 
 extern "C" {
-struct sqlite3;
-struct sqlite3_stmt;
+    struct sqlite3;
+    struct sqlite3_stmt;
 }
 
 namespace up {
@@ -78,7 +78,7 @@ namespace up {
             }
 
             struct Stmt : shared<Stmt> {
-                explicit Stmt(sqlite3_stmt* s) noexcept : stmt(s) {}
+                explicit Stmt(sqlite3_stmt* s) noexcept : stmt(s) { }
                 virtual ~Stmt() { destroy(stmt); }
                 sqlite3_stmt* stmt = nullptr;
             };
@@ -91,7 +91,7 @@ namespace up {
 
         template <typename...>
         class Query;
-        struct QuerySentinel {};
+        struct QuerySentinel { };
         template <typename...>
         class Cursor;
 
@@ -107,7 +107,7 @@ namespace up {
             sentinel end() noexcept { return sentinel{}; }
 
         private:
-            explicit Query(rc<sqlutil::Stmt> stmt) : _stmt(std::move(stmt)) {}
+            explicit Query(rc<sqlutil::Stmt> stmt) : _stmt(std::move(stmt)) { }
 
             rc<sqlutil::Stmt> _stmt;
 
@@ -186,7 +186,7 @@ namespace up {
             void rollback();
 
         private:
-            explicit Transaction(sqlite3* conn) noexcept : _conn(conn) {}
+            explicit Transaction(sqlite3* conn) noexcept : _conn(conn) { }
 
             friend Database;
 
@@ -196,7 +196,7 @@ namespace up {
         class Statement {
         public:
             Statement() noexcept = default;
-            explicit Statement(rc<sqlutil::Stmt> stmt) noexcept : _stmt(std::move(stmt)) {}
+            explicit Statement(rc<sqlutil::Stmt> stmt) noexcept : _stmt(std::move(stmt)) { }
 
             Statement(Statement&& rhs) noexcept : _stmt(std::move(rhs._stmt)) { rhs._stmt = nullptr; }
             Statement& operator=(Statement&& rhs) noexcept;
@@ -252,7 +252,7 @@ namespace up {
             [[nodiscard]] inline std::tuple<T...> operator*() { return sqlutil::fetchColumns<T...>(_stmt->stmt); }
 
         private:
-            explicit Cursor(rc<sqlutil::Stmt> stmt) : _stmt(std::move(stmt)) {}
+            explicit Cursor(rc<sqlutil::Stmt> stmt) : _stmt(std::move(stmt)) { }
 
             rc<sqlutil::Stmt> _stmt;
 

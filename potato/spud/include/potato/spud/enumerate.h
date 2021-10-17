@@ -58,7 +58,7 @@ namespace up {
             }
 
         private:
-            constexpr iterator(IteratorT iterator) noexcept : _iterator(iterator) {}
+            constexpr iterator(IteratorT iterator) noexcept : _iterator(iterator) { }
 
             template <typename>
             friend class up::enumerate;
@@ -80,8 +80,8 @@ namespace up {
         using sentinel = _detail::enumerate::sentinel<range_sentinel>;
         using value_type = typename iterator::value_type;
 
-        constexpr explicit enumerate(RangeT& range) noexcept : _range(range) {}
-        constexpr explicit enumerate(RangeT&& range) noexcept : _range(range) {}
+        constexpr explicit enumerate(RangeT& range) noexcept : _range(range) { }
+        constexpr explicit enumerate(RangeT&& range) noexcept : _range(range) { }
 
         constexpr auto begin() const noexcept -> iterator { return iterator{_range.begin()}; }
         constexpr auto end() const noexcept -> sentinel { return sentinel{_range.end()}; }

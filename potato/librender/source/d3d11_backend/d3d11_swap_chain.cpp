@@ -10,7 +10,7 @@
 
 #include <utility>
 
-up::d3d11::SwapChainD3D11::SwapChainD3D11(com_ptr<IDXGISwapChain1> swapChain) : _swapChain(std::move(swapChain)) {}
+up::d3d11::SwapChainD3D11::SwapChainD3D11(com_ptr<IDXGISwapChain1> swapChain) : _swapChain(std::move(swapChain)) { }
 
 up::d3d11::SwapChainD3D11::~SwapChainD3D11() = default;
 

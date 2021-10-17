@@ -23,7 +23,7 @@ up::ImporterContext::ImporterContext(
     , _uuid(uuid)
     , _sourceDependencies(dependencies)
     , _outputs(outputs)
-    , _logger(logger) {}
+    , _logger(logger) { }
 
 void up::ImporterContext::addSourceDependency(zstring_view path) {
     _sourceDependencies.push_back(string(path));
