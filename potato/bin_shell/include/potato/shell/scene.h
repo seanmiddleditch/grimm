@@ -18,12 +18,9 @@ namespace up::components {
 } // namespace up::components
 
 namespace up {
-    class RenderContext;
-    class AudioEngine;
-
     class Scene : public Space {
     public:
-        explicit Scene(Universe& universe, AudioEngine& audioEngine);
+        explicit Scene(Universe& universe);
         ~Scene();
 
         Scene(Scene const&) = delete;
@@ -40,13 +37,7 @@ namespace up {
         Universe& universe() noexcept { return _universe; }
 
     private:
-        AudioEngine& _audioEngine;
         Universe& _universe;
         bool _playing = false;
-
-        Query<components::Transform, components::Wave> _waveQuery;
-        Query<components::Transform> _orbitQuery;
-        Query<components::Transform, components::Spin> _spinQuery;
-        Query<components::Ding> _dingQuery;
     };
 } // namespace up

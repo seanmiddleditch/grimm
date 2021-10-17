@@ -10,8 +10,6 @@
 #include "potato/spud/vector.h"
 
 namespace up {
-    class RenderContext;
-
     class Space {
     public:
         UP_GAME_API Space(box<World> world);
@@ -21,10 +19,13 @@ namespace up {
         UP_GAME_API void stop();
 
         UP_GAME_API virtual void update(float deltaTime);
-        UP_GAME_API virtual void render(RenderContext& ctx);
+        UP_GAME_API virtual void render(class RenderContext& ctx);
+
+        // FIXME: find a better place for this...
+        static UP_GAME_API void addDemoSystem(Space& space, class AudioEngine& audio);
 
         template <typename SystemT, typename... Args>
-        void addSystem(Args&... args) {
+        void addSystem(Args&&... args) {
             UP_ASSERT(_state == State::New);
             _systems.push_back(new_box<SystemT>(*this, std::forward<Args>(args)...));
         }

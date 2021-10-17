@@ -2,6 +2,7 @@
 
 #include "space.h"
 
+#include "systems/demo_system.h"
 #include "systems/render_system.h"
 #include "systems/transform_system.h"
 
@@ -45,4 +46,8 @@ void up::Space::render(RenderContext& ctx) {
     for (auto& system : _systems) {
         system->render(ctx);
     }
+}
+
+void up::Space::addDemoSystem(Space& space, class AudioEngine& audio) {
+    space.addSystem<game::DemoSystem>(audio);
 }

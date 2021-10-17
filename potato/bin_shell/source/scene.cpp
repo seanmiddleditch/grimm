@@ -16,39 +16,15 @@
 #include <glm/vec3.hpp>
 #include <nlohmann/json.hpp>
 
-up::Scene::Scene(Universe& universe, AudioEngine& audioEngine)
+up::Scene::Scene(Universe& universe)
     : Space(universe.createWorld())
-    , _audioEngine(audioEngine)
-    , _universe(universe)
-    , _waveQuery{universe.createQuery<components::Transform, components::Wave>()}
-    , _orbitQuery{universe.createQuery<components::Transform>()}
-    , _spinQuery{universe.createQuery<components::Transform, components::Spin>()}
-    , _dingQuery{universe.createQuery<components::Ding>()} {}
+    , _universe(universe) {}
 
 up::Scene::~Scene() = default;
 
 void up::Scene::update(float frameTime) {
     if (_playing) {
-        _waveQuery.select(world(), [&](EntityId, components::Transform& trans, components::Wave& wave) {
-            wave.offset += frameTime * .2f;
-            trans.position.y = 1 + 5 * glm::sin(wave.offset * 10);
-        });
 
-        _orbitQuery.select(world(), [&](EntityId, components::Transform& trans) {
-            trans.position = glm::rotateY(trans.position, frameTime);
-        });
-
-        _spinQuery.select(world(), [&](EntityId, components::Transform& trans, components::Spin const& spin) {
-            trans.rotation = glm::angleAxis(spin.radians * frameTime, glm::vec3(0.f, 1.f, 0.f)) * trans.rotation;
-        });
-
-        _dingQuery.select(world(), [&, this](EntityId, components::Ding& ding) {
-            ding.time += frameTime;
-            if (ding.time > ding.period) {
-                ding.time -= ding.period;
-                _audioEngine.play(ding.sound.asset());
-            }
-        });
     }
 
     Space::update(frameTime);

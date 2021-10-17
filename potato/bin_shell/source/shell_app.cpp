@@ -292,7 +292,8 @@ int up::shell::ShellApp::initialize() {
         }));
     _editorFactories.push_back(
         SceneEditor::createFactory(*_audio, *_universe, _sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
-            auto scene = new_box<Scene>(*_universe, *_audio);
+            auto scene = new_box<Scene>(*_universe);
+            Scene::addDemoSystem(*scene, *_audio);
             doc.syncGame(*scene);
             scene->start();
             _createGame(std::move(scene));

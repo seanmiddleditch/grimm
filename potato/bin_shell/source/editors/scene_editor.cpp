@@ -53,7 +53,7 @@ namespace up::shell {
             box<Editor> createEditor() override { return nullptr; }
 
             box<Editor> createEditorForDocument(zstring_view filename) override {
-                auto scene = new_box<Scene>(_universe, _audioEngine);
+                auto scene = new_box<Scene>(_universe);
                 scene->start();
                 auto doc = new_box<SceneDocument>(string(filename), _database);
 
