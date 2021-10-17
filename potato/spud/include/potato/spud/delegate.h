@@ -144,12 +144,10 @@ namespace up {
                 return *this;
             }
 
-            // clang-format off
-        private:
-            // clang-format on
-            struct _dummy_for_clang_format_12 { };
-            template <typename Functor>
-            void assign(Functor&& functor);
+        private
+            : template <typename Functor>
+              void
+              assign(Functor&& functor);
         };
     } // namespace _detail
 } // namespace up

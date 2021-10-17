@@ -7,7 +7,7 @@
 #include "potato/spud/zstring_view.h"
 
 namespace up {
-    class Scene;
+    class Space;
     struct SceneComponent;
 
     class EditComponent {
@@ -17,10 +17,10 @@ namespace up {
         virtual zstring_view name() const noexcept = 0;
         virtual reflex::TypeInfo const& typeInfo() const noexcept = 0;
 
-        virtual bool syncAdd(Scene& scene, EntityId entityId, SceneComponent const& component) const = 0;
-        virtual bool syncUpdate(Scene& scene, EntityId entityId, SceneComponent const& component) const = 0;
-        virtual bool syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const = 0;
+        virtual bool syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const = 0;
+        virtual bool syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const = 0;
+        virtual bool syncRemove(Space& space, EntityId entityId, SceneComponent const& component) const = 0;
 
-        virtual bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const = 0;
+        virtual bool syncGame(Space& space, EntityId entityId, SceneComponent const& component) const = 0;
     };
 } // namespace up

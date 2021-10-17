@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "scene.h"
 #include "scene/edit_component.h"
 
 #include "potato/audio/sound_resource.h"
@@ -114,8 +113,8 @@ namespace up {
         auto addNewComponent(SceneEntityId entityId, EditComponent const& component) -> SceneComponent*;
 
         void createTestObjects(Mesh::Handle const& cube, Material::Handle const& mat, SoundHandle const& ding);
-        void syncPreview(Scene& scene);
-        void syncGame(Scene& scene) const;
+        void syncPreview(Space& space);
+        void syncGame(Space& space) const;
 
         void toJson(nlohmann::json& doc) const;
         void fromJson(nlohmann::json const& doc, AssetLoader& assetLoader);
