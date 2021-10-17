@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "scene.h"
 #include "scene/edit_component.h"
 
 #include "potato/audio/sound_resource.h"

@@ -5,7 +5,6 @@
 #include "camera.h"
 #include "camera_controller.h"
 #include "editor.h"
-#include "scene.h"
 #include "scene_doc.h"
 #include "selection.h"
 
@@ -38,7 +37,7 @@ namespace up::shell {
 
         explicit SceneEditor(
             box<SceneDocument> sceneDoc,
-            box<Scene> previewScene,
+            box<Space> previewScene,
             SceneDatabase& database,
             AssetLoader& assetLoader,
             HandlePlayClicked& onPlayClicked)
@@ -73,7 +72,7 @@ namespace up::shell {
         void _save();
 
         rc<GpuTexture> _buffer;
-        box<Scene> _previewScene;
+        box<Space> _previewScene;
         box<SceneDocument> _doc;
         box<GpuResourceView> _bufferView;
         box<RenderCamera> _renderCamera;

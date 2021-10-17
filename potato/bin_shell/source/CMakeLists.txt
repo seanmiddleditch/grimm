@@ -6,7 +6,6 @@ target_sources(potato_shell PRIVATE
     "editor.cpp"
     "log_history.cpp"
     "main.cpp"
-    "scene.cpp"
     "scene_doc.cpp"
     "settings.cpp"
     "settings.h"

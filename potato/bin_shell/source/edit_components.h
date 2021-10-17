@@ -3,10 +3,10 @@
 #pragma once
 
 #include "components_schema.h"
-#include "scene.h"
 #include "scene_doc.h"
 #include "scene_schema.h"
 #include "scene/edit_component.h"
+#include "potato/game/space.h"
 
 namespace up {
     struct SceneComponent;

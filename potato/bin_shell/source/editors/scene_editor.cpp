@@ -4,13 +4,14 @@
 #include "camera.h"
 #include "camera_controller.h"
 #include "editor.h"
-#include "scene.h"
 #include "scene_doc.h"
 #include "selection.h"
 
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/game/space.h"
+#include "potato/game/universe.h"
 #include "potato/reflex/serialize.h"
 #include "potato/render/camera.h"
 #include "potato/render/context.h"
@@ -51,8 +52,8 @@ namespace up::shell {
             box<Editor> createEditor() override { return nullptr; }
 
             box<Editor> createEditorForDocument(zstring_view filename) override {
-                auto scene = new_box<Scene>(_universe);
-                scene->start();
+                auto space = new_box<Space>(_universe.createWorld());
+                space->start();
                 auto doc = new_box<SceneDocument>(string(filename), _database);
 
 #if 0
@@ -82,7 +83,7 @@ namespace up::shell {
                 }
 #endif
 
-                return new_box<SceneEditor>(std::move(doc), std::move(scene), _database, _assetLoader, _onPlayClicked);
+                return new_box<SceneEditor>(std::move(doc), std::move(space), _database, _assetLoader, _onPlayClicked);
             }
 
         private:

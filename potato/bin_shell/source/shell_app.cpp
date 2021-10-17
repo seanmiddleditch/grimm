@@ -6,7 +6,6 @@
 #include "components_schema.h"
 #include "edit_components.h"
 #include "recon_messages_schema.h"
-#include "scene.h"
 #include "scene_schema.h"
 #include "editors/asset_browser.h"
 #include "editors/game_editor.h"
@@ -19,8 +18,10 @@
 #include "potato/editor/imgui_backend.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/editor/project.h"
+#include "potato/game/space.h"
 #include "potato/game/query.h"
 #include "potato/game/world.h"
+#include "potato/game/universe.h"
 #include "potato/render/camera.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
@@ -293,7 +294,7 @@ int up::shell::ShellApp::initialize() {
     _editorFactories.push_back(
         SceneEditor::createFactory(*_universe, _sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
             auto space = new_box<Space>(_universe->createWorld());
-            Scene::addDemoSystem(*space, *_audio);
+            Space::addDemoSystem(*space, *_audio);
             doc.syncGame(*space);
             space->start();
             _createGame(std::move(space));

@@ -3,6 +3,8 @@
 #include "scene_doc.h"
 #include "scene_schema.h"
 
+#include "potato/game/common.h"
+#include "potato/game/space.h"
 #include "potato/game/world.h"
 #include "potato/reflex/serialize.h"
 #include "potato/render/mesh.h"
