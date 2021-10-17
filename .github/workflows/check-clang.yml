@@ -12,13 +12,14 @@ jobs:
     runs-on: 'ubuntu-20.04'
 
     steps:
-      - name: Apt update
-        run: sudo apt-get -yq update
-      - name: Install toolchain
-        run: sudo apt-get -yq install clang-format-11 # Match VS2019's version
       - uses: actions/checkout@master
+      - name: Install Clang
+        uses: ./.github/actions/setup-llvm
+        with:
+          version: 12
+          components: clang-format
       - name: Check Format
-        run: python3 ./scripts/tools/run-clang-format.py -r --clang-format-executable clang-format-11 --exclude ./external --extensions h,cpp,cc ./potato
+        run: python3 ./scripts/tools/run-clang-format.py -r --clang-format-executable clang-format-12 --exclude ./external --extensions h,cpp,cc ./potato
 
   check-clang-tidy:
     name: 'Clang Tidy'
