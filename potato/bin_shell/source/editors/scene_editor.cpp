@@ -37,13 +37,11 @@ namespace up::shell {
         class SceneEditorFactory : public EditorFactory {
         public:
             SceneEditorFactory(
-                AudioEngine& audioEngine,
                 Universe& universe,
                 SceneDatabase& database,
                 AssetLoader& assetLoader,
                 SceneEditor::HandlePlayClicked onPlayClicked)
-                : _audioEngine(audioEngine)
-                , _universe(universe)
+                : _universe(universe)
                 , _database(database)
                 , _assetLoader(assetLoader)
                 , _onPlayClicked(std::move(onPlayClicked)) { }
@@ -88,7 +86,6 @@ namespace up::shell {
             }
 
         private:
-            AudioEngine& _audioEngine;
             Universe& _universe;
             SceneDatabase& _database;
             AssetLoader& _assetLoader;
@@ -98,12 +95,11 @@ namespace up::shell {
 } // namespace up::shell
 
 auto up::shell::SceneEditor::createFactory(
-    AudioEngine& audioEngine,
     Universe& universe,
     SceneDatabase& database,
     AssetLoader& assetLoader,
     SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
-    return new_box<SceneEditorFactory>(audioEngine, universe, database, assetLoader, std::move(onPlayClicked));
+    return new_box<SceneEditorFactory>(universe, database, assetLoader, std::move(onPlayClicked));
 }
 
 void up::shell::SceneEditor::tick(float deltaTime) {

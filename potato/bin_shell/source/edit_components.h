@@ -16,11 +16,11 @@ namespace up {
     public:
         zstring_view name() const noexcept final { return typeInfo().name; }
         reflex::TypeInfo const& typeInfo() const noexcept final { return reflex::getTypeInfo<SceneComponentT>(); }
-        bool syncAdd(Scene&, EntityId, SceneComponent const&) const final { return false; }
-        bool syncUpdate(Scene&, EntityId, SceneComponent const&) const final { return false; }
-        bool syncRemove(Scene&, EntityId, SceneComponent const&) const final { return false; }
+        bool syncAdd(Space&, EntityId, SceneComponent const&) const final { return false; }
+        bool syncUpdate(Space&, EntityId, SceneComponent const&) const final { return false; }
+        bool syncRemove(Space&, EntityId, SceneComponent const&) const final { return false; }
 
-        bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const final {
+        bool syncGame(Space& scene, EntityId entityId, SceneComponent const& component) const final {
             scene.world().addComponent<GameComponentT>(
                 entityId,
                 createFrom(*static_cast<SceneComponentT*>(component.data.get())));
@@ -39,10 +39,10 @@ namespace up {
             return reflex::getTypeInfo<scene::components::Transform>();
         }
 
-        bool syncAdd(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
-        bool syncUpdate(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
-        bool syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
-        bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncAdd(Space& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncUpdate(Space& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncRemove(Space& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncGame(Space& scene, EntityId entityId, SceneComponent const& component) const override;
     };
 
     class MeshEditComponent : public EditComponent {
@@ -54,10 +54,10 @@ namespace up {
             return reflex::getTypeInfo<scene::components::Mesh>();
         }
 
-        bool syncAdd(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
-        bool syncUpdate(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
-        bool syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
-        bool syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncAdd(Space& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncUpdate(Space& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncRemove(Space& scene, EntityId entityId, SceneComponent const& component) const override;
+        bool syncGame(Space& scene, EntityId entityId, SceneComponent const& component) const override;
     };
 
     class WaveEditComponent final : public SimpleEditComponent<scene::components::Wave, components::Wave> {

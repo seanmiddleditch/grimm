@@ -291,12 +291,12 @@ int up::shell::ShellApp::initialize() {
             _openAssetEditor(uuid);
         }));
     _editorFactories.push_back(
-        SceneEditor::createFactory(*_audio, *_universe, _sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
-            auto scene = new_box<Scene>(*_universe);
-            Scene::addDemoSystem(*scene, *_audio);
-            doc.syncGame(*scene);
-            scene->start();
-            _createGame(std::move(scene));
+        SceneEditor::createFactory(*_universe, _sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
+            auto space = new_box<Space>(_universe->createWorld());
+            Scene::addDemoSystem(*space, *_audio);
+            doc.syncGame(*space);
+            space->start();
+            _createGame(std::move(space));
         }));
     _editorFactories.push_back(MaterialEditor::createFactory(_assetLoader));
     _editorFactories.push_back(LogWindow::createFactory(_logHistory));
@@ -698,8 +698,8 @@ void up::shell::ShellApp::_createScene() {
     _openEditor(SceneEditor::editorName);
 }
 
-void up::shell::ShellApp::_createGame(box<Scene> scene) {
-    _editors.open(createGameEditor(std::move(scene)));
+void up::shell::ShellApp::_createGame(box<Space> space) {
+    _editors.open(createGameEditor(std::move(space)));
 }
 
 void up::shell::ShellApp::_executeRecon() {

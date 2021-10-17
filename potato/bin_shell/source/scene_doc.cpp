@@ -193,10 +193,10 @@ void up::SceneDocument::createTestObjects(
     }
 }
 
-void up::SceneDocument::syncPreview(Scene& scene) {
+void up::SceneDocument::syncPreview(Space& space) {
     for (auto& entity : _entities) {
         if (entity.previewId == EntityId::None) {
-            entity.previewId = scene.world().createEntity();
+            entity.previewId = space.world().createEntity();
         }
 
         for (auto& component : entity.components) {
@@ -204,15 +204,15 @@ void up::SceneDocument::syncPreview(Scene& scene) {
                 case SceneComponent::State::Idle:
                     break;
                 case SceneComponent::State::New:
-                    component->info->syncAdd(scene, entity.previewId, *component);
+                    component->info->syncAdd(space, entity.previewId, *component);
                     component->state = SceneComponent::State::Idle;
                     break;
                 case SceneComponent::State::Pending:
-                    component->info->syncUpdate(scene, entity.previewId, *component);
+                    component->info->syncUpdate(space, entity.previewId, *component);
                     component->state = SceneComponent::State::Idle;
                     break;
                 case SceneComponent::State::Removed:
-                    component->info->syncRemove(scene, entity.previewId, *component);
+                    component->info->syncRemove(space, entity.previewId, *component);
                     component->state = SceneComponent::State::Idle;
                     break;
             }
@@ -220,12 +220,12 @@ void up::SceneDocument::syncPreview(Scene& scene) {
     }
 }
 
-void up::SceneDocument::syncGame(Scene& scene) const {
+void up::SceneDocument::syncGame(Space& space) const {
     for (auto& entity : _entities) {
-        EntityId entityId = scene.world().createEntity();
+        EntityId entityId = space.world().createEntity();
 
         for (auto& component : entity.components) {
-            component->info->syncGame(scene, entityId, *component);
+            component->info->syncGame(space, entityId, *component);
         }
     }
 }

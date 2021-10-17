@@ -77,7 +77,7 @@ namespace up::shell {
         void _openAssetEditor(UUID const& uuid);
 
         void _createScene();
-        void _createGame(box<Scene> scene);
+        void _createGame(box<Space> space);
 
         void _executeRecon();
         void _loadManifest();

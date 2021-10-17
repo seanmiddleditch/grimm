@@ -31,7 +31,6 @@ namespace up::shell {
         using HandlePlayClicked = delegate<void(SceneDocument const& doc)>;
 
         static auto createFactory(
-            AudioEngine& audioEngine,
             Universe& universe,
             SceneDatabase& database,
             AssetLoader& assetLoader,
