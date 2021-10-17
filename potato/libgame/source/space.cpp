@@ -1,7 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "space.h"
-
 #include "systems/demo_system.h"
 #include "systems/render_system.h"
 #include "systems/transform_system.h"

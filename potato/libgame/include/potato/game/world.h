@@ -29,7 +29,7 @@ namespace up {
 
         World(World&&) = delete;
         World& operator=(World&&) = delete;
-        
+
         template <typename... Components>
         auto createQuery(Query<Components...>& query) -> Query<Components...>& {
             return query = Query<Components...>(_context);

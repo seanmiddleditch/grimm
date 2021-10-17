@@ -17,7 +17,7 @@ namespace up {
         virtual void update(float deltaTime) = 0;
         virtual void render(RenderContext&) {}
 
-        protected:
+    protected:
         Space& space() noexcept { return m_space; }
 
     private:

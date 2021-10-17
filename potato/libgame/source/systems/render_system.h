@@ -3,9 +3,8 @@
 #pragma once
 
 #include "components_schema.h"
-
-#include "system.h"
 #include "query.h"
+#include "system.h"
 
 namespace up::game {
     class RenderSystem final : public System {
@@ -21,4 +20,4 @@ namespace up::game {
     private:
         Query<components::Mesh, components::Transform> _meshQuery;
     };
-}
+} // namespace up::game

@@ -40,11 +40,7 @@ namespace up {
         template <typename Callback>
         void select(World& world, Callback&& callback) requires is_invocable_v<Callback, EntityId, Components&...>;
 
-        // clang-format off
-    private:
-        // clang-format on
-
-        struct Match {
+    private : struct Match {
             ArchetypeId archetype;
             int offsets[sizeof...(Components)];
         };
@@ -62,9 +58,8 @@ namespace up {
 
     template <typename... Components>
     template <typename Callback>
-    void Query<Components...>::selectChunks(
-        World& world,
-        Callback&& callback) requires is_invocable_v<Callback, size_t, EntityId const*, Components*...> {
+    void Query<Components...>::selectChunks(World& world, Callback&& callback) requires
+        is_invocable_v<Callback, size_t, EntityId const*, Components*...> {
         UP_ASSERT(_context != nullptr);
         _match();
         _executeChunks(world, callback, std::make_index_sequence<sizeof...(Components)>{});
@@ -72,9 +67,8 @@ namespace up {
 
     template <typename... Components>
     template <typename Callback>
-    void Query<Components...>::select(
-        World& world,
-        Callback&& callback) requires is_invocable_v<Callback, EntityId, Components&...> {
+    void Query<Components...>::select(World& world, Callback&& callback) requires
+        is_invocable_v<Callback, EntityId, Components&...> {
         UP_ASSERT(_context != nullptr);
         _match();
         _execute(world, callback, std::make_index_sequence<sizeof...(Components)>{});
