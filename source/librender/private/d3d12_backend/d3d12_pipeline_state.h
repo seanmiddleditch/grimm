@@ -18,8 +18,6 @@ namespace up::d3d12 {
     class PipelineStateD3D12 : public GpuPipelineState {
     public:
 
-        enum RootParamIndex { ConstantBuffer, TextureSRV, TextureSampler, RootParamCount };
-
         explicit PipelineStateD3D12();
         virtual ~PipelineStateD3D12();
 

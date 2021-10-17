@@ -12,111 +12,6 @@ up::d3d12::RootSignatureD3D12::RootSignatureD3D12()  {
 up::d3d12::RootSignatureD3D12::~RootSignatureD3D12() {
 };
 
-static inline void InitRange(
-    _Out_ D3D12_DESCRIPTOR_RANGE1& range,
-    D3D12_DESCRIPTOR_RANGE_TYPE rangeType,
-    UINT numDescriptors,
-    UINT baseShaderRegister,
-    UINT registerSpace = 0,
-    D3D12_DESCRIPTOR_RANGE_FLAGS flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE,
-    UINT offsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND) noexcept {
-    range.RangeType = rangeType;
-    range.NumDescriptors = numDescriptors;
-    range.BaseShaderRegister = baseShaderRegister;
-    range.RegisterSpace = registerSpace;
-    range.Flags = flags;
-    range.OffsetInDescriptorsFromTableStart = offsetInDescriptorsFromTableStart;
-}
-
-static inline void InitRootDescriptor(
-    _Out_ D3D12_ROOT_DESCRIPTOR1& table,
-    UINT shaderRegister,
-    UINT registerSpace = 0,
-    D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE) noexcept {
-    table.ShaderRegister = shaderRegister;
-    table.RegisterSpace = registerSpace;
-    table.Flags = flags;
-}
-
-static inline void InitRootDescriptorTable(
-    _Out_ D3D12_ROOT_DESCRIPTOR_TABLE1& rootDescriptorTable,
-    UINT numDescriptorRanges,
-    _In_reads_opt_(numDescriptorRanges) const D3D12_DESCRIPTOR_RANGE1* _pDescriptorRanges) noexcept {
-    rootDescriptorTable.NumDescriptorRanges = numDescriptorRanges;
-    rootDescriptorTable.pDescriptorRanges = _pDescriptorRanges;
-}
-
-static inline void InitRootConstant(
-    _Out_ D3D12_ROOT_CONSTANTS& rootConstants,
-    UINT num32BitValues,
-    UINT shaderRegister,
-    UINT registerSpace = 0) noexcept {
-    rootConstants.Num32BitValues = num32BitValues;
-    rootConstants.ShaderRegister = shaderRegister;
-    rootConstants.RegisterSpace = registerSpace;
-}
-
-static inline void InitRootDescriptorTable1(
-    _Out_ D3D12_ROOT_DESCRIPTOR_TABLE1& rootDescriptorTable,
-    UINT numDescriptorRanges,
-    _In_reads_opt_(numDescriptorRanges) const D3D12_DESCRIPTOR_RANGE1* _pDescriptorRanges) noexcept {
-    rootDescriptorTable.NumDescriptorRanges = numDescriptorRanges;
-    rootDescriptorTable.pDescriptorRanges = _pDescriptorRanges;
-}
- static inline void InitAsDescriptorTable(
-     _Out_ D3D12_ROOT_PARAMETER1& rootParam,
-     UINT numDescriptorRanges,
-     _In_reads_(numDescriptorRanges) const D3D12_DESCRIPTOR_RANGE1* pDescriptorRanges,
-     D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) noexcept {
-     rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-     rootParam.ShaderVisibility = visibility;
-     InitRootDescriptorTable(rootParam.DescriptorTable, numDescriptorRanges, pDescriptorRanges);
- }
-
-    static inline void InitAsConstants(
-     _Out_ D3D12_ROOT_PARAMETER1& rootParam,
-     UINT num32BitValues,
-     UINT shaderRegister,
-     UINT registerSpace = 0,
-     D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) noexcept {
-     rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-     rootParam.ShaderVisibility = visibility;
-     InitRootConstant(rootParam.Constants, num32BitValues, shaderRegister, registerSpace);
- }
-
- static inline void InitAsConstantBufferView(
-     _Out_ D3D12_ROOT_PARAMETER1& rootParam,
-     UINT shaderRegister,
-     UINT registerSpace = 0,
-     D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
-     D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) noexcept {
-     rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-     rootParam.ShaderVisibility = visibility;
-     InitRootDescriptor(rootParam.Descriptor, shaderRegister, registerSpace, flags);
- }
-
- static inline void InitAsShaderResourceView(
-     _Out_ D3D12_ROOT_PARAMETER1& rootParam,
-     UINT shaderRegister,
-     UINT registerSpace = 0,
-     D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
-     D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) noexcept {
-     rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-     rootParam.ShaderVisibility = visibility;
-     InitRootDescriptor(rootParam.Descriptor, shaderRegister, registerSpace, flags);
- }
-
- static inline void InitAsUnorderedAccessView(
-     _Out_ D3D12_ROOT_PARAMETER1& rootParam,
-     UINT shaderRegister,
-     UINT registerSpace = 0,
-     D3D12_ROOT_DESCRIPTOR_FLAGS flags = D3D12_ROOT_DESCRIPTOR_FLAG_NONE,
-     D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) noexcept {
-     rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
-     rootParam.ShaderVisibility = visibility;
-     InitRootDescriptor(rootParam.Descriptor, shaderRegister, registerSpace, flags);
- }
-
 
 static inline void Init_1_1(
     _Out_ D3D12_VERSIONED_ROOT_SIGNATURE_DESC& desc,
@@ -151,8 +46,20 @@ static std::vector<up::rc<up::d3d12::RootSignatureD3D12>> s_RootSignatures;
 
 auto up::d3d12::RootSignatureD3D12::initializeSignatures(ID3D12Device* device) -> bool {
     s_RootSignatures.resize(RootSignatureType::Max);
-    s_RootSignatures[RootSignatureType::ImGui] = RootSignatureD3D12::createRootSignature(device);
-    s_RootSignatures[RootSignatureType::Model] = RootSignatureD3D12::createRootSignature(device);
+
+    SignatureDesc desc;
+    desc._range.resize(2);
+    desc._range[0].initRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
+    desc._range[1].initRange(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0, 0);
+
+    // InitAsConstantBufferView(parameters[RootParamIndex::ConstantBuffer], 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+    desc._params.resize(3);
+    desc._params[0].initAsConstants(16, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    desc._params[1].initAsDescriptorTable(1, &desc._range[0]._range, D3D12_SHADER_VISIBILITY_PIXEL);
+    desc._params[2].initAsDescriptorTable(1, &desc._range[1]._range, D3D12_SHADER_VISIBILITY_PIXEL);
+
+    s_RootSignatures[RootSignatureType::ImGui] = RootSignatureD3D12::createRootSignature(device, desc);
+    s_RootSignatures[RootSignatureType::Model] = RootSignatureD3D12::createRootSignature(device, desc);
 
     return true;
  };
@@ -302,13 +209,13 @@ inline HRESULT D3DX12SerializeVersionedRootSignature(
     return E_INVALIDARG;
 }
 
-auto up::d3d12::RootSignatureD3D12::createRootSignature(ID3D12Device* device) -> rc<RootSignatureD3D12> {
+auto up::d3d12::RootSignatureD3D12::createRootSignature(ID3D12Device* device, const SignatureDesc& desc) -> rc<RootSignatureD3D12> {
     auto signature = new_shared<RootSignatureD3D12>();
-    signature->create(device);
+    signature->create(device, desc);
     return signature;
 }
 
-auto up::d3d12::RootSignatureD3D12::create(ID3D12Device* device) -> bool {
+auto up::d3d12::RootSignatureD3D12::create(ID3D12Device* device, const SignatureDesc& desc) -> bool {
     ID3DRootSignaturePtr root;
     D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 
@@ -322,17 +229,6 @@ auto up::d3d12::RootSignatureD3D12::create(ID3D12Device* device) -> bool {
     
     up::com_ptr<ID3DBlob> signature;
     up::com_ptr<ID3DBlob> error;
-
-    D3D12_DESCRIPTOR_RANGE1 ranges[2];
-    D3D12_ROOT_PARAMETER1 parameters[RootParamIndex::RootParamCount];
-
-    InitRange(ranges[0], D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
-    InitRange(ranges[1], D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0, 0);
-
-    //InitAsConstantBufferView(parameters[RootParamIndex::ConstantBuffer], 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
-    InitAsConstants(parameters[RootParamIndex::ConstantBuffer], 16, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
-    InitAsDescriptorTable(parameters[RootParamIndex::TextureSRV], 1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
-    InitAsDescriptorTable(parameters[RootParamIndex::TextureSampler], 1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
  
     // Allow input layout and deny unnecessary access to certain pipeline stages.
     D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -356,7 +252,7 @@ auto up::d3d12::RootSignatureD3D12::create(ID3D12Device* device) -> bool {
     sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
     D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    Init_1_1(rootSignatureDesc, _countof(parameters), parameters, 0, &sampler, rootSignatureFlags);
+    Init_1_1(rootSignatureDesc, static_cast<uint32>(desc._params.size()), (const D3D12_ROOT_PARAMETER1*)desc._params.data(), 0, &sampler, rootSignatureFlags);
 
    if (FAILED(D3DX12SerializeVersionedRootSignature(
             &rootSignatureDesc,

@@ -150,16 +150,16 @@ void up::d3d12::PipelineStateD3D12::bindTexture(
     D3D12_GPU_DESCRIPTOR_HANDLE sampler) {
     UP_ASSERT(cmd != nullptr);
 
-    cmd->SetGraphicsRootDescriptorTable(RootParamIndex::TextureSRV, srv);
-    cmd->SetGraphicsRootDescriptorTable(RootParamIndex::TextureSampler, sampler);
+    cmd->SetGraphicsRootDescriptorTable(RootParamType::TextureSRV, srv);
+    cmd->SetGraphicsRootDescriptorTable(RootParamType::TextureSampler, sampler);
 }
 
 void up::d3d12::PipelineStateD3D12::bindConstBuffer(ID3D12GraphicsCommandList* cmd, D3D12_GPU_VIRTUAL_ADDRESS cbv) {
     UP_ASSERT(cmd != nullptr);
-    cmd->SetGraphicsRootConstantBufferView(RootParamIndex::ConstantBuffer, cbv);
+    cmd->SetGraphicsRootConstantBufferView(RootParamType::ConstantBuffer, cbv);
 }
 
 void up::d3d12::PipelineStateD3D12::bindConstValues(ID3D12GraphicsCommandList* cmd, uint32 size, float* values) {
     UP_ASSERT(cmd != nullptr);
-    cmd->SetGraphicsRoot32BitConstants(RootParamIndex::ConstantBuffer, size, values, 0);
+    cmd->SetGraphicsRoot32BitConstants(RootParamType::ConstantBuffer, size, values, 0);
 }
