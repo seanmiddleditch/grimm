@@ -2,6 +2,7 @@
 
 #include "material_importer.h"
 #include "material_schema.h"
+#include "../importer_context.h"
 
 #include "potato/reflex/serialize.h"
 #include "potato/render/material_generated.h"

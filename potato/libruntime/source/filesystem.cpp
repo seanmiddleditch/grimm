@@ -1,9 +1,10 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "assertion.h"
-#include "filesystem.h"
-#include "logger.h"
-#include "stream.h"
+#include "potato/runtime/filesystem.h"
+
+#include "potato/runtime/assertion.h"
+#include "potato/runtime/logger.h"
+#include "potato/runtime/stream.h"
 
 #include <filesystem>
 #include <fstream>

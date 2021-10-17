@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d11_platform.h"
-#include "gpu_device.h"
 
+#include "potato/render/gpu_device.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/unique_resource.h"
 

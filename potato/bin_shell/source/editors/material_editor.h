@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "editor.h"
 #include "material_schema.h"
 
 #include "potato/editor/property_grid.h"
+#include "potato/shell/editor.h"
 
 namespace up {
     class AssetLoader;

@@ -2,6 +2,7 @@
 
 #include "recon_app.h"
 #include "file_hash_cache.h"
+#include "importer_context.h"
 #include "meta_file.h"
 #include "recon_log_sink.h"
 #include "recon_messages_schema.h"

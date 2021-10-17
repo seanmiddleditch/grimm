@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "path.h"
-#include "assertion.h"
+#include "potato/runtime/path.h"
 
+#include "potato/runtime/assertion.h"
 #include "potato/spud/platform.h"
 #include "potato/spud/string_writer.h"
 #include "potato/spud/utility.h"

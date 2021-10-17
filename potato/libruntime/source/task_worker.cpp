@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "task_worker.h"
-#include "thread_util.h"
+#include "potato/runtime/task_worker.h"
 
+#include "potato/runtime/thread_util.h"
 #include "potato/spud/string.h"
 
 up::TaskWorker::TaskWorker(ConcurrentQueue<Task>& queue, zstring_view name) : _queue(queue) {

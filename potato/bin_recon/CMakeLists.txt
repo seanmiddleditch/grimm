@@ -4,6 +4,7 @@ project(recon VERSION 0.1 LANGUAGES CXX)
 add_executable(potato_recon)
 add_executable(potato::recon ALIAS potato_recon)
 
+add_subdirectory(include/potato/recon)
 add_subdirectory(source)
 
 set_target_properties(potato_recon PROPERTIES

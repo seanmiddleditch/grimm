@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "project.h"
+#include "potato/editor/project.h"
 
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"

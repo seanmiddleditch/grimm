@@ -1,8 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "shell_app.h"
-#include "camera.h"
-#include "camera_controller.h"
 #include "components_schema.h"
 #include "edit_components.h"
 #include "recon_messages_schema.h"
@@ -34,6 +32,8 @@
 #include "potato/render/material.h"
 #include "potato/render/renderer.h"
 #include "potato/render/shader.h"
+#include "potato/shell/camera.h"
+#include "potato/shell/camera_controller.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"
 #include "potato/runtime/path.h"

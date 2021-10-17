@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "audio_engine.h"
-#include "sound_resource.h"
+#include "potato/audio/audio_engine.h"
 
+#include "potato/audio/sound_resource.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/stream.h"
 #include "potato/spud/vector.h"

@@ -1,7 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "thread_util.h"
-#include "assertion.h"
+#include "potato/runtime/thread_util.h"
+
+#include "potato/runtime/assertion.h"
 
 #include <atomic>
 #include <limits>

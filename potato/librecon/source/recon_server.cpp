@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "recon_server.h"
+#include "potato/recon/recon_server.h"
 
 #include <nlohmann/json.hpp>
 #include <iostream>

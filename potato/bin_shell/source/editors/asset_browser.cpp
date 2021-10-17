@@ -1,12 +1,12 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "asset_browser.h"
-#include "editor.h"
 
 #include "potato/editor/desktop.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/editor/imgui_fonts.h"
 #include "potato/recon/recon_client.h"
+#include "potato/shell/editor.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/path.h"
 #include "potato/runtime/resource_manifest.h"

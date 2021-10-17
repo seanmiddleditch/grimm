@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "edit_components.h"
-#include "scene_doc.h"
 
 #include "potato/game/world.h"
+#include "potato/shell/scene_doc.h"
 
 auto up::TransformEditComponent::data(SceneComponent const& component) noexcept -> scene::components::Transform& {
     return *static_cast<scene::components::Transform*>(component.data.get());

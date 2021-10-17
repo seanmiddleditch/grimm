@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d11_platform.h"
-#include "gpu_swap_chain.h"
 
+#include "potato/render/gpu_swap_chain.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/box.h"
 

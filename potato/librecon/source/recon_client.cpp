@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "recon_client.h"
+#include "potato/recon/recon_client.h"
 
 #include "potato/recon/recon_protocol.h"
 #include "potato/runtime/logger.h"

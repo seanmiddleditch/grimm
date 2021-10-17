@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "camera.h"
-#include "camera_controller.h"
-#include "editor.h"
-
 #include "potato/game/space.h"
 #include "potato/render/camera.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
+#include "potato/shell/camera.h"
+#include "potato/shell/camera_controller.h"
+#include "potato/shell/editor.h"
 
 namespace up {
     class Space;

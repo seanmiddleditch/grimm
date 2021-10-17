@@ -1,16 +1,16 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "material.h"
-#include "context.h"
-#include "gpu_command_list.h"
-#include "gpu_device.h"
-#include "gpu_pipeline_state.h"
-#include "gpu_resource_view.h"
-#include "gpu_sampler.h"
-#include "material_generated.h"
-#include "shader.h"
-#include "texture.h"
+#include "potato/render/material.h"
 
+#include "potato/render/context.h"
+#include "potato/render/gpu_command_list.h"
+#include "potato/render/gpu_device.h"
+#include "potato/render/gpu_pipeline_state.h"
+#include "potato/render/gpu_resource_view.h"
+#include "potato/render/gpu_sampler.h"
+#include "potato/render/material_generated.h"
+#include "potato/render/shader.h"
+#include "potato/render/texture.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/spud/string.h"
 

@@ -2,6 +2,7 @@
 
 #include "json_importer.h"
 #include "importer_configs_schema.h"
+#include "../importer_context.h"
 
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/logger.h"

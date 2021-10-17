@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "serialize.h"
+#include "potato/reflex/serialize.h"
 #include "common_schema.h"
 #include "tools_schema.h"
 

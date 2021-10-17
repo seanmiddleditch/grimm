@@ -1,13 +1,13 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "mesh.h"
-#include "context.h"
-#include "gpu_buffer.h"
-#include "gpu_command_list.h"
-#include "gpu_device.h"
-#include "material.h"
-#include "model_generated.h"
+#include "potato/render/mesh.h"
 
+#include "potato/render/context.h"
+#include "potato/render/gpu_buffer.h"
+#include "potato/render/gpu_command_list.h"
+#include "potato/render/gpu_device.h"
+#include "potato/render/material.h"
+#include "potato/render/model_generated.h"
 #include "potato/spud/sequence.h"
 
 #include <glm/vec3.hpp>

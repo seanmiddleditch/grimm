@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include "importer_context.h"
-
 #include "potato/reflex/type.h"
 
 #include <nlohmann/json_fwd.hpp>
 
 namespace up {
+    class ImporterContext;
+
     struct ImporterConfig {
         ImporterConfig() = default;
         virtual ~ImporterConfig() = default;

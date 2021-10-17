@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "editor.h"
-#include "selection.h"
-
 #include "potato/editor/asset_edit_service.h"
+#include "potato/shell/editor.h"
+#include "potato/shell/selection.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/uuid.h"
 #include "potato/spud/delegate.h"

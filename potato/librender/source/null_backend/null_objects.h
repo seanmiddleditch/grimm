@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include "gpu_buffer.h"
-#include "gpu_command_list.h"
-#include "gpu_device.h"
-#include "gpu_factory.h"
-#include "gpu_pipeline_state.h"
-#include "gpu_resource_view.h"
-#include "gpu_sampler.h"
-#include "gpu_swap_chain.h"
-#include "gpu_texture.h"
+#include "potato/render/gpu_buffer.h"
+#include "potato/render/gpu_command_list.h"
+#include "potato/render/gpu_device.h"
+#include "potato/render/gpu_factory.h"
+#include "potato/render/gpu_pipeline_state.h"
+#include "potato/render/gpu_resource_view.h"
+#include "potato/render/gpu_sampler.h"
+#include "potato/render/gpu_swap_chain.h"
+#include "potato/render/gpu_texture.h"
 
 namespace up::null {
     class DeviceNull;

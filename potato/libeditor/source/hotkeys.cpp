@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "hotkeys.h"
+#include "potato/editor/hotkeys.h"
 
 #include "potato/spud/erase.h"
 #include "potato/spud/find.h"

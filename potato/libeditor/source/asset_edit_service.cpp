@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "asset_edit_service.h"
-#include "icons.h"
+#include "potato/editor/asset_edit_service.h"
 
+#include "potato/editor/icons.h"
 #include "potato/runtime/path.h"
 #include "potato/spud/hash.h"
 

@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d11_platform.h"
-#include "gpu_buffer.h"
 
+#include "potato/render/gpu_buffer.h"
 #include "potato/runtime/com_ptr.h"
 
 namespace up::d3d11 {
