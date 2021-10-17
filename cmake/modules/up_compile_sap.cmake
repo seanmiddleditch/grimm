@@ -9,7 +9,11 @@ cmake_policy(PUSH)
 cmake_policy(SET CMP0116 NEW)
 
 function(up_compile_sap TARGET)
-    cmake_parse_arguments(ARG "" "" "SCHEMAS" ${ARGN})
+    cmake_parse_arguments(PARSE_ARGV 0 ARG "PUBLIC;PRIVATE" "" "SCHEMAS")
+
+    if(NOT ARG_PUBLIC AND NOT ARG_PRIVATE)
+        message(FATAL_ERROR "One of PUBLIC or PRIVATE must be set for up_compile_sap")
+    endif()
 
     set(GEN_TGT "generate_sap_schemas_${TARGET}")
     set(JSON_FILES)
@@ -17,15 +21,18 @@ function(up_compile_sap TARGET)
     up_get_target_shortname(${TARGET} SHORT_NAME)
 
     get_target_property(TARGET_TYPE ${TARGET} TYPE)
-    if (${TARGET_TYPE} STREQUAL INTERFACE_LIBRARY)
+    if(${TARGET_TYPE} STREQUAL INTERFACE_LIBRARY)
         target_include_directories(${TARGET} INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/gen/inc")
     else()
-        target_include_directories(${TARGET} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/gen/inc")
+        target_include_directories(${TARGET}
+            PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/gen/inc"
+            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/gen/src"
+        )
     endif()
 
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/gen/sap")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/gen/src")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/gen/inc")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/gen/src/potato/schema")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/gen/inc/potato/schema")
 
     foreach(FILE ${ARG_SCHEMAS})
         get_filename_component(FILE_NAME ${FILE} NAME_WE)
@@ -37,7 +44,12 @@ function(up_compile_sap TARGET)
         list(APPEND JSON_FILES "${CMAKE_CURRENT_BINARY_DIR}/${JSON_FILE}")
 
         set(GENERATED_SOURCE_FILE "gen/src/${FILE_NAME}_gen.cpp")
-        set(GENERATED_HEADER_FILE "gen/inc/${FILE_NAME}_schema.h")
+
+        if(ARG_PUBLIC)
+            set(GENERATED_HEADER_FILE "gen/inc/potato/schema/${FILE_NAME}_schema.h")
+        else()
+            set(GENERATED_HEADER_FILE "gen/src/potato/schema/${FILE_NAME}_schema.h")
+        endif()
 
         add_custom_command(
             OUTPUT "${JSON_FILE}"
@@ -57,6 +69,7 @@ function(up_compile_sap TARGET)
                     -i "${JSON_FILE}"
                     -o "${GENERATED_HEADER_FILE}"
                     -m schema_header
+                    -D SHORT_NAME "${SHORT_NAME}"
                     -D EXPORT_HEADER "potato/${SHORT_NAME}/_export.h"
                     -D EXPORT_MACRO "UP_$<UPPER_CASE:${SHORT_NAME}>_API"
             MAIN_DEPENDENCY "${JSON_FILE}"
@@ -69,7 +82,7 @@ function(up_compile_sap TARGET)
                     -i "${JSON_FILE}"
                     -o "${GENERATED_SOURCE_FILE}"
                     -m schema_source
-                    -D MODULE_HEADER "${FILE_NAME}_schema.h"
+                    -D MODULE_HEADER "potato/schema/${FILE_NAME}_schema.h"
             MAIN_DEPENDENCY "${JSON_FILE}"
             DEPENDS potato_bin_codegen
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"

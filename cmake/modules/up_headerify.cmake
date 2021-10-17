@@ -1,7 +1,7 @@
 function(up_headerify TARGET NAME SOURCE_FILE)
     set(OUT_ROOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/gen")
     set(OUT_HEADER_DIR "${OUT_ROOT_DIR}/inc")
-    set(OUT_HEADER "${OUT_HEADER_DIR}/${NAME}.h")
+    set(OUT_HEADER "${OUT_HEADER_DIR}/potato/data/${NAME}.h")
 
     file(MAKE_DIRECTORY "${OUT_HEADER_DIR}")
     add_custom_command(

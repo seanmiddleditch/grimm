@@ -6,8 +6,8 @@ function(up_compile_flat_schema TARGET)
     set(GEN_TGT "generate_flat_schemas_${TARGET}")
     set(OUT_FILES)
 
-    set(OUT_ROOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
-    set(OUT_HEADER_DIR "${OUT_ROOT_DIR}/potato/${ARG_NAME}")
+    set(OUT_ROOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/gen/inc")
+    set(OUT_HEADER_DIR "${OUT_ROOT_DIR}/potato/flatbuffer")
 
     foreach(FILE ${ARG_SCHEMAS})
         up_path_combine(${CMAKE_CURRENT_SOURCE_DIR} ${FILE} FILE)
@@ -41,7 +41,6 @@ function(up_compile_flat_schema TARGET)
     cmake_policy(SET CMP0079 NEW)
     target_include_directories(${TARGET}
         PUBLIC "${OUT_ROOT_DIR}"
-        PRIVATE "${OUT_HEADER_DIR}"
     )
     target_link_libraries(${TARGET} PRIVATE flatbuffers::flatlib)
     add_dependencies(${TARGET} ${GEN_TGT})
