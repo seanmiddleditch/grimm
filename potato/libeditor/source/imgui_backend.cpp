@@ -1,14 +1,15 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/editor/imgui_backend.h"
-#include "fontawesome_font.h"
-#include "roboto_font.h"
+
+#include "potato/data/fontawesome_font.h"
+#include "potato/data/roboto_font.h"
 
 // This will result in silent fails on unsupported platforms; figure out a better solution
-#if __has_include("imgui_pixel_shader.h")
+#if __has_include("potato/shader/imgui_pixel_shader.h")
 #    define BYTE unsigned char
-#    include "imgui_pixel_shader.h"
-#    include "imgui_vertex_shader.h"
+#    include "potato/shader/imgui_pixel_shader.h"
+#    include "potato/shader/imgui_vertex_shader.h"
 #    undef BYTE
 #    define UP_HAS_IMGUI_SHADERS 1
 #endif

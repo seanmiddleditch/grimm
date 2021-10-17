@@ -28,8 +28,10 @@ include(up_copy_library_import)
 up_copy_library_import(assimp potato_recon)
 
 include(up_compile_sap)
-up_compile_sap(potato_recon SCHEMAS
-    schema/importer_configs.sap
+up_compile_sap(potato_recon
+    PRIVATE
+    SCHEMAS 
+        schema/importer_configs.sap
 )
 
 find_library(D3DCOMPILER_PATH d3dcompiler)

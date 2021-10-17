@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "recon_messages_schema.h"
-
+#include "potato/schema/recon_messages_schema.h"
 #include "potato/spud/concepts.h"
 
 namespace up {

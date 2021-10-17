@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "material_schema.h"
-
 #include "potato/editor/property_grid.h"
+#include "potato/schema/material_schema.h"
 #include "potato/shell/editor.h"
 
 namespace up {

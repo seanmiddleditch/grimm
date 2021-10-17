@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "settings_schema.h"
+#include "potato/schema/settings_schema.h"
 
 namespace up::shell {
     bool loadShellSettings(zstring_view filename, schema::EditorSettings& settings);

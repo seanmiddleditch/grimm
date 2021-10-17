@@ -16,9 +16,11 @@ add_subdirectory(include/potato/shell)
 add_subdirectory(source)
 
 include(up_compile_sap)
-up_compile_sap(potato_shell SCHEMAS
-    "schema/scene.sap"
-    "schema/settings.sap"
+up_compile_sap(potato_shell
+    PRIVATE
+    SCHEMAS
+        "schema/scene.sap"
+        "schema/settings.sap"
 )
 
 

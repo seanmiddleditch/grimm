@@ -1,13 +1,13 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/shell/scene_doc.h"
-#include "scene_schema.h"
 
 #include "potato/game/common.h"
 #include "potato/game/space.h"
 #include "potato/game/world.h"
 #include "potato/reflex/serialize.h"
 #include "potato/render/mesh.h"
+#include "potato/schema/scene_schema.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/json.h"
 

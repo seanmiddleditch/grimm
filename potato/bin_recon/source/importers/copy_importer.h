@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "importer_configs_schema.h"
-
 #include "potato/recon/importer.h"
+#include "potato/schema/importer_configs_schema.h"
 
 namespace up {
     using CopyImporterConfig = schema::CopyImporterConfig;

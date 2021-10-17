@@ -6,6 +6,7 @@ target_sources(potato_libgame_test PRIVATE
 )
 
 up_compile_sap(potato_libgame_test
+    PRIVATE
     SCHEMAS
         test_components.sap
 )

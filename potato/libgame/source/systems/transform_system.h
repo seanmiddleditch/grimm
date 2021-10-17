@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "components_schema.h"
-
 #include "potato/game/query.h"
 #include "potato/game/system.h"
+#include "potato/schema/components_schema.h"
 
 namespace up::game {
     class TransformSystem final : public System {
