@@ -5,8 +5,8 @@
 #include "camera.h"
 #include "camera_controller.h"
 #include "editor.h"
-#include "scene.h"
 
+#include "potato/game/space.h"
 #include "potato/render/camera.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
@@ -18,9 +18,9 @@ namespace up {
 namespace up::shell {
     class GameEditor : public Editor {
     public:
-        explicit GameEditor(box<Scene> scene)
+        explicit GameEditor(box<Space> space)
             : Editor("GameEditor"_zsv)
-            , _scene(std::move(scene))
+            , _space(std::move(space))
             , _cameraController(_camera) {
             _camera.lookAt({0, 10, 15}, {0, 0, 0}, {0, 1, 0});
         }
@@ -39,16 +39,16 @@ namespace up::shell {
     private:
         void _resize(GpuDevice& device, glm::ivec2 size);
 
-        box<Scene> _scene;
+        box<Space> _space;
         rc<GpuTexture> _buffer;
         box<GpuResourceView> _bufferView;
         box<RenderCamera> _renderCamera;
         Camera _camera;
         FlyCameraController _cameraController;
-        glm::ivec2 _sceneDimensions = {0, 0};
+        glm::ivec2 _viewDimensions = {0, 0};
         bool _isInputBound = false;
         bool _paused = false;
     };
 
-    auto createGameEditor(box<Scene> scene) -> box<Editor>;
+    auto createGameEditor(box<Space> space) -> box<Editor>;
 } // namespace up::shell

@@ -4,7 +4,6 @@
 #include "camera.h"
 #include "camera_controller.h"
 #include "editor.h"
-#include "scene.h"
 
 #include "potato/editor/imgui_ext.h"
 #include "potato/render/camera.h"
@@ -20,8 +19,8 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-auto up::shell::createGameEditor(box<Scene> scene) -> box<Editor> {
-    return new_box<GameEditor>(std::move(scene));
+auto up::shell::createGameEditor(box<Space> space) -> box<Editor> {
+    return new_box<GameEditor>(std::move(space));
 }
 
 void up::shell::GameEditor::configure() {
@@ -92,7 +91,7 @@ void up::shell::GameEditor::content() {
     }
 
     if (ImGui::BeginChild("GameContent", contentSize, false)) {
-        _sceneDimensions = {contentSize.x, contentSize.y};
+        _viewDimensions = {contentSize.x, contentSize.y};
 
         auto const pos = ImGui::GetCursorScreenPos();
         if (_bufferView != nullptr) {
@@ -100,7 +99,7 @@ void up::shell::GameEditor::content() {
         }
         ImGui::SetCursorPos(pos);
         ImGui::InvisibleButton("GameContent", contentSize);
-        if (ImGui::IsItemActive() && _scene != nullptr && !_paused) {
+        if (ImGui::IsItemActive() && _space != nullptr && !_paused) {
             _isInputBound = true;
         }
     }
@@ -108,17 +107,17 @@ void up::shell::GameEditor::content() {
 }
 
 void up::shell::GameEditor::tick(float deltaTime) {
-    _scene->update(deltaTime);
+    _space->update(deltaTime);
 }
 
 void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
-    if (_sceneDimensions.x == 0 || _sceneDimensions.y == 0) {
+    if (_viewDimensions.x == 0 || _viewDimensions.y == 0) {
         return;
     }
 
     glm::ivec2 bufferSize = _buffer != nullptr ? _buffer->dimensions() : glm::vec2{0, 0};
-    if (bufferSize.x != _sceneDimensions.x || bufferSize.y != _sceneDimensions.y) {
-        _resize(renderer.device(), _sceneDimensions);
+    if (bufferSize.x != _viewDimensions.x || bufferSize.y != _viewDimensions.y) {
+        _resize(renderer.device(), _viewDimensions);
     }
 
     if (_renderCamera == nullptr) {
@@ -131,8 +130,8 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
 
         _renderCamera->resetBackBuffer(_buffer);
         _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
-        if (_scene != nullptr) {
-            _scene->render(ctx);
+        if (_space != nullptr) {
+            _space->render(ctx);
         }
         renderer.flushDebugDraw(deltaTime);
         renderer.endFrame(deltaTime);
