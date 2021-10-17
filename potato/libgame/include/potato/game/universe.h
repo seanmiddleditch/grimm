@@ -25,7 +25,7 @@ namespace up {
         UP_GAME_API Universe();
         UP_GAME_API ~Universe();
 
-        auto createWorld() noexcept -> World { return World(_context); }
+        auto createWorld() noexcept -> box<World> { return new_box<World>(_context); }
 
         template <typename... Components>
         auto createQuery() -> Query<Components...> {

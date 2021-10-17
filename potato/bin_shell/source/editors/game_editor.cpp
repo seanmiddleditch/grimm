@@ -136,7 +136,6 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
         _renderCamera->resetBackBuffer(_buffer);
         _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
         if (_scene != nullptr) {
-            _scene->flush();
             _scene->render(ctx);
         }
         renderer.flushDebugDraw(deltaTime);

@@ -54,6 +54,7 @@ namespace up::shell {
 
             box<Editor> createEditorForDocument(zstring_view filename) override {
                 auto scene = new_box<Scene>(_universe, _audioEngine);
+                scene->start();
                 auto doc = new_box<SceneDocument>(string(filename), _database);
 
 #if 0
@@ -109,7 +110,6 @@ void up::shell::SceneEditor::tick(float deltaTime) {
     _doc->syncPreview(*_previewScene);
 
     _previewScene->update(deltaTime);
-    _previewScene->flush();
 }
 
 void up::shell::SceneEditor::configure() {
