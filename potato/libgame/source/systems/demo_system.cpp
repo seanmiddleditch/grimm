@@ -8,7 +8,7 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-up::game::DemoSystem::DemoSystem(Space& space, AudioEngine& audioEngine) : System(space), _audioEngine(audioEngine) {}
+up::game::DemoSystem::DemoSystem(Space& space, AudioEngine& audioEngine) : System(space), _audioEngine(audioEngine) { }
 
 void up::game::DemoSystem::start() {
     space().world().createQuery(_waveQuery);

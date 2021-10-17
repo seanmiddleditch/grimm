@@ -21,7 +21,7 @@ namespace up {
         static_assert(sizeof...(Components) != 0, "Empty Query objects are not allowed");
 
         Query() = default;
-        explicit Query(rc<EcsSharedContext> context) noexcept : _context(std::move(context)) {}
+        explicit Query(rc<EcsSharedContext> context) noexcept : _context(std::move(context)) { }
 
         /// Given a World and a callback, finds all matching Archetypes, and invokes the
         /// callback once for each Chunk belonging to the Archetypes, with appropriate pointers.

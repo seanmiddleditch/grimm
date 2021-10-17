@@ -8,14 +8,14 @@ namespace up {
 
     class System {
     public:
-        explicit System(Space& space) noexcept : m_space(space) {}
+        explicit System(Space& space) noexcept : m_space(space) { }
         virtual ~System() = default;
 
         virtual void start() = 0;
         virtual void stop() = 0;
 
         virtual void update(float deltaTime) = 0;
-        virtual void render(RenderContext&) {}
+        virtual void render(RenderContext&) { }
 
     protected:
         Space& space() noexcept { return m_space; }

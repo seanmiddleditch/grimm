@@ -16,10 +16,10 @@ namespace up::game {
         DemoSystem(Space& space, AudioEngine& audioEngine);
 
         void start() override;
-        void stop() override {}
+        void stop() override { }
 
         void update(float) override;
-        void render(RenderContext&) override {}
+        void render(RenderContext&) override { }
 
     private:
         Query<components::Transform, components::Wave> _waveQuery;

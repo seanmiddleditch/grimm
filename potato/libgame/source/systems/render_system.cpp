@@ -10,9 +10,9 @@ void up::game::RenderSystem::start() {
     space().world().createQuery(_meshQuery);
 }
 
-void up::game::RenderSystem::stop() {}
+void up::game::RenderSystem::stop() { }
 
-void up::game::RenderSystem::update(float) {}
+void up::game::RenderSystem::update(float) { }
 
 void up::game::RenderSystem::render(RenderContext& ctx) {
     _meshQuery.select(space().world(), [&](EntityId, components::Mesh& mesh, components::Transform const& trans) {
