@@ -11,7 +11,7 @@ void up::Space::update(float deltaTime) {
     }
 }
 
-void up::Space::render(RenderContext& ctx) {}
+void up::Space::render(RenderContext& ctx) { }
 
 void up::Space::addSystem(box<System> system) {
     _systems.push_back(std::move(system));

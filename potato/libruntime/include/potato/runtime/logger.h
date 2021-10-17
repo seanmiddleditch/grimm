@@ -99,11 +99,11 @@ namespace up {
     class Logger {
     public:
         Logger(string name, LogSeverity minimumSeverity = LogSeverity::Info)
-            : Logger(std::move(name), root()._impl, nullptr, minimumSeverity) {}
+            : Logger(std::move(name), root()._impl, nullptr, minimumSeverity) { }
         Logger(string name, Logger& parent, LogSeverity minimumSeverity = LogSeverity::Info)
-            : Logger(std::move(name), parent._impl, nullptr, minimumSeverity) {}
+            : Logger(std::move(name), parent._impl, nullptr, minimumSeverity) { }
         Logger(string name, Logger& parent, rc<LogSink> sink, LogSeverity minimumSeverity = LogSeverity::Info)
-            : Logger(std::move(name), parent._impl, std::move(sink), minimumSeverity) {}
+            : Logger(std::move(name), parent._impl, std::move(sink), minimumSeverity) { }
 
         UP_RUNTIME_API ~Logger();
 

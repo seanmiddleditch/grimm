@@ -15,7 +15,7 @@ namespace up {
 
         explicit Shader(AssetKey key, vector<byte> shader) noexcept
             : AssetBase(std::move(key))
-            , _content(std::move(shader)) {}
+            , _content(std::move(shader)) { }
 
         view<byte> content() const noexcept { return _content; }
 

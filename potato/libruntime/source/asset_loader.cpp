@@ -13,7 +13,7 @@
 
 #include <Tracy.hpp>
 
-up::AssetLoader::AssetLoader() : _logger("AssetLoader") {}
+up::AssetLoader::AssetLoader() : _logger("AssetLoader") { }
 
 up::AssetLoader::~AssetLoader() = default;
 

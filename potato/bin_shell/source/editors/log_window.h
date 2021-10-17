@@ -15,7 +15,7 @@ namespace up::shell {
     public:
         static constexpr zstring_view editorName = "potato.editor.logs"_zsv;
 
-        explicit LogWindow(LogHistory& history) : Editor("LogWindow"_zsv), _history(history) {}
+        explicit LogWindow(LogHistory& history) : Editor("LogWindow"_zsv), _history(history) { }
 
         LogWindow(LogWindow const&) = delete;
         LogWindow& operator=(LogWindow const&) = delete;
@@ -26,7 +26,7 @@ namespace up::shell {
 
         static box<EditorFactory> createFactory(LogHistory& history);
 
-        void configure() override {}
+        void configure() override { }
         void content() override;
 
     private:

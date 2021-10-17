@@ -7,6 +7,6 @@
 up::Texture::Texture(AssetKey key, Image image, rc<GpuTexture> texture)
     : AssetBase(std::move(key))
     , _texture(std::move(texture))
-    , _image(std::move(image)) {}
+    , _image(std::move(image)) { }
 
 up::Texture::~Texture() = default;

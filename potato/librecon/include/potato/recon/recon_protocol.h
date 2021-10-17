@@ -70,7 +70,7 @@ namespace up {
     struct ReconProtocol::Handler : HandlerBase {
         using Callback = ReconProtocol::Callback<MessageT>;
 
-        explicit Handler(Callback cb) : schema(reflex::getSchema<typename MessageT::type>()), callback(move(cb)) {}
+        explicit Handler(Callback cb) : schema(reflex::getSchema<typename MessageT::type>()), callback(move(cb)) { }
 
         bool match(string_view name) const noexcept override { return name == MessageT::name; }
 

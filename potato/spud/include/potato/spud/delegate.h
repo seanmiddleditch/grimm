@@ -87,7 +87,7 @@ namespace up {
             inline delegate_base(delegate_base&& rhs) noexcept;
             inline delegate_base& operator=(delegate_base&& rhs) noexcept;
 
-            /*implicit*/ delegate_base(std::nullptr_t) noexcept {}
+            /*implicit*/ delegate_base(std::nullptr_t) noexcept { }
             delegate_base& operator=(std::nullptr_t) {
                 reset();
                 return *this;
@@ -106,7 +106,7 @@ namespace up {
             bool operator==(std::nullptr_t) const noexcept { return _vtable == nullptr; }
 
         protected:
-            explicit delegate_base(delegate_vtable_base const* vtable) noexcept : _vtable(vtable) {}
+            explicit delegate_base(delegate_vtable_base const* vtable) noexcept : _vtable(vtable) { }
             ~delegate_base() = default;
 
             // we will overwrite this with an object with just a vtable - if we are nullptr, we have no real vtable
@@ -144,7 +144,10 @@ namespace up {
                 return *this;
             }
 
+            // clang-format off
         private:
+            // clang-format on
+            struct _dummy_for_clang_format_12 { };
             template <typename Functor>
             void assign(Functor&& functor);
         };
@@ -164,19 +167,19 @@ public:
     delegate(ClassType& object, ReturnType (ClassType::*method)(ParamTypes...)) noexcept
         : delegate([&object, method](ParamTypes&&... params) {
             return (object.*method)(std::forward<ParamTypes>(params)...);
-        }) {}
+        }) { }
 
     template <typename ClassType>
     delegate(ClassType&& object, ReturnType (ClassType::*method)(ParamTypes...) const) noexcept
         : delegate([object = std::forward<ClassType>(object), method](ParamTypes&&... params) {
             return (object.*method)(std::forward<ParamTypes>(params)...);
-        }) {}
+        }) { }
 
     template <typename ClassType>
     delegate(ClassType* object, ReturnType (ClassType::*method)(ParamTypes...)) noexcept
         : delegate([object, method](ParamTypes&&... params) {
             return (object->*method)(std::forward<ParamTypes>(params)...);
-        }) {}
+        }) { }
 
     auto operator()(ParamTypes... params) -> ReturnType {
         UP_SPUD_ASSERT(this->_vtable != nullptr, "Invoking an empty delegate");
@@ -198,13 +201,13 @@ public:
     delegate(ClassType const& object, ReturnType (ClassType::*method)(ParamTypes...) const)
         : delegate([&object, method](ParamTypes&&... params) {
             return (object.*method)(std::forward<ParamTypes>(params)...);
-        }) {}
+        }) { }
 
     template <typename ClassType>
     delegate(ClassType const* object, ReturnType (ClassType::*method)(ParamTypes...) const)
         : delegate([object, method](ParamTypes&&... params) {
             return (object->*method)(std::forward<ParamTypes>(params)...);
-        }) {}
+        }) { }
 
     auto operator()(ParamTypes... params) const -> ReturnType {
         UP_SPUD_ASSERT(this->_vtable != nullptr, "Invoking an empty delegate");

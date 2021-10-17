@@ -21,7 +21,7 @@ namespace up {
     }
 } // namespace up
 
-up::World::World(rc<EcsSharedContext> context) : _context(std::move(context)) {}
+up::World::World(rc<EcsSharedContext> context) : _context(std::move(context)) { }
 
 up::World::~World() = default;
 

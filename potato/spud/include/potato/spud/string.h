@@ -39,7 +39,7 @@ public:
     constexpr string() noexcept = default;
     ~string() { _free(_data, _size); }
 
-    /*implicit*/ string(string const& str) : _data(_copy(str._data, str._size)), _size(str._size) {}
+    /*implicit*/ string(string const& str) : _data(_copy(str._data, str._size)), _size(str._size) { }
     constexpr string(string&& rhs) noexcept : _data(rhs._data), _size(rhs._size) {
         rhs._data = nullptr;
         rhs._size = 0;
@@ -47,9 +47,9 @@ public:
     /*implicit*/ string(const_pointer zstr) : _size(zstr != nullptr ? stringLength(zstr) : 0) {
         _data = _copy(zstr, _size);
     }
-    /*implicit*/ string(const_pointer data, size_type size) : _data(_copy(data, size)), _size(size) {}
-    explicit string(zstring_view view) : _data(_copy(view.data(), view.size())), _size(view.size()) {}
-    explicit string(string_view view) : _data(_copy(view.data(), view.size())), _size(view.size()) {}
+    /*implicit*/ string(const_pointer data, size_type size) : _data(_copy(data, size)), _size(size) { }
+    explicit string(zstring_view view) : _data(_copy(view.data(), view.size())), _size(view.size()) { }
+    explicit string(string_view view) : _data(_copy(view.data(), view.size())), _size(view.size()) { }
 
     static string take_ownership(pointer str, size_type length) noexcept {
         string s;

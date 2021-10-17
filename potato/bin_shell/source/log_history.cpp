@@ -4,7 +4,7 @@
 
 class up::shell::LogHistory::LogHistorySink : public LogSink {
 public:
-    LogHistorySink(LogHistory& history) : _history(history) {}
+    LogHistorySink(LogHistory& history) : _history(history) { }
 
     void log(string_view loggerName, LogSeverity severity, string_view message, LogLocation location) noexcept
         override {

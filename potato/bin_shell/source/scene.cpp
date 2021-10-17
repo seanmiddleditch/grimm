@@ -25,7 +25,7 @@ up::Scene::Scene(Universe& universe, AudioEngine& audioEngine)
     , _spinQuery{universe.createQuery<components::Transform, components::Spin>()}
     , _dingQuery{universe.createQuery<components::Ding>()}
     , _transformQuery{universe.createQuery<components::Transform>()}
-    , _renderableMeshQuery{universe.createQuery<components::Mesh, components::Transform>()} {}
+    , _renderableMeshQuery{universe.createQuery<components::Mesh, components::Transform>()} { }
 
 up::Scene::~Scene() = default;
 

@@ -103,7 +103,7 @@ endif()
 
 if(CLANG_FORMAT)
     add_custom_target(potato_format_all
-        COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/scripts/tools/run-clang-format.py" -ri "--clang-format-executable=${CLANG_FORMAT}" "${CMAKE_CURRENT_SOURCE_DIR}/source"
+        COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/scripts/tools/run-clang-format.py" -ri "--clang-format-executable=${CLANG_FORMAT}" "${CMAKE_CURRENT_SOURCE_DIR}/potato"
         COMMAND echo "Format complete!"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         COMMENT "Formatting code...")
@@ -111,7 +111,7 @@ endif()
 
 if(CLANG_TIDY)
     add_custom_target(potato_tidy_fix
-        COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/scripts/tools/run-clang-tidy.py" -clang-tidy-binary "${CLANG_TIDY}" -p "${CMAKE_CURRENT_BINARY_DIR}" -quiet -fix "${CMAKE_CURRENT_SOURCE_DIR}/source" -exclude "[.]rc$$"
+        COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/scripts/tools/run-clang-tidy.py" -clang-tidy-binary "${CLANG_TIDY}" -p "${CMAKE_CURRENT_BINARY_DIR}" -quiet -fix "${CMAKE_CURRENT_SOURCE_DIR}/potato" -exclude "[.]rc$$"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         COMMENT "Tidying code...")
 endif()

@@ -146,16 +146,17 @@ bool up::ImguiBackend::handleEvent(SDL_Event const& ev) {
             io.AddInputCharactersUTF8(ev.text.text);
             return io.WantTextInput;
         case SDL_KEYDOWN:
-        case SDL_KEYUP: {
-            int key = ev.key.keysym.scancode;
-            IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
-            io.KeysDown[key] = (ev.type == SDL_KEYDOWN);
-            io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
-            io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
-            io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
-            io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
-            return io.WantCaptureKeyboard;
-        }
+        case SDL_KEYUP:
+            {
+                int key = ev.key.keysym.scancode;
+                IM_ASSERT(key >= 0 && key < IM_ARRAYSIZE(io.KeysDown));
+                io.KeysDown[key] = (ev.type == SDL_KEYDOWN);
+                io.KeyShift = ((SDL_GetModState() & KMOD_SHIFT) != 0);
+                io.KeyCtrl = ((SDL_GetModState() & KMOD_CTRL) != 0);
+                io.KeyAlt = ((SDL_GetModState() & KMOD_ALT) != 0);
+                io.KeySuper = ((SDL_GetModState() & KMOD_GUI) != 0);
+                return io.WantCaptureKeyboard;
+            }
     }
     return false;
 }

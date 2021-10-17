@@ -20,7 +20,7 @@ namespace up {
     public:
         static_assert(sizeof...(Components) != 0, "Empty Query objects are not allowed");
 
-        explicit Query(rc<EcsSharedContext> context) : _context(std::move(context)) {}
+        explicit Query(rc<EcsSharedContext> context) : _context(std::move(context)) { }
 
         /// Given a World and a callback, finds all matching Archetypes, and invokes the
         /// callback once for each Chunk belonging to the Archetypes, with appropriate pointers.
@@ -28,9 +28,8 @@ namespace up {
         /// This is the primary mechanism for finding or mutating Entities.
         ///
         template <typename Callback>
-        void selectChunks(
-            World& world,
-            Callback&& callback) requires is_invocable_v<Callback, size_t, EntityId const*, Components*...>;
+        void selectChunks(World& world, Callback&& callback) requires
+            is_invocable_v<Callback, size_t, EntityId const*, Components*...>;
 
         /// Given a World and a callback, finds all matching Archetypes, and invokes the
         /// callback once for each entity.
@@ -40,7 +39,10 @@ namespace up {
         template <typename Callback>
         void select(World& world, Callback&& callback) requires is_invocable_v<Callback, EntityId, Components&...>;
 
+        // clang-format off
     private:
+        // clang-format on
+
         struct Match {
             ArchetypeId archetype;
             int offsets[sizeof...(Components)];
@@ -59,18 +61,16 @@ namespace up {
 
     template <typename... Components>
     template <typename Callback>
-    void Query<Components...>::selectChunks(
-        World& world,
-        Callback&& callback) requires is_invocable_v<Callback, size_t, EntityId const*, Components*...> {
+    void Query<Components...>::selectChunks(World& world, Callback&& callback) requires
+        is_invocable_v<Callback, size_t, EntityId const*, Components*...> {
         _match();
         _executeChunks(world, callback, std::make_index_sequence<sizeof...(Components)>{});
     }
 
     template <typename... Components>
     template <typename Callback>
-    void Query<Components...>::select(
-        World& world,
-        Callback&& callback) requires is_invocable_v<Callback, EntityId, Components&...> {
+    void Query<Components...>::select(World& world, Callback&& callback) requires
+        is_invocable_v<Callback, EntityId, Components&...> {
         _match();
         _execute(world, callback, std::make_index_sequence<sizeof...(Components)>{});
     }

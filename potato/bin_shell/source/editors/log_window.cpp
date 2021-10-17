@@ -13,7 +13,7 @@ namespace up::shell {
     namespace {
         class LogWindowFactory : public EditorFactory {
         public:
-            explicit LogWindowFactory(LogHistory& history) : _history(history) {}
+            explicit LogWindowFactory(LogHistory& history) : _history(history) { }
 
             zstring_view editorName() const noexcept override { return LogWindow::editorName; }
 

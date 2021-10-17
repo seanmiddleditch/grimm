@@ -52,7 +52,7 @@ namespace up {
 
         class iterator {
         public:
-            constexpr explicit iterator(PointerT* ptr) noexcept : _ptr(ptr) {}
+            constexpr explicit iterator(PointerT* ptr) noexcept : _ptr(ptr) { }
 
             constexpr reference operator*() const noexcept { return **_ptr; }
             constexpr iterator& operator++() noexcept {
@@ -68,7 +68,7 @@ namespace up {
 
         template <typename RangeT>
         constexpr deref_span(RangeT const& range) noexcept : _first(range.data())
-                                                           , _last(_first + range.size()) {}
+                                                           , _last(_first + range.size()) { }
 
         constexpr iterator begin() const noexcept { return iterator(_first); }
         constexpr iterator end() const noexcept { return iterator(_last); }
@@ -98,7 +98,9 @@ namespace up {
 
     class SceneDocument {
     public:
-        SceneDocument(string filename, SceneDatabase& database) : _filename(std::move(filename)), _database(database) {}
+        SceneDocument(string filename, SceneDatabase& database)
+            : _filename(std::move(filename))
+            , _database(database) { }
 
         sequence<int> indices() const noexcept { return sequence{static_cast<int>(_entities.size())}; }
         SceneEntity& entityAt(int index) noexcept { return _entities[index]; }

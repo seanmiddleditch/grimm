@@ -20,7 +20,7 @@ struct GeneratorContext {
 
 class Generator {
 public:
-    explicit Generator(GeneratorContext const& ctx) : _output(ctx.output), _module(ctx.mod), _config(ctx.config) {}
+    explicit Generator(GeneratorContext const& ctx) : _output(ctx.output), _module(ctx.mod), _config(ctx.config) { }
     virtual ~Generator() = default;
 
     virtual bool generate() = 0;

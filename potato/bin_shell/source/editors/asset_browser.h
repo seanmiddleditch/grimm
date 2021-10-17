@@ -36,7 +36,7 @@ namespace up::shell {
             , _assetLoader(assetLoader)
             , _assetEditService(assetEditService)
             , _reconClient(reconClient)
-            , _onFileSelected(onFileSelected) {}
+            , _onFileSelected(onFileSelected) { }
 
         zstring_view displayName() const override { return "Assets"; }
         zstring_view editorClass() const override { return editorName; }

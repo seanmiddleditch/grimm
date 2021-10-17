@@ -16,7 +16,8 @@
 #    define UP_DEBUG_BREAK() \
         do { \
             raise(SIGTRAP); \
-        } while (false)
+        } \
+        while (false)
 #else
 #    error "UP_DEBUG_BREAK: Unsupported platform/compiler"
 #endif
@@ -52,4 +53,5 @@ namespace up::_detail {
                     break; \
             } \
         } \
-    } while (false)
+    } \
+    while (false)

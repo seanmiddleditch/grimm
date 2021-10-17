@@ -33,7 +33,7 @@ namespace up {
 
             generator<T> get_return_object() noexcept;
 
-            void return_void() const noexcept {}
+            void return_void() const noexcept { }
             coro_std::suspend_always initial_suspend() const noexcept { return {}; }
             coro_std::suspend_always final_suspend() const noexcept { return {}; }
 
@@ -48,13 +48,13 @@ namespace up {
             template <typename U>
             coro_std::suspend_never await_transform(U&& value) = delete;
 
-            void rethrow_if_exception() const noexcept {}
+            void rethrow_if_exception() const noexcept { }
 
         private:
             pointer _value = nullptr;
         };
 
-        struct generator_sentinel {};
+        struct generator_sentinel { };
 
         template <typename T>
         class generator_iterator {
@@ -67,7 +67,7 @@ namespace up {
             using pointer = typename generator_promise<T>::pointer;
 
             generator_iterator() noexcept = default;
-            explicit generator_iterator(handle_type handle) noexcept : _coro(handle) {}
+            explicit generator_iterator(handle_type handle) noexcept : _coro(handle) { }
 
             friend bool operator==(generator_iterator const& lhs, generator_sentinel) noexcept {
                 return lhs._coro == nullptr || lhs._coro.done();
@@ -123,7 +123,7 @@ namespace up {
         }
 
     private:
-        explicit generator(handle_type handle) noexcept : _coro(handle) {}
+        explicit generator(handle_type handle) noexcept : _coro(handle) { }
 
         handle_type _coro;
 

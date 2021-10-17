@@ -9,7 +9,7 @@ namespace up {
     public:
         class Reader {
         public:
-            explicit Reader(std::atomic<unsigned>& lock) noexcept : _lock(lock) {}
+            explicit Reader(std::atomic<unsigned>& lock) noexcept : _lock(lock) { }
 
             inline void lock() noexcept;
             [[nodiscard]] inline bool tryLock() noexcept;
@@ -21,7 +21,7 @@ namespace up {
 
         class Writer {
         public:
-            explicit Writer(std::atomic<unsigned>& lock) noexcept : _lock(lock) {}
+            explicit Writer(std::atomic<unsigned>& lock) noexcept : _lock(lock) { }
 
             inline void lock() noexcept;
             [[nodiscard]] inline bool tryLock() noexcept;
@@ -31,7 +31,7 @@ namespace up {
             std::atomic<unsigned>& _lock;
         };
 
-        RWLock() noexcept : _lock(0), _reader(_lock), _writer(_lock) {}
+        RWLock() noexcept : _lock(0), _reader(_lock), _writer(_lock) { }
 
         Reader& reader() noexcept { return _reader; }
         Writer& writer() noexcept { return _writer; }
@@ -45,7 +45,7 @@ namespace up {
     void RWLock::Reader::lock() noexcept {
         // FIXME - exponential backoff should be added
         unsigned expected = _lock.load(std::memory_order_relaxed);
-        while (expected == ~0U || _lock.compare_exchange_weak(expected, expected + 1, std::memory_order_acquire)) {}
+        while (expected == ~0U || _lock.compare_exchange_weak(expected, expected + 1, std::memory_order_acquire)) { }
     }
 
     bool RWLock::Reader::tryLock() noexcept {
@@ -58,7 +58,7 @@ namespace up {
     void RWLock::Writer::lock() noexcept {
         // FIXME - exponential backoff should be added
         unsigned expected = 0;
-        while (_lock.compare_exchange_weak(expected, ~0U, std::memory_order_acquire)) {}
+        while (_lock.compare_exchange_weak(expected, ~0U, std::memory_order_acquire)) { }
     }
 
     bool RWLock::Writer::tryLock() noexcept {

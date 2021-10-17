@@ -8,7 +8,7 @@
 static_assert(up::nameof<int>() == "int");
 
 template <typename T>
-struct as_template {};
+struct as_template { };
 
 TEST_CASE("potato.spud.nameof", "[potato][spud]") {
     using namespace up;

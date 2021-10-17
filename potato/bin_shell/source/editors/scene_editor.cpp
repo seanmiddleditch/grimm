@@ -46,7 +46,7 @@ namespace up::shell {
                 , _universe(universe)
                 , _database(database)
                 , _assetLoader(assetLoader)
-                , _onPlayClicked(std::move(onPlayClicked)) {}
+                , _onPlayClicked(std::move(onPlayClicked)) { }
 
             zstring_view editorName() const noexcept override { return SceneEditor::editorName; }
 

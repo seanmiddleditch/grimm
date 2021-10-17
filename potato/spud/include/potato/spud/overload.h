@@ -5,7 +5,7 @@
 namespace up {
     template <typename... Fs>
     struct overload : Fs... {
-        overload(Fs&&... fs) : Fs(fs)... {}
+        overload(Fs&&... fs) : Fs(fs)... { }
 
         using Fs::operator()...;
     };

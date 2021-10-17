@@ -21,7 +21,7 @@ namespace up {
         shared& operator=(shared const&) = delete;
 
         // moving is allowed, but does not impact references
-        shared(shared&&) noexcept {}
+        shared(shared&&) noexcept { }
         shared& operator=(shared&&) noexcept { return *this; }
 
         void addRef() const noexcept { ++_refs; }
@@ -49,19 +49,19 @@ namespace up {
         using reference = T&;
 
         rc() noexcept = default;
-        explicit rc(pointer ptr) noexcept : _ptr(ptr) {}
+        explicit rc(pointer ptr) noexcept : _ptr(ptr) { }
         rc(decltype(rc_acquire), pointer ptr) noexcept : _ptr(ptr) { _addRef(); }
         ~rc() noexcept { _removeRef(); }
 
         rc(rc const& rhs) noexcept : _ptr(rhs._ptr) { _addRef(); }
-        rc(rc&& rhs) noexcept : _ptr(rhs.release()) {}
+        rc(rc&& rhs) noexcept : _ptr(rhs.release()) { }
         template <typename U>
         /*implicit*/ rc(rc<U> const& rhs) noexcept requires std::is_convertible_v<U*, T*> : _ptr(rhs.get()) {
             _addRef();
         }
         template <typename U>
-        /*implicit*/ rc(rc<U>&& rhs) noexcept requires std::is_convertible_v<U*, T*> : _ptr(rhs.release()) {}
-        /*implicit*/ rc(std::nullptr_t) noexcept {}
+        /*implicit*/ rc(rc<U>&& rhs) noexcept requires std::is_convertible_v<U*, T*> : _ptr(rhs.release()) { }
+        /*implicit*/ rc(std::nullptr_t) noexcept { }
 
         inline rc& operator=(rc const& rhs) noexcept;
         inline rc& operator=(rc&& rhs) noexcept;
