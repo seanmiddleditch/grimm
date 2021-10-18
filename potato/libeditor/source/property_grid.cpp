@@ -1,13 +1,13 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "property_grid.h"
-#include "asset_browser_popup.h"
-#include "common_schema.h"
-#include "constraint_schema.h"
-#include "tools_schema.h"
+#include "potato/editor/property_grid.h"
 
+#include "potato/editor/asset_browser_popup.h"
 #include "potato/editor/icons.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/schema/common_schema.h"
+#include "potato/schema/constraint_schema.h"
+#include "potato/schema/tools_schema.h"
 #include "potato/runtime/asset.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/resource_manifest.h"

@@ -1,11 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "scene_editor.h"
-#include "camera.h"
-#include "camera_controller.h"
-#include "editor.h"
-#include "scene_doc.h"
-#include "selection.h"
 
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
@@ -22,6 +17,11 @@
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/renderer.h"
+#include "potato/shell/camera.h"
+#include "potato/shell/camera_controller.h"
+#include "potato/shell/editor.h"
+#include "potato/shell/scene_doc.h"
+#include "potato/shell/selection.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/spud/delegate.h"

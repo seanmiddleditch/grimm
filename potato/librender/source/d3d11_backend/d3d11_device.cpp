@@ -11,8 +11,8 @@
 #include "d3d11_texture.h"
 
 #define BYTE unsigned char
-#include "debug_pixel_shader.h"
-#include "debug_vertex_shader.h"
+#include "potato/shader/debug_pixel_shader.h"
+#include "potato/shader/debug_vertex_shader.h"
 #undef BYTE
 
 #include "potato/runtime/assertion.h"

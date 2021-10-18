@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "common.h"
-
+#include "potato/game/common.h"
 #include "potato/spud/int_types.h"
 
 namespace up {

@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "debug.h"
-#include "callstack.h"
+#include "potato/runtime/debug.h"
 #include "debug.windows.h"
 
+#include "potato/runtime/callstack.h"
 #include "potato/spud/fixed_string_writer.h"
 #include "potato/spud/platform_windows.h"
 

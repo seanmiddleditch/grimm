@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "json.h"
-#include "filesystem.h"
-#include "stream.h"
+#include "potato/runtime/json.h"
 
+#include "potato/runtime/filesystem.h"
+#include "potato/runtime/stream.h"
 #include "potato/spud/string.h"
 #include "potato/spud/string_view.h"
 

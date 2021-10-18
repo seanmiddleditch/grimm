@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "world.h"
+#include "potato/game/world.h"
 #include "entity_id.h"
-#include "shared_context.h"
 
+#include "potato/game/shared_context.h"
 #include "potato/runtime/assertion.h"
 #include "potato/spud/find.h"
 #include "potato/spud/sequence.h"

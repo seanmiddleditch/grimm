@@ -161,15 +161,6 @@ function(up_set_common_properties TARGET)
         )
     endif()
 
-    # Private include directories
-    #
-    if(NOT IS_INTERFACE AND NOT IS_TEST)
-        target_include_directories(${TARGET} PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/source
-            ${CMAKE_CURRENT_SOURCE_DIR}/include/potato/${SHORT_NAME}
-        )
-    endif()
-
     ## Set test output directory.
     ## Not actually a good idea without figuring out how to place
     ## runtime libraries next to the tests.

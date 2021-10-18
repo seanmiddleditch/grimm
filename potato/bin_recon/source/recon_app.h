@@ -4,11 +4,11 @@
 
 #include "asset_database.h"
 #include "file_hash_cache.h"
-#include "importer.h"
 #include "importer_factory.h"
 #include "recon_config.h"
 #include "recon_queue.h"
 
+#include "potato/recon/importer.h"
 #include "potato/recon/recon_server.h"
 #include "potato/runtime/io_loop.h"
 #include "potato/runtime/logger.h"

@@ -1,7 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "callstack.h"
-#include "debug.h"
+#include "potato/runtime/debug.h"
+
+#include "potato/runtime/callstack.h"
 
 #include <nanofmt/format.h>
 #include <array>

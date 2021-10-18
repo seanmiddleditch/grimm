@@ -1,7 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "camera_controller.h"
-#include "camera.h"
+#include "potato/shell/camera_controller.h"
+
+#include "potato/shell/camera.h"
 
 #include <glm/common.hpp>
 #include <glm/geometric.hpp>

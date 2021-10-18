@@ -38,8 +38,10 @@ up_compile_flat_schema(potato_librender
 )
 
 include(up_compile_sap)
-up_compile_sap(potato_librender SCHEMAS
-    "schema/material.sap"
+up_compile_sap(potato_librender
+    PUBLIC
+    SCHEMAS
+        "schema/material.sap"
 )
 
 target_link_libraries(potato_librender

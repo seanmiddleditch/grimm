@@ -1,9 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "game_editor.h"
-#include "camera.h"
-#include "camera_controller.h"
-#include "editor.h"
 
 #include "potato/editor/imgui_ext.h"
 #include "potato/render/camera.h"
@@ -13,6 +10,9 @@
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
 #include "potato/render/renderer.h"
+#include "potato/shell/camera.h"
+#include "potato/shell/camera_controller.h"
+#include "potato/shell/editor.h"
 
 #include <glm/glm.hpp>
 #include <SDL.h>

@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "universe.h"
-#include "shared_context.h"
-#include "world.h"
+#include "potato/game/universe.h"
 
+#include "potato/game/shared_context.h"
+#include "potato/game/world.h"
 #include "potato/runtime/assertion.h"
 
 up::Universe::Universe() : _context(new_shared<EcsSharedContext>()) { }

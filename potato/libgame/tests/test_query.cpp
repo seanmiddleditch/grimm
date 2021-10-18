@@ -1,10 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "test_components_schema.h"
-
 #include "potato/game/query.h"
 #include "potato/game/universe.h"
 #include "potato/game/world.h"
+#include "potato/schema/test_components_schema.h"
 
 #include <catch2/catch.hpp>
 

@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "importer_context.h"
-#include "importer.h"
 
+#include "potato/recon/importer.h"
 #include "potato/reflex/type.h"
 
 up::ImporterContext::ImporterContext(

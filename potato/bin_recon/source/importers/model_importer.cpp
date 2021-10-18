@@ -1,8 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "model_importer.h"
+#include "../importer_context.h"
 
-#include "potato/render/model_generated.h"
+#include "potato/flatbuffer/model_generated.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/logger.h"
 #include "potato/runtime/path.h"

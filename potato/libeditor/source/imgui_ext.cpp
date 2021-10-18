@@ -25,9 +25,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "imgui_ext.h"
-#include "imgui_backend.h"
+#include "potato/editor/imgui_ext.h"
 
+#include "potato/editor/imgui_backend.h"
 #include "potato/spud/numeric_util.h"
 
 #include <glm/gtx/quaternion.hpp>

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "importer.h"
-#include "importer_configs_schema.h"
+#include "potato/recon/importer.h"
+#include "potato/schema/importer_configs_schema.h"
 
 namespace up {
     using JsonImporterConfig = schema::JsonImporterConfig;

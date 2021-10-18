@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "image.h"
+#include "potato/render/image.h"
 
 #include "potato/runtime/stream.h"
 

@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "ui/menu.h"
-#include "ui/action.h"
+#include "potato/shell/ui/menu.h"
 
 #include "potato/editor/imgui_ext.h"
+#include "potato/shell/ui/action.h"
 #include "potato/spud/enumerate.h"
 #include "potato/spud/erase.h"
 #include "potato/spud/find.h"

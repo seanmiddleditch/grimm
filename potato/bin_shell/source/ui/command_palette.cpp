@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "ui/command_palette.h"
-#include "ui/action.h"
+#include "potato/shell/ui/command_palette.h"
 
+#include "potato/shell/ui/action.h"
 #include "potato/spud/enumerate.h"
 #include "potato/spud/sequence.h"
 #include "potato/spud/sort.h"

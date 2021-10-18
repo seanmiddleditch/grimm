@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "importer.h"
+#include "potato/recon/importer.h"
 
 namespace up {
     class ModelImporter : public Importer {

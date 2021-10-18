@@ -4,7 +4,6 @@ target_sources(potato_recon PRIVATE
     "file_hash_cache.cpp"
     "file_hash_cache.h"
     "importer.cpp"
-    "importer.h"
     "importer_context.cpp"
     "importer_context.h"
     "importer_factory.cpp"

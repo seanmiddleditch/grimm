@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "debug.h"
+#include "potato/runtime/debug.h"
 
 #include <cstdio>
 #include <cstdlib>

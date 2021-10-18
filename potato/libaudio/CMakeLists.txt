@@ -14,8 +14,10 @@ include(up_set_common_properties)
 up_set_common_properties(potato_libaudio)
 
 include(up_compile_sap)
-up_compile_sap(potato_libaudio SCHEMAS
-    "schema/sound.sap"
+up_compile_sap(potato_libaudio
+    PUBLIC
+    SCHEMAS
+        "schema/sound.sap"
 )
 
 target_link_libraries(potato_libaudio

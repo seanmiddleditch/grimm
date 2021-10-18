@@ -33,7 +33,7 @@ function(up_compile_shader TARGET)
         )
 
         set(OUT_HEADER_DIR "${CMAKE_CURRENT_BINARY_DIR}/gen/inc")
-        set(OUT_HEADER "${OUT_HEADER_DIR}/${ARG_NAME}_shader.h")
+        set(OUT_HEADER "${OUT_HEADER_DIR}/potato/shader/${ARG_NAME}_shader.h")
 
         file(MAKE_DIRECTORY "${OUT_HEADER_DIR}")
         add_custom_command(

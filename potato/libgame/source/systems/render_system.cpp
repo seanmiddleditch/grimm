@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "render_system.h"
-#include "space.h"
-#include "world.h"
 
+#include "potato/game/space.h"
+#include "potato/game/world.h"
 #include "potato/render/context.h"
 
 void up::game::RenderSystem::start() {

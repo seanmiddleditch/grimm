@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "ui/action.h"
-
+#include "potato/shell/ui/action.h"
 #include "potato/spud/string.h"
 #include "potato/spud/vector.h"
 

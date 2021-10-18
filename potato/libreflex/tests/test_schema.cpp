@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "reflex_test_schema.h"
+#include "potato/schema/reflex_test_schema.h"
 
 #include <catch2/catch.hpp>
 

@@ -1,10 +1,11 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "material_importer.h"
-#include "material_schema.h"
+#include "../importer_context.h"
 
+#include "potato/flatbuffer/material_generated.h"
 #include "potato/reflex/serialize.h"
-#include "potato/render/material_generated.h"
+#include "potato/schema/material_schema.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"
 #include "potato/runtime/logger.h"

@@ -12,6 +12,7 @@ add_subdirectory(include/potato/game)
 add_subdirectory(source)
 
 up_compile_sap(potato_libgame
+    PUBLIC
     SCHEMAS
         "schema/ecs.sap"
         "schema/components.sap"
