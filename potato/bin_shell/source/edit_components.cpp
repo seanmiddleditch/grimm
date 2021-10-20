@@ -68,3 +68,7 @@ auto up::SpinEditComponent::createFrom(scene::components::Spin const& sceneCompo
 auto up::DingEditComponent::createFrom(scene::components::Ding const& sceneComponent) const -> components::Ding {
     return {.period = sceneComponent.period, .time = 0, .sound = sceneComponent.sound};
 }
+
+auto up::BodyEditComponent::createFrom(scene::components::Body const& sceneComponent) const -> components::Body {
+    return {.linearVelocity = sceneComponent.linearVelocity};
+}

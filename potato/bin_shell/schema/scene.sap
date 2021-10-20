@@ -35,3 +35,8 @@ scene_component Ding {
     float period = 1;
     SoundRef sound;
 }
+
+scene_component Body {
+    vec3 linearVelocity = {0, 0, 0};
+}
+

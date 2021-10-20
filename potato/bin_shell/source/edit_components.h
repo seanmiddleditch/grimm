@@ -71,4 +71,8 @@ namespace up {
     class DingEditComponent final : public SimpleEditComponent<scene::components::Ding, components::Ding> {
         components::Ding createFrom(scene::components::Ding const& sceneComponent) const override;
     };
+
+    class BodyEditComponent final : public SimpleEditComponent<scene::components::Body, components::Body> {
+        components::Body createFrom(scene::components::Body const& sceneComponent) const override;
+    };
 } // namespace up

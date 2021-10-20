@@ -3,9 +3,10 @@
 #include "potato/game/space.h"
 
 namespace up {
-    extern void registerTransformSystem(Space& space);
-    extern void registerRenderSystem(Space& space);
     extern void registerDemoSystem(Space& space, AudioEngine& audioEngine);
+    extern void registerPhysicsSystem(Space& space);
+    extern void registerRenderSystem(Space& space);
+    extern void registerTransformSystem(Space& space);
 }
 
 up::Space::Space(box<World> world) : _world(std::move(world)) {
@@ -52,4 +53,5 @@ void up::Space::render(RenderContext& ctx) {
 
 void up::Space::addDemoSystem(Space& space, class AudioEngine& audio) {
     registerDemoSystem(space, audio);
+    registerPhysicsSystem(space);
 }
