@@ -26,12 +26,12 @@ struct VS_Output {
 VS_Output vertex_main(VS_Input input) {
     VS_Output output;
     output.position = float4(input.position, 1);
-    output.position = mul(output.position, modelWorld);
-    output.position = mul(output.position, worldView);
-    output.position = mul(output.position, viewProjection);
+    output.position = mul(output.position, modelData.modelWorld);
+    output.position = mul(output.position, cameraData.worldView);
+    output.position = mul(output.position, cameraData.viewProjection);
 
-    output.normal = mul(mul(float4(input.normal, 0), modelWorld), worldView).xyz;
-    float3 tangent = mul(mul(float4(input.tangent, 0), modelWorld), worldView).xyz;
+    output.normal = mul(mul(float4(input.normal, 0), modelData.modelWorld), cameraData.worldView).xyz;
+    float3 tangent = mul(mul(float4(input.tangent, 0), modelData.modelWorld), cameraData.worldView).xyz;
     float3 bitangent = normalize(float4(cross(output.normal.xyz, tangent.xyz).xyz, 0)).xyz;
 
     output.tangentSpace = float3x3(tangent, bitangent, output.normal);

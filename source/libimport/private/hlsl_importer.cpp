@@ -77,8 +77,8 @@ bool up::HlslImporter::import(ImporterContext& ctx) {
 
     stream.close();
 
-    bool success = _compile(ctx, absoluteSourcePath, shader, "vertex", "vertex_main", "vs_5_0");
-    success = _compile(ctx, absoluteSourcePath, shader, "pixel", "pixel_main", "ps_5_0") && success;
+    bool success = _compile(ctx, absoluteSourcePath, shader, "vertex", "vertex_main", "vs_5_1");
+    success = _compile(ctx, absoluteSourcePath, shader, "pixel", "pixel_main", "ps_5_1") && success;
 
     return success;
 #else

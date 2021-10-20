@@ -1,12 +1,13 @@
 // Copyright (C) 2019 Sean Middleditch, all rights reserverd.
 
-cbuffer frameData : register(b0) {
+struct FrameData {
     uint frameNumber;
     float lastFrameTimeDelta;
     double timeStamp;
 };
+ConstantBuffer<FrameData> frameData : register(b0);
 
-cbuffer cameraData : register(b1) {
+struct CameraData {
     float4x4 worldViewProjection;
     float4x4 worldView;
     float4x4 viewProjection;
@@ -14,10 +15,12 @@ cbuffer cameraData : register(b1) {
     float nearZ;
     float farZ;
 };
+ConstantBuffer<CameraData> cameraData : register(b1);
 
-cbuffer modelData : register(b2) {
+struct ModelData {
     float4x4 modelWorld;
     float4x4 worldModel;
-}
+};
+ConstantBuffer<ModelData> modelData : register(b2);
 
 static const float PI = 3.14159265f;
