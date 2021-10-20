@@ -1,13 +1,16 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/game/space.h"
-#include "systems/demo_system.h"
-#include "systems/render_system.h"
-#include "systems/transform_system.h"
+
+namespace up {
+    extern void registerTransformSystem(Space& space);
+    extern void registerRenderSystem(Space& space);
+    extern void registerDemoSystem(Space& space, AudioEngine& audioEngine);
+}
 
 up::Space::Space(box<World> world) : _world(std::move(world)) {
-    addSystem<game::TransformSystem>();
-    addSystem<game::RenderSystem>();
+    registerTransformSystem(*this);
+    registerRenderSystem(*this);
 }
 
 up::Space::~Space() = default;
@@ -48,5 +51,5 @@ void up::Space::render(RenderContext& ctx) {
 }
 
 void up::Space::addDemoSystem(Space& space, class AudioEngine& audio) {
-    space.addSystem<game::DemoSystem>(audio);
+    registerDemoSystem(space, audio);
 }

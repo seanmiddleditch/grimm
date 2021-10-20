@@ -1,23 +1,50 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "demo_system.h"
-
 #include "potato/audio/audio_engine.h"
+#include "potato/game/query.h"
 #include "potato/game/space.h"
+#include "potato/game/system.h"
 #include "potato/game/world.h"
+#include "potato/schema/components_schema.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 
-up::game::DemoSystem::DemoSystem(Space& space, AudioEngine& audioEngine) : System(space), _audioEngine(audioEngine) { }
+namespace {
+    using namespace up;
 
-void up::game::DemoSystem::start() {
+    class DemoSystem final : public System {
+    public:
+        DemoSystem(Space& space, AudioEngine& audioEngine);
+
+        void start() override;
+        void stop() override { }
+
+        void update(float) override;
+        void render(RenderContext&) override { }
+
+    private:
+        Query<components::Transform, components::Wave> _waveQuery;
+        Query<components::Transform> _orbitQuery;
+        Query<components::Transform, components::Spin> _spinQuery;
+        Query<components::Ding> _dingQuery;
+        AudioEngine& _audioEngine;
+    };
+} // namespace
+
+namespace up {
+    void registerDemoSystem(Space& space, AudioEngine& audioEngine) { space.addSystem<DemoSystem>(audioEngine); }
+} // namespace up
+
+DemoSystem::DemoSystem(Space& space, AudioEngine& audioEngine) : System(space), _audioEngine(audioEngine) { }
+
+void DemoSystem::start() {
     space().world().createQuery(_waveQuery);
     space().world().createQuery(_orbitQuery);
     space().world().createQuery(_spinQuery);
     space().world().createQuery(_dingQuery);
 }
 
-void up::game::DemoSystem::update(float deltaTime) {
+void DemoSystem::update(float deltaTime) {
     _waveQuery.select(space().world(), [&](EntityId, components::Transform& trans, components::Wave& wave) {
         wave.offset += deltaTime * .2f;
         trans.position.y = 1 + 5 * glm::sin(wave.offset * 10);
