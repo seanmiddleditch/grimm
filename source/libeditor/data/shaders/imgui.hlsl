@@ -1,7 +1,7 @@
 cbuffer vertexBuffer : register(b0) {
     float4x4 ProjectionMatrix;
 };
-SamplerState sampler0: register(s0);;
+SamplerState sampler0: register(s0);
 Texture2D texture0: register(t0);
 
 struct VS_Input {
