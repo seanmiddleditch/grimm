@@ -32,8 +32,8 @@ namespace up::d3d12 {
         }
 
         void bindPipeline(ID3D12GraphicsCommandList* cmd);
-        void bindTexture(ID3D12GraphicsCommandList* cmd, D3D12_GPU_DESCRIPTOR_HANDLE srv, D3D12_GPU_DESCRIPTOR_HANDLE sampler);
-        void bindConstBuffer(ID3D12GraphicsCommandList* cmd, D3D12_GPU_VIRTUAL_ADDRESS cbv);
+        void bindTexture(ID3D12GraphicsCommandList* cmd, uint32 offset, D3D12_GPU_DESCRIPTOR_HANDLE srv, D3D12_GPU_DESCRIPTOR_HANDLE sampler);
+        void bindConstBuffer(ID3D12GraphicsCommandList* cmd, uint32 offset, D3D12_GPU_VIRTUAL_ADDRESS cbv);
         void bindConstValues(ID3D12GraphicsCommandList* cmd, uint32 size, float* values);
 
         ID3D12PipelineState* state() const { return _state.get(); }

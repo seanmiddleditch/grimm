@@ -45,21 +45,30 @@ static inline void InitRootSignatureDesc(
 static std::vector<up::rc<up::d3d12::RootSignatureD3D12>> s_RootSignatures;
 
 auto up::d3d12::RootSignatureD3D12::initializeSignatures(ID3D12Device* device) -> bool {
-    s_RootSignatures.resize(RootSignatureType::Max);
+    s_RootSignatures.resize(RootSignatureType::eRST_Max);
 
-    SignatureDesc desc;
-    desc._range.resize(2);
-    desc._range[0].initRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0);
-    desc._range[1].initRange(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0, 0);
+    SignatureDesc imguiDesc;
+  
+    imguiDesc.resize(3);
+    imguiDesc.initSRVs(0, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+    imguiDesc.initSamplers(1, 1, D3D12_SHADER_VISIBILITY_PIXEL);
+    imguiDesc.initConstValues(2, 16, D3D12_SHADER_VISIBILITY_VERTEX);
+   
+    s_RootSignatures[RootSignatureType::eRST_ImGui] = RootSignatureD3D12::createRootSignature(device, imguiDesc);
 
-    // InitAsConstantBufferView(parameters[RootParamIndex::ConstantBuffer], 0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
-    desc._params.resize(3);
-    desc._params[0].initAsConstants(16, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
-    desc._params[1].initAsDescriptorTable(1, &desc._range[0]._range, D3D12_SHADER_VISIBILITY_PIXEL);
-    desc._params[2].initAsDescriptorTable(1, &desc._range[1]._range, D3D12_SHADER_VISIBILITY_PIXEL);
+    SignatureDesc modelDesc;
+   
+    modelDesc.resize(5);
+    //imguiDesc._params[0].initAsConstants(16, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    modelDesc.initSRVs(0, 3, D3D12_SHADER_VISIBILITY_PIXEL);
+    modelDesc.initSamplers(1, 3, D3D12_SHADER_VISIBILITY_PIXEL);
+    modelDesc.initConstBuffer(2, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    modelDesc.initConstBuffer(3, 1, D3D12_SHADER_VISIBILITY_VERTEX);
+    modelDesc.initConstBuffer(4, 2, D3D12_SHADER_VISIBILITY_VERTEX);
 
-    s_RootSignatures[RootSignatureType::ImGui] = RootSignatureD3D12::createRootSignature(device, desc);
-    s_RootSignatures[RootSignatureType::Model] = RootSignatureD3D12::createRootSignature(device, desc);
+    
+  
+    s_RootSignatures[RootSignatureType::eRST_FullModel] = RootSignatureD3D12::createRootSignature(device, modelDesc);
 
     return true;
  };
@@ -250,6 +259,10 @@ auto up::d3d12::RootSignatureD3D12::create(ID3D12Device* device, const Signature
     sampler.ShaderRegister = 0;
     sampler.RegisterSpace = 0;
     sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+    for (int i = 0; i < RootParamType::RootParamMax; i++) {
+        _offsetMap[i] = desc._offsets[i];
+    }
 
     D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
     Init_1_1(rootSignatureDesc, static_cast<uint32>(desc._params.size()), (const D3D12_ROOT_PARAMETER1*)desc._params.data(), 0, &sampler, rootSignatureFlags);

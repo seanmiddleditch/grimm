@@ -52,6 +52,7 @@ bool up::ImguiBackend::createResources(GpuDevice& device) {
     desc.pixelShader = span{g_pixel_main}.as_bytes();
 #endif
     desc.inputLayout = layout;
+    desc.signatureType = RootSignatureType::eRST_ImGui;
 
     _indexBuffer = device.createBuffer(GpuBufferType::Index, bufferSize);
     _vertexBuffer = device.createBuffer(GpuBufferType::Vertex, bufferSize);

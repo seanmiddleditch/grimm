@@ -98,7 +98,7 @@ bool up::d3d12::PipelineStateD3D12::create(ID3D12Device* device, GpuPipelineStat
         elements.push_back(desc);
     }
 
-    _signature = RootSignatureD3D12::getRootSignature(RootSignatureType::ImGui);
+    _signature = RootSignatureD3D12::getRootSignature(desc.signatureType);
 
     // Describe and create the graphics pipeline state object (PSO).
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
@@ -146,20 +146,29 @@ void up::d3d12::PipelineStateD3D12::bindPipeline(ID3D12GraphicsCommandList* cmd)
 
 void up::d3d12::PipelineStateD3D12::bindTexture(
     ID3D12GraphicsCommandList* cmd,
+    uint32 offset,
     D3D12_GPU_DESCRIPTOR_HANDLE srv,
     D3D12_GPU_DESCRIPTOR_HANDLE sampler) {
     UP_ASSERT(cmd != nullptr);
 
-    cmd->SetGraphicsRootDescriptorTable(RootParamType::TextureSRV, srv);
-    cmd->SetGraphicsRootDescriptorTable(RootParamType::TextureSampler, sampler);
+    uint32 srvOffset = _signature->getRootOffset(RootParamType::Texture); 
+    uint32 samplerOffset = _signature->getRootOffset(RootParamType::Sampler);
+    cmd->SetGraphicsRootDescriptorTable(srvOffset, srv);
+    cmd->SetGraphicsRootDescriptorTable(samplerOffset, sampler);
 }
 
-void up::d3d12::PipelineStateD3D12::bindConstBuffer(ID3D12GraphicsCommandList* cmd, D3D12_GPU_VIRTUAL_ADDRESS cbv) {
+void up::d3d12::PipelineStateD3D12::bindConstBuffer(
+    ID3D12GraphicsCommandList* cmd,
+    uint32 offset,
+    D3D12_GPU_VIRTUAL_ADDRESS cbv) {
     UP_ASSERT(cmd != nullptr);
-    cmd->SetGraphicsRootConstantBufferView(RootParamType::ConstantBuffer, cbv);
+
+    uint32 rootOffset = _signature->getRootOffset(RootParamType::ConstBuffer);
+    cmd->SetGraphicsRootConstantBufferView(rootOffset + offset, cbv);
 }
 
 void up::d3d12::PipelineStateD3D12::bindConstValues(ID3D12GraphicsCommandList* cmd, uint32 size, float* values) {
     UP_ASSERT(cmd != nullptr);
-    cmd->SetGraphicsRoot32BitConstants(RootParamType::ConstantBuffer, size, values, 0);
+    uint32 rootOffset = _signature->getRootOffset(RootParamType::ConstValues);
+    cmd->SetGraphicsRoot32BitConstants(rootOffset, size, values, 0);
 }

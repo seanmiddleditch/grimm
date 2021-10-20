@@ -105,7 +105,7 @@ void up::d3d12::CommandListD3D12::bindConstantBuffer(up::uint32 slot, GpuBuffer*
 
     auto cb = static_cast<BufferD3D12*>(buffer);
 
-    _pipeline->bindConstBuffer(_commandList.get(), cb->buffer()->GetGPUVirtualAddress());
+    _pipeline->bindConstBuffer(_commandList.get(), slot, cb->buffer()->GetGPUVirtualAddress());
 }
 
 void up::d3d12::CommandListD3D12::bindConstantValues(up::uint32 count, float* values, GpuShaderStage stage) {
@@ -129,7 +129,7 @@ void up::d3d12::CommandListD3D12::bindTexture(
     auto s = static_cast<SamplerD3D12*>(sampler);
 
     auto heap = srv->heap();
-    _pipeline->bindTexture(_commandList.get(), heap->heap()->GetGPUDescriptorHandleForHeapStart(), s->desc());
+    _pipeline->bindTexture(_commandList.get(), slot, heap->heap()->GetGPUDescriptorHandleForHeapStart(), s->desc());
 }
 
 void up::d3d12::CommandListD3D12::setPrimitiveTopology(GpuPrimitiveTopology topology) {

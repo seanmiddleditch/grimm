@@ -68,6 +68,14 @@ namespace up {
         uint32 width = 0, height = 0;
     };
 
+    enum RootSignatureType : uint32
+    {
+        eRST_ImGui,
+        eRST_SimpleModel,
+        eRST_FullModel,
+        eRST_Max
+    };
+
     struct GpuPipelineStateDesc {
         bool enableScissor = false;
         bool enableDepthWrite = false;
@@ -75,6 +83,7 @@ namespace up {
         span<byte const> vertShader;
         span<byte const> pixelShader;
         span<GpuInputLayoutElement const> inputLayout;
+        RootSignatureType signatureType; 
     };
 
 } // namespace up

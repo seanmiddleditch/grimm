@@ -45,6 +45,7 @@ void up::Material::bindMaterialToRender(RenderContext& ctx) {
         pipelineDesc.vertShader = _vertexShader.asset()->content();
         pipelineDesc.pixelShader = _pixelShader.asset()->content();
         pipelineDesc.inputLayout = layout;
+        pipelineDesc.signatureType = RootSignatureType::eRST_FullModel;
         _state = ctx.device.createPipelineState(pipelineDesc);
 
         int texIndex = 0;
@@ -58,7 +59,7 @@ void up::Material::bindMaterialToRender(RenderContext& ctx) {
 
     int texIndex = 0;
     for (auto const& srv : _srvs) {
-        ctx.commandList.bindTexture(texIndex, srv.get(), _samplers[texIndex].get(), GpuShaderStage::Pixel);
+        ctx.commandList.bindTexture(texIndex, srv.get(), _samplers[texIndex++].get(), GpuShaderStage::Pixel);
     }
 }
 
