@@ -24,7 +24,7 @@ namespace {
 
     private:
         Query<components::Transform, components::Wave> _waveQuery;
-        Query<components::Transform> _orbitQuery;
+        Query<components::Transform, components::Wave> _orbitQuery;
         Query<components::Transform, components::Spin> _spinQuery;
         Query<components::Ding> _dingQuery;
         AudioEngine& _audioEngine;
@@ -50,7 +50,7 @@ void DemoSystem::update(float deltaTime) {
         trans.position.y = 1 + 5 * glm::sin(wave.offset * 10);
     });
 
-    _orbitQuery.select(space().world(), [&](EntityId, components::Transform& trans) {
+    _orbitQuery.select(space().world(), [&](EntityId, components::Transform& trans, components::Wave&) {
         trans.position = glm::rotateY(trans.position, deltaTime);
     });
 
