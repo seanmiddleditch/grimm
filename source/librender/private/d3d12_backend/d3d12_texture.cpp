@@ -17,7 +17,6 @@ up::d3d12::TextureD3D12::TextureD3D12() {}
 
 up::d3d12::TextureD3D12::TextureD3D12(ID3DResourcePtr buffer) : _texture(buffer) {}
 
-up::d3d12::TextureD3D12::~TextureD3D12() {}
 
 namespace ResourceDesc { 
 static inline D3D12_RESOURCE_DESC ResourceDesc(

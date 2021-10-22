@@ -16,7 +16,7 @@ namespace up::d3d12 {
     public:
         explicit TextureD3D12();
         explicit TextureD3D12(ID3DResourcePtr buffer);
-        virtual ~TextureD3D12();
+        ~TextureD3D12() override = default;
 
         TextureD3D12(TextureD3D12&&) = delete;
         TextureD3D12& operator=(TextureD3D12&&) = delete;

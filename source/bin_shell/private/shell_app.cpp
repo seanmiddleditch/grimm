@@ -67,6 +67,8 @@ up::shell::ShellApp::ShellApp() : _universe(new_box<Universe>()), _editors(_acti
 up::shell::ShellApp::~ShellApp() {
     _imguiBackend.releaseResources();
 
+    _editors.shutdown();
+
     _renderer.reset();
     _uiRenderCamera.reset();
     _swapChain.reset();

@@ -128,8 +128,7 @@ void up::d3d12::CommandListD3D12::bindTexture(
     auto srv = static_cast<ResourceViewD3D12*>(view);
     auto s = static_cast<SamplerD3D12*>(sampler);
 
-    auto heap = srv->heap();
-    _pipeline->bindTexture(_commandList.get(), slot, heap->heap()->GetGPUDescriptorHandleForHeapStart(), s->desc());
+    _pipeline->bindTexture(_commandList.get(), slot, srv->getGpuDesc(), s->desc());
 }
 
 void up::d3d12::CommandListD3D12::setPrimitiveTopology(GpuPrimitiveTopology topology) {

@@ -15,7 +15,7 @@ namespace up::d3d12 {
     class BufferD3D12 final : public GpuBuffer {
     public:
         BufferD3D12() noexcept;
-        ~BufferD3D12() = default;
+        ~BufferD3D12() override  = default;
 
         bool create(ContextD3D12 const& ctx, GpuBufferType type, uint64 size); 
 

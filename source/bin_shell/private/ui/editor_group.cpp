@@ -64,6 +64,10 @@ void up::shell::EditorGroup::closeAll() noexcept {
     }
 }
 
+void up::shell::EditorGroup::shutdown() noexcept {
+    _editors.clear();
+}
+
 void up::shell::EditorGroup::closeActive() noexcept {
     if (_active != nullptr) {
         _active->close();

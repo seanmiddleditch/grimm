@@ -29,6 +29,10 @@ namespace up::shell {
         void closeAll() noexcept;
         void closeActive() noexcept;
 
+        // shut it all down.  this needs to be called before renderer shutdown to ensure that
+        // any graphics resources are freed up before the device is killed.
+        void shutdown() noexcept; 
+
         bool canCloseActive() const noexcept;
 
         void open(box<Editor> editor);
