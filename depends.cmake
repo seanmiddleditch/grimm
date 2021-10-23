@@ -34,8 +34,8 @@ up_require(json
     CMAKE_FILE json.cmake
 )
 up_require(sdl2_vc_sdk
-    URL https://github.com/potatoengine/win-sdks/releases/download/sdl2-2.0.12-x64/SDL2-2.0.12-win-x64.7z
-    URL_HASH SHA1=21EFE9F45962EF2B57DC97FE7905D1EC82670AEF
+    URL https://www.libsdl.org/release/SDL2-devel-2.0.16-VC.zip
+    URL_HASH SHA1=13d952c333f3c2ebe9b7bc0075b4ad2f784e7584
     CMAKE_FILE sdl2_vc.cmake
 )
 up_require(assimp_win64_sdk
