@@ -13,6 +13,10 @@ component Transform {
     mat4x4 transform;
 }
 
+component Body {
+    vec3 linearVelocity;
+}
+
 component Mesh {
     MeshRef mesh;
     MaterialRef material;

@@ -280,12 +280,14 @@ int up::shell::ShellApp::initialize() {
     _universe->registerComponent<components::Spin>("Spin");
     _universe->registerComponent<components::Ding>("Ding");
     _universe->registerComponent<components::Test>("Test");
+    _universe->registerComponent<components::Body>("Body");
 
     _sceneDatabase.registerComponent<TransformEditComponent>();
     _sceneDatabase.registerComponent<MeshEditComponent>();
     _sceneDatabase.registerComponent<WaveEditComponent>();
     _sceneDatabase.registerComponent<SpinEditComponent>();
     _sceneDatabase.registerComponent<DingEditComponent>();
+    _sceneDatabase.registerComponent<BodyEditComponent>();
 
     _editorFactories.push_back(
         AssetBrowser::createFactory(_assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
