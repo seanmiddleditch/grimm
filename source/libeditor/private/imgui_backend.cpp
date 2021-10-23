@@ -232,8 +232,7 @@ void up::ImguiBackend::render(RenderContext& ctx, RenderCamera* camera) {
 
     ctx.commandList.bindIndexBuffer(_indexBuffer.get(), GpuIndexFormat::Unsigned16, 0);
     ctx.commandList.bindVertexBuffer(0, _vertexBuffer.get(), sizeof(ImDrawVert));
-    //ctx.commandList.bindConstantBuffer(0, _constantBuffer.get(), GpuShaderStage::Vertex);
-    ctx.commandList.bindConstantValues(16, &mvp[0][0], GpuShaderStage::Vertex);
+    ctx.commandList.bindConstantBuffer(0, _constantBuffer.get(), GpuShaderStage::Vertex);
     
     GpuViewportDesc viewport;
     viewport.width = data.DisplaySize.x;
