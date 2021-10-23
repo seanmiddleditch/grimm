@@ -1,5 +1,10 @@
 include(up_require)
+include(FetchContent)
 
+up_require(libbullet3_cmake
+    GIT_REPOSITORY git://github.com/potatoengine/libbullet3-cmake.git
+    GIT_COMMIT f27bf2d0d0d50051df8380b45d0b000b0ab9056a
+)
 up_require(sqlite_source
     URL https://www.sqlite.org/2021/sqlite-amalgamation-3360000.zip
     URL_HASH SHA3_256=d25609210ec93b3c8c7da66a03cf82e2c9868cfbd2d7d866982861855e96f972

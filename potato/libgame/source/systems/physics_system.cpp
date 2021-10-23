@@ -7,6 +7,7 @@
 #include "potato/game/system.h"
 
 #include <glm/gtx/rotate_vector.hpp>
+#include <btBulletDynamicsCommon.h>
 
 namespace up {
     namespace {
@@ -16,20 +17,34 @@ namespace up {
 
             void update(float) override;
 
-        private:
-            glm::vec3 _gravity = {0, -9, 0};
-        };
-    } // namespace
+		private:
+	        btDefaultCollisionConfiguration _config;
+	        btCollisionDispatcher _dispatcher;
+	        btDbvtBroadphase _broadphase;
+	        btSequentialImpulseConstraintSolver _solver;
+	        btDiscreteDynamicsWorld _world;
+	        float _physicsTickRate = 1.f / 60.f;
+    };
+} // namespace
 
     void registerPhysicsSystem(Space& space) { space.addSystem<PhysicsSystem>(); }
 
-    void PhysicsSystem::update(float deltaTime) {
-        using namespace component;
-
-        space().entities().select<Transform, RigidBody>([this, deltaTime](EntityId, Transform& trans, RigidBody& body) {
-            if (trans.position.y > 0) {
-                body.linearVelocity += _gravity * deltaTime;
-                trans.position += body.linearVelocity * deltaTime;
+	PhysicsSystem::PhysicsSystem(Space& space)
+	    : System(space)
+	    , _dispatcher(&_config)
+	    , _world(&_dispatcher, &_broadphase, &_solver, &_config) { }
+	
+	void PhysicsSystem::start() {
+	    space().world().createQuery(_bodiesQuery);
+	}
+	
+	void PhysicsSystem::update(float deltaTime) {
+	    _world.stepSimulation(deltaTime, 12, _physicsTickRate);
+	
+	    _bodiesQuery.select(space().world(), [&](EntityId, components::Transform& trans, components::Body& body) {
+	        if (trans.position.y > 0) {
+	            body.linearVelocity += glm::vec3(0.f, -10.f, 0.f) * deltaTime;
+	            trans.position += body.linearVelocity * deltaTime;
 
                 if (trans.position.y <= 0.f) {
                     trans.position.y = 0.f;
