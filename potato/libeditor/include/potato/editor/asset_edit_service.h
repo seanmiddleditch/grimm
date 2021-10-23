@@ -14,7 +14,7 @@ namespace up {
             zstring_view name;
             zstring_view extension;
             zstring_view editor;
-            char8_t const* icon = nullptr;
+            char const* icon = nullptr;
             uint64 typeHash = 0;
         };
 

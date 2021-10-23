@@ -19,7 +19,7 @@ namespace up {
         string name;
         string command;
         string menu;
-        char8_t const* icon = nullptr;
+        char const* icon = nullptr;
         string group;
         int priority = 1000;
         string hotKey;
