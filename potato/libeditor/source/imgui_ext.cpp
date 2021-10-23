@@ -35,7 +35,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-static void DrawIcon(const char8_t* icon, ImVec2 minPos, ImVec2 maxPos) {
+static void DrawIcon(const char* icon, ImVec2 minPos, ImVec2 maxPos) {
     ImGui::RenderTextClipped(
         minPos,
         maxPos,
@@ -46,7 +46,7 @@ static void DrawIcon(const char8_t* icon, ImVec2 minPos, ImVec2 maxPos) {
         nullptr);
 }
 
-bool ImGui::Potato::IconButton(char const* label, char8_t const* icon, ImVec2 size, ImGuiButtonFlags flags) {
+bool ImGui::Potato::IconButton(char const* label, char const* icon, ImVec2 size, ImGuiButtonFlags flags) {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems) {
         return false;
@@ -80,7 +80,7 @@ bool ImGui::Potato::IconButton(char const* label, char8_t const* icon, ImVec2 si
         return false;
     }
 
-    if ((window->DC.ItemFlags & ImGuiItemFlags_ButtonRepeat) != 0) {
+    if ((g.LastItemData.InFlags & ImGuiItemFlags_ButtonRepeat) != 0) {
         flags |= ImGuiButtonFlags_Repeat;
     }
 
@@ -146,13 +146,13 @@ bool ImGui::Potato::InputQuat(char const* label, glm::quat& value, char const* f
     return false;
 }
 
-bool ImGui::BeginIconMenuContextPopup() {
+bool ImGui::BeginContextPopup() {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems) {
         return false;
     }
 
-    ImGuiID const id = window->DC.LastItemId;
+    ImGuiID const id = GetItemID();
 
     if (IsMouseReleased(ImGuiMouseButton_Right) && IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup)) {
         OpenPopupEx(id, 0);
@@ -160,122 +160,6 @@ bool ImGui::BeginIconMenuContextPopup() {
     return BeginPopupEx(
         id,
         ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings);
-}
-
-bool ImGui::BeginIconMenu(const char* label, bool enabled) {
-    ImGuiWindow* window = GetCurrentWindow();
-    if (window->SkipItems) {
-        return false;
-    }
-
-    if (window->DC.LayoutType == ImGuiLayoutType_Horizontal) {
-        return BeginMenu(label, enabled);
-    }
-
-    char const* labelEnd = FindRenderedTextEnd(label);
-
-    ImVec2 const pos = window->DC.CursorPos;
-    ImVec2 const iconSize = ImGui::CalcTextSize(reinterpret_cast<char const*>(ICON_FA_INFO));
-    ImVec2 const labelSize = ImGui::CalcTextSize(label, labelEnd);
-    ImVec2 const spacing = GetStyle().ItemInnerSpacing;
-
-    float const labelOffsetX = iconSize.x + spacing.x * 2.f;
-
-    ImColor const color = GetColorU32(enabled ? ImGuiCol_Text : ImGuiCol_TextDisabled);
-
-    window->DC.MenuColumns.DeclColumns(labelSize.x + labelOffsetX, 0, 0);
-
-    char menuId[32] = {
-        0,
-    };
-    nanofmt::format_to(menuId, "##menu_{}", GetID(label));
-
-    bool const open = BeginMenu(menuId, enabled);
-
-    // we need to draw into our original window, so temporarily close the new sub-menu,
-    // draw, and then we'll reopen it if appropriate.
-    //
-    ImGuiWindow* menuWindow = nullptr;
-    if (open) {
-        menuWindow = GetCurrentWindow();
-        EndPopup();
-        UP_ASSERT(window == GetCurrentWindow());
-    }
-
-    window->DrawList->AddText(ImVec2(pos.x + labelOffsetX, pos.y), color, label, labelEnd);
-
-    if (open) {
-        BeginPopup(menuId, menuWindow->Flags);
-    }
-
-    return open;
-}
-
-void ImGui::Potato::IconMenuSeparator() {
-    ImGuiWindow* window = GetCurrentWindow();
-    if (window->SkipItems) {
-        return;
-    }
-
-    if (window->DC.LayoutType == ImGuiLayoutType_Vertical) {
-        ImVec2 const iconSize = ImGui::CalcTextSize(reinterpret_cast<char const*>(ICON_FA_INFO));
-        ImVec2 const spacing = GetStyle().ItemInnerSpacing;
-
-        window->DC.CursorPos.x += window->DC.Indent.x + iconSize.x + spacing.x * 2.f;
-
-        ImRect const bounds(window->DC.CursorPos, window->DC.CursorPos + ImVec2(GetContentRegionAvailWidth(), 1.f));
-
-        ItemSize(ImVec2(0.0f, 1.f));
-        if (!ItemAdd(bounds, 0)) {
-            return;
-        }
-
-        window->DrawList->AddLine(bounds.Min, ImVec2(bounds.Max.x, bounds.Min.y), GetColorU32(ImGuiCol_Separator));
-    }
-    else {
-        Separator();
-    }
-}
-
-bool ImGui::Potato::IconMenuItem(
-    const char* label,
-    const char8_t* icon,
-    const char* shortcut,
-    bool selected,
-    bool enabled) {
-    ImGuiWindow* window = GetCurrentWindow();
-    if (window->SkipItems && TableGetColumnCount() == 0) {
-        return false;
-    }
-
-    if (window->DC.LayoutType == ImGuiLayoutType_Horizontal) {
-        return MenuItem(label, shortcut, selected, enabled);
-    }
-
-    char const* labelEnd = FindRenderedTextEnd(label);
-
-    ImVec2 const pos = window->DC.CursorPos;
-    ImVec2 const iconSize = ImGui::CalcTextSize(reinterpret_cast<char const*>(ICON_FA_INFO));
-    ImVec2 const labelSize = ImGui::CalcTextSize(label, labelEnd);
-    ImVec2 const spacing = GetStyle().ItemInnerSpacing;
-
-    float const labelOffsetX = iconSize.x + spacing.x * 2.f;
-
-    ImColor const color = GetColorU32(enabled ? ImGuiCol_Text : ImGuiCol_TextDisabled);
-
-    window->DC.MenuColumns.DeclColumns(labelSize.x + labelOffsetX, 0, 0);
-
-    PushID(label);
-    bool const clicked = MenuItem("##item", shortcut, &selected, enabled);
-    PopID();
-
-    if (icon != nullptr) {
-        window->DrawList->AddText(ImVec2(pos.x + spacing.x, pos.y), color, reinterpret_cast<char const*>(icon));
-    }
-
-    window->DrawList->AddText(ImVec2(pos.x + labelOffsetX, pos.y), color, label, labelEnd);
-
-    return clicked;
 }
 
 ImVec2 ImGui::Potato::GetItemSpacing() {
@@ -300,7 +184,7 @@ void ImGui::Potato::EndIconGrid() {
 bool ImGui::Potato::IconGridItem(
     ImGuiID id,
     char const* label,
-    char8_t const* icon,
+    char const* icon,
     bool selected,
     float width,
     float rounding) {

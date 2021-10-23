@@ -97,7 +97,7 @@ void up::shell::AssetBrowser::content() {
         if (ImGui::BeginPopup(
                 "##folder_popup",
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings)) {
-            if (ImGui::IconMenuItem("New Folder", ICON_FA_FOLDER)) {
+            if (ImGui::MenuItemEx("New Folder", ICON_FA_FOLDER)) {
                 _command = Command::ShowNewFolderDialog;
             }
             ImGui::EndPopup();
@@ -145,34 +145,36 @@ void up::shell::AssetBrowser::_showAsset(Entry const& asset) {
             ImGui::IsMouseDown(ImGuiMouseButton_Right));
     }
 
-    if (ImGui::BeginIconMenuContextPopup()) {
-        if (ImGui::IconMenuItem("Edit Asset", ICON_FA_EDIT)) {
+    ImGui::GetItemID();
+
+    if (ImGui::BeginContextPopup()) {
+        if (ImGui::MenuItemEx("Edit Asset", ICON_FA_EDIT)) {
             _command = Command::EditAsset;
         }
-        if (ImGui::IconMenuItem("Import", ICON_FA_DOWNLOAD)) {
+        if (ImGui::MenuItemEx("Import", ICON_FA_DOWNLOAD)) {
             _command = Command::Import;
         }
-        if (ImGui::IconMenuItem("Import (Force)")) {
+        if (ImGui::MenuItem("Import (Force)")) {
             _command = Command::ForceImport;
         }
-        ImGui::IconMenuSeparator();
-        if (ImGui::IconMenuItem("Copy Path", ICON_FA_COPY)) {
+        ImGui::Separator();
+        if (ImGui::MenuItemEx("Copy Path", ICON_FA_COPY)) {
             ImGui::SetClipboardText(asset.osPath.c_str());
         }
-        if (ImGui::IconMenuItem("Copy UUID")) {
+        if (ImGui::MenuItem("Copy UUID")) {
             char buf[UUID::strLength];
             nanofmt::format_to(buf, "{}", asset.uuid);
             ImGui::SetClipboardText(buf);
         }
-        if (ImGui::IconMenuItem("Show in Explorer", ICON_FA_FOLDER_OPEN)) {
+        if (ImGui::MenuItemEx("Show in Explorer", ICON_FA_FOLDER_OPEN)) {
             _command = Command::ShowInExplorer;
         }
-        ImGui::IconMenuSeparator();
-        if (ImGui::IconMenuItem("Rename", ICON_FA_PEN)) {
+        ImGui::Separator();
+        if (ImGui::MenuItemEx("Rename", ICON_FA_PEN)) {
             _command = Command::ShowRenameDialog;
         }
-        ImGui::IconMenuSeparator();
-        if (ImGui::IconMenuItem("Move to Trash", ICON_FA_TRASH)) {
+        ImGui::Separator();
+        if (ImGui::MenuItemEx("Move to Trash", ICON_FA_TRASH)) {
             _command = Command::Trash;
         }
         ImGui::EndPopup();
@@ -197,23 +199,23 @@ void up::shell::AssetBrowser::_showFolder(Entry const& folder) {
             ImGui::IsMouseDown(ImGuiMouseButton_Right));
     }
 
-    if (ImGui::BeginIconMenuContextPopup()) {
-        if (ImGui::IconMenuItem("Open", ICON_FA_FOLDER_OPEN)) {
+    if (ImGui::BeginContextPopup()) {
+        if (ImGui::MenuItemEx("Open", ICON_FA_FOLDER_OPEN)) {
             _command = Command::OpenFolder;
         }
-        if (ImGui::IconMenuItem("Open in Explorer", nullptr)) {
+        if (ImGui::MenuItem("Open in Explorer")) {
             _command = Command::OpenInExplorer;
         }
-        ImGui::IconMenuSeparator();
-        if (ImGui::IconMenuItem("Copy Path", ICON_FA_COPY)) {
+        ImGui::Separator();
+        if (ImGui::MenuItemEx("Copy Path", ICON_FA_COPY)) {
             ImGui::SetClipboardText(folder.osPath.c_str());
         }
-        ImGui::IconMenuSeparator();
-        if (ImGui::IconMenuItem("Rename", ICON_FA_PEN)) {
+        ImGui::Separator();
+        if (ImGui::MenuItemEx("Rename", ICON_FA_PEN)) {
             _command = Command::ShowRenameDialog;
         }
-        ImGui::IconMenuSeparator();
-        if (ImGui::IconMenuItem("Move to Trash", ICON_FA_TRASH)) {
+        ImGui::Separator();
+        if (ImGui::MenuItemEx("Move to Trash", ICON_FA_TRASH)) {
             _command = Command::Trash;
         }
         ImGui::EndPopup();

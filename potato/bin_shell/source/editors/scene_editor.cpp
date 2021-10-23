@@ -309,10 +309,10 @@ void up::shell::SceneEditor::_inspector() {
         }
 
         if (ImGui::BeginPopupContextItem("##component_context_menu")) {
-            if (ImGui::IconMenuItem("Add", ICON_FA_PLUS_CIRCLE)) {
+            if (ImGui::MenuItemEx("Add", ICON_FA_PLUS_CIRCLE)) {
                 ImGui::OpenPopupEx(addComponentId);
             }
-            if (ImGui::IconMenuItem("Remove", ICON_FA_TRASH)) {
+            if (ImGui::MenuItemEx("Remove", ICON_FA_TRASH)) {
                 component = nullptr;
             }
             ImGui::EndPopup();
@@ -341,7 +341,7 @@ void up::shell::SceneEditor::_inspector() {
             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings |
                 ImGuiWindowFlags_NoMove)) {
         for (EditComponent const& component : _database.components()) {
-            if (ImGui::IconMenuItem(component.name().c_str())) {
+            if (ImGui::MenuItem(component.name().c_str())) {
                 _doc->addNewComponent(selectedId, component);
             }
         }
@@ -419,11 +419,11 @@ void up::shell::SceneEditor::_hierarchyShowIndex(int index) {
 
 void up::shell::SceneEditor::_hierarchyContext(SceneEntityId id) {
     if (ImGui::BeginPopupContextItem()) {
-        if (ImGui::IconMenuItem("New Entity", ICON_FA_PLUS)) {
+        if (ImGui::MenuItemEx("New Entity", ICON_FA_PLUS)) {
             _targetId = id;
             _create = true;
         }
-        if (ImGui::IconMenuItem("Delete", ICON_FA_TRASH, nullptr, false, id != SceneEntityId::None)) {
+        if (ImGui::MenuItemEx("Delete", ICON_FA_TRASH, nullptr, false, id != SceneEntityId::None)) {
             _targetId = id;
             _delete = true;
         }

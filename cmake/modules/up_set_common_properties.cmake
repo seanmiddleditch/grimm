@@ -83,6 +83,13 @@ function(up_set_common_properties TARGET)
         )
     endif()
 
+    # Use UTF8 on Windows.
+    if (NOT IS_INTERFACE)
+        target_compile_options(${TARGET} PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
+        )
+    endif()
+
     # Trick MSVC into behaving like a standards-complient
     # compiler.
     target_compile_options(${TARGET} ${PUBLIC_INTERFACE}
