@@ -1,7 +1,5 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#pragma once
-
 #include "potato/game/query.h"
 #include "potato/game/space.h"
 #include "potato/game/system.h"
