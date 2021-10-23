@@ -11,6 +11,7 @@
 #include "potato/spud/sequence.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 
 up::shell::Menu::Menu() {
     _strings.push_back("0_default"_s);
@@ -82,7 +83,7 @@ void up::shell::Menu::_drawMenu(size_t index, size_t depth) {
         auto const& item = _items[index];
 
         if (depth != 0 && item.groupIndex != lastGroup) {
-            ImGui::IconMenuSeparator();
+            ImGui::Separator();
             lastGroup = item.groupIndex;
         }
 
@@ -91,7 +92,7 @@ void up::shell::Menu::_drawMenu(size_t index, size_t depth) {
             auto const enabled = _actions->isEnabled(item.id);
             auto const& actionDesc = _actions->actionAt(item.id);
 
-            if (ImGui::IconMenuItem(
+            if (ImGui::MenuItemEx(
                     _strings[item.stringIndex].c_str(),
                     actionDesc.icon,
                     actionDesc.hotKey.c_str(),
@@ -101,7 +102,7 @@ void up::shell::Menu::_drawMenu(size_t index, size_t depth) {
             }
         }
         else {
-            if (ImGui::BeginIconMenu(_strings[item.stringIndex].c_str())) {
+            if (ImGui::MenuItem(_strings[item.stringIndex].c_str())) {
                 _drawMenu(item.childIndex, depth + 1);
                 ImGui::EndMenu();
             }

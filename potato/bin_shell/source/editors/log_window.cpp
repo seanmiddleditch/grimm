@@ -128,7 +128,7 @@ void up::shell::LogWindow::content() {
 
         _stickyBottom = ImGui::IsWindowAppearing() || (ImGui::GetScrollY() >= ImGui::GetScrollMaxY());
         if (_stickyBottom) {
-            ImGui::SetScrollHere();
+            ImGui::ScrollToItem();
         }
 
         ImGui::EndTable();
