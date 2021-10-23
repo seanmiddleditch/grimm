@@ -133,6 +133,7 @@ namespace up::d3d12 {
         void resize(uint32 params) {
             _params.resize(params);
             _range.resize(2);
+            memset(&_offsets[0], 0xff, sizeof(_offsets));
         }
 
         void initSamplers(uint32 offset, uint32 count, D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) {
@@ -151,7 +152,9 @@ namespace up::d3d12 {
         }
         void initConstBuffer(uint32 offset, uint32 reg, D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL){
             _params[offset].initAsConstantBufferView(reg, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, visibility);
-            _offsets[RootParamType::ConstBuffer] = offset;
+            if (_offsets[RootParamType::ConstBuffer] == 0xffffffff) {
+                _offsets[RootParamType::ConstBuffer] = offset;
+            }
         } 
     };
 
