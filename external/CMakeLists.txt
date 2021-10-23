@@ -20,14 +20,14 @@ foreach(EXT ${DEPENDENCIES})
         set(EXT_DESCRIPTION "${EXT}")
     endif()
 
-    get_property(EXT_CMAKE_FILE GLOBAL PROPERTY "UP_DEPENDENCY_CMAKE_FILE_${EXT}")
-    if(NOT EXT_CMAKE_FILE)
-        set(EXT_CMAKE_FILE "${EXT}.cmake")
-    endif()
-
     message(STATUS "[${INDEX}/${COUNT}] Updating ${EXT} (${EXT_DESCRIPTION})")
 
-    include("${EXT_CMAKE_FILE}")
+    get_property(EXT_CMAKE_FILE GLOBAL PROPERTY "UP_DEPENDENCY_CMAKE_FILE_${EXT}")
+    if(EXT_CMAKE_FILE)
+        include("${EXT_CMAKE_FILE}")
+    else()
+        FetchContent_MakeAvailable(${EXT})
+    endif()
 endforeach()
 message(STATUS "Finished updating dependencies")
 
