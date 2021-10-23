@@ -49,10 +49,11 @@ auto up::d3d12::RootSignatureD3D12::initializeSignatures(ID3D12Device* device) -
 
     SignatureDesc imguiDesc;
   
-    imguiDesc.resize(3);
+    imguiDesc.resize(4);
     imguiDesc.initSRVs(0, 1, D3D12_SHADER_VISIBILITY_PIXEL);
     imguiDesc.initSamplers(1, 1, D3D12_SHADER_VISIBILITY_PIXEL);
-    imguiDesc.initConstValues(2, 16, D3D12_SHADER_VISIBILITY_VERTEX);
+    imguiDesc.initConstBuffer(2, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    imguiDesc.initConstBuffer(3, 1, D3D12_SHADER_VISIBILITY_VERTEX);
    
     s_RootSignatures[RootSignatureType::eRST_ImGui] = RootSignatureD3D12::createRootSignature(device, imguiDesc);
 
