@@ -7,7 +7,7 @@ namespace up {
     extern void registerPhysicsSystem(Space& space);
     extern void registerRenderSystem(Space& space);
     extern void registerTransformSystem(Space& space);
-}
+} // namespace up
 
 up::Space::Space(box<World> world) : _world(std::move(world)) {
     registerTransformSystem(*this);
