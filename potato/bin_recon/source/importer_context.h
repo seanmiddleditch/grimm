@@ -5,7 +5,6 @@
 #include "potato/runtime/uuid.h"
 #include "potato/spud/box.h"
 #include "potato/spud/concepts.h"
-#include "potato/spud/std_iostream.h"
 #include "potato/spud/string.h"
 #include "potato/spud/vector.h"
 #include "potato/spud/zstring_view.h"
