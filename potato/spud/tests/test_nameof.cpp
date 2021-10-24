@@ -8,7 +8,7 @@
 //static_assert(up::nameof<int>() == "int");
 
 template <typename>
-struct wrap{};
+struct wrap {};
 
 template <typename T>
 struct as_template { };
