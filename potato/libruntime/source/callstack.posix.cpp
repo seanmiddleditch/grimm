@@ -7,6 +7,7 @@
 #include "potato/spud/sequence.h"
 #include "potato/spud/string.h"
 
+#include <nanofmt/format.h>
 #include <cstdlib>
 #include <cstring>
 #include <execinfo.h>
@@ -34,10 +35,7 @@ auto up::callstack::resolveTraceRecords(span<uintptr const> addresses, span<Trac
         auto& record = records[index];
         record.address = addresses[index];
 
-        *nanofmt::copy_to(
-            record.symbol,
-            record.symbol + sizeof record.symbol - 1,
-            symbols[index]) = '\0';
+        *nanofmt::copy_to(record.symbol, record.symbol + sizeof record.symbol - 1, symbols[index]) = '\0';
     }
 
     free(symbols); // NOLINT(cppcoreguidelines-no-malloc)
