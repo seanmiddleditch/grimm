@@ -10,9 +10,9 @@ function(up_compile_shader TARGET)
 
     if(NOT ARG_PROFILE)
         if(ARG_STAGE STREQUAL "pixel")
-            set(ARG_PROFILE ps_5_0)
+            set(ARG_PROFILE ps_5_1)
         else()
-            set(ARG_PROFILE vs_5_0)
+            set(ARG_PROFILE vs_5_1)
         endif()
     endif()
 
