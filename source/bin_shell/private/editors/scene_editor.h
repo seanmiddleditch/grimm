@@ -26,13 +26,23 @@ namespace up {
 
 namespace up::shell {
 
-    class GridRenderer : public up::IRenderable {
+    class SceneEditor; 
+    class SceneRenderer : public up::IRenderable {
     public:
+        SceneRenderer(SceneEditor* owner) : _owner(owner) {}
+
         void onSchedule(up::RenderContext& ctx) override;
         void onRender(up::RenderContext& ctx) override;
+
+        void setDeltaTime(float deltaTime) { _deltaTime = deltaTime;  }
+
+        private:
+        SceneEditor* _owner;
+        float _deltaTime;
     };
 
     class SceneEditor : public Editor {
+        friend class SceneRenderer; 
     public:
         static constexpr zstring_view editorName = "potato.editor.scene"_zsv;
 
@@ -72,13 +82,14 @@ namespace up::shell {
         void render(Renderer& renderer, float deltaTime) override;
 
     private:
-        void _drawGrid();
+        void _render(up::RenderContext& ctx, float deltaTime);
         void _resize(GpuDevice& device, glm::ivec2 size);
         void _inspector();
         void _hierarchy();
         void _hierarchyShowIndex(int index);
         void _hierarchyContext(EntityId id);
         void _save();
+        void _drawGrid();
 
         rc<GpuTexture> _buffer;
         box<SceneDocument> _doc;
@@ -96,6 +107,6 @@ namespace up::shell {
         bool _delete = false;
         EntityId _targetId = EntityId::None;
         AssetLoader& _assetLoader;
-        box<GridRenderer> _gridRenderer;
+        box<SceneRenderer> _sceneRenderer;
     };
 } // namespace up::shell

@@ -24,6 +24,7 @@ namespace up {
     class ResourceLoader;
     class GpuRenderable;
     class GpuSwapChain;
+    class GpuTexture; 
 
     // client-side interface of render object.  
     class IRenderable {
@@ -40,9 +41,8 @@ namespace up {
         Renderer(Renderer const&) = delete;
         Renderer& operator=(Renderer const&) = delete;
 
-        UP_RENDER_API void beginFrame(GpuSwapChain* swapChain);
+        UP_RENDER_API void flush();
         UP_RENDER_API void flushDebugDraw(float frameTime);
-        UP_RENDER_API void endFrame(GpuSwapChain* swapChain, float frameTime);
 
         // \brief: call before application is about to quit to ensure that the renderer can clean up
         //          any outstanding operations
@@ -51,12 +51,17 @@ namespace up {
         UP_RENDER_API GpuRenderable* createRendarable(IRenderable* pInterface);
 
         UP_RENDER_API void registerAssetBackends(AssetLoader& assetLoader);
+        UP_RENDER_API bool createSwapChain(void* nativeWindow);
 
-        UP_RENDER_API void clearCommandList(); 
+        UP_RENDER_API void clearCommandList();
+
+        UP_RENDER_API void resizeBuffers(int width, int height);
+        UP_RENDER_API rc<GpuTexture> getBackBuffer();
 
         GpuDevice& device() const noexcept { return *_device; }
     
     private:
+        rc<GpuSwapChain> _swapChain;
         rc<GpuDevice> _device;
         box<GpuBuffer> _frameDataBuffer;
         box<GpuPipelineState> _debugState;

@@ -188,9 +188,11 @@ auto up::d3d12::DeviceD3D12::createShaderResourceView(GpuPipelineState* pipeline
 auto up::d3d12::DeviceD3D12::createRenderTargetView(GpuTexture* resource) -> box<GpuResourceView> {
     UP_ASSERT(resource != nullptr);
 
-    uint32 __rtvcount = 0;
+    // dx12: temp hack to make sure that we offset to the rtvHeap table.  this rvHeap should
+    // live with the resource -- consider wrapping it in a back-buffer object down the line.
+    static uint32 __rtvcount = 0;
     auto rtv = new_box<ResourceViewD3D12>(GpuViewType::RTV);
-    rtv->create(_rtvHeap.get(), __rtvcount++);
+    rtv->create(_rtvHeap.get(), __rtvcount++%2);
 
     return rtv;
 }

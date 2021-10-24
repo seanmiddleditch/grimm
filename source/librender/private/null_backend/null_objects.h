@@ -70,7 +70,7 @@ namespace up::null {
         void unbind(GpuCommandList* cmd) override{};
         void present() override {}
         void resizeBuffers(GpuDevice& device, int width, int height) override {}
-        box<GpuResourceView> getRenderTargetView() override;
+        rc<GpuTexture> getBuffer(int index) override; 
         int getCurrentBufferIndex() override;
     };
 

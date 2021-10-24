@@ -28,8 +28,17 @@ up::RenderCamera::RenderCamera() = default;
 
 up::RenderCamera::~RenderCamera() = default;
 
-void up::RenderCamera::setRenderTarget(box<GpuResourceView> rtv) {
-    _rtv = std::move(rtv);
+void up::RenderCamera::resetBackBuffer(rc<GpuTexture> texture) {
+
+    // no need to reset resources if we are setting to the same buffer
+    if (texture == _backBuffer) {
+        return;
+    }
+
+    _backBuffer = std::move(texture);
+    _depthStencilBuffer.reset();
+    _rtv.reset();
+    _dsv.reset();
 }
 
 void up::RenderCamera::updateBuffers(
@@ -37,6 +46,10 @@ void up::RenderCamera::updateBuffers(
     glm::vec3 dimensions,
     glm::vec3 cameraPosition,
     glm::mat4x4 cameraTransform) {
+
+    if (_rtv == nullptr && _backBuffer != nullptr) {
+        _rtv = ctx.device.createRenderTargetView(_backBuffer.get());
+    }
 
     if (_dsv == nullptr) {
         GpuTextureDesc desc;
@@ -96,6 +109,6 @@ void up::RenderCamera::beginFrame(RenderContext& ctx, glm::vec3 cameraPosition, 
     ctx.commandList.clearDepthStencil(_dsv.get());
     ctx.commandList.bindRenderTarget(0, _rtv.get());
     ctx.commandList.bindDepthStencil(_dsv.get());
-    //ctx.commandList.bindConstantBuffer(1, _cameraDataBuffer.get(), GpuShaderStage::All);
+    ctx.commandList.bindConstantBuffer(1, _cameraDataBuffer.get(), GpuShaderStage::All);
     ctx.commandList.setViewport(viewport);
 }

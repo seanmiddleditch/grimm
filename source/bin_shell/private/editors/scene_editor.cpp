@@ -207,13 +207,10 @@ void up::shell::SceneEditor::content() {
     }
 }
 
-void up::shell::GridRenderer::onSchedule(up::RenderContext& ctx) {}
+void up::shell::SceneRenderer::onSchedule(up::RenderContext& ctx) {}
 
-void up::shell::GridRenderer::onRender(up::RenderContext& ctx) {
-
- //   if (_enableGrid) {
- //       _drawGrid();
- //   }
+void up::shell::SceneRenderer::onRender(up::RenderContext& ctx) {
+    _owner->_render(ctx, _deltaTime);
 }
 
 void up::shell::SceneEditor::render(Renderer& renderer, float deltaTime) {
@@ -225,21 +222,36 @@ void up::shell::SceneEditor::render(Renderer& renderer, float deltaTime) {
     if (bufferSize.x != _sceneDimensions.x || bufferSize.y != _sceneDimensions.y) {
         _resize(renderer.device(), _sceneDimensions);
     }
-
+    
     if (_renderCamera == nullptr) {
         _renderCamera = new_box<RenderCamera>();
     }
 
-    if (_gridRenderer == nullptr) {
-        _gridRenderer = new_box<GridRenderer>();
+    if (_sceneRenderer == nullptr) {
+        _sceneRenderer = new_box<SceneRenderer>(this);
     }
 
-    // first draw the grid
-    renderer.createRendarable(_gridRenderer.get());
+    renderer.createRendarable(_sceneRenderer.get());
 
-    // render the scene
     if (_doc->scene() != nullptr) {
         _doc->scene()->render(renderer);
+    }
+
+    //renderer.beginFrame();
+    //renderer.flushDebugDraw(deltaTime);
+    //renderer.endFrame(deltaTime);
+}
+
+void up::shell::SceneEditor::_render(up::RenderContext& ctx, float deltaTime) {
+
+    if (_buffer != nullptr) {
+        
+         _renderCamera->resetBackBuffer(_buffer);
+        if (_enableGrid) {
+            _drawGrid();
+        }
+        _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
+
     }
 }
 

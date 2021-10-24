@@ -24,7 +24,6 @@
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_factory.h"
 #include "potato/render/gpu_resource_view.h"
-#include "potato/render/gpu_swap_chain.h"
 #include "potato/render/gpu_texture.h"
 #include "potato/render/material.h"
 #include "potato/render/renderer.h"
@@ -67,13 +66,10 @@ up::shell::ShellApp::ShellApp() : _universe(new_box<Universe>()), _editors(_acti
 up::shell::ShellApp::~ShellApp() {
     _imguiBackend.releaseResources();
 
+     _uiRenderCamera.reset();
     _editors.shutdown();
-
     _renderer.reset();
-    _uiRenderCamera.reset();
-    _swapChain.reset();
     _window.reset();
-
     _device.reset();
 
     _reconClient.stop();
@@ -258,10 +254,7 @@ int up::shell::ShellApp::initialize() {
     _renderer = new_box<Renderer>(_device);
     _renderer->registerAssetBackends(_assetLoader);
 
-#if UP_PLATFORM_WINDOWS
-    _swapChain = _device->createSwapChain(wmInfo.info.win.window);
-#endif
-    if (_swapChain == nullptr) {
+    if (!_renderer->createSwapChain(wmInfo.info.win.window)) {
         _errorDialog("Failed to create swap chain");
         return 1;
     }
@@ -464,10 +457,10 @@ void up::shell::ShellApp::_onWindowSizeChanged() {
     int width = 0;
     int height = 0;
     SDL_GetWindowSize(_window.get(), &width, &height);
+    _uiRenderCamera->resetBackBuffer(nullptr);
     _renderer->clearCommandList();
-    _uiRenderCamera->setRenderTarget(nullptr);
-    _swapChain->resizeBuffers(_renderer->device(), width, height);
-    _uiRenderCamera->setRenderTarget(std::move(_swapChain->getRenderTargetView()));
+    _renderer->resizeBuffers(width, height);
+    _uiRenderCamera->resetBackBuffer(_renderer->getBackBuffer());
 
     _logger.info("Window resized: {}x{}", width, height);
 }
@@ -584,13 +577,11 @@ void up::shell::ShellApp::_render() {
     viewport.width = static_cast<float>(width);
     viewport.height = static_cast<float>(height);
 
-    _uiRenderCamera->setRenderTarget(std::move(_swapChain->getRenderTargetView()));
+    _uiRenderCamera->resetBackBuffer(_renderer->getBackBuffer());
 
     _imguiBackend.draw(*_renderer.get(), _uiRenderCamera.get());
 
-    _renderer->beginFrame(_swapChain.get());
-    _renderer->endFrame(_swapChain.get(), 0.0f);
-    _swapChain->present();
+    _renderer->flush();
     FrameMark;
 }
 

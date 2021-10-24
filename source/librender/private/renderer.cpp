@@ -53,9 +53,9 @@ up::Renderer::Renderer(rc<GpuDevice> device) : _device(std::move(device)) {
 
 up::Renderer::~Renderer() = default;
 
-void up::Renderer::beginFrame(GpuSwapChain* swapChain) {
+void up::Renderer::flush() {
     constexpr double nanoToSeconds = 1.0 / 1000000000.0;
-    UP_ASSERT(swapChain != nullptr);
+    UP_ASSERT(_swapChain.get() != nullptr);
     if (_frameDataBuffer == nullptr) {
         _frameDataBuffer = _device->createBuffer(GpuBufferType::Constant, sizeof(FrameData));
     }
@@ -69,23 +69,20 @@ void up::Renderer::beginFrame(GpuSwapChain* swapChain) {
     FrameData frame = {_frameCounter++, static_cast<float>(now - _frameTimestamp), now};
     _frameTimestamp = now;
 
-    _device->beginFrame(swapChain);
+    _device->beginFrame(_swapChain.get());
     for (auto& renderable : _rendarables) {
         _device->render(frame, renderable.get());
     }
     _rendarables.clear(); 
-    _device->endFrame(swapChain);
-}
+    _device->endFrame(_swapChain.get());
 
-void up::Renderer::endFrame(GpuSwapChain* swapChain, float frameTime) {
-    UP_ASSERT(swapChain != nullptr);
     _device->execute(false);
+    _swapChain->present();
 }
 
 void up::Renderer::quit() {
     _device->execute(true);
 }
-
 
 auto up::Renderer::createRendarable(IRenderable* pInterface) -> GpuRenderable* {
 
@@ -177,6 +174,23 @@ void up::Renderer::registerAssetBackends(AssetLoader& assetLoader) {
     assetLoader.registerBackend(new_box<TextureAssetLoaderBackend>(*this));
     _device->registerAssetBackends(assetLoader);
 }
+
+bool up::Renderer::createSwapChain(void* nativeWindow) {
+    UP_ASSERT(_device != nullptr);
+    _swapChain = _device->createSwapChain(nativeWindow);
+    if (!_swapChain)
+        return false;
+    return true;
+ }
+
+void up::Renderer::resizeBuffers(int width, int height) {
+     UP_ASSERT(_device != nullptr);
+    _swapChain->resizeBuffers(*_device.get(), width, height);
+ }
+
+auto up::Renderer::getBackBuffer() -> rc<GpuTexture> {
+     return _swapChain->getBuffer(_swapChain->getCurrentBufferIndex());
+ }
 
 void up::Renderer::clearCommandList() {
     _device->clearCommandList();

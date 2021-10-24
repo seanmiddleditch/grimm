@@ -92,7 +92,6 @@ namespace up::shell {
         bool _closeProject = false;
         bool _aboutDialog = false;
         rc<GpuDevice> _device;
-        rc<GpuSwapChain> _swapChain;
         box<Renderer> _renderer;
         box<RenderCamera> _uiRenderCamera;
         box<Universe> _universe;

@@ -62,9 +62,9 @@ auto up::null::DeviceNull::createRenderTargetView(GpuTexture* resource)
     return new_box<ResourceViewNull>(GpuViewType::RTV);
 }
 
-auto up::null::SwapChainNull::getRenderTargetView() -> box<GpuResourceView> {
-    return new_box<ResourceViewNull>(GpuViewType::RTV);
-}
+auto up::null::SwapChainNull::getBuffer(int index) -> rc<GpuTexture> {
+    return new_shared<TextureNull>();
+}   
 
 auto up::null::DeviceNull::getDebugShader(GpuShaderStage) -> up::view<unsigned char> {
     return {};

@@ -120,11 +120,13 @@ void up::d3d12::SwapChainD3D12::resizeBuffers(GpuDevice& device, int width, int 
     _bufferIndex = _swapChain->GetCurrentBackBufferIndex();
 }
 
-auto up::d3d12::SwapChainD3D12::getRenderTargetView() -> box<GpuResourceView> {
-
-    auto rtv = new_box<ResourceViewD3D12>(GpuViewType::RTV);
-    rtv->create(_descHeap, _bufferIndex);
-    return rtv;
+auto up::d3d12::SwapChainD3D12::getBuffer(int index) -> rc<GpuTexture> {
+    ID3DResourcePtr buffer;
+    _swapChain->GetBuffer(_bufferIndex, __uuidof(ID3D12Resource), out_ptr(buffer));
+    if (buffer == nullptr) {
+        return nullptr;
+    }
+    return new_shared<TextureD3D12>(std::move(buffer));
 }
 
 int up::d3d12::SwapChainD3D12::getCurrentBufferIndex() {

@@ -10,6 +10,7 @@
 
 namespace up::d3d12 {
     class DescriptorHeapD3D12;
+
     class SwapChainD3D12 : public GpuSwapChain {
     public:
         SwapChainD3D12() = default;
@@ -30,7 +31,7 @@ namespace up::d3d12 {
         void unbind(GpuCommandList* cmd) override;
         void present() override;
         void resizeBuffers(GpuDevice& device, int width, int height) override;
-        box<GpuResourceView> getRenderTargetView() override;
+        rc<GpuTexture> getBuffer(int index) override;
         int getCurrentBufferIndex() override;
 
         protected:

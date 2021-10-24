@@ -25,7 +25,7 @@ namespace up {
         UP_RENDER_API RenderCamera();
         UP_RENDER_API ~RenderCamera();
 
-        UP_RENDER_API void setRenderTarget(box<GpuResourceView> rtv);
+        UP_RENDER_API void resetBackBuffer(rc<GpuTexture> texture);
 
         UP_RENDER_API void updateBuffers(
             RenderContext& ctx,
@@ -36,6 +36,7 @@ namespace up {
 
     private:
         box<GpuBuffer> _cameraDataBuffer;
+        rc<GpuTexture> _backBuffer;
         rc<GpuTexture> _depthStencilBuffer;
         box<GpuResourceView> _rtv;
         box<GpuResourceView> _dsv;
