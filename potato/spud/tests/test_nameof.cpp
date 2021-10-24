@@ -5,10 +5,10 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 
-//static_assert(up::nameof<int>() == "int");
+// static_assert(up::nameof<int>() == "int");
 
 template <typename>
-struct wrap {};
+struct wrap { };
 
 template <typename T>
 struct as_template { };
