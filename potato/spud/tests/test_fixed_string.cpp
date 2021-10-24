@@ -1,40 +1,40 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/spud/fixed_string.h"
+#include "potato/spud/string_view.h"
 
 #include <catch2/catch.hpp>
 #include <iostream>
+
+namespace {
+    template <typename Fixed>
+    consteval size_t length(Fixed const& fixed) {
+        return fixed.size();
+    }
+} // namespace
 
 TEST_CASE("potato.spud.fixed_string", "[potato][spud]") {
     using namespace up;
 
     SECTION("empty fixed_string") {
-        fixed_string<32> fs;
+        fixed_string const empty = "";
 
-        CHECK(fs.empty());
-
-        CHECK(fs.empty());
-        CHECK(fs.capacity() == 31);
-        CHECK(*fs.data() == '\0');
+        CHECK(empty.empty());
+        CHECK(*empty.data() == '\0');
     }
 
-    SECTION("fixed_string from string_view") {
-        fixed_string<32> fs = string_view("hello world");
-
-        CHECK_FALSE(fs.empty());
-
-        CHECK(fs.size() == 11);
-        CHECK(fs.capacity() == 31);
-        CHECK(std::strcmp(fs.c_str(), "hello world") == 0);
+    SECTION("init fixed_string") {
+        constexpr fixed_string test = "This is a test";
+        CHECK(!test.empty());
+        CHECK(length(test) == 14);
+        CHECK(string_view{"This is a test"} == test.c_str());
     }
 
-    SECTION("fixed_string from overlong string_view") {
-        fixed_string<5> ss = string_view("hello world");
-
-        CHECK_FALSE(ss.empty());
-
-        CHECK(ss.size() == 4);
-        CHECK(ss.capacity() == 4);
-        CHECK(std::strcmp(ss.c_str(), "hell") == 0);
+    SECTION("compare fixed_string") {
+        constexpr fixed_string test1 = "This is a test";
+        constexpr fixed_string test2 = "This is a test";
+        constexpr fixed_string test3 = "This is different";
+        CHECK(test1 == test2);
+        CHECK(test1 != test3);
     }
 }
