@@ -30,7 +30,6 @@ target_sources(potato_spud_test PRIVATE
     "tests/test_delegate_ref.cpp"
     "tests/test_find.cpp"
     "tests/test_fixed_string.cpp"
-    "tests/test_fixed_string_writer.cpp"
     "tests/test_generator.cpp"
     "tests/test_hash.cpp"
     "tests/test_hash_map.cpp"

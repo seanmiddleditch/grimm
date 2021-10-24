@@ -90,12 +90,11 @@
     include/potato/spud/fixed_string.h
    -->
   <Type Name="up::fixed_string&lt;*&gt;">
-    <DisplayString Condition="_size == 0">empty</DisplayString>
-    <DisplayString>{_buffer,[_size]s8}</DisplayString>
-    <StringView>_buffer,[_size]s8</StringView>
+    <DisplayString Condition="$T1 == 0">empty</DisplayString>
+    <DisplayString>{_data,s8}</DisplayString>
+    <StringView>{_data,s8}</StringView>
     <Expand>
-      <Item Name="[size]" ExcludeView="simple">_size</Item>
-      <Item Name="[capacity]" ExcludeView="simple">$T1</Item>
+      <Item Name="[size]" ExcludeView="simple">$T1</Item>
     </Expand>
   </Type>
 
@@ -123,20 +122,6 @@
     <Expand>
       <Item Name="[size]" ExcludeView="simple">_size</Item>
       <Item Name="[capacity]" ExcludeView="simple">_capacity</Item>
-    </Expand>
-  </Type>
-
-  <!--
-    up::fixed_string_writer
-    include/potato/spud/fixed_string_writer.h
-   -->
-  <Type Name="up::fixed_string_writer&lt;*&gt;">
-    <DisplayString Condition="_size == 0">empty</DisplayString>
-    <DisplayString>{_buffer,[_size]s8}</DisplayString>
-    <StringView>_buffer,[_size]s8</StringView>
-    <Expand>
-      <Item Name="[size]" ExcludeView="simple">_size</Item>
-      <Item Name="[capacity]" ExcludeView="simple">$T1 - 1</Item>
     </Expand>
   </Type>
 </AutoVisualizer>

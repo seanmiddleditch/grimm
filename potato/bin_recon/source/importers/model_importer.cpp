@@ -8,7 +8,6 @@
 #include "potato/runtime/logger.h"
 #include "potato/runtime/path.h"
 #include "potato/runtime/stream.h"
-#include "potato/spud/std_iostream.h"
 
 #include <assimp/Exporter.hpp>
 #include <assimp/Importer.hpp>

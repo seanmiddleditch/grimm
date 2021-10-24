@@ -6,7 +6,9 @@
 #include "potato/spud/numeric_util.h"
 #include "potato/spud/platform.h"
 #include "potato/spud/platform_windows.h"
+#include "potato/spud/string_view.h"
 
+#include <nanofmt/format.h>
 #include <Tracy.hpp>
 
 #pragma warning(disable : 4091)
@@ -196,8 +198,11 @@ auto up::callstack::resolveTraceRecords(span<up::uintptr const> addresses, span<
 
         auto& record = records[index];
         record.address = addresses[index];
-        record.symbol = string_view(static_cast<char*>(symbolInfoPtr->Name), symbolInfoPtr->NameLen);
-        // record.filename = imagehlpLine64.FileName;
+        *nanofmt::copy_to_n(
+            record.symbol,
+            record.symbol + sizeof record.symbol - 1,
+            static_cast<char*>(symbolInfoPtr->Name),
+            symbolInfoPtr->NameLen) = '\0';
         record.line = imagehlpLine64.LineNumber;
 
         // show only the last directory and file name
@@ -210,7 +215,11 @@ auto up::callstack::resolveTraceRecords(span<up::uintptr const> addresses, span<
             }
             filename = filename.substr(pos + 1);
         }
-        record.filename = filename;
+        *nanofmt::copy_to_n(
+            record.filename,
+            record.filename + sizeof record.filename - 1,
+            filename.data(),
+            filename.size()) = '\0';
     }
 
     return records.first(max);

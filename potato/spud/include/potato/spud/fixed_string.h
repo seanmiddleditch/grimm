@@ -2,104 +2,70 @@
 
 #pragma once
 
-#include "string_view.h"
+#include "int_types.h"
 
-#include <cstring>
+#include <compare>
 
 namespace up {
-    template <size_t Capacity>
+    template <size_t Size>
     class fixed_string;
 
-    template <size_t Capacity>
-    fixed_string(char const (&)[Capacity]) -> fixed_string<Capacity>;
+    template <size_t Size>
+    fixed_string(char const (&)[Size]) -> fixed_string<Size - 1 /*NUL*/>;
 
-    template <size_t Capacity>
+    template <size_t Size>
     class fixed_string {
-        static_assert(Capacity > 0);
-
     public:
         using value_type = char;
         using pointer = char const*;
         using size_type = size_t;
-        static constexpr auto effective_capacity = Capacity - 1;
 
-        constexpr fixed_string() noexcept = default;
+        // this is "safe" because it's consteval and will fail
+        // compilation instead of triggering UB if it reads
+        // out-of-bounds
+        consteval fixed_string(char const* string) noexcept;
 
-        constexpr fixed_string(fixed_string const& string) noexcept;
-        constexpr fixed_string(string_view string) noexcept;
-        constexpr fixed_string(char const (&string)[Capacity]) noexcept;
+        [[nodiscard]] constexpr explicit operator bool() const noexcept { return Size != 0; }
+        [[nodiscard]] constexpr bool empty() const noexcept { return Size == 0; }
 
-        constexpr fixed_string& operator=(fixed_string const& string) noexcept;
-        constexpr fixed_string& operator=(string_view string) noexcept;
+        [[nodiscard]] constexpr size_type size() const noexcept { return Size; }
 
-        constexpr /*implicit*/ operator string_view() const noexcept { return {_buffer, _size}; }
+        [[nodiscard]] constexpr pointer data() const noexcept { return _data; }
+        [[nodiscard]] constexpr pointer c_str() const noexcept { return _data; }
 
-        constexpr explicit operator bool() const noexcept { return _size != 0; }
-        [[nodiscard]] constexpr bool empty() const noexcept { return _size == 0; }
+        [[nodiscard]] constexpr value_type operator[](size_type index) const noexcept { return _data[index]; }
 
-        [[nodiscard]] constexpr size_type size() const noexcept { return _size; }
-        [[nodiscard]] constexpr size_type capacity() const noexcept { return effective_capacity; }
+        [[nodiscard]] constexpr friend auto operator<=>(fixed_string const&, fixed_string const&) noexcept = default;
 
-        [[nodiscard]] constexpr pointer data() const noexcept { return _buffer; }
-        [[nodiscard]] constexpr pointer c_str() const noexcept { return _buffer; }
+        [[nodiscard]] constexpr friend auto operator==(fixed_string const& lhs, fixed_string const& rhs) noexcept {
+            for (size_t i = 0; i != Size; ++i) {
+                if (lhs._data[i] != rhs._data[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-        constexpr void clear() noexcept;
+        template <size_t OtherSize>
+        [[nodiscard]] constexpr friend bool operator==(fixed_string const&, fixed_string<OtherSize> const&) noexcept {
+            return false;
+        }
 
         template <typename Writer, typename Spec>
         friend void format_value(Writer& writer, fixed_string const& fs, Spec const& options) noexcept {
-            format_value_to(writer, string_view{fs._buffer, fs._size}, options);
+            format_value_to(writer, {fs._data, Size}, options);
         }
 
     private:
-        size_t _size = 0;
-        char _buffer[Capacity] = {
-            '\0',
-        };
+        char _data[Size + 1 /*NUL*/] = {};
     };
 
-    template <size_t Capacity>
-    constexpr fixed_string<Capacity>::fixed_string(fixed_string const& string) noexcept : _size(string._size) {
-        std::memcpy(_buffer, string._buffer, _size + 1);
-    }
-
-    template <size_t Capacity>
-    constexpr fixed_string<Capacity>::fixed_string(string_view string) noexcept {
-        *this = string;
-    }
-
-    template <size_t Capacity>
-    constexpr fixed_string<Capacity>::fixed_string(char const (&string)[Capacity]) noexcept : _size(Capacity - 1) {
-        std::memcpy(_buffer, string, Capacity);
-    }
-
-    template <size_t Capacity>
-    constexpr auto fixed_string<Capacity>::operator=(fixed_string const& string) noexcept -> fixed_string& {
-        if (this != &string) {
-            _size = string._size;
-            std::memcpy(_buffer, string._buffer, _size + 1);
+    template <size_t Size>
+    consteval fixed_string<Size>::fixed_string(char const* string) noexcept {
+        for (size_t i = 0; i != Size; ++i) {
+            _data[i] = string[i];
         }
-        return *this;
-    }
-
-    template <size_t Capacity>
-    constexpr auto fixed_string<Capacity>::operator=(string_view string) noexcept -> fixed_string& {
-        size_t newSize = effective_capacity < string.size() ? effective_capacity : string.size();
-        _size = newSize;
-
-        if (string.data() >= _buffer && string.data() < _buffer + Capacity) {
-            std::memmove(_buffer, string.data(), newSize);
-        }
-        else {
-            std::memcpy(_buffer, string.data(), newSize);
-        }
-        _buffer[newSize] = '\0';
-        return *this;
-    }
-
-    template <size_t Capacity>
-    constexpr void fixed_string<Capacity>::clear() noexcept {
-        _size = 0;
-        _buffer[0] = '\0';
+        _data[Size] = '\0';
     }
 
     template <typename HashAlgorithm, size_t Size>

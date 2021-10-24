@@ -4,10 +4,10 @@
 #include "debug.windows.h"
 
 #include "potato/runtime/callstack.h"
-#include "potato/spud/fixed_string_writer.h"
 #include "potato/spud/platform_windows.h"
 
 #include <nanofmt/format.h>
+#include <cstring>
 
 namespace {
     struct DialogData {

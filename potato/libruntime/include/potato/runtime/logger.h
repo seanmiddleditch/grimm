@@ -6,7 +6,6 @@
 #include "lock_guard.h"
 #include "rwlock.h"
 
-#include "potato/spud/fixed_string_writer.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/string.h"
 #include "potato/spud/string_view.h"

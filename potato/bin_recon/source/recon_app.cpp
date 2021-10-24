@@ -18,7 +18,6 @@
 #include "potato/runtime/stream.h"
 #include "potato/runtime/uuid.h"
 #include "potato/spud/overload.h"
-#include "potato/spud/std_iostream.h"
 #include "potato/spud/string_view.h"
 #include "potato/spud/string_writer.h"
 

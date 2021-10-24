@@ -44,9 +44,9 @@ auto up::_detail::raiseFatalError(char const* file, int line, char const* failed
                 sizeof buffer - (end - buffer),
                 "[{:016X}] ({}:{}) {}\r\n",
                 record.address,
-                record.filename.c_str(),
+                record.filename,
                 record.line,
-                record.symbol.c_str());
+                record.symbol);
         }
     }
     else
