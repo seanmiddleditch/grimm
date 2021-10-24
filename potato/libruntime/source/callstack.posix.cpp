@@ -33,7 +33,11 @@ auto up::callstack::resolveTraceRecords(span<uintptr const> addresses, span<Trac
     for (auto index : sequence(max)) {
         auto& record = records[index];
         record.address = addresses[index];
-        record.symbol = string_view(symbols[index]);
+
+        *nanofmt::copy_to(
+            record.symbol,
+            record.symbol + sizeof record.symbol - 1,
+            symbols[index]) = '\0';
     }
 
     free(symbols); // NOLINT(cppcoreguidelines-no-malloc)
