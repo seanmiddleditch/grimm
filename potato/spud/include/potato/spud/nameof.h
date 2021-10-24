@@ -9,8 +9,14 @@
 #include <compare>
 
 namespace up {
-#if defined(_MSC_VER)
     namespace _detail::nameof {
+#if defined(__clang__) || defined(__GNUC__)
+        consteval char const* find_equal_reverse(char const* str) {
+            while (*str != '=')
+                --str;
+            return str;
+        }
+#elif defined(_MSC_VER)
         // given a string like "whatever<> outer<inner<innermost>>", finds
         // the substring after the first of the nested pairs < > starting
         // from the end; e.g. "inner<innermost>>" in the example
@@ -26,8 +32,8 @@ namespace up {
                 --str;
             }
         }
-    } // namespace _detail::nameof
 #endif
+    } // namespace _detail::nameof
 
     template <class T>
     consteval auto nameof() {
@@ -36,11 +42,8 @@ namespace up {
         // so we trim off the last two characters (NUL byte and ]) and then
         // search backwards for the =, and we know the type starts two
         // characters after that
-        char const* const end = __PRETTY_FUNCTION__ + sizeof __PRETTY_FUNCTION__ - 2 /*], NUL*/;
-        char const* func = end;
-        while (*func != '=')
-            --func;
-        func += 2;
+        constexpr char const* end = __PRETTY_FUNCTION__ + sizeof __PRETTY_FUNCTION__ - 2 /*], NUL*/;
+        constexpr char const* func = _detail::nameof::find_equal_reverse(end) + 2;
         return fixed_string<end - func>(func);
 #elif defined(_MSC_VER)
         // form is: blah <$$$>(void)
