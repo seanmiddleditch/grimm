@@ -7,6 +7,7 @@
 #include "potato/spud/platform_windows.h"
 
 #include <nanofmt/format.h>
+#include <cstring>
 
 namespace {
     struct DialogData {

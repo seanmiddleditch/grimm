@@ -4,7 +4,6 @@
 
 #include "_export.h"
 
-#include "potato/spud/fixed_string.h"
 #include "potato/spud/int_types.h"
 #include "potato/spud/span.h"
 
@@ -12,8 +11,12 @@ namespace up::callstack {
     struct TraceRecord {
         static constexpr int symbol_length = 128;
 
-        fixed_string<symbol_length> filename;
-        fixed_string<symbol_length> symbol;
+        char filename[symbol_length] = {
+            '\0',
+        };
+        char symbol[symbol_length] = {
+            '\0',
+        };
         uintptr address = 0;
         int line = 0;
     };
