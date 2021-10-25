@@ -3,7 +3,7 @@
 #pragma once
 
 #include "_export.h"
-#include "shared_context.h"
+#include "component.h"
 #include "world.h"
 
 #include "potato/spud/span.h"
@@ -20,102 +20,52 @@ namespace up {
     public:
         static_assert(sizeof...(Components) != 0, "Empty Query objects are not allowed");
 
-        Query() = default;
-        explicit Query(rc<EcsSharedContext> context) noexcept : _context(std::move(context)) { }
-
-        /// Given a World and a callback, finds all matching Archetypes, and invokes the
-        /// callback once for each Chunk belonging to the Archetypes, with appropriate pointers.
+        /// Given a World and a callback and invokes the callback once for each matching entity.
         ///
         /// This is the primary mechanism for finding or mutating Entities.
         ///
         template <typename Callback>
-        void selectChunks(World& world, Callback&& callback) requires
-            is_invocable_v<Callback, size_t, EntityId const*, Components*...>;
+            requires is_invocable_v<Callback, EntityId, Components&...>
+        void select(World& world, Callback&& callback);
 
-        /// Given a World and a callback, finds all matching Archetypes, and invokes the
-        /// callback once for each entity.
-        ///
-        /// This is the primary mechanism for finding or mutating Entities.
-        ///
-        template <typename Callback>
-        void select(World& world, Callback&& callback) requires is_invocable_v<Callback, EntityId, Components&...>;
-
-    private : struct Match {
-            ArchetypeId archetype;
-            int offsets[sizeof...(Components)];
-        };
-
-        void _match();
-        template <typename Callback, size_t... Indices>
-        void _executeChunks(World& world, Callback&& callback, std::index_sequence<Indices...>) const;
+    private:
         template <typename Callback, size_t... Indices>
         void _execute(World& world, Callback&& callback, std::index_sequence<Indices...>) const;
-
-        vector<Match> _matches;
-        size_t _matchIndex = 0;
-        rc<EcsSharedContext> _context;
     };
 
     template <typename... Components>
     template <typename Callback>
-    void Query<Components...>::selectChunks(World& world, Callback&& callback) requires
-        is_invocable_v<Callback, size_t, EntityId const*, Components*...> {
-        UP_ASSERT(_context != nullptr);
-        _match();
-        _executeChunks(world, callback, std::make_index_sequence<sizeof...(Components)>{});
-    }
-
-    template <typename... Components>
-    template <typename Callback>
-    void Query<Components...>::select(World& world, Callback&& callback) requires
-        is_invocable_v<Callback, EntityId, Components&...> {
-        UP_ASSERT(_context != nullptr);
-        _match();
+        requires is_invocable_v<Callback, EntityId, Components&...>
+    void Query<Components...>::select(World& world, Callback&& callback) {
         _execute(world, callback, std::make_index_sequence<sizeof...(Components)>{});
-    }
-
-    template <typename... Components>
-    void Query<Components...>::_match() {
-        if (_matchIndex >= _context->archetypes.size()) {
-            return;
-        }
-
-        ComponentId const components[sizeof...(Components)] = {makeComponentId<Components>()...};
-
-        for (; _matchIndex < _context->archetypes.size(); ++_matchIndex) {
-            auto& match = _matches.push_back({ArchetypeId(_matchIndex)});
-            if (!_context->_bindArchetypeOffets(match.archetype, components, match.offsets)) {
-                _matches.pop_back();
-            }
-        }
-    }
-
-    template <typename... Components>
-    template <typename Callback, size_t... Indices>
-    void Query<Components...>::_executeChunks(World& world, Callback&& callback, std::index_sequence<Indices...>)
-        const {
-        for (auto const& match : _matches) {
-            for (auto const& chunk : world.chunksOf(match.archetype)) {
-                callback(
-                    chunk->header.entities,
-                    static_cast<EntityId const*>(static_cast<void*>(chunk->payload)),
-                    static_cast<Components*>(static_cast<void*>(chunk->payload + match.offsets[Indices]))...);
-            }
-        }
     }
 
     template <typename... Components>
     template <typename Callback, size_t... Indices>
     void Query<Components...>::_execute(World& world, Callback&& callback, std::index_sequence<Indices...>) const {
-        for (auto const& match : _matches) {
-            for (auto const& chunk : world.chunksOf(match.archetype)) {
-                for (unsigned index = 0; index < chunk->header.entities; ++index) {
-                    callback(
-                        *(static_cast<EntityId*>(static_cast<void*>(chunk->payload)) + index),
-                        *(static_cast<Components*>(static_cast<void*>(chunk->payload + match.offsets[Indices])) +
-                          index)...);
-                }
+        ComponentId const componentIds[] = {makeComponentId<Components>()...};
+        ComponentStorage* componentStorages[] = {world.getComponentStorage(componentIds[Indices])...};
+        void* componentData[sizeof...(Components)] = {};
+
+        for (size_t index = 0; index != sizeof...(Components); ++index) {
+            UP_ASSERT(componentStorages[index] != nullptr);
+            if (componentStorages[index] == nullptr) {
+                return;
             }
         }
+
+        componentStorages[0]->forEachUnsafe([&, this](EntityId entityId, void* data) {
+            componentData[0] = data;
+            for (size_t index = 1; index != sizeof...(Components); ++index) {
+                componentData[index] = componentStorages[index]->getUnsafe(entityId);
+                if (componentData[index] == nullptr) {
+                    return true;
+                }
+            }
+
+            callback(entityId, *(static_cast<Components*>(componentData[Indices]))...);
+
+            return true;
+        });
     }
 } // namespace up

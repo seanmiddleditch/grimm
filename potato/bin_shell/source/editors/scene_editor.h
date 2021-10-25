@@ -17,7 +17,6 @@
 #include <glm/glm.hpp>
 
 namespace up {
-    class Universe;
     class AssetLoader;
 } // namespace up
 
@@ -29,7 +28,6 @@ namespace up::shell {
         using HandlePlayClicked = delegate<void(SceneDocument const& doc)>;
 
         static auto createFactory(
-            Universe& universe,
             SceneDatabase& database,
             AssetLoader& assetLoader,
             SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory>;

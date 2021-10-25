@@ -6,7 +6,6 @@
 #include "potato/audio/sound_resource.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/game/space.h"
-#include "potato/game/universe.h"
 #include "potato/reflex/serialize.h"
 #include "potato/render/camera.h"
 #include "potato/render/context.h"
@@ -37,12 +36,10 @@ namespace up::shell {
         class SceneEditorFactory : public EditorFactory {
         public:
             SceneEditorFactory(
-                Universe& universe,
                 SceneDatabase& database,
                 AssetLoader& assetLoader,
                 SceneEditor::HandlePlayClicked onPlayClicked)
-                : _universe(universe)
-                , _database(database)
+                : _database(database)
                 , _assetLoader(assetLoader)
                 , _onPlayClicked(std::move(onPlayClicked)) { }
 
@@ -51,7 +48,7 @@ namespace up::shell {
             box<Editor> createEditor() override { return nullptr; }
 
             box<Editor> createEditorForDocument(zstring_view filename) override {
-                auto space = new_box<Space>(_universe.createWorld());
+                auto space = new_box<Space>();
                 space->start();
                 auto doc = new_box<SceneDocument>(string(filename), _database);
 
@@ -86,7 +83,6 @@ namespace up::shell {
             }
 
         private:
-            Universe& _universe;
             SceneDatabase& _database;
             AssetLoader& _assetLoader;
             SceneEditor::HandlePlayClicked _onPlayClicked;
@@ -95,11 +91,10 @@ namespace up::shell {
 } // namespace up::shell
 
 auto up::shell::SceneEditor::createFactory(
-    Universe& universe,
     SceneDatabase& database,
     AssetLoader& assetLoader,
     SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
-    return new_box<SceneEditorFactory>(universe, database, assetLoader, std::move(onPlayClicked));
+    return new_box<SceneEditorFactory>(database, assetLoader, std::move(onPlayClicked));
 }
 
 void up::shell::SceneEditor::tick(float deltaTime) {

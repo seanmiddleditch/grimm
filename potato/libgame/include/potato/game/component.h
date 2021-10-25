@@ -5,51 +5,111 @@
 #include "common.h"
 
 #include "potato/reflex/typeid.h"
+#include "potato/spud/delegate_ref.h"
+#include "potato/spud/hash_map.h"
+#include "potato/spud/vector.h"
 #include "potato/spud/zstring_view.h"
 
 namespace up {
-    class ComponentTypeBase {
+    class ComponentStorage {
     public:
-        virtual ~ComponentTypeBase() = default;
+        virtual ~ComponentStorage() = default;
 
-        constexpr uint32 size() const noexcept { return _size; }
-        constexpr uint32 align() const noexcept { return _align; }
+        constexpr ComponentId componentId() const noexcept { return _id; }
 
         virtual zstring_view debugName() const noexcept = 0;
 
-        virtual void construct(void* dest) const = 0;
-        virtual void construct(void* dest, void* source) const = 0;
-        virtual void destruct(void* dest) const = 0;
+        virtual void* add(EntityId entity) = 0;
+        virtual bool remove(EntityId entity) = 0;
+        virtual [[nodiscard]] bool contains(EntityId entity) const noexcept = 0;
 
-        virtual void moveTo(void* dest, void* source) const = 0;
+        virtual [[nodiscard]] void* getUnsafe(EntityId entity) noexcept = 0;
+
+        virtual void forEachUnsafe(delegate_ref<bool(EntityId, void*)> callback) = 0;
 
     protected:
-        ComponentTypeBase(uint32 size, uint32 align) noexcept : _size(size), _align(align) { }
+        explicit ComponentStorage(ComponentId id) noexcept : _id(id) { }
 
-        uint32 _size = 0;
-        uint32 _align = 0;
+    private:
+        ComponentId _id;
     };
 
     template <typename ComponentT>
-    class ComponentType : public ComponentTypeBase {
+    class TypedComponentStorage : public ComponentStorage {
     public:
-        ComponentType() noexcept : ComponentTypeBase(sizeof(ComponentT), alignof(ComponentT)) { }
+        TypedComponentStorage() noexcept : ComponentStorage(makeComponentId<ComponentT>()) { }
 
         zstring_view debugName() const noexcept override { return _name.c_str(); }
 
-        void construct(void* dest) const override { new (dest) ComponentT(); }
-        void construct(void* dest, void* source) const override {
-            new (dest) ComponentT(std::move(*static_cast<ComponentT*>(source)));
-        }
-        void destruct(void* dest) const override { static_cast<ComponentT*>(dest)->~ComponentT(); }
+        void* add(EntityId entityId) override {
+            {
+                uint32 const index = _indexOf(entityId);
+                if (index != _entities.size()) {
+                    return &_components[index];
+                }
+            }
 
-        void moveTo(void* dest, void* source) const override {
-            *static_cast<ComponentT*>(dest) = std::move(*static_cast<ComponentT*>(source));
+            if (!_free.empty()) {
+                uint32 const index = _free.back();
+                _entities[index] = entityId;
+                _free.pop_back();
+                return &_components[index];
+            }
+
+            _entities.push_back(entityId);
+            return &_components.emplace_back();
+        }
+
+        bool remove(EntityId entityId) override {
+            uint32 const index = _indexOf(entityId);
+            if (index != _entities.size()) {
+                _entities[index] = {};
+                _free.push_back(index);
+                return true;
+            }
+            return false;
+        }
+
+        [[nodiscard]] bool contains(EntityId entityId) const noexcept override {
+            return _indexOf(entityId) != _entities.size();
+        }
+
+        [[nodiscard]] void* getUnsafe(EntityId entityId) noexcept override {
+            uint32 const index = _indexOf(entityId);
+            return index < _entities.size() ? &_components[index] : nullptr;
+        }
+
+        void forEachUnsafe(delegate_ref<bool(EntityId, void*)> callback) override {
+            for (size_t index = 0; index != _entities.size(); ++index) {
+                if (_entities[index] != EntityId::None) {
+                    if (!callback(_entities[index], &_components[index])) {
+                        break;
+                    }
+                }
+            }
         }
 
     private:
+        [[nodiscard]] uint32 _indexOf(EntityId entity) const noexcept;
+
         decltype(nameof<ComponentT>()) _name = nameof<ComponentT>();
+
+        vector<EntityId> _entities;
+        vector<ComponentT> _components;
+        vector<uint32> _free;
     };
+
+    template <typename ComponentT>
+    uint32 TypedComponentStorage<ComponentT>::_indexOf(EntityId entity) const noexcept {
+        if (entity != EntityId::None) {
+            for (uint32 index = 0; index != _entities.size(); ++index) {
+                if (_entities[index] == entity) {
+                    return index;
+                }
+            }
+        }
+        return static_cast<uint32>(_entities.size());
+    }
 
     template <typename ComponentT>
     consteval ComponentId makeComponentId() noexcept {

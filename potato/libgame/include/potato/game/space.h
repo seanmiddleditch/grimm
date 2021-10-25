@@ -12,7 +12,7 @@
 namespace up {
     class Space {
     public:
-        UP_GAME_API Space(box<World> world);
+        UP_GAME_API Space();
         UP_GAME_API virtual ~Space();
 
         UP_GAME_API void start();
@@ -30,12 +30,12 @@ namespace up {
             return *_systems.push_back(new_box<SystemT>(*this, std::forward<Args>(args)...));
         }
 
-        World& world() noexcept { return *_world; }
+        World& world() noexcept { return _world; }
 
     private:
         enum class State { New, Starting, Started, Stopped };
 
-        box<World> _world;
+        World _world;
         vector<box<System>> _systems;
         State _state = State::New;
     };
