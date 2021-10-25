@@ -1,8 +1,8 @@
 add_executable(potato_libgame_test)
 target_sources(potato_libgame_test PRIVATE
     "main.cpp"
+    "test_entity_manager.cpp"
     "test_query.cpp"
-    "test_world.cpp"
 )
 
 up_compile_sap(potato_libgame_test

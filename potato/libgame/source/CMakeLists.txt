@@ -1,6 +1,6 @@
 target_sources(potato_libgame PRIVATE
+    "entity_manager.cpp"
     "space.cpp"
-    "world.cpp"
 )
 
 add_subdirectory(components)

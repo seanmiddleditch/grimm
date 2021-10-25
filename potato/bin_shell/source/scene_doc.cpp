@@ -4,7 +4,6 @@
 
 #include "potato/game/common.h"
 #include "potato/game/space.h"
-#include "potato/game/world.h"
 #include "potato/reflex/serialize.h"
 #include "potato/render/mesh.h"
 #include "potato/schema/scene_schema.h"
@@ -198,7 +197,7 @@ void up::SceneDocument::createTestObjects(
 void up::SceneDocument::syncPreview(Space& space) {
     for (auto& entity : _entities) {
         if (entity.previewId == EntityId::None) {
-            entity.previewId = space.world().createEntity();
+            entity.previewId = space.entities().createEntity();
         }
 
         for (auto& component : entity.components) {
@@ -224,7 +223,7 @@ void up::SceneDocument::syncPreview(Space& space) {
 
 void up::SceneDocument::syncGame(Space& space) const {
     for (auto& entity : _entities) {
-        EntityId entityId = space.world().createEntity();
+        EntityId entityId = space.entities().createEntity();
 
         for (auto& component : entity.components) {
             component->info->syncGame(space, entityId, *component);

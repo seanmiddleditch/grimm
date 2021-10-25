@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "potato/game/world.h"
+#include "potato/game/entity_manager.h"
 
 #include "potato/runtime/assertion.h"
 #include "potato/spud/erase.h"
@@ -9,11 +9,11 @@
 
 #include <algorithm>
 
-up::World::World() = default;
+up::EntityManager::EntityManager() = default;
 
-up::World::~World() = default;
+up::EntityManager::~EntityManager() = default;
 
-void* up::World::getComponentSlowUnsafe(EntityId entityId, ComponentId componentId) noexcept {
+void* up::EntityManager::getComponentSlowUnsafe(EntityId entityId, ComponentId componentId) noexcept {
     for (auto& comp : _components) {
         if (comp->componentId() == componentId) {
             return comp->getUnsafe(entityId);
@@ -22,20 +22,20 @@ void* up::World::getComponentSlowUnsafe(EntityId entityId, ComponentId component
     return nullptr;
 }
 
-auto up::World::createEntity() -> EntityId {
+auto up::EntityManager::createEntity() -> EntityId {
     EntityId const id { _entities.size() };
     _entities.push_back(id);
     return id;
 }
 
-bool up::World::deleteEntity(EntityId entityId) noexcept {
+bool up::EntityManager::deleteEntity(EntityId entityId) noexcept {
     for (auto& comp : _components) {
         comp->remove(entityId);
     }
     return erase(_entities, entityId) != 0;
 }
 
-bool up::World::removeComponent(EntityId entityId, ComponentId componentId) noexcept {
+bool up::EntityManager::removeComponent(EntityId entityId, ComponentId componentId) noexcept {
     for (auto& comp : _components) {
         if (comp->componentId() == componentId) {
             return comp->remove(entityId);
@@ -44,7 +44,7 @@ bool up::World::removeComponent(EntityId entityId, ComponentId componentId) noex
     return false;
 }
 
-auto up::World::getComponentStorage(ComponentId componentId) noexcept -> ComponentStorage* {
+auto up::EntityManager::getComponentStorage(ComponentId componentId) noexcept -> ComponentStorage* {
     for (auto& comp : _components) {
         if (comp->componentId() == componentId) {
             return comp.get();
@@ -53,11 +53,11 @@ auto up::World::getComponentStorage(ComponentId componentId) noexcept -> Compone
     return nullptr;
 }
 
-void up::World::_registerComponent(box<ComponentStorage> storage) {
+void up::EntityManager::_registerComponent(box<ComponentStorage> storage) {
     _components.push_back(std::move(storage));
 }
 
-void* up::World::_addComponentRaw(EntityId entityId, ComponentId componentId) {
+void* up::EntityManager::_addComponentRaw(EntityId entityId, ComponentId componentId) {
     for (auto& comp : _components) {
         if (comp->componentId() == componentId) {
             return comp->add(entityId);

@@ -2,7 +2,7 @@
 
 #include "edit_components.h"
 
-#include "potato/game/world.h"
+#include "potato/game/entity_manager.h"
 #include "potato/shell/scene_doc.h"
 
 auto up::TransformEditComponent::data(SceneComponent const& component) noexcept -> scene::components::Transform& {
@@ -10,20 +10,20 @@ auto up::TransformEditComponent::data(SceneComponent const& component) noexcept 
 }
 
 bool up::TransformEditComponent::syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const {
-    space.world().addComponent(
+    space.entities().addComponent(
         entityId,
         components::Transform{.position = data(component).position, .rotation = data(component).rotation});
     return true;
 }
 
 bool up::TransformEditComponent::syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const {
-    *space.world().getComponentSlow<components::Transform>(entityId) =
+    *space.entities().getComponentSlow<components::Transform>(entityId) =
         components::Transform{.position = data(component).position, .rotation = data(component).rotation};
     return true;
 }
 
 bool up::TransformEditComponent::syncRemove(Space& space, EntityId entityId, SceneComponent const& component) const {
-    space.world().removeComponent<components::Transform>(entityId);
+    space.entities().removeComponent<components::Transform>(entityId);
     return true;
 }
 
@@ -36,20 +36,20 @@ auto up::MeshEditComponent::data(SceneComponent const& component) noexcept -> sc
 }
 
 bool up::MeshEditComponent::syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const {
-    space.world().addComponent(
+    space.entities().addComponent(
         entityId,
         components::Mesh{.mesh = data(component).mesh, .material = data(component).material});
     return true;
 }
 
 bool up::MeshEditComponent::syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const {
-    *space.world().getComponentSlow<components::Mesh>(entityId) =
+    *space.entities().getComponentSlow<components::Mesh>(entityId) =
         components::Mesh{.mesh = data(component).mesh, .material = data(component).material};
     return true;
 }
 
 bool up::MeshEditComponent::syncRemove(Space& space, EntityId entityId, SceneComponent const& component) const {
-    space.world().removeComponent<components::Mesh>(entityId);
+    space.entities().removeComponent<components::Mesh>(entityId);
     return true;
 }
 

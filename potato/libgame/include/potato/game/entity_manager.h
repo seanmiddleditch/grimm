@@ -18,17 +18,15 @@ namespace up {
     template <typename...>
     class Query;
 
-    /// A world contains a collection of Entities, Archetypes, and their associated Components.
+    /// Contains a collection of Entities and their associated Components.
     ///
-    /// Entities from different Worlds cannot interact.
-    ///
-    class World {
+    class EntityManager {
     public:
-        UP_GAME_API World();
-        UP_GAME_API ~World();
+        UP_GAME_API EntityManager();
+        UP_GAME_API ~EntityManager();
 
-        World(World&&) = delete;
-        World& operator=(World&&) = delete;
+        EntityManager(EntityManager&&) = delete;
+        EntityManager& operator=(EntityManager&&) = delete;
 
         template <typename... Components>
         auto createQuery(Query<Components...>& query) -> Query<Components...>& {
@@ -107,26 +105,26 @@ namespace up {
     };
 
     template <typename... Components>
-    EntityId World::createEntity(identity_t<Components>&&... components) {
+    EntityId EntityManager::createEntity(identity_t<Components>&&... components) {
         auto const entityId = createEntity();
         int const _[] = {(addComponent(entityId, std::move(components)), 0)...};
         return entityId;
     }
 
     template <typename Component>
-    Component* World::getComponentSlow(EntityId entity) noexcept {
+    Component* EntityManager::getComponentSlow(EntityId entity) noexcept {
         return static_cast<Component*>(getComponentSlowUnsafe(entity, makeComponentId<Component>()));
     }
 
     template <typename Component>
-    Component& World::addComponent(EntityId entityId, identity_t<Component>&& component) noexcept {
+    Component& EntityManager::addComponent(EntityId entityId, identity_t<Component>&& component) noexcept {
         void* const data = _addComponentRaw(entityId, makeComponentId<Component>());
         UP_ASSERT(data != nullptr);
         return *static_cast<Component*>(data) = std::move(component);
     }
 
     template <typename Component>
-    void World::registerComponent() {
+    void EntityManager::registerComponent() {
         _registerComponent(new_box<TypedComponentStorage<Component>>());
     }
 } // namespace up

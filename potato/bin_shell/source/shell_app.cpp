@@ -15,7 +15,6 @@
 #include "potato/editor/project.h"
 #include "potato/game/query.h"
 #include "potato/game/space.h"
-#include "potato/game/world.h"
 #include "potato/render/camera.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"

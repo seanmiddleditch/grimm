@@ -3,7 +3,7 @@
 #include "potato/game/query.h"
 #include "potato/game/space.h"
 #include "potato/game/system.h"
-#include "potato/game/world.h"
+#include "potato/game/entity_manager.h"
 #include "potato/schema/components_schema.h"
 
 #include <glm/gtx/rotate_vector.hpp>
@@ -31,11 +31,11 @@ namespace up {
 } // namespace up
 
 void TransformSystem::start() {
-    space().world().createQuery(_transformQuery);
+    space().entities().createQuery(_transformQuery);
 }
 
 void TransformSystem::update(float) {
-    _transformQuery.select(space().world(), [&](EntityId, components::Transform& trans) {
+    _transformQuery.select(space().entities(), [&](EntityId, components::Transform& trans) {
         trans.transform = glm::translate(trans.position) * glm::mat4_cast(trans.rotation);
     });
 }

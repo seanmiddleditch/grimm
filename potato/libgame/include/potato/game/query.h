@@ -4,7 +4,7 @@
 
 #include "_export.h"
 #include "component.h"
-#include "world.h"
+#include "entity_manager.h"
 
 #include "potato/spud/span.h"
 #include "potato/spud/traits.h"
@@ -20,31 +20,32 @@ namespace up {
     public:
         static_assert(sizeof...(Components) != 0, "Empty Query objects are not allowed");
 
-        /// Given a World and a callback and invokes the callback once for each matching entity.
+        /// Invokes the callback once for each matching entity.
         ///
         /// This is the primary mechanism for finding or mutating Entities.
         ///
         template <typename Callback>
             requires is_invocable_v<Callback, EntityId, Components&...>
-        void select(World& world, Callback&& callback);
+        void select(EntityManager& entities, Callback&& callback);
 
     private:
         template <typename Callback, size_t... Indices>
-        void _execute(World& world, Callback&& callback, std::index_sequence<Indices...>) const;
+        void _execute(EntityManager& entities, Callback&& callback, std::index_sequence<Indices...>) const;
     };
 
     template <typename... Components>
     template <typename Callback>
         requires is_invocable_v<Callback, EntityId, Components&...>
-    void Query<Components...>::select(World& world, Callback&& callback) {
-        _execute(world, callback, std::make_index_sequence<sizeof...(Components)>{});
+    void Query<Components...>::select(EntityManager& entities, Callback&& callback) {
+        _execute(entities, callback, std::make_index_sequence<sizeof...(Components)>{});
     }
 
     template <typename... Components>
     template <typename Callback, size_t... Indices>
-    void Query<Components...>::_execute(World& world, Callback&& callback, std::index_sequence<Indices...>) const {
+    void Query<Components...>::_execute(EntityManager& entities, Callback&& callback, std::index_sequence<Indices...>)
+        const {
         ComponentId const componentIds[] = {makeComponentId<Components>()...};
-        ComponentStorage* componentStorages[] = {world.getComponentStorage(componentIds[Indices])...};
+        ComponentStorage* componentStorages[] = {entities.getComponentStorage(componentIds[Indices])...};
         void* componentData[sizeof...(Components)] = {};
 
         for (size_t index = 0; index != sizeof...(Components); ++index) {

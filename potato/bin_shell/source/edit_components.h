@@ -21,7 +21,7 @@ namespace up {
         bool syncRemove(Space&, EntityId, SceneComponent const&) const final { return false; }
 
         bool syncGame(Space& space, EntityId entityId, SceneComponent const& component) const final {
-            space.world().addComponent<GameComponentT>(
+            space.entities().addComponent<GameComponentT>(
                 entityId,
                 createFrom(*static_cast<SceneComponentT*>(component.data.get())));
             return true;

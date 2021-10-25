@@ -3,7 +3,7 @@
 #include "potato/game/query.h"
 #include "potato/game/space.h"
 #include "potato/game/system.h"
-#include "potato/game/world.h"
+#include "potato/game/entity_manager.h"
 #include "potato/schema/components_schema.h"
 
 #include <glm/gtx/rotate_vector.hpp>
@@ -33,11 +33,11 @@ namespace up {
 } // namespace up
 
 void PhysicsSystem::start() {
-    space().world().createQuery(_bodiesQuery);
+    space().entities().createQuery(_bodiesQuery);
 }
 
 void PhysicsSystem::update(float deltaTime) {
-    _bodiesQuery.select(space().world(), [&](EntityId, components::Transform& trans, components::Body& body) {
+    _bodiesQuery.select(space().entities(), [&](EntityId, components::Transform& trans, components::Body& body) {
         if (trans.position.y > 0) {
             body.linearVelocity += _gravity * deltaTime;
             trans.position += body.linearVelocity * deltaTime;

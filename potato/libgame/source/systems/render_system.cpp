@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
+#include "potato/game/entity_manager.h"
 #include "potato/game/query.h"
 #include "potato/game/space.h"
 #include "potato/game/system.h"
-#include "potato/game/world.h"
 #include "potato/render/context.h"
 #include "potato/schema/components_schema.h"
 
@@ -30,7 +30,7 @@ namespace up {
 } // namespace up
 
 void RenderSystem::start() {
-    space().world().createQuery(_meshQuery);
+    space().entities().createQuery(_meshQuery);
 }
 
 void RenderSystem::stop() { }
@@ -38,7 +38,7 @@ void RenderSystem::stop() { }
 void RenderSystem::update(float) { }
 
 void RenderSystem::render(RenderContext& ctx) {
-    _meshQuery.select(space().world(), [&](EntityId, components::Mesh& mesh, components::Transform const& trans) {
+    _meshQuery.select(space().entities(), [&](EntityId, components::Mesh& mesh, components::Transform const& trans) {
         if (mesh.mesh.ready() && mesh.material.ready()) {
             mesh.mesh.asset()->render(ctx, mesh.material.asset(), trans.transform);
         }
