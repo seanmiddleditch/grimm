@@ -3,6 +3,7 @@
 #pragma once
 
 #include "potato/spud/hash.h"
+#include "potato/spud/nameof.h"
 #include "potato/spud/zstring_view.h"
 
 namespace up::reflex {
@@ -88,7 +89,7 @@ namespace up::reflex {
         TypeInfo info;
         info.name = name;
         info.schema = schema;
-        info.hash = hash_value(name);
+        info.hash = hash_value(nameof<T>());
         info.size = sizeof(T);
         info.alignment = alignof(T);
         info.ops = makeTypeOps<T>();
