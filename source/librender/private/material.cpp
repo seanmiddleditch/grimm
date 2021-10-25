@@ -46,20 +46,20 @@ void up::Material::bindMaterialToRender(RenderContext& ctx) {
         pipelineDesc.pixelShader = _pixelShader.asset()->content();
         pipelineDesc.inputLayout = layout;
         pipelineDesc.signatureType = RootSignatureType::eRST_FullModel;
-        _state = ctx.device.createPipelineState(pipelineDesc);
+        _state = ctx.device()->createPipelineState(pipelineDesc);
 
         int texIndex = 0;
         for (auto const& tex : _textures) {
-            _srvs[texIndex] = ctx.device.createShaderResourceView(_state.get(), &tex.asset()->texture());
-            _samplers[texIndex++] = ctx.device.createSampler();
+            _srvs[texIndex] = ctx.device()->createShaderResourceView(_state.get(), &tex.asset()->texture());
+            _samplers[texIndex++] = ctx.device()->createSampler();
         }
     }
 
-    ctx.commandList.setPipelineState(_state.get());
+    ctx.setPipelineState(_state.get());
 
     int texIndex = 0;
     for (auto const& srv : _srvs) {
-        ctx.commandList.bindTexture(texIndex, srv.get(), _samplers[texIndex++].get(), GpuShaderStage::Pixel);
+        ctx.bindTexture(texIndex, srv.get(), _samplers[texIndex++].get(), GpuShaderStage::Pixel);
     }
 }
 

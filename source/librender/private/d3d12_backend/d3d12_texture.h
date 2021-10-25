@@ -9,7 +9,7 @@
 #include "potato/spud/box.h"
 
 namespace up::d3d12 {
-    class ContextD3D12;
+    class RenderContextD3D12;
     class DescriptorHeapD3D12;
 
     class TextureD3D12 final : public GpuTexture {
@@ -21,7 +21,7 @@ namespace up::d3d12 {
         TextureD3D12(TextureD3D12&&) = delete;
         TextureD3D12& operator=(TextureD3D12&&) = delete;
 
-        bool create(ContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data); 
+        bool create(RenderContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data); 
 
         GpuTextureType type() const noexcept override;
         GpuFormat format() const noexcept override;
@@ -33,9 +33,9 @@ namespace up::d3d12 {
         DescriptorHeapD3D12* desc() const { return _cbvHeap.get(); }
 
     protected:
-        bool create2DTex(ContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data);
-        bool createDepthStencilTex(ContextD3D12 const& ctx, GpuTextureDesc const& desc);
-        bool uploadData(ContextD3D12 const& ctx, D3D12_RESOURCE_DESC& resourceDesc, span<up::byte const> data);
+        bool create2DTex(RenderContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data);
+        bool createDepthStencilTex(RenderContextD3D12 const& ctx, GpuTextureDesc const& desc);
+        bool uploadData(RenderContextD3D12 const& ctx, D3D12_RESOURCE_DESC& resourceDesc, span<up::byte const> data);
 
     private:
         ID3DResourcePtr _texture;

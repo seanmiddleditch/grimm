@@ -15,6 +15,7 @@ namespace up {
 namespace up::d3d12 {
     class CommandListD3D12;
     class DescriptorHeapD3D12;
+    class RenderContextD3D12;
 
     class DeviceD3D12 final : public GpuDevice {
     public:
@@ -54,6 +55,7 @@ namespace up::d3d12 {
         void clearCommandList() override; 
 
         view<unsigned char> getDebugShader(GpuShaderStage stage) override;
+        void debugDraw(delegate_ref<void(GpuCommandList& cmdList)> callback) override;
 
         void registerAssetBackends(AssetLoader& assetLoader) override;
 
@@ -78,7 +80,8 @@ namespace up::d3d12 {
         // main command list -- for now we use single command list but that will most likely change
         // in the future
         box<CommandListD3D12> _mainCmdList;
-        box<CommandListD3D12> _uploadCmdList; 
+        box<CommandListD3D12> _uploadCmdList;
+        box<RenderContextD3D12> _mainContext; 
 
         // Synchronization objects.
         UINT _frameIndex;

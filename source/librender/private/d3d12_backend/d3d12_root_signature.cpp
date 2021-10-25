@@ -48,17 +48,14 @@ auto up::d3d12::RootSignatureD3D12::initializeSignatures(ID3D12Device* device) -
     s_RootSignatures.resize(RootSignatureType::eRST_Max);
 
     SignatureDesc imguiDesc;
-  
     imguiDesc.resize(4);
     imguiDesc.initSRVs(0, 1, D3D12_SHADER_VISIBILITY_PIXEL);
     imguiDesc.initSamplers(1, 1, D3D12_SHADER_VISIBILITY_PIXEL);
     imguiDesc.initConstBuffer(2, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     imguiDesc.initConstBuffer(3, 1, D3D12_SHADER_VISIBILITY_VERTEX);
-   
     s_RootSignatures[RootSignatureType::eRST_ImGui] = RootSignatureD3D12::createRootSignature(device, imguiDesc);
 
     SignatureDesc modelDesc;
-   
     modelDesc.resize(5);
     //imguiDesc._params[0].initAsConstants(16, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     modelDesc.initSRVs(0, 3, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -66,10 +63,13 @@ auto up::d3d12::RootSignatureD3D12::initializeSignatures(ID3D12Device* device) -
     modelDesc.initConstBuffer(2, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     modelDesc.initConstBuffer(3, 1, D3D12_SHADER_VISIBILITY_VERTEX);
     modelDesc.initConstBuffer(4, 2, D3D12_SHADER_VISIBILITY_VERTEX);
-
-    
-  
     s_RootSignatures[RootSignatureType::eRST_FullModel] = RootSignatureD3D12::createRootSignature(device, modelDesc);
+
+    SignatureDesc debugDesc;
+    debugDesc.resize(2);
+    debugDesc.initConstBuffer(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    debugDesc.initConstBuffer(1, 1, D3D12_SHADER_VISIBILITY_ALL);
+    s_RootSignatures[RootSignatureType::eRST_DebugDraw] = RootSignatureD3D12::createRootSignature(device, debugDesc);
 
     return true;
  };

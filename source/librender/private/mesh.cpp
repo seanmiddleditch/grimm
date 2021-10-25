@@ -56,20 +56,20 @@ void up::Mesh::populateLayout(span<GpuInputLayoutElement>& inputLayout) const no
 
 void up::Mesh::updateVertexBuffers(RenderContext& ctx) {
     if (_ibo == nullptr) {
-        _ibo = ctx.device.createBuffer(GpuBufferType::Index, _indices.size() * sizeof(uint16));
-        ctx.commandList.update(_ibo.get(), _indices.as_bytes(), 0);
+        _ibo = ctx.device()->createBuffer(GpuBufferType::Index, _indices.size() * sizeof(uint16));
+        ctx.update(_ibo.get(), _indices.as_bytes(), 0);
     }
     if (_vbo == nullptr) {
-        _vbo = ctx.device.createBuffer(GpuBufferType::Vertex, _data.size());
-        ctx.commandList.update(_vbo.get(), _data, 0);
+        _vbo = ctx.device()->createBuffer(GpuBufferType::Vertex, _data.size());
+        ctx.update(_vbo.get(), _data, 0);
     }
 }
 
 void up::Mesh::bindVertexBuffers(RenderContext& ctx) {
-    ctx.commandList.bindIndexBuffer(_ibo.get(), GpuIndexFormat::Unsigned16, 0);
+    ctx.bindIndexBuffer(_ibo.get(), GpuIndexFormat::Unsigned16, 0);
 
     for (auto i : sequence(_buffers.size())) {
-        ctx.commandList.bindVertexBuffer(static_cast<uint32>(i), _vbo.get(), _buffers[i].stride, _buffers[i].offset);
+        ctx.bindVertexBuffer(static_cast<uint32>(i), _vbo.get(), _buffers[i].stride, _buffers[i].offset);
     }
 }
 
@@ -182,7 +182,7 @@ auto up::Mesh::createFromBuffer(AssetKey key, view<byte> buffer) -> rc<Mesh> {
 
 void UP_VECTORCALL up::Mesh::render(RenderContext& ctx, Material* material, glm::mat4x4 transform) {
     if (_transformBuffer == nullptr) {
-        _transformBuffer = ctx.device.createBuffer(GpuBufferType::Constant, sizeof(Trans));
+        _transformBuffer = ctx.device()->createBuffer(GpuBufferType::Constant, sizeof(Trans));
     }
 
     auto trans = Trans{
@@ -191,14 +191,14 @@ void UP_VECTORCALL up::Mesh::render(RenderContext& ctx, Material* material, glm:
     };
 
     updateVertexBuffers(ctx);
-    ctx.commandList.update(_transformBuffer.get(), span{&trans, 1}.as_bytes());
+    ctx.update(_transformBuffer.get(), span{&trans, 1}.as_bytes());
 
     if (material != nullptr) {
         material->bindMaterialToRender(ctx);
     }
 
     bindVertexBuffers(ctx);
-    ctx.commandList.bindConstantBuffer(2, _transformBuffer.get(), GpuShaderStage::All);
-    ctx.commandList.setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
-    ctx.commandList.drawIndexed(static_cast<uint32>(indexCount()));
+    ctx.bindConstantBuffer(2, _transformBuffer.get(), GpuShaderStage::All);
+    ctx.setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
+    ctx.drawIndexed(static_cast<uint32>(indexCount()));
 }

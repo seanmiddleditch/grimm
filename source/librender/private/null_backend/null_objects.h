@@ -40,6 +40,7 @@ namespace up::null {
         box<GpuResourceView> createDepthStencilView(GpuTexture* resource) override; 
 
         view<unsigned char> getDebugShader(GpuShaderStage stage) override;
+        void debugDraw(delegate_ref<void(GpuCommandList& cmdList)> callback) override {};
 
         void registerAssetBackends(AssetLoader& assetLoader) override {}
 

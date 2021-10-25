@@ -48,7 +48,7 @@ void up::RenderCamera::updateBuffers(
     glm::mat4x4 cameraTransform) {
 
     if (_rtv == nullptr && _backBuffer != nullptr) {
-        _rtv = ctx.device.createRenderTargetView(_backBuffer.get());
+        _rtv = ctx.device()->createRenderTargetView(_backBuffer.get());
     }
 
     if (_dsv == nullptr) {
@@ -57,12 +57,12 @@ void up::RenderCamera::updateBuffers(
         desc.format = GpuFormat::D32Float;
         desc.width = static_cast<uint32>(dimensions.x);
         desc.height = static_cast<uint32>(dimensions.y);
-        _depthStencilBuffer = ctx.device.createTexture2D(desc, {});
-        _dsv = ctx.device.createDepthStencilView(_depthStencilBuffer.get());
+        _depthStencilBuffer = ctx.device()->createTexture2D(desc, {});
+        _dsv = ctx.device()->createDepthStencilView(_depthStencilBuffer.get());
     }
 
     if (_cameraDataBuffer == nullptr) {
-        _cameraDataBuffer = ctx.device.createBuffer(GpuBufferType::Constant, sizeof(CameraData));
+        _cameraDataBuffer = ctx.device()->createBuffer(GpuBufferType::Constant, sizeof(CameraData));
     }
 
     GpuViewportDesc viewport;
@@ -85,7 +85,7 @@ void up::RenderCamera::updateBuffers(
         .nearFar = {nearZ, farZ},
     };
 
-    ctx.commandList.update(_cameraDataBuffer.get(), span{&data, 1}.as_bytes());
+    ctx.update(_cameraDataBuffer.get(), span{&data, 1}.as_bytes());
 }
 
 void up::RenderCamera::beginFrame(RenderContext& ctx, glm::vec3 cameraPosition, glm::mat4x4 cameraTransform) {
@@ -105,10 +105,10 @@ void up::RenderCamera::beginFrame(RenderContext& ctx, glm::vec3 cameraPosition, 
 
     constexpr glm::vec4 clearColor{0.f, 0.f, 0.1f, 1.f};
 
-    ctx.commandList.clearRenderTarget(_rtv.get(), clearColor);
-    ctx.commandList.clearDepthStencil(_dsv.get());
-    ctx.commandList.bindRenderTarget(0, _rtv.get());
-    ctx.commandList.bindDepthStencil(_dsv.get());
-    ctx.commandList.bindConstantBuffer(1, _cameraDataBuffer.get(), GpuShaderStage::All);
-    ctx.commandList.setViewport(viewport);
+    ctx.clearRenderTarget(_rtv.get(), clearColor);
+    ctx.clearDepthStencil(_dsv.get());
+    ctx.bindRenderTarget(0, _rtv.get());
+    ctx.bindDepthStencil(_dsv.get());
+    ctx.bindConstantBuffer(1, _cameraDataBuffer.get(), GpuShaderStage::All);
+    ctx.setViewport(viewport);
 }

@@ -94,6 +94,8 @@ bool up::d3d12::DeviceD3D12::create() {
     _mainCmdList = CommandListD3D12::createCommandList(_device.get(), nullptr, D3D12_COMMAND_LIST_TYPE_DIRECT);
     _uploadCmdList = CommandListD3D12::createCommandList(_device.get(), nullptr, D3D12_COMMAND_LIST_TYPE_COPY);
 
+    _mainContext = new_box<RenderContextD3D12>(this, _mainCmdList.get(), _allocator.get());
+
     return true;
 }
 
@@ -135,8 +137,8 @@ auto up::d3d12::DeviceD3D12::createPipelineState(GpuPipelineStateDesc const& des
 
 auto up::d3d12::DeviceD3D12::createBuffer(GpuBufferType type, up::uint64 size) -> box<GpuBuffer> {
     auto buffer = new_box<BufferD3D12>();
-    ContextD3D12 ctx = {_device.get(), _mainCmdList.get(), _allocator.get()};
-    buffer->create(ctx, type, size);
+
+    buffer->create(*_mainContext.get(), type, size);
     return buffer;
 }
 
@@ -145,9 +147,7 @@ auto up::d3d12::DeviceD3D12::createTexture2D(GpuTextureDesc const& desc, span<up
 
     UP_ASSERT(data.empty() || data.size() == desc.width * desc.height * bytesPerPixel);
     auto texture = new_shared<TextureD3D12>();
-
-    ContextD3D12 ctx = {_device.get(), _mainCmdList.get(), _allocator.get()};
-    texture->create(ctx, desc, data);
+    texture->create(*_mainContext.get(), desc, data);
 
     return texture;
 }
@@ -306,8 +306,7 @@ void up::d3d12::DeviceD3D12::clearCommandList() {
 
 void up::d3d12::DeviceD3D12::render(const FrameData& frameData, GpuRenderable* renderable) {
     UP_ASSERT(renderable);
-    RenderContext ctx = {frameData.lastFrameTimeDelta, *_mainCmdList.get(), *this};
-    static_cast<RenderableD3D12*>(renderable)->onRender(ctx);
+    static_cast<RenderableD3D12*>(renderable)->onRender(*_mainContext.get());
 }
 
 void up::d3d12::DeviceD3D12::execute(bool quitting) {
@@ -336,5 +335,9 @@ auto up::d3d12::DeviceD3D12::getDebugShader(GpuShaderStage stage) -> view<unsign
             return {};
     }
 }
+
+void up::d3d12::DeviceD3D12::debugDraw(delegate_ref<void(GpuCommandList& cmdList)> callback) {
+    callback(*_mainCmdList.get());
+ }
 
 void up::d3d12::DeviceD3D12::registerAssetBackends(AssetLoader& assetLoader) {}

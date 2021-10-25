@@ -6,6 +6,7 @@
 #include "d3d12_platform.h"
 #include "d3d12_utils.h"
 #include "d3d12_desc_heap.h"
+#include "d3d12_device.h"
 
 #include "potato/runtime/assertion.h"
 #include "potato/runtime/com_ptr.h"
@@ -91,7 +92,7 @@ static inline D3D12_RESOURCE_DESC ResourceDesc(
 }
 } // namespace ResourceDesc
 
-auto up::d3d12::TextureD3D12::create(ContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data)
+auto up::d3d12::TextureD3D12::create(RenderContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data)
     -> bool {
     if (desc.type == GpuTextureType::Texture2D) {
         return create2DTex(ctx, desc, data);
@@ -104,7 +105,7 @@ auto up::d3d12::TextureD3D12::create(ContextD3D12 const& ctx, GpuTextureDesc con
     return false; 
 }
 
-auto up::d3d12::TextureD3D12::create2DTex(ContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data)
+auto up::d3d12::TextureD3D12::create2DTex(RenderContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data)
         ->bool {
     _format = toNative(desc.format);
     D3D12_RESOURCE_DESC resourceDesc = ResourceDesc::Tex2D(_format, desc.width, desc.height, 1, 1);
@@ -113,7 +114,7 @@ auto up::d3d12::TextureD3D12::create2DTex(ContextD3D12 const& ctx, GpuTextureDes
     allocDesc.HeapType = D3D12_HEAP_TYPE_DEFAULT;
 
 
-    ctx._allocator->CreateResource(
+    ctx.allocator()->CreateResource(
         &allocDesc,
         &resourceDesc,
         D3D12_RESOURCE_STATE_COPY_DEST,
@@ -129,7 +130,7 @@ auto up::d3d12::TextureD3D12::create2DTex(ContextD3D12 const& ctx, GpuTextureDes
     return true;
 }
 
-auto up::d3d12::TextureD3D12::createDepthStencilTex(ContextD3D12 const& ctx, GpuTextureDesc const& desc)
+auto up::d3d12::TextureD3D12::createDepthStencilTex(RenderContextD3D12 const& ctx, GpuTextureDesc const& desc)
         ->bool {
     _format = toNative(desc.format);
     D3D12_RESOURCE_DESC resourceDesc =
@@ -143,7 +144,7 @@ auto up::d3d12::TextureD3D12::createDepthStencilTex(ContextD3D12 const& ctx, Gpu
     depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
     depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
-    ctx._allocator->CreateResource(
+    ctx.allocator()->CreateResource(
         &allocDesc,
         &resourceDesc,
         D3D12_RESOURCE_STATE_DEPTH_WRITE,
@@ -156,13 +157,13 @@ auto up::d3d12::TextureD3D12::createDepthStencilTex(ContextD3D12 const& ctx, Gpu
 }
 
 
-auto up::d3d12::TextureD3D12::uploadData(ContextD3D12 const& ctx, D3D12_RESOURCE_DESC& resourceDesc, span<up::byte const> data)
+auto up::d3d12::TextureD3D12::uploadData(RenderContextD3D12 const& ctx, D3D12_RESOURCE_DESC& resourceDesc, span<up::byte const> data)
     -> bool {
 
     uint32 stride = static_cast<uint32>(resourceDesc.Width * toByteSize(fromNative(resourceDesc.Format)));
 
     UINT64 textureUploadBufferSize = 0;
-    ctx._device->GetCopyableFootprints(
+    static_cast<DeviceD3D12*>(ctx.device())->getDevice()->GetCopyableFootprints(
         &resourceDesc,
         0, // FirstSubresource
         1, // NumSubresources
@@ -178,7 +179,7 @@ auto up::d3d12::TextureD3D12::uploadData(ContextD3D12 const& ctx, D3D12_RESOURCE
 
     D3D12_RESOURCE_DESC uploadBufferDesc = ResourceDesc::Buffer(textureUploadBufferSize);
 
-    ctx._allocator->CreateResource(
+    ctx.allocator()->CreateResource(
         &uploadAllocDesc,
         &uploadBufferDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
@@ -188,16 +189,14 @@ auto up::d3d12::TextureD3D12::uploadData(ContextD3D12 const& ctx, D3D12_RESOURCE
         out_ptr(_uploadTexture));
     _uploadTexture->SetName(L"textureUpload");
 
-    auto d3dCmd = static_cast<CommandListD3D12*>(ctx._cmdList);
-
     D3D12_SUBRESOURCE_DATA textureSubresourceData = {};
     textureSubresourceData.pData = data.data();
     textureSubresourceData.RowPitch = stride;
     textureSubresourceData.SlicePitch = stride * resourceDesc.Height;
 
     UpdateSubresources(
-        ctx._device,
-        d3dCmd->getResource(),
+        static_cast<DeviceD3D12*>(ctx.device())->getDevice(),
+        ctx.cmdList()->getResource(),
         _texture.get(),
         _uploadTexture.get(),
         0,
@@ -212,7 +211,7 @@ auto up::d3d12::TextureD3D12::uploadData(ContextD3D12 const& ctx, D3D12_RESOURCE
     textureBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
     textureBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-    d3dCmd->getResource()->ResourceBarrier(1, &textureBarrier);
+    ctx.cmdList()->getResource()->ResourceBarrier(1, &textureBarrier);
 
     return true;
 }

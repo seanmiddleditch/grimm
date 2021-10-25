@@ -42,7 +42,7 @@ namespace up {
         Renderer& operator=(Renderer const&) = delete;
 
         UP_RENDER_API void flush();
-        UP_RENDER_API void flushDebugDraw(float frameTime);
+        UP_RENDER_API void flushDebugDraw(GpuCommandList& cmdList, float frameTime);
 
         // \brief: call before application is about to quit to ensure that the renderer can clean up
         //          any outstanding operations

@@ -10,7 +10,7 @@
 up::d3d12::BufferD3D12::BufferD3D12() noexcept
 {}
 
-auto up::d3d12::BufferD3D12::create(ContextD3D12 const& ctx, GpuBufferType type, uint64 size)
+auto up::d3d12::BufferD3D12::create(RenderContextD3D12 const& ctx, GpuBufferType type, uint64 size)
     -> bool {
 
     // const buffers have to be multiples of 256
@@ -32,7 +32,7 @@ auto up::d3d12::BufferD3D12::create(ContextD3D12 const& ctx, GpuBufferType type,
     vertexBufferResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
     vertexBufferResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-    ctx._allocator->CreateResource(
+    ctx.allocator()->CreateResource(
         &vertexBufferAllocDesc,
         &vertexBufferResourceDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ, 

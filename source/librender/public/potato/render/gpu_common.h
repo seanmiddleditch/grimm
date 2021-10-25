@@ -71,6 +71,7 @@ namespace up {
     enum RootSignatureType : uint32
     {
         eRST_ImGui,
+        eRST_DebugDraw,
         eRST_SimpleModel,
         eRST_FullModel,
         eRST_Max

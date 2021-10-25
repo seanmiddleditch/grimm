@@ -70,6 +70,7 @@ auto up::null::DeviceNull::getDebugShader(GpuShaderStage) -> up::view<unsigned c
     return {};
 }
 
+
 int up::null::SwapChainNull::getCurrentBufferIndex() {
     return 0;
 }

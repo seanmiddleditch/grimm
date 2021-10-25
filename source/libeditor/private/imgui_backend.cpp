@@ -181,7 +181,7 @@ void up::ImguiBackend::render(RenderContext& ctx, RenderCamera* camera) {
     ImGui::Render();
 
     if (_pipelineState.empty()) {
-        createResources(ctx.device);
+        createResources(*ctx.device());
     }
 
     ImDrawData& data = *ImGui::GetDrawData();
@@ -191,13 +191,13 @@ void up::ImguiBackend::render(RenderContext& ctx, RenderCamera* camera) {
     UP_ASSERT(data.TotalIdxCount * sizeof(ImDrawIdx) <= bufferSize, "Too many ImGui indices");
     UP_ASSERT(data.TotalVtxCount * sizeof(ImDrawVert) <= bufferSize, "Too many ImGui verticies");
 
-    ctx.commandList.setPipelineState(_pipelineState.get());
-    ctx.commandList.setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
+    ctx.setPipelineState(_pipelineState.get());
+    ctx.setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
 
     camera->beginFrame(ctx, {}, glm::identity<glm::mat4x4>());
 
-    auto indices = ctx.commandList.map(_indexBuffer.get(), bufferSize);
-    auto vertices = ctx.commandList.map(_vertexBuffer.get(), bufferSize);
+    auto indices = ctx.map(_indexBuffer.get(), bufferSize);
+    auto vertices = ctx.map(_vertexBuffer.get(), bufferSize);
 
     uint32 indexOffset = 0;
     uint32 vertexOffset = 0;
@@ -212,8 +212,8 @@ void up::ImguiBackend::render(RenderContext& ctx, RenderCamera* camera) {
         vertexOffset += list.VtxBuffer.Size * sizeof(ImDrawVert);
     }
 
-    ctx.commandList.unmap(_indexBuffer.get(), indices);
-    ctx.commandList.unmap(_vertexBuffer.get(), vertices);
+    ctx.unmap(_indexBuffer.get(), indices);
+    ctx.unmap(_vertexBuffer.get(), vertices);
 
     float L = data.DisplayPos.x;
     float R = data.DisplayPos.x + data.DisplaySize.x;
@@ -226,13 +226,13 @@ void up::ImguiBackend::render(RenderContext& ctx, RenderCamera* camera) {
         {(R + L) / (L - R), (T + B) / (B - T), 0.5f, 1.0f},
     };
 
-    auto constants = ctx.commandList.map(_constantBuffer.get(), sizeof(mvp));
+    auto constants = ctx.map(_constantBuffer.get(), sizeof(mvp));
     std::memcpy(constants.data(), mvp, constants.size());
-    ctx.commandList.unmap(_constantBuffer.get(), constants);
+    ctx.unmap(_constantBuffer.get(), constants);
 
-    ctx.commandList.bindIndexBuffer(_indexBuffer.get(), GpuIndexFormat::Unsigned16, 0);
-    ctx.commandList.bindVertexBuffer(0, _vertexBuffer.get(), sizeof(ImDrawVert));
-    ctx.commandList.bindConstantBuffer(0, _constantBuffer.get(), GpuShaderStage::Vertex);
+    ctx.bindIndexBuffer(_indexBuffer.get(), GpuIndexFormat::Unsigned16, 0);
+    ctx.bindVertexBuffer(0, _vertexBuffer.get(), sizeof(ImDrawVert));
+    ctx.bindConstantBuffer(0, _constantBuffer.get(), GpuShaderStage::Vertex);
     
     GpuViewportDesc viewport;
     viewport.width = data.DisplaySize.x;
@@ -241,7 +241,7 @@ void up::ImguiBackend::render(RenderContext& ctx, RenderCamera* camera) {
     viewport.topY = 0;
     viewport.minDepth = 0;
     viewport.maxDepth = 1;
-    ctx.commandList.setViewport(viewport);
+    ctx.setViewport(viewport);
 
     indexOffset = 0;
     vertexOffset = 0;
@@ -260,16 +260,16 @@ void up::ImguiBackend::render(RenderContext& ctx, RenderCamera* camera) {
             }
 
             auto const srv = static_cast<GpuResourceView*>(cmd.TextureId);
-            ctx.commandList.bindTexture(0, srv != nullptr ? srv : _srv.get(), _sampler.get(), GpuShaderStage::Pixel);
+            ctx.bindTexture(0, srv != nullptr ? srv : _srv.get(), _sampler.get(), GpuShaderStage::Pixel);
             
             GpuClipRect scissor;
             scissor.left = (uint32)cmd.ClipRect.x - (uint32)pos.x;
             scissor.top = (uint32)cmd.ClipRect.y - (uint32)pos.y;
             scissor.right = (uint32)cmd.ClipRect.z - (uint32)pos.x;
             scissor.bottom = (uint32)cmd.ClipRect.w - (uint32)pos.y;
-            ctx.commandList.setClipRect(scissor);
+            ctx.setClipRect(scissor);
 
-            ctx.commandList.drawIndexed(cmd.ElemCount, indexOffset, vertexOffset);
+            ctx.drawIndexed(cmd.ElemCount, indexOffset, vertexOffset);
 
             indexOffset += cmd.ElemCount;
         }

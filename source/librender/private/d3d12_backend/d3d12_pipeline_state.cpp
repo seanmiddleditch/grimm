@@ -164,11 +164,13 @@ void up::d3d12::PipelineStateD3D12::bindConstBuffer(
     UP_ASSERT(cmd != nullptr);
 
     uint32 rootOffset = _signature->getRootOffset(RootParamType::ConstBuffer);
+    UP_ASSERT(rootOffset != 0xffffff);
     cmd->SetGraphicsRootConstantBufferView(rootOffset + offset, cbv);
 }
 
 void up::d3d12::PipelineStateD3D12::bindConstValues(ID3D12GraphicsCommandList* cmd, uint32 size, float* values) {
     UP_ASSERT(cmd != nullptr);
     uint32 rootOffset = _signature->getRootOffset(RootParamType::ConstValues);
+    UP_ASSERT(rootOffset != 0xffffff);
     cmd->SetGraphicsRoot32BitConstants(rootOffset, size, values, 0);
 }

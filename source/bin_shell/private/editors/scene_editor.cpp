@@ -236,10 +236,6 @@ void up::shell::SceneEditor::render(Renderer& renderer, float deltaTime) {
     if (_doc->scene() != nullptr) {
         _doc->scene()->render(renderer);
     }
-
-    //renderer.beginFrame();
-    //renderer.flushDebugDraw(deltaTime);
-    //renderer.endFrame(deltaTime);
 }
 
 void up::shell::SceneEditor::_render(up::RenderContext& ctx, float deltaTime) {
@@ -250,6 +246,7 @@ void up::shell::SceneEditor::_render(up::RenderContext& ctx, float deltaTime) {
         if (_enableGrid) {
             _drawGrid();
         }
+
         _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
 
     }

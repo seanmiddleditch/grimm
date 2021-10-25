@@ -7,6 +7,7 @@
 #include "potato/spud/box.h"
 #include "potato/spud/int_types.h"
 #include "potato/spud/rc.h"
+#include "potato/spud/delegate_ref.h"
 
 namespace up {
     class GpuBuffer;
@@ -59,6 +60,7 @@ namespace up {
         virtual void clearCommandList() = 0;
 
         virtual view<unsigned char> getDebugShader(GpuShaderStage stage) = 0;
+        virtual void debugDraw(delegate_ref<void(GpuCommandList& cmdList)> callback) = 0; 
 
         virtual void registerAssetBackends(AssetLoader& assetLoader) = 0;
     };

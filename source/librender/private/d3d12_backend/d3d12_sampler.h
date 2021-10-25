@@ -8,7 +8,6 @@
 #include "potato/runtime/com_ptr.h"
 
 namespace up::d3d12 {
-    class ContextD3D12;
     class SamplerD3D12 final : public GpuSampler {
     public:
         explicit SamplerD3D12();
