@@ -6,8 +6,6 @@
 #include "shared_context.h"
 #include "world.h"
 
-#include "potato/reflex/schema.h"
-#include "potato/reflex/type.h"
 #include "potato/spud/box.h"
 #include "potato/spud/hash.h"
 #include "potato/spud/zstring_view.h"
@@ -35,19 +33,16 @@ namespace up {
         template <typename Component>
         void registerComponent(zstring_view name);
 
-        UP_GAME_API reflex::TypeInfo const* findComponentByName(string_view name) const noexcept;
-
-        auto components() const noexcept -> view<reflex::TypeInfo const*> { return _context->components; }
-
     private:
-        UP_GAME_API void _registerComponent(reflex::TypeInfo const& typeInfo);
+        UP_GAME_API void _registerComponent(ComponentId componentId, ComponentTypeBase const& componentType);
 
         rc<EcsSharedContext> _context;
     };
 
     template <typename Component>
     void Universe::registerComponent(zstring_view name) {
-        static const reflex::TypeInfo typeInfo = reflex::makeTypeInfo<Component>(name, &reflex::getSchema<Component>());
-        _registerComponent(typeInfo);
+        ComponentId const componentId = makeComponentId<Component>();
+        static ComponentType<Component> const componentType;
+        _registerComponent(componentId, componentType);
     }
 } // namespace up

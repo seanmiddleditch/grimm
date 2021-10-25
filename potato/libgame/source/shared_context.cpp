@@ -6,19 +6,9 @@
 #include "potato/spud/sort.h"
 #include "potato/spud/utility.h"
 
-auto up::EcsSharedContext::findComponentById(ComponentId id) const noexcept -> reflex::TypeInfo const* {
-    auto const* it = find(components, static_cast<uint64>(id), equality{}, &reflex::TypeInfo::hash);
-    return it != components.end() ? *it : nullptr;
-}
-
-auto up::EcsSharedContext::findComponentByName(string_view name) const noexcept -> reflex::TypeInfo const* {
-    auto const* it = find(components, name, equality{}, &reflex::TypeInfo::name);
-    return it != components.end() ? *it : nullptr;
-}
-
-auto up::EcsSharedContext::_findComponentByTypeHash(uint64 typeHash) const noexcept -> reflex::TypeInfo const* {
-    auto const* it = find(components, typeHash, equality{}, &reflex::TypeInfo::hash);
-    return it != components.end() ? *it : nullptr;
+auto up::EcsSharedContext::findComponentTypeById(ComponentId id) const noexcept -> ComponentTypeBase const* {
+    auto const* it = find(components, id, equality{}, &ComponentRecord::id);
+    return it != components.end() ? it->component : nullptr;
 }
 
 auto up::EcsSharedContext::acquireChunk() -> Chunk* {
@@ -68,28 +58,26 @@ auto up::EcsSharedContext::_bindArchetypeOffets(
     return true;
 }
 
-auto up::EcsSharedContext::acquireArchetype(
-    ArchetypeId original,
-    view<reflex::TypeInfo const*> include,
-    view<reflex::TypeInfo const*> exclude) -> ArchetypeId {
+auto up::EcsSharedContext::acquireArchetype(ArchetypeId original, view<ComponentId> include, view<ComponentId> exclude)
+    -> ArchetypeId {
     // attempt to find any existing archetype with the same component set
     //
     {
         auto const originalLayout = layoutOf(original);
         for (size_t index = 0; index != archetypes.size(); ++index) {
             auto const layout = layoutOf(ArchetypeId(index));
-            if (any(exclude, [&layout](reflex::TypeInfo const* typeInfo) noexcept {
-                    return contains(layout, typeInfo, {}, &LayoutRow::typeInfo);
+            if (any(exclude, [&layout](ComponentId component) noexcept {
+                    return contains(layout, component, {}, &LayoutRow::component);
                 })) {
                 continue;
             }
-            if (!all(include, [&layout](reflex::TypeInfo const* typeInfo) noexcept {
-                    return contains(layout, typeInfo, {}, &LayoutRow::typeInfo);
+            if (!all(include, [&layout](ComponentId component) noexcept {
+                    return contains(layout, component, {}, &LayoutRow::component);
                 })) {
                 continue;
             }
             if (!all(originalLayout, [&layout](auto const& row) noexcept {
-                    return contains(layout, row.typeInfo, {}, &LayoutRow::typeInfo);
+                    return contains(layout, row.component, {}, &LayoutRow::component);
                 })) {
                 continue;
             }
@@ -110,15 +98,17 @@ auto up::EcsSharedContext::acquireArchetype(
     for (int index = 0; index != originalArch.layoutLength; ++index) {
         auto const rowIndex = originalArch.layoutOffset + index;
         auto const& row = chunkRows[rowIndex];
-        if (!contains(exclude, row.typeInfo)) {
+        if (!contains(exclude, row.component)) {
             chunkRows.push_back(chunkRows[rowIndex]);
         }
     }
 
     // append all the new components
     //
-    for (reflex::TypeInfo const* typeInfo : include) {
-        chunkRows.push_back({static_cast<ComponentId>(typeInfo->hash), typeInfo});
+    for (ComponentId component : include) {
+        ComponentTypeBase const* const componentType = findComponentTypeById(component);
+        UP_ASSERT(componentType != nullptr);
+        chunkRows.push_back({component, componentType});
     }
 
     // now that all components are added, we can calculate the total number of them
@@ -129,7 +119,7 @@ auto up::EcsSharedContext::acquireArchetype(
 
     // sort rows by alignment for ideal packing
     //
-    sort(newLayout, {}, [](const auto& row) noexcept { return row.typeInfo->alignment; });
+    sort(newLayout, {}, [this](const auto& row) noexcept { return row.type->align(); });
 
     // calculate total size of all components including padding, used to determine how many
     // entities we can store in a chunk for this archetype
@@ -137,8 +127,8 @@ auto up::EcsSharedContext::acquireArchetype(
     size_t size = sizeof(EntityId);
     size_t padding = 0;
     for (auto const& row : newLayout) {
-        padding += align_to(size, row.typeInfo->alignment) - size;
-        size += row.typeInfo->size;
+        padding += align_to(size, row.type->align()) - size;
+        size += row.type->size();
     }
 
     // calculate how many entities with this layout can fit in a single chunk
@@ -150,11 +140,10 @@ auto up::EcsSharedContext::acquireArchetype(
     //
     size_t offset = sizeof(EntityId) * archData.maxEntitiesPerChunk;
     for (auto& row : newLayout) {
-        offset = align_to(offset, row.typeInfo->alignment);
+        offset = align_to(offset, row.type->align());
 
-        row.component = static_cast<ComponentId>(row.typeInfo->hash);
         row.offset = static_cast<uint32>(offset);
-        row.width = static_cast<uint16>(row.typeInfo->size);
+        row.width = static_cast<uint16>(row.type->size());
 
         offset += row.width * archData.maxEntitiesPerChunk;
         UP_ASSERT(offset <= sizeof(Chunk::payload));

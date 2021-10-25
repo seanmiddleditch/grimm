@@ -11,6 +11,7 @@
 #include "potato/spud/concepts.h"
 #include "potato/spud/delegate_ref.h"
 #include "potato/spud/rc.h"
+#include "potato/spud/traits.h"
 #include "potato/spud/vector.h"
 
 namespace up {
@@ -48,7 +49,7 @@ namespace up {
         /// Creates a new Entity with the provided list of Component data
         ///
         template <typename... Components>
-        EntityId createEntity(Components const&... components) noexcept;
+        EntityId createEntity(identity_t<Components>&&... components) noexcept;
 
         /// Deletes an existing Entity
         ///
@@ -59,13 +60,13 @@ namespace up {
         /// Changes the Entity's Archetype and home Chunk
         ///
         template <typename Component>
-        void addComponent(EntityId entityId, Component const& component) noexcept;
+        void addComponent(EntityId entityId, identity_t<Component>&& component) noexcept;
 
         /// @brief Add a default-constructed component to an existing entity.
         /// @param entity The entity to add the componet to.
         /// @param typeInfo Metadata for the to-be-added component.
         /// @returns unsafe raw pointer to the created component.
-        UP_GAME_API void* addComponentDefault(EntityId entity, reflex::TypeInfo const& typeInfo);
+        UP_GAME_API void* addComponentDefault(EntityId entity, ComponentId componentId);
 
         /// Removes a Component from an existing Entity.
         ///
@@ -78,8 +79,7 @@ namespace up {
         /// @param entityId Entity to modify.
         template <typename Component>
         void removeComponent(EntityId entityId) noexcept {
-            reflex::TypeInfo const* const typeInfo = _context->findComponentByType<Component>();
-            return removeComponent(entityId, static_cast<ComponentId>(typeInfo->hash));
+            return removeComponent(entityId, makeComponentId<Component>());
         }
 
         /// Retrieves a pointer to a Component on the specified Entity.
@@ -96,25 +96,6 @@ namespace up {
         /// This is a type-unsafe variant of getComponentSlow.
         ///
         UP_GAME_API void* getComponentSlowUnsafe(EntityId entity, ComponentId component) noexcept;
-
-        /// Interrogate an entity and enumerate all of its components.
-        ///
-        template <callable<EntityId, ArchetypeId, reflex::TypeInfo const*, void*> Callback>
-        auto interrogateEntityUnsafe(EntityId entity, Callback&& callback) const -> bool {
-            if (auto [success, archetype, chunkIndex, index] = _parseEntityId(entity); success) {
-                auto const layout = _context->layoutOf(archetype);
-                Chunk* const chunk = _getChunk(archetype, chunkIndex);
-                for (LayoutRow const& row : layout) {
-                    callback(
-                        entity,
-                        archetype,
-                        row.typeInfo,
-                        static_cast<void*>(chunk->payload + row.offset + row.width * index));
-                }
-                return true;
-            }
-            return false;
-        }
 
     private:
         struct AllocatedLocation {
@@ -137,11 +118,8 @@ namespace up {
 
         static constexpr uint64 freeEntityIndex = ~0ULL;
 
-        UP_GAME_API EntityId _createEntityRaw(view<reflex::TypeInfo const*> components, view<void const*> data);
-        UP_GAME_API void _addComponentRaw(
-            EntityId entityId,
-            reflex::TypeInfo const& typeInfo,
-            void const* componentData) noexcept;
+        UP_GAME_API EntityId _createEntityRaw(view<ComponentId> components, view<void*> data);
+        UP_GAME_API void _addComponentRaw(EntityId entityId, ComponentId component, void* componentData) noexcept;
         void _deleteEntityData(ArchetypeId archetypeId, uint16 chunkIndex, uint16 index) noexcept;
 
         auto _allocateEntitySpace(ArchetypeId archetype) -> AllocatedLocation;
@@ -164,7 +142,7 @@ namespace up {
             Chunk& destChunk,
             int destIndex,
             ComponentId srcComponent,
-            void const* srcData);
+            void* srcData);
         void* _constructAt(ArchetypeId arch, Chunk& chunk, int index, ComponentId component);
         void _destroyAt(ArchetypeId arch, Chunk& chunk, int index);
 
@@ -180,12 +158,12 @@ namespace up {
     };
 
     template <typename... Components>
-    EntityId World::createEntity(Components const&... components) noexcept {
+    EntityId World::createEntity(identity_t<Components>&&... components) noexcept {
         if constexpr (sizeof...(Components) != 0) {
-            reflex::TypeInfo const* const typeInfos[] = {_context->findComponentByType<Components>()...};
-            void const* const componentData[] = {&components...};
+            ComponentId const componentIds[] = {makeComponentId<Components>()...};
+            void* const componentData[] = {&components...};
 
-            return _createEntityRaw(typeInfos, componentData);
+            return _createEntityRaw(componentIds, componentData);
         }
         else {
             return _createEntityRaw({}, {});
@@ -194,16 +172,11 @@ namespace up {
 
     template <typename Component>
     Component* World::getComponentSlow(EntityId entity) noexcept {
-        reflex::TypeInfo const* const typeInfo = _context->findComponentByType<Component>();
-        if (typeInfo == nullptr) {
-            return nullptr;
-        }
-        return static_cast<Component*>(getComponentSlowUnsafe(entity, static_cast<ComponentId>(typeInfo->hash)));
+        return static_cast<Component*>(getComponentSlowUnsafe(entity, makeComponentId<Component>()));
     }
 
     template <typename Component>
-    void World::addComponent(EntityId entityId, Component const& component) noexcept {
-        reflex::TypeInfo const* const typeInfo = _context->findComponentByType<Component>();
-        _addComponentRaw(entityId, *typeInfo, &component);
+    void World::addComponent(EntityId entityId, identity_t<Component>&& component) noexcept {
+        _addComponentRaw(entityId, makeComponentId<Component>(), &component);
     }
 } // namespace up

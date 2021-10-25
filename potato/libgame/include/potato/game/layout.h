@@ -4,14 +4,14 @@
 
 #include "common.h"
 
-#include "potato/reflex/type.h"
-
 namespace up {
+    class ComponentTypeBase;
+
     /// @brief Describes the information about how components are laid out in an Archetype
     ///
     struct LayoutRow {
-        ComponentId component = ComponentId::Unknown;
-        reflex::TypeInfo const* typeInfo = nullptr;
+        ComponentId component;
+        ComponentTypeBase const* type = nullptr;
         uint16 offset = 0;
         uint16 width = 0;
     };

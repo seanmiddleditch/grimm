@@ -133,12 +133,6 @@ TEST_CASE("potato.ecs.World", "[potato][ecs]") {
         found = false;
         queryTest1.select(*world, [&found](EntityId, Test1&) { found = true; });
         CHECK(found);
-
-        found = false;
-        world->interrogateEntityUnsafe(id, [&found](EntityId, ArchetypeId, reflex::TypeInfo const*, void*) {
-            found = true;
-        });
-        CHECK(found);
     }
 
     SECTION("add component") {
@@ -161,27 +155,5 @@ TEST_CASE("potato.ecs.World", "[potato][ecs]") {
         found = false;
         queryTest1.select(*world, [&found](EntityId, Test1&) { found = true; });
         CHECK(found);
-    }
-
-    SECTION("iterrogate entities") {
-        auto world = universe.createWorld();
-
-        auto id = world->createEntity(Test1{'f'}, Another{1.0, 2.f}, Second{7.f, 'g'});
-
-        auto success = world->interrogateEntityUnsafe(id, [&](auto entity, auto archetype, auto component, auto data) {
-            if (component->hash == reflex::TypeHolder<Test1>::get().hash) {
-                CHECK(static_cast<Test1 const*>(data)->a == 'f');
-            }
-            else if (component->hash == reflex::TypeHolder<Another>::get().hash) {
-                CHECK(static_cast<Another const*>(data)->a == 1.0);
-            }
-            else if (component->hash == reflex::TypeHolder<Second>::get().hash) {
-                CHECK(static_cast<Second const*>(data)->b == 7.f);
-            }
-            else {
-                CHECK_FALSE("unknown component");
-            }
-        });
-        CHECK(success);
     }
 }
