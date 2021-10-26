@@ -7,39 +7,37 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-namespace {
-    using namespace up;
-
-    class PhysicsSystem final : public System {
-    public:
-        using System::System;
-
-        void start() override { }
-        void stop() override { }
-
-        void update(float) override;
-        void render(RenderContext&) override { }
-
-    private:
-        glm::vec3 _gravity = {0, -9, 0};
-    };
-} // namespace
-
 namespace up {
+    namespace {
+        class PhysicsSystem final : public System {
+        public:
+            using System::System;
+
+            void start() override { }
+            void stop() override { }
+
+            void update(float) override;
+            void render(RenderContext&) override { }
+
+        private:
+            glm::vec3 _gravity = {0, -9, 0};
+        };
+    } // namespace
+
     void registerPhysicsSystem(Space& space) { space.addSystem<PhysicsSystem>(); }
-} // namespace up
 
-void PhysicsSystem::update(float deltaTime) {
-    space().entities().select<components::Transform, components::Body>(
-        [this, deltaTime](EntityId, components::Transform& trans, components::Body& body) {
-            if (trans.position.y > 0) {
-                body.linearVelocity += _gravity * deltaTime;
-                trans.position += body.linearVelocity * deltaTime;
+    void PhysicsSystem::update(float deltaTime) {
+        space().entities().select<components::Transform, components::Body>(
+            [this, deltaTime](EntityId, components::Transform& trans, components::Body& body) {
+                if (trans.position.y > 0) {
+                    body.linearVelocity += _gravity * deltaTime;
+                    trans.position += body.linearVelocity * deltaTime;
 
-                if (trans.position.y <= 0.f) {
-                    trans.position.y = 0.f;
-                    body.linearVelocity.y = 0.f;
+                    if (trans.position.y <= 0.f) {
+                        trans.position.y = 0.f;
+                        body.linearVelocity.y = 0.f;
+                    }
                 }
-            }
-        });
-}
+            });
+    }
+} // namespace up

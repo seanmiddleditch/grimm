@@ -7,27 +7,25 @@
 
 #include <glm/gtx/rotate_vector.hpp>
 
-namespace {
-    using namespace up;
-
-    class TransformSystem final : public System {
-    public:
-        using System::System;
-
-        void start() override { }
-        void stop() override { }
-
-        void update(float) override;
-        void render(RenderContext&) override { }
-    };
-} // namespace
-
 namespace up {
-    void registerTransformSystem(Space& space) { space.addSystem<TransformSystem>(); }
-} // namespace up
+    namespace {
+        class TransformSystem final : public System {
+        public:
+            using System::System;
 
-void TransformSystem::update(float) {
-    space().entities().select<components::Transform>([&](EntityId, components::Transform& trans) {
-        trans.transform = glm::translate(trans.position) * glm::mat4_cast(trans.rotation);
-    });
-}
+            void start() override { }
+            void stop() override { }
+
+            void update(float) override;
+            void render(RenderContext&) override { }
+        };
+    } // namespace
+
+    void registerTransformSystem(Space& space) { space.addSystem<TransformSystem>(); }
+
+    void TransformSystem::update(float) {
+        space().entities().select<components::Transform>([&](EntityId, components::Transform& trans) {
+            trans.transform = glm::translate(trans.position) * glm::mat4_cast(trans.rotation);
+        });
+    }
+} // namespace up
