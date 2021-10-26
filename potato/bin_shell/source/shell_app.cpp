@@ -26,7 +26,6 @@
 #include "potato/render/material.h"
 #include "potato/render/renderer.h"
 #include "potato/render/shader.h"
-#include "potato/schema/components_schema.h"
 #include "potato/schema/recon_messages_schema.h"
 #include "potato/schema/scene_schema.h"
 #include "potato/shell/camera.h"

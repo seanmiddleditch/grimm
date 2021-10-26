@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include "potato/game/components/demo_components.h"
+#include "potato/game/components/mesh_component.h"
+#include "potato/game/components/rigidbody_component.h"
+#include "potato/game/components/transform_component.h"
 #include "potato/game/space.h"
-#include "potato/schema/components_schema.h"
 #include "potato/schema/scene_schema.h"
 #include "potato/shell/scene/edit_component.h"
 #include "potato/shell/scene_doc.h"
@@ -60,19 +63,19 @@ namespace up {
         bool syncGame(Space& space, EntityId entityId, SceneComponent const& component) const override;
     };
 
-    class WaveEditComponent final : public SimpleEditComponent<scene::components::Wave, components::Wave> {
-        components::Wave createFrom(scene::components::Wave const& sceneComponent) const override;
+    class WaveEditComponent final : public SimpleEditComponent<scene::components::Wave, component::Wave> {
+        component::Wave createFrom(scene::components::Wave const& sceneComponent) const override;
     };
 
-    class SpinEditComponent final : public SimpleEditComponent<scene::components::Spin, components::Spin> {
-        components::Spin createFrom(scene::components::Spin const& sceneComponent) const override;
+    class SpinEditComponent final : public SimpleEditComponent<scene::components::Spin, component::Spin> {
+        component::Spin createFrom(scene::components::Spin const& sceneComponent) const override;
     };
 
-    class DingEditComponent final : public SimpleEditComponent<scene::components::Ding, components::Ding> {
-        components::Ding createFrom(scene::components::Ding const& sceneComponent) const override;
+    class DingEditComponent final : public SimpleEditComponent<scene::components::Ding, component::Ding> {
+        component::Ding createFrom(scene::components::Ding const& sceneComponent) const override;
     };
 
-    class BodyEditComponent final : public SimpleEditComponent<scene::components::Body, components::Body> {
-        components::Body createFrom(scene::components::Body const& sceneComponent) const override;
+    class BodyEditComponent final : public SimpleEditComponent<scene::components::Body, component::RigidBody> {
+        component::RigidBody createFrom(scene::components::Body const& sceneComponent) const override;
     };
 } // namespace up

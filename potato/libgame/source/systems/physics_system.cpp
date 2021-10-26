@@ -1,9 +1,10 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
+#include "potato/game/components/rigidbody_component.h"
+#include "potato/game/components/transform_component.h"
 #include "potato/game/entity_manager.h"
 #include "potato/game/space.h"
 #include "potato/game/system.h"
-#include "potato/schema/components_schema.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -27,17 +28,18 @@ namespace up {
     void registerPhysicsSystem(Space& space) { space.addSystem<PhysicsSystem>(); }
 
     void PhysicsSystem::update(float deltaTime) {
-        space().entities().select<components::Transform, components::Body>(
-            [this, deltaTime](EntityId, components::Transform& trans, components::Body& body) {
-                if (trans.position.y > 0) {
-                    body.linearVelocity += _gravity * deltaTime;
-                    trans.position += body.linearVelocity * deltaTime;
+        using namespace component;
 
-                    if (trans.position.y <= 0.f) {
-                        trans.position.y = 0.f;
-                        body.linearVelocity.y = 0.f;
-                    }
+        space().entities().select<Transform, RigidBody>([this, deltaTime](EntityId, Transform& trans, RigidBody& body) {
+            if (trans.position.y > 0) {
+                body.linearVelocity += _gravity * deltaTime;
+                trans.position += body.linearVelocity * deltaTime;
+
+                if (trans.position.y <= 0.f) {
+                    trans.position.y = 0.f;
+                    body.linearVelocity.y = 0.f;
                 }
-            });
+            }
+        });
     }
 } // namespace up

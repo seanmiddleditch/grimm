@@ -4,12 +4,6 @@ target_sources(potato_libgame_test PRIVATE
     "test_entity_manager.cpp"
 )
 
-up_compile_sap(potato_libgame_test
-    PRIVATE
-    SCHEMAS
-        test_components.sap
-)
-
 up_set_common_properties(potato_libgame_test)
 
 target_link_libraries(potato_libgame_test PRIVATE

@@ -1,15 +1,34 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/game/entity_manager.h"
-#include "potato/schema/test_components_schema.h"
 
 #include <catch2/catch.hpp>
 
 CATCH_REGISTER_ENUM(up::EntityId);
 
+namespace components {
+    struct Test1 {
+        char a;
+    };
+
+    struct Second {
+        float b;
+        char a;
+    };
+
+    struct Another {
+        double a;
+        float b;
+    };
+
+    struct Counter {
+        int value;
+    };
+} // namespace components
+
 TEST_CASE("potato.ecs.EntityManager", "[potato][ecs]") {
     using namespace up;
-    using namespace up::components;
+    using namespace components;
 
     SECTION("directly access componens") {
         EntityManager entities;
