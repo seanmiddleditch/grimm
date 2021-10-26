@@ -9,59 +9,59 @@
 
 #include <algorithm>
 
-up::EntityManager::EntityManager() = default;
+namespace up {
+    EntityManager::EntityManager() = default;
+    EntityManager::~EntityManager() = default;
 
-up::EntityManager::~EntityManager() = default;
-
-void* up::EntityManager::getComponentSlowUnsafe(EntityId entityId, ComponentId componentId) noexcept {
-    for (auto& comp : _components) {
-        if (comp->componentId() == componentId) {
-            return comp->getUnsafe(entityId);
+    void* EntityManager::getComponentUnsafe(EntityId entityId, ComponentId componentId) noexcept {
+        ComponentStorage* const component = _getComponent(componentId);
+        if (component != nullptr) {
+            return component->getUnsafe(entityId);
         }
+        return nullptr;
     }
-    return nullptr;
-}
 
-auto up::EntityManager::createEntity() -> EntityId {
-    EntityId const id { _entities.size() };
-    _entities.push_back(id);
-    return id;
-}
-
-bool up::EntityManager::deleteEntity(EntityId entityId) noexcept {
-    for (auto& comp : _components) {
-        comp->remove(entityId);
+    auto EntityManager::createEntity() -> EntityId {
+        EntityId const id{_entities.size()};
+        _entities.push_back(id);
+        return id;
     }
-    return erase(_entities, entityId) != 0;
-}
 
-bool up::EntityManager::removeComponent(EntityId entityId, ComponentId componentId) noexcept {
-    for (auto& comp : _components) {
-        if (comp->componentId() == componentId) {
-            return comp->remove(entityId);
+    bool EntityManager::deleteEntity(EntityId entityId) noexcept {
+        for (auto& comp : _components) {
+            comp->remove(entityId);
         }
+        return erase(_entities, entityId) != 0;
     }
-    return false;
-}
 
-auto up::EntityManager::getComponentStorage(ComponentId componentId) noexcept -> ComponentStorage* {
-    for (auto& comp : _components) {
-        if (comp->componentId() == componentId) {
-            return comp.get();
+    bool EntityManager::removeComponent(EntityId entityId, ComponentId componentId) noexcept {
+        ComponentStorage* const component = _getComponent(componentId);
+        if (component != nullptr) {
+            return component->remove(entityId);
         }
+        return false;
     }
-    return nullptr;
-}
 
-void up::EntityManager::_registerComponent(box<ComponentStorage> storage) {
-    _components.push_back(std::move(storage));
-}
+    ComponentStorage& EntityManager::_registerComponent(box<ComponentStorage> storage) {
+        _components.push_back(std::move(storage));
+        return *_components.back();
+    }
 
-void* up::EntityManager::_addComponentRaw(EntityId entityId, ComponentId componentId) {
-    for (auto& comp : _components) {
-        if (comp->componentId() == componentId) {
-            return comp->add(entityId);
+    void* EntityManager::_addComponentRaw(EntityId entityId, ComponentId componentId) {
+        ComponentStorage* const component = _getComponent(componentId);
+        if (component != nullptr) {
+            return component->add(entityId);
         }
+        return nullptr;
     }
-    return nullptr;
-}
+
+    ComponentStorage* EntityManager::_getComponent(ComponentId componentId) noexcept {
+        for (auto& comp : _components) {
+            if (comp->componentId() == componentId) {
+                return comp.get();
+            }
+        }
+        return nullptr;
+    }
+
+} // namespace up

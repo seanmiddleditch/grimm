@@ -80,24 +80,22 @@ namespace up {
         /// and a Query should be used for runtime code.
         ///
         template <typename Component>
-        Component* getComponentSlow(EntityId entityId) noexcept;
+        [[nodiscard]] Component* getComponentSlow(EntityId entityId) noexcept;
 
         /// Retrieves a pointer to a Component on the specified Entity.
         ///
         /// This is a type-unsafe variant of getComponentSlow.
         ///
-        UP_GAME_API void* getComponentSlowUnsafe(EntityId entityId, ComponentId componentId) noexcept;
+        UP_GAME_API [[nodiscard]] void* getComponentUnsafe(EntityId entityId, ComponentId componentId) noexcept;
 
         /// Registers a new component type
         template <typename Component>
-        void registerComponent();
-
-        /// Retrieves the component storage for a given component type
-        UP_GAME_API ComponentStorage* getComponentStorage(ComponentId componentId) noexcept;
+        ComponentStorage& registerComponent();
 
     private:
-        UP_GAME_API void _registerComponent(box<ComponentStorage> storage);
+        UP_GAME_API ComponentStorage& _registerComponent(box<ComponentStorage> storage);
         UP_GAME_API void* _addComponentRaw(EntityId entityId, ComponentId componentId);
+        UP_GAME_API ComponentStorage* _getComponent(ComponentId componentId) noexcept;
 
         template <typename Callback, typename... Components, size_t... Indices>
         void _select(Callback&& callback, typelist<Components...>, std::index_sequence<Indices...>);
@@ -115,7 +113,7 @@ namespace up {
 
     template <typename Component>
     Component* EntityManager::getComponentSlow(EntityId entity) noexcept {
-        return static_cast<Component*>(getComponentSlowUnsafe(entity, makeComponentId<Component>()));
+        return static_cast<Component*>(getComponentUnsafe(entity, makeComponentId<Component>()));
     }
 
     template <typename Component>
@@ -125,6 +123,13 @@ namespace up {
         return *static_cast<Component*>(data) = std::move(component);
     }
 
+    template <typename Component>
+    Component& EntityManager::addComponent(EntityId entityId) noexcept {
+        void* const data = _addComponentRaw(entityId, makeComponentId<Component>());
+        UP_ASSERT(data != nullptr);
+        return *static_cast<Component*>(data);
+    }
+
     template <typename... Components, typename Callback>
         requires is_invocable_v<Callback, EntityId, Components&...>
     void EntityManager::select(Callback&& callback) {
@@ -132,14 +137,13 @@ namespace up {
     }
 
     template <typename Component>
-    void EntityManager::registerComponent() {
-        _registerComponent(new_box<TypedComponentStorage<Component>>());
+    ComponentStorage& EntityManager::registerComponent() {
+        return _registerComponent(new_box<TypedComponentStorage<Component, std::is_empty_v<Component>>>());
     }
 
     template <typename Callback, typename... Components, size_t... Indices>
     void EntityManager::_select(Callback&& callback, typelist<Components...>, std::index_sequence<Indices...>) {
-        ComponentId const componentIds[] = {makeComponentId<Components>()...};
-        ComponentStorage* componentStorages[] = {getComponentStorage(componentIds[Indices])...};
+        ComponentStorage* componentStorages[] = {_getComponent(makeComponentId<Components>())...};
         void* componentData[sizeof...(Components)] = {};
 
         for (size_t index = 0; index != sizeof...(Components); ++index) {
@@ -149,18 +153,19 @@ namespace up {
             }
         }
 
-        componentStorages[0]->forEachUnsafe([&, this](EntityId entityId, void* data) {
-            componentData[0] = data;
+        auto cursor = componentStorages[0]->enumerateUnsafe();
+        while (cursor.next()) {
+            componentData[0] = cursor.componentData;
+
             for (size_t index = 1; index != sizeof...(Components); ++index) {
-                componentData[index] = componentStorages[index]->getUnsafe(entityId);
+                componentData[index] = componentStorages[index]->getUnsafe(cursor.entityId);
                 if (componentData[index] == nullptr) {
-                    return true;
+                    goto skip;
                 }
             }
 
-            callback(entityId, *(static_cast<Components*>(componentData[Indices]))...);
-
-            return true;
-        });
+            callback(cursor.entityId, *(static_cast<Components*>(componentData[Indices]))...);
+skip:;
+        }
     }
 } // namespace up
