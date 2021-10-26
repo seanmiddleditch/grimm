@@ -13,7 +13,6 @@
 #include "potato/editor/imgui_backend.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/editor/project.h"
-#include "potato/game/query.h"
 #include "potato/game/space.h"
 #include "potato/render/camera.h"
 #include "potato/render/context.h"

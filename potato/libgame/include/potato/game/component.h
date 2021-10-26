@@ -13,7 +13,7 @@
 namespace up {
     template <typename ComponentT>
     consteval ComponentId makeComponentId() noexcept {
-        reflex::TypeId const typeId = reflex::makeTypeId<ComponentT>();
+        reflex::TypeId const typeId = reflex::makeTypeId<std::remove_cvref_t<ComponentT>>();
         return ComponentId{typeId.raw()};
     }
 

@@ -1,10 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/audio/audio_engine.h"
-#include "potato/game/query.h"
+#include "potato/game/entity_manager.h"
 #include "potato/game/space.h"
 #include "potato/game/system.h"
-#include "potato/game/entity_manager.h"
 #include "potato/schema/components_schema.h"
 
 #include <glm/gtx/rotate_vector.hpp>
@@ -16,17 +15,13 @@ namespace {
     public:
         DemoSystem(Space& space, AudioEngine& audioEngine);
 
-        void start() override;
+        void start() override { }
         void stop() override { }
 
         void update(float) override;
         void render(RenderContext&) override { }
 
     private:
-        Query<components::Transform, components::Wave> _waveQuery;
-        Query<components::Transform, components::Wave> _orbitQuery;
-        Query<components::Transform, components::Spin> _spinQuery;
-        Query<components::Ding> _dingQuery;
         AudioEngine& _audioEngine;
     };
 } // namespace
@@ -37,28 +32,24 @@ namespace up {
 
 DemoSystem::DemoSystem(Space& space, AudioEngine& audioEngine) : System(space), _audioEngine(audioEngine) { }
 
-void DemoSystem::start() {
-    space().entities().createQuery(_waveQuery);
-    space().entities().createQuery(_orbitQuery);
-    space().entities().createQuery(_spinQuery);
-    space().entities().createQuery(_dingQuery);
-}
-
 void DemoSystem::update(float deltaTime) {
-    _waveQuery.select(space().entities(), [&](EntityId, components::Transform& trans, components::Wave& wave) {
-        wave.offset += deltaTime * .2f;
-        trans.position.y = 1 + 5 * glm::sin(wave.offset * 10);
-    });
+    space().entities().select<components::Transform, components::Wave>(
+        [&](EntityId, components::Transform& trans, components::Wave& wave) {
+            wave.offset += deltaTime * .2f;
+            trans.position.y = 1 + 5 * glm::sin(wave.offset * 10);
+        });
 
-    _orbitQuery.select(space().entities(), [&](EntityId, components::Transform& trans, components::Wave&) {
-        trans.position = glm::rotateY(trans.position, deltaTime);
-    });
+    space().entities().select<components::Transform, components::Wave>(
+        [&](EntityId, components::Transform& trans, components::Wave&) {
+            trans.position = glm::rotateY(trans.position, deltaTime);
+        });
 
-    _spinQuery.select(space().entities(), [&](EntityId, components::Transform& trans, components::Spin const& spin) {
-        trans.rotation = glm::angleAxis(spin.radians * deltaTime, glm::vec3(0.f, 1.f, 0.f)) * trans.rotation;
-    });
+    space().entities().select<components::Transform, components::Spin const>(
+        [&](EntityId, components::Transform& trans, components::Spin const& spin) {
+            trans.rotation = glm::angleAxis(spin.radians * deltaTime, glm::vec3(0.f, 1.f, 0.f)) * trans.rotation;
+        });
 
-    _dingQuery.select(space().entities(), [&, this](EntityId, components::Ding& ding) {
+    space().entities().select<components::Ding>([&, this](EntityId, components::Ding& ding) {
         ding.time += deltaTime;
         if (ding.time > ding.period) {
             ding.time -= ding.period;

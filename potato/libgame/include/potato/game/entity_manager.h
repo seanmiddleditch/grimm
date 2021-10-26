@@ -15,7 +15,6 @@
 #include "potato/spud/vector.h"
 
 namespace up {
-    template <typename...>
     class Query;
 
     /// Contains a collection of Entities and their associated Components.
@@ -27,11 +26,6 @@ namespace up {
 
         EntityManager(EntityManager&&) = delete;
         EntityManager& operator=(EntityManager&&) = delete;
-
-        template <typename... Components>
-        auto createQuery(Query<Components...>& query) -> Query<Components...>& {
-            return query;
-        }
 
         /// Creates a new Entity
         ///
@@ -74,6 +68,11 @@ namespace up {
             return removeComponent(entityId, makeComponentId<Component>());
         }
 
+        /// Invokes callback for every Entity matching the signature
+        template <typename... Components, typename Callback>
+            requires is_invocable_v<Callback, EntityId, Components&...>
+        void select(Callback&& callback);
+
         /// Retrieves a pointer to a Component on the specified Entity.
         ///
         /// This is typically a slow operation. It will incur several table lookups
@@ -100,6 +99,9 @@ namespace up {
         UP_GAME_API void _registerComponent(box<ComponentStorage> storage);
         UP_GAME_API void* _addComponentRaw(EntityId entityId, ComponentId componentId);
 
+        template <typename Callback, typename... Components, size_t... Indices>
+        void _select(Callback&& callback, typelist<Components...>, std::index_sequence<Indices...>);
+
         vector<EntityId> _entities;
         vector<box<ComponentStorage>> _components;
     };
@@ -123,8 +125,42 @@ namespace up {
         return *static_cast<Component*>(data) = std::move(component);
     }
 
+    template <typename... Components, typename Callback>
+        requires is_invocable_v<Callback, EntityId, Components&...>
+    void EntityManager::select(Callback&& callback) {
+        _select(callback, typelist<Components...>{}, std::make_index_sequence<sizeof...(Components)>{});
+    }
+
     template <typename Component>
     void EntityManager::registerComponent() {
         _registerComponent(new_box<TypedComponentStorage<Component>>());
+    }
+
+    template <typename Callback, typename... Components, size_t... Indices>
+    void EntityManager::_select(Callback&& callback, typelist<Components...>, std::index_sequence<Indices...>) {
+        ComponentId const componentIds[] = {makeComponentId<Components>()...};
+        ComponentStorage* componentStorages[] = {getComponentStorage(componentIds[Indices])...};
+        void* componentData[sizeof...(Components)] = {};
+
+        for (size_t index = 0; index != sizeof...(Components); ++index) {
+            UP_ASSERT(componentStorages[index] != nullptr);
+            if (componentStorages[index] == nullptr) {
+                return;
+            }
+        }
+
+        componentStorages[0]->forEachUnsafe([&, this](EntityId entityId, void* data) {
+            componentData[0] = data;
+            for (size_t index = 1; index != sizeof...(Components); ++index) {
+                componentData[index] = componentStorages[index]->getUnsafe(entityId);
+                if (componentData[index] == nullptr) {
+                    return true;
+                }
+            }
+
+            callback(entityId, *(static_cast<Components*>(componentData[Indices]))...);
+
+            return true;
+        });
     }
 } // namespace up

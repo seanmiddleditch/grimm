@@ -1,7 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/game/entity_manager.h"
-#include "potato/game/query.h"
 #include "potato/schema/test_components_schema.h"
 
 #include <catch2/catch.hpp>
@@ -79,22 +78,19 @@ TEST_CASE("potato.ecs.EntityManager", "[potato][ecs]") {
         entities.registerComponent<Another>();
         entities.registerComponent<Counter>();
 
-        Query<Test1> queryTest1;
-        Query<Second> querySecond;
-
         EntityId id = entities.createEntity(Test1{}, Second{});
 
-        querySecond.select(entities, [&found](EntityId, Second&) { found = true; });
+        entities.select<Second>([&found](EntityId, Second&) { found = true; });
         CHECK(found);
 
         entities.removeComponent<Second>(id);
 
         found = false;
-        querySecond.select(entities, [&found](EntityId, Second&) { found = true; });
+        entities.select<Second>([&found](EntityId, Second&) { found = true; });
         CHECK_FALSE(found);
 
         found = false;
-        queryTest1.select(entities, [&found](EntityId, Test1&) { found = true; });
+        entities.select<Test1>([&found](EntityId, Test1&) { found = true; });
         CHECK(found);
     }
 
@@ -106,22 +102,19 @@ TEST_CASE("potato.ecs.EntityManager", "[potato][ecs]") {
         entities.registerComponent<Another>();
         entities.registerComponent<Counter>();
 
-        Query<Test1> queryTest1;
-        Query<Second> querySecond;
-
         EntityId id = entities.createEntity(Test1{});
 
-        querySecond.select(entities, [&found](EntityId, Second&) { found = true; });
+        entities.select<Second>([&found](EntityId, Second&) { found = true; });
         CHECK_FALSE(found);
 
         entities.addComponent(id, Second{});
 
         found = false;
-        querySecond.select(entities, [&found](EntityId, Second&) { found = true; });
+        entities.select<Second>([&found](EntityId, Second&) { found = true; });
         CHECK(found);
 
         found = false;
-        queryTest1.select(entities, [&found](EntityId, Test1&) { found = true; });
+        entities.select<Test1>([&found](EntityId, Test1&) { found = true; });
         CHECK(found);
     }
 }
