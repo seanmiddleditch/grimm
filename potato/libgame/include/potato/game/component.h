@@ -66,6 +66,7 @@ namespace up {
 
         vector<EntityId> _entities;
         vector<uint32> _free;
+        hash_map<EntityId, uint32> _map;
         size_t _size = 0;
         ComponentId _id;
         zstring_view _debugName;
@@ -124,6 +125,7 @@ namespace up {
         }
 
         uint32 const index = allocateIndex(entityId);
+        _map.insert(entityId, index);
         ++_size;
         return allocateComponentAt(index);
     }
@@ -133,6 +135,7 @@ namespace up {
             uint32 const index = indexOf(entityId);
             if (index != InvalidIndex) {
                 _entities[index] = {};
+                _map.erase(entityId);
                 _free.push_back(index);
                 --_size;
                 return true;
@@ -166,14 +169,8 @@ namespace up {
     }
 
     uint32 ComponentStorage::indexOf(EntityId entityId) const noexcept {
-        if (_size != 0 && entityId != EntityId::None) {
-            for (uint32 index = 0; index != _entities.size(); ++index) {
-                if (_entities[index] == entityId) {
-                    return index;
-                }
-            }
-        }
-        return InvalidIndex;
+        auto const& item = _map.find(entityId);
+        return item ? item->value : InvalidIndex;
     }
 
     template <typename ComponentT, bool IsEmptyComponent>
