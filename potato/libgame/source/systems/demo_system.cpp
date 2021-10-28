@@ -15,11 +15,7 @@ namespace up {
         public:
             DemoSystem(Space& space, AudioEngine& audioEngine);
 
-            void start() override { }
-            void stop() override { }
-
             void update(float) override;
-            void render(RenderContext&) override { }
 
         private:
             AudioEngine& _audioEngine;

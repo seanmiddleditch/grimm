@@ -14,11 +14,7 @@ namespace up {
         public:
             using System::System;
 
-            void start() override { }
-            void stop() override { }
-
             void update(float) override;
-            void render(RenderContext&) override { }
 
         private:
             glm::vec3 _gravity = {0, -9, 0};

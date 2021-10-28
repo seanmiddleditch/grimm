@@ -11,8 +11,8 @@ namespace up {
         explicit System(Space& space) noexcept : m_space(space) { }
         virtual ~System() = default;
 
-        virtual void start() = 0;
-        virtual void stop() = 0;
+        virtual void start() { }
+        virtual void stop() { }
 
         virtual void update(float deltaTime) = 0;
         virtual void render(RenderContext&) { }

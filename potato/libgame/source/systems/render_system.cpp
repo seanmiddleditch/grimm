@@ -13,9 +13,6 @@ namespace up {
         public:
             using System::System;
 
-            void start() override { }
-            void stop() override { }
-
             void update(float deltaTime) override;
             void render(RenderContext& ctx) override;
         };
