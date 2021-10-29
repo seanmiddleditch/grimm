@@ -15,6 +15,10 @@
 #    define UP_UNREACHABLE(...) \
         do { } \
         while (false)
+#    define UP_VERIFY(condition, ...) (true)
+#    define UP_GUARD(condition, retval, ...) \
+        do { } \
+        while (false)
 
 #elif _PREFAST_ // Microsoft's /analyze tool
 
@@ -22,16 +26,6 @@
 #    define UP_UNREACHABLE(...) __analysis_assume(false)
 
 #else
-
-namespace up::_detail {
-    // abstraction to deal with assert instances that don't have a message at all
-    template <int N, typename... Args>
-    void constexpr formatAssertion(char (&buffer)[N], nanofmt::format_string format, Args&&... args) {
-        nanofmt::format_to(buffer, format, std::forward<Args>(args)...);
-    }
-    template <typename DestT>
-    void constexpr formatAssertion(DestT& dest) { }
-} // namespace up::_detail
 
 #    define uppriv_FORMAT_FAIL(condition_text, ...) \
         do { \
@@ -52,5 +46,23 @@ namespace up::_detail {
         while (false)
 
 #    define UP_UNREACHABLE(...) uppriv_FAIL("unreachable code", ##__VA_ARGS__)
+
+#    define UP_VERIFY(condition, ...) \
+        ([&]() { \
+            if (UP_UNLIKELY(!((condition)))) { \
+                uppriv_FORMAT_FAIL(#condition, ##__VA_ARGS__); \
+                return false; \
+            } \
+            return true; \
+        }())
+
+#    define UP_GUARD(condition, retval, ...) \
+        do { \
+            if (UP_UNLIKELY(!((condition)))) { \
+                uppriv_FORMAT_FAIL(#condition, ##__VA_ARGS__); \
+                return (retval); \
+            } \
+        } \
+        while (false)
 
 #endif // _PREFAST_
