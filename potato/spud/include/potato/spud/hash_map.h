@@ -233,7 +233,7 @@ namespace up {
             _grow();
         }
 
-        return _insert(key, value, hash);
+        return _insert(std::forward<InsertKey>(key), std::forward<InsertValue>(value), hash);
     }
 
     template <typename Key, typename Value, typename Hash, typename Equality>
