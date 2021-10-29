@@ -67,8 +67,8 @@ TEST_CASE("potato.ecs.EntityManager", "[potato][ecs]") {
 
         // delete some entities (not the last one!)
         //
-        entities.deleteEntity(foo);
-        entities.deleteEntity(bar);
+        entities.destroyEntity(foo);
+        entities.destroyEntity(bar);
 
         // ensure deleted entities are gone
         //

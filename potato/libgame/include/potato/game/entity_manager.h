@@ -10,6 +10,8 @@
 #include "potato/spud/box.h"
 #include "potato/spud/concepts.h"
 #include "potato/spud/delegate_ref.h"
+#include "potato/spud/hash_map.h"
+#include "potato/spud/hash_set.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/traits.h"
 #include "potato/spud/vector.h"
@@ -38,7 +40,7 @@ namespace up {
 
         /// Deletes an existing Entity
         ///
-        UP_GAME_API bool deleteEntity(EntityId entity) noexcept;
+        UP_GAME_API bool destroyEntity(EntityId entity) noexcept;
 
         /// Adds a new Component to an existing Entity.
         ///
@@ -100,8 +102,10 @@ namespace up {
         template <typename Callback, typename... Components, size_t... Indices>
         void _select(Callback&& callback, typelist<Components...>, std::index_sequence<Indices...>);
 
-        vector<EntityId> _entities;
+        hash_set<EntityId> _entities;
+        hash_map<ComponentId, ComponentStorage*> _componentMap;
         vector<box<ComponentStorage>> _components;
+        std::underlying_type_t<EntityId> _nextEntityId = to_underlying(EntityId::None) + 1;
     };
 
     template <typename... Components>

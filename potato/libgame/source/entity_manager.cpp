@@ -22,16 +22,20 @@ namespace up {
     }
 
     auto EntityManager::createEntity() -> EntityId {
-        EntityId const id{_entities.size()};
-        _entities.push_back(id);
+        EntityId const id{_nextEntityId++};
+        _entities.insert(id);
         return id;
     }
 
-    bool EntityManager::deleteEntity(EntityId entityId) noexcept {
-        for (auto& comp : _components) {
+    bool EntityManager::destroyEntity(EntityId entityId) noexcept {
+        if (!_entities.erase(entityId)) {
+            return false;
+        }
+
+        for (box<ComponentStorage>& comp : _components) {
             comp->remove(entityId);
         }
-        return erase(_entities, entityId) != 0;
+        return true;
     }
 
     bool EntityManager::removeComponent(EntityId entityId, ComponentId componentId) noexcept {
@@ -43,11 +47,19 @@ namespace up {
     }
 
     ComponentStorage& EntityManager::_registerComponent(box<ComponentStorage> storage) {
+        UP_ASSERT(storage != nullptr);
+
+        ComponentId const componentId = storage->componentId();
+        UP_ASSERT(!_componentMap.contains(componentId));
+
+        ComponentStorage* const result = storage.get();
         _components.push_back(std::move(storage));
-        return *_components.back();
+        _componentMap.insert(componentId, result);
+        return *result;
     }
 
     void* EntityManager::_addComponentRaw(EntityId entityId, ComponentId componentId) {
+        UP_ASSERT(_entities.contains(entityId));
         ComponentStorage* const component = _getComponent(componentId);
         if (component != nullptr) {
             return component->add(entityId);
@@ -56,12 +68,8 @@ namespace up {
     }
 
     ComponentStorage* EntityManager::_getComponent(ComponentId componentId) noexcept {
-        for (auto& comp : _components) {
-            if (comp->componentId() == componentId) {
-                return comp.get();
-            }
-        }
-        return nullptr;
+        auto const rs = _componentMap.find(componentId);
+        return rs ? rs->value : nullptr;
     }
 
 } // namespace up
