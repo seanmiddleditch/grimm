@@ -40,10 +40,8 @@ namespace up {
 
     bool EntityManager::removeComponent(EntityId entityId, ComponentId componentId) noexcept {
         ComponentStorage* const component = _getComponent(componentId);
-        if (component != nullptr) {
-            return component->remove(entityId);
-        }
-        return false;
+        UP_GUARD(component != nullptr, false);
+        return component->remove(entityId);
     }
 
     ComponentStorage& EntityManager::_registerComponent(box<ComponentStorage> storage) {
@@ -59,12 +57,10 @@ namespace up {
     }
 
     void* EntityManager::_addComponentRaw(EntityId entityId, ComponentId componentId) {
-        UP_ASSERT(_entities.contains(entityId));
+        UP_GUARD(_entities.contains(entityId), nullptr);
         ComponentStorage* const component = _getComponent(componentId);
-        if (component != nullptr) {
-            return component->add(entityId);
-        }
-        return nullptr;
+        UP_GUARD(component != nullptr, nullptr);
+        return component->add(entityId);
     }
 
     ComponentStorage* EntityManager::_getComponent(ComponentId componentId) noexcept {
