@@ -17,7 +17,7 @@ target_sources(potato_bin_codegen PRIVATE
 
 target_link_libraries(potato_bin_codegen PRIVATE
     nlohmann_json::nlohmann_json
-    potato::libformat
+    nanofmt::nanofmt
 )
 
 include(up_set_common_properties)

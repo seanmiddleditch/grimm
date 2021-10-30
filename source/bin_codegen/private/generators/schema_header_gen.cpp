@@ -4,6 +4,7 @@
 #include "../generator.h"
 #include "../schema.h"
 
+#include <nanofmt/std_string.h>
 #include <memory>
 #include <ostream>
 

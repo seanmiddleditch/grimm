@@ -348,7 +348,7 @@ void up::editor::PropertyGrid::_editStringField(
     // edited, make a temporary copy into a cheaply-resizable buffer, then post-
     // edit copy that back into a new up::string. For now... just this.
     char buffer[512];
-    format_to(buffer, "{}", value);
+    nanofmt::format_to(buffer, "{}", value);
 
     if (ImGui::InputText("##string", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
         value = string(buffer);
@@ -385,7 +385,7 @@ void up::editor::PropertyGrid::_editAssetField(
     char browserId[32] = {
         0,
     };
-    format_to(browserId, "##assets{}", ImGui::GetID("popup"));
+    nanofmt::format_to(browserId, "##assets{}", ImGui::GetID("popup"));
 
     if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
         ImGui::OpenPopup(browserId);
@@ -410,7 +410,7 @@ void up::editor::PropertyGrid::_editUuidField([[maybe_unused]] reflex::SchemaFie
     // edited, make a temporary copy into a cheaply-resizable buffer, then post-
     // edit copy that back into a new up::string. For now... just this.
     char buffer[UUID::strLength];
-    format_to(buffer, "{}", value);
+    nanofmt::format_to(buffer, "{}", value);
 
     if (ImGui::InputText(
             "##uuid",

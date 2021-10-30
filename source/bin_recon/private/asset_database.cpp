@@ -205,11 +205,10 @@ bool up::AssetDatabase::close() {
     return true;
 }
 
-void up::AssetDatabase::generateManifest(erased_writer writer) {
-    format_to(writer, "# Potato Manifest\n");
-    format_to(writer, ".version={}\n", ResourceManifest::version);
-    format_to(
-        writer,
+void up::AssetDatabase::generateManifest(string_writer& writer) {
+    writer.append("# Potato Manifest\n");
+    writer.format(".version={}\n", ResourceManifest::version);
+    writer.format(
         ":{}|{}|{}|{}|{}|{}\n",
         ResourceManifest::columnUuid,
         ResourceManifest::columnLogicalId,
@@ -218,11 +217,11 @@ void up::AssetDatabase::generateManifest(erased_writer writer) {
         ResourceManifest::columnContentHash,
         ResourceManifest::columnDebugName);
 
-    string_writer fullName;
+    char fullName[1024];
 
     for (auto const& [uuid, filename, assetType] :
          _db.query<zstring_view, zstring_view, zstring_view>("SELECT uuid, path, asset_type FROM source_assets")) {
-        format_to(writer, "{}|||{}||{}\n", uuid, assetType, filename);
+        writer.format("{}|||{}||{}\n", uuid, assetType, filename);
     }
 
     for (auto const& [uuid, filename] : _db.query<UUID, zstring_view>("SELECT uuid, path FROM source_assets")) {
@@ -230,15 +229,12 @@ void up::AssetDatabase::generateManifest(erased_writer writer) {
              _db.query<AssetId, zstring_view, zstring_view, uint64>(
                  "SELECT id, name, type, hash FROM imported_assets WHERE uuid=?",
                  uuid)) {
-            fullName.clear();
-            fullName.append(filename);
-
+            nanofmt::format_to(fullName, "{}", filename);
             if (!logicalName.empty()) {
-                format_append(fullName, ":{}", logicalName);
+                nanofmt::format_append_to(fullName, ":{}", logicalName);
             }
 
-            format_to(
-                writer,
+            writer.format(
                 "{}|{:016X}|{}|{}|{:016X}|{}\n",
                 uuid,
                 createLogicalAssetId(uuid, logicalName),

@@ -47,6 +47,11 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@v3
       - name: Setup VS Environment
         uses: seanmiddleditch/gha-setup-vsdevenv@v3
+      - name: Cache source dependencies
+        uses: actions/cache@v2
+        with:
+          path: deps
+          key: ${{ runner.os }}-${{ hashFiles('external/config.cmake') }}
       - name: Configure
         env:
           CXX: '${{ matrix.cxx }}'

@@ -3,6 +3,7 @@
 #include "reflex_test_schema.h"
 
 #include "potato/reflex/serialize.h"
+#include "potato/runtime/json.h"
 
 #include <catch2/catch.hpp>
 #include <nlohmann/json.hpp>
@@ -40,7 +41,7 @@ TEST_CASE("potato.reflex.Serialize", "[potato][reflex]") {
             R"({"$schema":"TestComplex","name":"Frederick","values":[42.0,-7.0,6000000000.0],"test":{"$schema":"TestStruct","enum":"Second"}})";
 
         TestComplex comp;
-        CHECK(reflex::decodeFromJson(nlohmann::json::parse(json), comp));
+        CHECK(reflex::decodeFromJson(nlohmann::json::parse(json.data(), json.data() + json.size()), comp));
 
         CHECK(comp.name == "Frederick"_s);
         REQUIRE(comp.values.size() == 3);

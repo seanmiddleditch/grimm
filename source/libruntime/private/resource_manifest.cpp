@@ -3,8 +3,6 @@
 #include "resource_manifest.h"
 #include "stream.h"
 
-#include "potato/format/format.h"
-
 #include <charconv>
 
 bool up::ResourceManifest::parseManifest(string_view input, ResourceManifest& manifest) {

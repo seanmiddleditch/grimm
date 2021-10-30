@@ -5,6 +5,7 @@
 
 #include "potato/spud/platform.h"
 #include "potato/spud/string_writer.h"
+#include "potato/spud/utility.h"
 
 // returns extension, including dot, e.g. foo.txt -> .txt
 // only the last extension is returned, e.g. foo.txt.gz -> .gz

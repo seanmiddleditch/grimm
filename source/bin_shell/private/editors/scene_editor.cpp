@@ -307,7 +307,7 @@ void up::shell::SceneEditor::_inspector() {
 
     {
         char buffer[128];
-        format_to(buffer, "{}", _doc->entityAt(index).name);
+        nanofmt::format_to(buffer, "{}", _doc->entityAt(index).name);
         if (ImGui::InputText("Name", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
             _doc->entityAt(index).name = string{buffer};
         }
@@ -413,7 +413,7 @@ void up::shell::SceneEditor::_hierarchyShowIndex(int index) {
 
     SceneEntity const& ent = _doc->entityAt(index);
 
-    format_to(label, "{} (#{})", !ent.name.empty() ? ent.name.c_str() : "Entity", ent.id);
+    nanofmt::format_to(label, "{} (#{})", !ent.name.empty() ? ent.name.c_str() : "Entity", ent.id);
 
     bool const hasChildren = ent.firstChild != -1;
     bool const selected = _selection.selected(to_underlying(ent.id));

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 project(runtime VERSION 0.1 LANGUAGES CXX)
 
 add_library(potato_libruntime)
@@ -72,7 +72,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(potato_libruntime
     PUBLIC
         potato::spud
-        potato::libformat
+        nanofmt::nanofmt
         ${UP_UUID_LIBRARY}
         Threads::Threads
         nlohmann_json::nlohmann_json

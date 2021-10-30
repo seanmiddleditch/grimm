@@ -7,7 +7,6 @@
 #include "resource_manifest.h"
 #include "stream.h"
 
-#include "potato/format/format.h"
 #include "potato/spud/fixed_string_writer.h"
 #include "potato/spud/hash.h"
 #include "potato/spud/hash_fnv1a.h"
@@ -114,7 +113,7 @@ auto up::AssetLoader::_makeCasPath(uint64 contentHash) const -> string {
     char casFilePath[32] = {
         0,
     };
-    format_to(
+    nanofmt::format_to(
         casFilePath,
         "{:02X}/{:04X}/{:016X}.bin",
         (contentHash >> 56) & 0xFF,

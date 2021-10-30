@@ -4,6 +4,7 @@
 #include "editor.h"
 
 #include "potato/spud/sequence.h"
+#include "potato/spud/utility.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>

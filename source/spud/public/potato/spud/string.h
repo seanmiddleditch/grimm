@@ -11,6 +11,7 @@
 #include "string_view.h"
 #include "zstring_view.h"
 
+#include <nanofmt/forward.h>
 #include <compare>
 #include <cstring>
 
@@ -244,3 +245,15 @@ void up::hash_append(HashAlgorithm& hasher, string const& string) {
 inline auto up::operator"" _s(char const* str, size_t size) -> string {
     return string{str, size};
 }
+
+namespace nanofmt {
+    template <>
+    struct formatter<up::string> {
+        constexpr char const* parse(char const* in, char const*) noexcept { return in; }
+
+        template <typename OutputT>
+        void format(up::string const& str, OutputT& output) noexcept {
+            output.append(str.data(), str.size());
+        }
+    };
+} // namespace nanofmt

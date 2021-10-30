@@ -2,6 +2,7 @@
 
 #include "io_loop.h"
 
+#include <cstring>
 #include <uv.h>
 
 namespace {

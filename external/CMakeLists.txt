@@ -20,6 +20,7 @@ set(EXTERNALS
     tracy
     dx12memalloc
     libuv
+    nanofmt
 )
 
 # ---------------------------- #

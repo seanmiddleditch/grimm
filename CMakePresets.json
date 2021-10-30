@@ -1,0 +1,67 @@
+{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "common",
+      "hidden": true,
+      "cacheVariables": {
+        "UP_OUTPUT_DIR": "${sourceDir}/out",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+      },
+      "binaryDir": "${sourceDir}/out/${presetName}",
+      "generator": "Ninja"
+    },
+    {
+      "name": "msvc",
+      "hidden": true,
+      "environment": {
+        "UP_CXXFLAGS": "/W3 /WX /w34295 /w34189",
+        "CXXFLAGS": "/FC /Zi"
+      }
+    },
+    {
+      "name": "msvc-debug",
+      "hidden": true,
+      "inherits": [ "msvc" ],
+      "environment": {
+        "CXXFLAGS": "$penv{CXXFLAGS} /Od /Ob1 /FC /Zi"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_DEBUG": "$env{CXXFLAGS}"
+      }
+    },
+    {
+      "name": "msvc-release",
+      "hidden": true,
+      "inherits": [ "msvc" ],
+      "environment": {
+        "CXXFLAGS": "$penv{CXXFLAGS} /O2 /Ob3 /DNDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "$env{CXXFLAGS}"
+      }
+    },
+    {
+      "name": "msvc-debug-shared",
+      "displayName": "Microsoft Debug Shared",
+      "inherits": [ "common", "msvc-debug" ],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": true
+      }
+    },
+    {
+      "name": "msvc-debug-static",
+      "displayName": "Microsoft Debug Static",
+      "inherits": [ "common", "msvc-debug" ],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": false
+      }
+    },
+    {
+      "name": "msvc-release-static",
+      "displayName": "Microsoft Release Static",
+      "inherits": [ "common", "msvc-release" ],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": false
+      }
+    }
+  ]
+}

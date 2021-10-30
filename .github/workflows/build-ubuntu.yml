@@ -42,7 +42,7 @@ jobs:
       - name: Apt update
         run: sudo apt-get -yq update
       - name: Install libraries
-        run: sudo apt-get -yq install uuid-dev libsdl2-dev libassimp-dev libuv1-dev
+        run: sudo apt-get -yq install uuid-dev libsdl2-dev libassimp-dev libuv1-dev libunwind-dev
       - name: Install packages
         run: sudo apt-get -yq install cmake ${{ matrix.packages }}
         if: ${{ matrix.packages }}
@@ -51,6 +51,11 @@ jobs:
         if: matrix.config == 'Debug'
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@v3
+      - name: Cache source dependencies
+        uses: actions/cache@v2
+        with:
+          path: deps
+          key: ${{ runner.os }}-${{ hashFiles('external/config.cmake') }}
       - name: Configure
         env:
           CXXFLAGS: '${{ matrix.cxxflags }}'

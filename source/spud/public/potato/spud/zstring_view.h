@@ -4,6 +4,7 @@
 
 #include "string_view.h"
 
+#include <nanofmt/forward.h>
 #include <cassert> // our assertion library requires zstring_view...
 
 namespace up {
@@ -124,3 +125,15 @@ namespace up {
 
     constexpr auto operator"" _zsv(char const* str, size_t) noexcept -> zstring_view { return {str}; }
 } // namespace up
+
+namespace nanofmt {
+    template <>
+    struct formatter<up::zstring_view> {
+        constexpr char const* parse(char const* in, char const*) noexcept { return in; }
+
+        template <typename OutputT>
+        void format(up::zstring_view str, OutputT& output) noexcept {
+            output.append(str.data(), str.size());
+        }
+    };
+} // namespace nanofmt

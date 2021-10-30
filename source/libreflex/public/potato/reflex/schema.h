@@ -5,6 +5,7 @@
 #include "traits.h"
 
 #include "potato/spud/box.h"
+#include "potato/spud/concepts.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/span.h"
 #include "potato/spud/string.h"
