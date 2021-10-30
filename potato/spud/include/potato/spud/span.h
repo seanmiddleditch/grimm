@@ -51,12 +51,12 @@ public:
     constexpr span(span&&) noexcept = default;
     template <typename U>
     /*implicit*/ constexpr span(span<U> src) noexcept : _begin(src.begin())
-                                                      , _end(src.end()) {}
-    /*implicit*/ constexpr span(T* begin, T* end) noexcept : _begin(begin), _end(end) {}
-    /*implicit*/ constexpr span(T* ptr, std::size_t size) noexcept : _begin(ptr), _end(ptr + size) {}
+                                                      , _end(src.end()) { }
+    /*implicit*/ constexpr span(T* begin, T* end) noexcept : _begin(begin), _end(end) { }
+    /*implicit*/ constexpr span(T* ptr, std::size_t size) noexcept : _begin(ptr), _end(ptr + size) { }
     template <std::size_t N>
     /*implicit*/ constexpr span(T (&src)[N]) noexcept : _begin(src)
-                                                      , _end(src + N) {}
+                                                      , _end(src + N) { }
 
     constexpr span& operator=(span&&) noexcept = default;
 

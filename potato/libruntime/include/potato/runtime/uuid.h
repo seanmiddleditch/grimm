@@ -17,9 +17,9 @@ namespace up {
         static constexpr int strLength = 37; // 32 hex values, four dashes, and NUL
         using Bytes = up::byte[octects];
 
-        constexpr UUID() noexcept : _data{HighLow{}} {}
-        constexpr UUID(UUID const& rhs) noexcept : _data{rhs._data.u64} {}
-        explicit UUID(Bytes const& bytes) noexcept : UUID(bytes, sizeof(bytes)) {}
+        constexpr UUID() noexcept : _data{HighLow{}} { }
+        constexpr UUID(UUID const& rhs) noexcept : _data{rhs._data.u64} { }
+        explicit UUID(Bytes const& bytes) noexcept : UUID(bytes, sizeof(bytes)) { }
         UUID(up::byte const* bytes, size_t length) noexcept;
 
         constexpr bool isValid() const noexcept { return _data.u64.high != 0 || _data.u64.low != 0; }

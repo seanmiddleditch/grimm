@@ -96,15 +96,15 @@ namespace up {
         void shrink_to_fit() noexcept;
 
         template <typename... ParamsT>
-        auto emplace(const_iterator pos, ParamsT&&... params) -> reference
-            requires std::is_constructible_v<T, ParamsT...>;
+        auto emplace(const_iterator pos, ParamsT&&... params)
+            -> reference requires std::is_constructible_v<T, ParamsT...>;
         auto emplace_back() -> reference requires std::is_default_constructible_v<T>;
         template <typename... ParamsT>
         auto emplace_back(ParamsT&&... params) -> reference requires std::is_constructible_v<T, ParamsT...>;
 
         template <typename InsertT = value_type>
-        auto insert(const_iterator pos, InsertT&& value) -> reference
-            requires std::is_constructible_v<T, decltype(value)> {
+        auto insert(const_iterator pos, InsertT&& value)
+            -> reference requires std::is_constructible_v<T, decltype(value)> {
             return emplace(pos, std::forward<InsertT>(value));
         }
 
@@ -334,8 +334,8 @@ namespace up {
 
     template <typename T>
     template <typename... ParamsT>
-    auto vector<T>::emplace(const_iterator pos, ParamsT&&... params) -> reference
-        requires std::is_constructible_v<T, ParamsT...> {
+    auto vector<T>::emplace(const_iterator pos, ParamsT&&... params)
+        -> reference requires std::is_constructible_v<T, ParamsT...> {
         if (pos == _last) {
             return emplace_back(std::forward<ParamsT>(params)...);
         }

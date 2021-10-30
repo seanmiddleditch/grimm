@@ -9,8 +9,7 @@
 namespace up {
     template <typename T>
     concept ReconMessage = requires(T const& msg) {
-        { T::name }
-        ->convertible_to<string_view>;
+        { T::name } -> convertible_to<string_view>;
         typename T::type;
     };
 

@@ -23,7 +23,7 @@
 
 #include <nlohmann/json.hpp>
 
-up::recon::ReconApp::ReconApp() : _programName("recon"), _logger("recon"), _server(_logger) {}
+up::recon::ReconApp::ReconApp() : _programName("recon"), _logger("recon"), _server(_logger) { }
 
 up::recon::ReconApp::~ReconApp() = default;
 

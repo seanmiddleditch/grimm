@@ -11,7 +11,8 @@ namespace up {
     template <typename>
     class box;
     template <typename T, typename... Args>
-    auto new_box(Args&&... args) -> box<T> requires std::is_constructible_v<T, Args&&...>;
+        requires std::is_constructible_v<T, Args&&...>
+    auto new_box(Args&&... args) -> box<T>;
 
     namespace _detail {
         template <typename>
@@ -47,22 +48,22 @@ public:
     box() noexcept = default;
     ~box() { reset(); }
 
-    box(std::nullptr_t) noexcept {}
+    box(std::nullptr_t) noexcept { }
     box& operator=(std::nullptr_t) noexcept {
         reset();
         return *this;
     }
 
-    explicit box(pointer ptr) noexcept : _ptr(ptr) {}
+    explicit box(pointer ptr) noexcept : _ptr(ptr) { }
 
-    box(box&& src) noexcept : _ptr(src.release()) {}
+    box(box&& src) noexcept : _ptr(src.release()) { }
     box& operator=(box&& src) noexcept {
         reset(src.release());
         return *this;
     }
 
     template <typename U>
-    box(box<U>&& src) noexcept requires std::is_convertible_v<U*, T*> : _ptr(src.release()) {}
+    box(box<U>&& src) noexcept requires std::is_convertible_v<U*, T*> : _ptr(src.release()) { }
     template <typename U>
     auto operator=(box<U>&& src) noexcept -> box<T>& requires std::is_convertible_v<U*, T*> {
         reset(src.release());
@@ -130,6 +131,7 @@ void up::box<T>::reset(pointer ptr) noexcept {
 /// <param name="args"> Parameters to pass to the constructor. </param>
 /// <returns> A box containing a new instance of the requested object. </returns>
 template <typename T, typename... Args>
-auto up::new_box(Args&&... args) -> box<T> requires std::is_constructible_v<T, Args&&...> {
+    requires std::is_constructible_v<T, Args&&...>
+auto up::new_box(Args&&... args) -> box<T> {
     return box<T>(new T(std::forward<Args>(args)...));
 }

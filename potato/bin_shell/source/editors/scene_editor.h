@@ -5,16 +5,15 @@
 #include "camera.h"
 #include "camera_controller.h"
 #include "editor.h"
-#include "scene.h"
 #include "scene_doc.h"
 #include "selection.h"
 
-#include "potato/render/renderer.h"
 #include "potato/editor/property_grid.h"
 #include "potato/render/camera.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
+#include "potato/render/renderer.h"
 #include "potato/spud/delegate.h"
 
 #include <glm/glm.hpp>
@@ -25,39 +24,26 @@ namespace up {
 } // namespace up
 
 namespace up::shell {
-
-    class SceneEditor; 
-    class SceneRenderer : public up::IRenderable {
-    public:
-        SceneRenderer(SceneEditor* owner) : _owner(owner) {}
-
-        void onSchedule(up::RenderContext& ctx) override;
-        void onRender(up::RenderContext& ctx) override;
-
-        void setDeltaTime(float deltaTime) { _deltaTime = deltaTime;  }
-
-        private:
-        SceneEditor* _owner;
-        float _deltaTime;
-    };
+    class SceneEditor;
 
     class SceneEditor : public Editor {
-        friend class SceneRenderer; 
+        friend class SceneRenderer;
+
     public:
         static constexpr zstring_view editorName = "potato.editor.scene"_zsv;
 
         using HandlePlayClicked = delegate<void(SceneDocument const& doc)>;
 
         static auto createFactory(
-            AudioEngine& audioEngine,
             Universe& universe,
             SceneDatabase& database,
+            Renderer& renderer,
             AssetLoader& assetLoader,
             SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory>;
 
         explicit SceneEditor(
             box<SceneDocument> sceneDoc,
-            box<Scene> previewScene,
+            box<Space> previewScene,
             SceneDatabase& database,
             AssetLoader& assetLoader,
             HandlePlayClicked& onPlayClicked)
@@ -93,7 +79,7 @@ namespace up::shell {
         void _drawGrid();
 
         rc<GpuTexture> _buffer;
-        box<Scene> _previewScene;
+        box<Space> _previewScene;
         box<SceneDocument> _doc;
         box<GpuResourceView> _bufferView;
         box<RenderCamera> _renderCamera;
@@ -109,6 +95,5 @@ namespace up::shell {
         SceneEntityId _targetId = SceneEntityId::None;
         SceneDatabase& _database;
         AssetLoader& _assetLoader;
-        box<SceneRenderer> _sceneRenderer;
     };
 } // namespace up::shell

@@ -21,7 +21,7 @@ public:
     unique_resource() = default;
     ~unique_resource() { reset(); }
 
-    explicit unique_resource(pointer ptr) noexcept : _ptr(ptr) {}
+    explicit unique_resource(pointer ptr) noexcept : _ptr(ptr) { }
 
     unique_resource(unique_resource&& src) noexcept : _ptr(src._ptr) { src._ptr = nullptr; }
 

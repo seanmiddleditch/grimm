@@ -56,8 +56,8 @@ namespace up {
 
     struct less {
         template <typename T, typename U>
-        requires less_than_comparable_with<T, U> constexpr bool operator()(T const& lhs, U const& rhs) const
-            noexcept(noexcept(lhs < rhs)) {
+            requires less_than_comparable_with<T, U>
+        constexpr bool operator()(T const& lhs, U const& rhs) const noexcept(noexcept(lhs < rhs)) {
             // appears to be a clang-tidy bug?
             //
             // NOLINTNEXTLINE(modernize-use-nullptr)
@@ -117,6 +117,6 @@ namespace up {
     }
 
     template <typename T>
-    struct tag {};
+    struct tag { };
 
 } // namespace up

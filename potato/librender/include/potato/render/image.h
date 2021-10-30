@@ -21,7 +21,7 @@ namespace up {
     class Image {
     public:
         Image() = default;
-        Image(ImageHeader header, vector<byte> data) noexcept : _data(std::move(data)), _header(header) {}
+        Image(ImageHeader header, vector<byte> data) noexcept : _data(std::move(data)), _header(header) { }
 
         ImageHeader const& header() const noexcept { return _header; }
         vector<byte> const& data() const noexcept { return _data; }

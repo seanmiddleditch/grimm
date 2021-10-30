@@ -24,7 +24,7 @@ namespace up {
         struct key_value {
             template <typename K, typename V>
             constexpr key_value(K&& k, V&& v) : key(std::forward<K>(k))
-                                              , value(std::forward<V>(v)) {}
+                                              , value(std::forward<V>(v)) { }
 
             Key key;
             Value value;
@@ -54,7 +54,7 @@ namespace up {
         private:
             bool _engaged = false;
             union Data {
-                constexpr Data() noexcept {} // NOLINT(modernize-use-equals-default)
+                constexpr Data() noexcept { } // NOLINT(modernize-use-equals-default)
 
                 value_type proxy;
             } _data;

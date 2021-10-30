@@ -14,7 +14,7 @@ namespace up {
     class LockGuard {
     public:
         explicit constexpr LockGuard(LockT& lock) noexcept : _lock(lock) { _lock.lock(); }
-        explicit constexpr LockGuard(LockT& lock, AdoptLock) noexcept : _lock(lock) {}
+        explicit constexpr LockGuard(LockT& lock, AdoptLock) noexcept : _lock(lock) { }
         ~LockGuard() noexcept { _lock.unlock(); }
 
         LockGuard(LockGuard const&) = delete;

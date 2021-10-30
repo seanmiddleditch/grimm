@@ -9,52 +9,52 @@ auto up::TransformEditComponent::data(SceneComponent const& component) noexcept 
     return *static_cast<scene::components::Transform*>(component.data.get());
 }
 
-bool up::TransformEditComponent::syncAdd(Scene& scene, EntityId entityId, SceneComponent const& component) const {
-    scene.world().addComponent(
+bool up::TransformEditComponent::syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const {
+    space.world().addComponent(
         entityId,
         components::Transform{.position = data(component).position, .rotation = data(component).rotation});
     return true;
 }
 
-bool up::TransformEditComponent::syncUpdate(Scene& scene, EntityId entityId, SceneComponent const& component) const {
-    *scene.world().getComponentSlow<components::Transform>(entityId) =
+bool up::TransformEditComponent::syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const {
+    *space.world().getComponentSlow<components::Transform>(entityId) =
         components::Transform{.position = data(component).position, .rotation = data(component).rotation};
     return true;
 }
 
-bool up::TransformEditComponent::syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const {
-    scene.world().removeComponent<components::Transform>(entityId);
+bool up::TransformEditComponent::syncRemove(Space& space, EntityId entityId, SceneComponent const& component) const {
+    space.world().removeComponent<components::Transform>(entityId);
     return true;
 }
 
-bool up::TransformEditComponent::syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const {
-    return syncAdd(scene, entityId, component);
+bool up::TransformEditComponent::syncGame(Space& space, EntityId entityId, SceneComponent const& component) const {
+    return syncAdd(space, entityId, component);
 }
 
 auto up::MeshEditComponent::data(SceneComponent const& component) noexcept -> scene::components::Mesh& {
     return *static_cast<scene::components::Mesh*>(component.data.get());
 }
 
-bool up::MeshEditComponent::syncAdd(Scene& scene, EntityId entityId, SceneComponent const& component) const {
-    scene.world().addComponent(
+bool up::MeshEditComponent::syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const {
+    space.world().addComponent(
         entityId,
         components::Mesh{.mesh = data(component).mesh, .material = data(component).material});
     return true;
 }
 
-bool up::MeshEditComponent::syncUpdate(Scene& scene, EntityId entityId, SceneComponent const& component) const {
-    *scene.world().getComponentSlow<components::Mesh>(entityId) =
+bool up::MeshEditComponent::syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const {
+    *space.world().getComponentSlow<components::Mesh>(entityId) =
         components::Mesh{.mesh = data(component).mesh, .material = data(component).material};
     return true;
 }
 
-bool up::MeshEditComponent::syncRemove(Scene& scene, EntityId entityId, SceneComponent const& component) const {
-    scene.world().removeComponent<components::Mesh>(entityId);
+bool up::MeshEditComponent::syncRemove(Space& space, EntityId entityId, SceneComponent const& component) const {
+    space.world().removeComponent<components::Mesh>(entityId);
     return true;
 }
 
-bool up::MeshEditComponent::syncGame(Scene& scene, EntityId entityId, SceneComponent const& component) const {
-    return syncAdd(scene, entityId, component);
+bool up::MeshEditComponent::syncGame(Space& space, EntityId entityId, SceneComponent const& component) const {
+    return syncAdd(space, entityId, component);
 }
 
 auto up::WaveEditComponent::createFrom(scene::components::Wave const& sceneComponent) const -> components::Wave {

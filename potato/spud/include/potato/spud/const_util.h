@@ -21,7 +21,7 @@ namespace up {
     // Stores an integer sequence of offsets
     //
     template <typename T, T... Values>
-    struct value_list {};
+    struct value_list { };
 
     // Fetches a value at a specific index from a value_list
     //

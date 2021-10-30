@@ -4,7 +4,6 @@ target_sources(potato_shell PRIVATE
     "camera_controller.h"
     "editor.h"
     "log_history.h"
-    "scene.h"
     "scene_doc.h"
     "selection.h"
 )

@@ -47,8 +47,8 @@ namespace up {
         };
 
         Stream() = default;
-        Stream(box<Backend> impl) noexcept : _impl(std::move(impl)) {}
-        Stream(std::nullptr_t) noexcept {}
+        Stream(box<Backend> impl) noexcept : _impl(std::move(impl)) { }
+        Stream(std::nullptr_t) noexcept { }
 
         Stream& operator=(box<Backend> impl) noexcept {
             _impl = std::move(impl);

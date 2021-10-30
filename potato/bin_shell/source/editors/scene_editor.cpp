@@ -4,13 +4,14 @@
 #include "camera.h"
 #include "camera_controller.h"
 #include "editor.h"
-#include "scene.h"
 #include "scene_doc.h"
 #include "selection.h"
 
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/game/space.h"
+#include "potato/game/universe.h"
 #include "potato/reflex/serialize.h"
 #include "potato/render/camera.h"
 #include "potato/render/context.h"
@@ -37,23 +38,25 @@ namespace up::shell {
         class SceneEditorFactory : public EditorFactory {
         public:
             SceneEditorFactory(
-                AudioEngine& audioEngine,
                 Universe& universe,
                 SceneDatabase& database,
+                Renderer& renderer,
                 AssetLoader& assetLoader,
                 SceneEditor::HandlePlayClicked onPlayClicked)
-                : _audioEngine(audioEngine)
-                , _universe(universe)
+                : _universe(universe)
                 , _database(database)
+                , _renderer(renderer)
                 , _assetLoader(assetLoader)
-                , _onPlayClicked(std::move(onPlayClicked)) {}
+                , _onPlayClicked(std::move(onPlayClicked)) { }
 
             zstring_view editorName() const noexcept override { return SceneEditor::editorName; }
 
             box<Editor> createEditor() override { return nullptr; }
 
             box<Editor> createEditorForDocument(zstring_view filename) override {
-                auto scene = new_box<Scene>(_universe, _audioEngine);
+                auto space = new_box<Space>(_universe.createWorld());
+                Space::addRenderSystem(*space, _renderer);
+                space->start();
                 auto doc = new_box<SceneDocument>(string(filename), _database);
 
 #if 0
@@ -83,13 +86,13 @@ namespace up::shell {
                 }
 #endif
 
-                return new_box<SceneEditor>(std::move(doc), std::move(scene), _database, _assetLoader, _onPlayClicked);
+                return new_box<SceneEditor>(std::move(doc), std::move(space), _database, _assetLoader, _onPlayClicked);
             }
 
         private:
-            AudioEngine& _audioEngine;
             Universe& _universe;
             SceneDatabase& _database;
+            Renderer& _renderer;
             AssetLoader& _assetLoader;
             SceneEditor::HandlePlayClicked _onPlayClicked;
         };
@@ -97,19 +100,18 @@ namespace up::shell {
 } // namespace up::shell
 
 auto up::shell::SceneEditor::createFactory(
-    AudioEngine& audioEngine,
     Universe& universe,
     SceneDatabase& database,
+    Renderer& renderer,
     AssetLoader& assetLoader,
     SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
-    return new_box<SceneEditorFactory>(audioEngine, universe, database, assetLoader, std::move(onPlayClicked));
+    return new_box<SceneEditorFactory>(universe, database, renderer, assetLoader, std::move(onPlayClicked));
 }
 
 void up::shell::SceneEditor::tick(float deltaTime) {
     _doc->syncPreview(*_previewScene);
 
     _previewScene->update(deltaTime);
-    _previewScene->flush();
 }
 
 void up::shell::SceneEditor::configure() {
@@ -205,12 +207,6 @@ void up::shell::SceneEditor::content() {
     }
 }
 
-void up::shell::SceneRenderer::onSchedule(up::RenderContext& ctx) {}
-
-void up::shell::SceneRenderer::onRender(up::RenderContext& ctx) {
-    _owner->_render(ctx, _deltaTime);
-}
-
 void up::shell::SceneEditor::render(Renderer& renderer, float deltaTime) {
     if (_sceneDimensions.x == 0 || _sceneDimensions.y == 0) {
         return;
@@ -224,12 +220,6 @@ void up::shell::SceneEditor::render(Renderer& renderer, float deltaTime) {
     if (_renderCamera == nullptr) {
         _renderCamera = new_box<RenderCamera>();
     }
-
-    if (_sceneRenderer == nullptr) {
-        _sceneRenderer = new_box<SceneRenderer>(this);
-    }
-
-    renderer.createRendarable(_sceneRenderer.get());
 
     if (_previewScene != nullptr) {
         _previewScene->render(renderer);

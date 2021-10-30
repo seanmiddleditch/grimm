@@ -14,7 +14,7 @@ namespace up::shell {
     namespace {
         class MaterialEditorFactory : public EditorFactory {
         public:
-            MaterialEditorFactory(AssetLoader& assetLoader) : _assetLoader(assetLoader) {}
+            MaterialEditorFactory(AssetLoader& assetLoader) : _assetLoader(assetLoader) { }
 
             zstring_view editorName() const noexcept override { return MaterialEditor::editorName; }
 
@@ -41,7 +41,7 @@ up::shell::MaterialEditor::MaterialEditor(AssetLoader& assetLoader, box<schema::
     : Editor(editorName)
     , _assetLoader(assetLoader)
     , _material(std::move(material))
-    , _filename(std::move(filename)) {}
+    , _filename(std::move(filename)) { }
 
 auto up::shell::MaterialEditor::createFactory(AssetLoader& assetLoader) -> box<EditorFactory> {
     return new_box<MaterialEditorFactory>(assetLoader);

@@ -10,11 +10,11 @@
 #if defined(NDEBUG)
 
 #    define UP_ASSERT(condition, ...) \
-        do { \
-        } while (false)
+        do { } \
+        while (false)
 #    define UP_UNREACHABLE(...) \
-        do { \
-        } while (false)
+        do { } \
+        while (false)
 
 #elif _PREFAST_ // Microsoft's /analyze tool
 
@@ -30,7 +30,7 @@ namespace up::_detail {
         nanofmt::format_to(buffer, format, std::forward<Args>(args)...);
     }
     template <typename DestT>
-    void constexpr formatAssertion(DestT& dest) {}
+    void constexpr formatAssertion(DestT& dest) { }
 } // namespace up::_detail
 
 #    define uppriv_FORMAT_FAIL(condition_text, ...) \
@@ -40,14 +40,16 @@ namespace up::_detail {
             }; \
             nanofmt::format_to(uppriv_fail_buffer, (condition_text), ##__VA_ARGS__); \
             uppriv_FAIL((condition_text), uppriv_fail_buffer); \
-        } while (false)
+        } \
+        while (false)
 
 #    define UP_ASSERT(condition, ...) \
         do { \
             if (UP_UNLIKELY(!((condition)))) { \
                 uppriv_FORMAT_FAIL(#condition, ##__VA_ARGS__); \
             } \
-        } while (false)
+        } \
+        while (false)
 
 #    define UP_UNREACHABLE(...) uppriv_FAIL("unreachable code", ##__VA_ARGS__)
 

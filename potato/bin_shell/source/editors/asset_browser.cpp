@@ -39,7 +39,7 @@ namespace up::shell {
                 : _assetLoader(assetLoader)
                 , _reconClient(reconClient)
                 , _assetEditService(assetEditService)
-                , _onFileSelected(std::move(onFileSelected)) {}
+                , _onFileSelected(std::move(onFileSelected)) { }
 
             zstring_view editorName() const noexcept override { return AssetBrowser::editorName; }
 

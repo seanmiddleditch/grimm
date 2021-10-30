@@ -6,7 +6,7 @@
 
 #include "potato/runtime/assertion.h"
 
-up::Universe::Universe() : _context(new_shared<EcsSharedContext>()) {}
+up::Universe::Universe() : _context(new_shared<EcsSharedContext>()) { }
 up::Universe::~Universe() = default;
 
 auto up::Universe::findComponentByName(string_view name) const noexcept -> reflex::TypeInfo const* {

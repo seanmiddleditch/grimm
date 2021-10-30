@@ -15,6 +15,8 @@
 
 namespace up {
     struct EcsSharedContext;
+    template <typename...>
+    class Query;
 
     /// A world contains a collection of Entities, Archetypes, and their associated Components.
     ///
@@ -27,6 +29,11 @@ namespace up {
 
         World(World&&) = delete;
         World& operator=(World&&) = delete;
+
+        template <typename... Components>
+        auto createQuery(Query<Components...>& query) -> Query<Components...>& {
+            return query = Query<Components...>(_context);
+        }
 
         /// Retrieve the chunks belonging to a specific archetype.
         ///

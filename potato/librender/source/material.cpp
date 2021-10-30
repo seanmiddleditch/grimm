@@ -24,7 +24,7 @@ up::Material::Material(
     , _pixelShader(std::move(pixelShader))
     , _textures(std::move(textures))
     , _srvs(_textures.size())
-    , _samplers(_textures.size()) {}
+    , _samplers(_textures.size()) { }
 
 up::Material::~Material() = default;
 

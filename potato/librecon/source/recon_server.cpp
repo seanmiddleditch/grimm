@@ -5,7 +5,7 @@
 #include <nlohmann/json.hpp>
 #include <iostream>
 
-up::recon::ReconServer::ReconServer(Logger& logger) : _logger("ReconServer", logger) {}
+up::recon::ReconServer::ReconServer(Logger& logger) : _logger("ReconServer", logger) { }
 
 void up::recon::ReconServer::onDisconnect(DisconnectHandler handler) {
     _disconnectHandler = std::move(handler);

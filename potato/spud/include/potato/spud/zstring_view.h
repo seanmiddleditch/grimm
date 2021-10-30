@@ -29,7 +29,7 @@ namespace up {
 
         constexpr zstring_view() = default;
         constexpr zstring_view(pointer str) noexcept : _str(str) { assert(str != nullptr); }
-        constexpr zstring_view(std::nullptr_t) noexcept {}
+        constexpr zstring_view(std::nullptr_t) noexcept { }
 
         constexpr explicit operator bool() const noexcept { return *_str != 0; }
         constexpr bool empty() const noexcept { return *_str == 0; }

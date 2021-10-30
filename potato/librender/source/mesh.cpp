@@ -37,7 +37,7 @@ up::Mesh::Mesh(
     , _buffers(buffers.begin(), buffers.end())
     , _channels(channels.begin(), channels.end())
     , _indices(std::move(indices))
-    , _data(std::move(data)) {}
+    , _data(std::move(data)) { }
 
 up::Mesh::~Mesh() = default;
 

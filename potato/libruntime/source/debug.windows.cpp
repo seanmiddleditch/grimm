@@ -51,27 +51,28 @@ namespace {
         using namespace up;
 
         switch (msg) {
-            case WM_INITDIALOG: {
-                // force the dialog to show
-                ShowWindow(hwnd, TRUE);
+            case WM_INITDIALOG:
+                {
+                    // force the dialog to show
+                    ShowWindow(hwnd, TRUE);
 
-                // save this for the copy button
-                SetWindowLongPtrW(hwnd, GWLP_USERDATA, lparam);
+                    // save this for the copy button
+                    SetWindowLongPtrW(hwnd, GWLP_USERDATA, lparam);
 
-                // style overrides that we can't set in the dialog template in the .rc file
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
-                HICON icon = LoadIconW(nullptr, IDI_ERROR);
-                SendMessageW(hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
-                DestroyIcon(icon);
+                    // style overrides that we can't set in the dialog template in the .rc file
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+                    HICON icon = LoadIconW(nullptr, IDI_ERROR);
+                    SendMessageW(hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
+                    DestroyIcon(icon);
 
-                // initialize text fields
-                DialogData const& data = *reinterpret_cast<DialogData const*>(lparam);
-                SetDlgItemTextA(hwnd, IDC_MESSAGE_TEXT, data.message);
-                SetDlgItemTextA(hwnd, IDC_LOCATION_TEXT, data.location);
-                SetDlgItemTextA(hwnd, IDC_ASSERT_TEXT, data.condition);
-                SetDlgItemTextA(hwnd, IDC_CALLSTACK_TEXT, data.callstack);
-                break;
-            }
+                    // initialize text fields
+                    DialogData const& data = *reinterpret_cast<DialogData const*>(lparam);
+                    SetDlgItemTextA(hwnd, IDC_MESSAGE_TEXT, data.message);
+                    SetDlgItemTextA(hwnd, IDC_LOCATION_TEXT, data.location);
+                    SetDlgItemTextA(hwnd, IDC_ASSERT_TEXT, data.condition);
+                    SetDlgItemTextA(hwnd, IDC_CALLSTACK_TEXT, data.callstack);
+                    break;
+                }
             case WM_COMMAND:
                 switch (LOWORD(wparam)) {
                     case IDABORT:
