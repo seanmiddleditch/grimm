@@ -15,7 +15,7 @@ find_library(LIBUUID_LIBRARY
 )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(LibUUID
+find_package_handle_standard_args(libuuid
 	FOUND_VAR
 		LIBUUID_FOUND
 	REQUIRED_VARS
@@ -25,9 +25,9 @@ find_package_handle_standard_args(LibUUID
 		LIBUUID_VERSION
 )
 
-if(LIBUUID_FOUND AND NOT TARGET LibUUID::UUID)
-	add_library(LibUUID::UUID UNKNOWN IMPORTED)
-	set_target_properties(LibUUID::UUID PROPERTIES
+if(LIBUUID_FOUND AND NOT TARGET libuuid::UUID)
+	add_library(libuuid::UUID UNKNOWN IMPORTED)
+	set_target_properties(libuuid::UUID PROPERTIES
 		IMPORTED_LOCATION "${LIBUUID_LIBRARY}"
 		INTERFACE_COMPILE_OPTIONS "${LIBUUID_DEFINITIONS}"
 		INTERFACE_INCLUDE_DIRECTORIES "${LIBUUID_INCLUDE_DIR}"

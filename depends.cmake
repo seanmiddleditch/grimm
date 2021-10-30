@@ -1,86 +1,78 @@
-include(FetchContent)
+include(up_require)
 
-set(UP_DEPENDENCIES
-    assimp_win64
-    catch2
-    imgui
-    glm
-    stb
-    json
-    flatbuffers
-    sdl2_vc
-    soloud
-    nfd
-    sapc
-    sqlite_source
-    tracy
-    libuv
-    nanofmt
-    dx12memalloc
-)
-
-FetchContent_Declare(sqlite_source
+up_require(sqlite_source
     URL https://www.sqlite.org/2021/sqlite-amalgamation-3360000.zip
     URL_HASH SHA3_256=d25609210ec93b3c8c7da66a03cf82e2c9868cfbd2d7d866982861855e96f972
 )
-FetchContent_Declare(catch2
+up_require(catch2
     GIT_REPOSITORY git://github.com/catchorg/Catch2.git
-    GIT_TAG c4e3767e265808590986d5db6ca1b5532a7f3d13 #v2.13.7
+    GIT_COMMIT c4e3767e265808590986d5db6ca1b5532a7f3d13
+    GIT_TAG v2.13.7
 )
-FetchContent_Declare(imgui
+up_require(imgui
     GIT_REPOSITORY git://github.com/ocornut/imgui.git
-    GIT_TAG d5a4d5300055c1222585a5f6758a232bb9d22d3f
+    GIT_COMMIT d5a4d5300055c1222585a5f6758a232bb9d22d3f
 )
-FetchContent_Declare(glm
+up_require(glm
     GIT_REPOSITORY git://github.com/g-truc/glm.git
-    GIT_TAG bf71a834948186f4097caa076cd2663c69a10e1e #0.9.9.8
+    GIT_COMMIT bf71a834948186f4097caa076cd2663c69a10e1e
+    GIT_TAG 0.9.9.8
 )
-FetchContent_Declare(stb
+up_require(stb
     GIT_REPOSITORY git://github.com/nothings/stb.git
-    GIT_TAG af1a5bc352164740c1cc1354942b1c6b72eacb8a
+    GIT_COMMIT af1a5bc352164740c1cc1354942b1c6b72eacb8a
 )
-FetchContent_Declare(json
+up_require(json
     GIT_REPOSITORY git://github.com/nlohmann/json.git
-    GIT_TAG aa0e847e5b57a00696bdcb6a834b927231b81613 #v3.10.3
+    GIT_COMMIT aa0e847e5b57a00696bdcb6a834b927231b81613
+    GIT_TAG v3.10.3
 )
-FetchContent_Declare(sdl2_vc_sdk
+up_require(sdl2_vc_sdk
     URL https://github.com/potatoengine/win-sdks/releases/download/sdl2-2.0.12-x64/SDL2-2.0.12-win-x64.7z
     URL_HASH SHA1=21EFE9F45962EF2B57DC97FE7905D1EC82670AEF
+    CMAKE_FILE sdl2_vc.cmake
 )
-FetchContent_Declare(assimp_win64_sdk
+up_require(assimp_win64_sdk
     URL https://github.com/potatoengine/win-sdks/releases/download/assimp-5.0.1-x64/assimp-5.0.1-win-x64.7z
     URL_HASH SHA1=8D96964E9E6946D39E187D6740BC5D2B21408BE2
+    CMAKE_FILE assimp_win64.cmake
 )
-FetchContent_Declare(flatbuffers
+up_require(flatbuffers
     GIT_REPOSITORY git://github.com/google/flatbuffers.git
-    GIT_TAG 697147a2e686486424b9d15fc3e1612586a60f97 #v1.12.1
+    GIT_COMMIT 697147a2e686486424b9d15fc3e1612586a60f97
+    GIT_TAG v1.12.1
 )
-FetchContent_Declare(soloud
+up_require(soloud
     GIT_REPOSITORY git://github.com/jarikomppa/soloud.git
-    GIT_TAG c8e339fdce5c7107bdb3e64bbf707c8fd3449beb #RELEASE_20200207
+    GIT_COMMIT c8e339fdce5c7107bdb3e64bbf707c8fd3449beb
+    GIT_TAG RELEASE_20200207
 )
-FetchContent_Declare(nfd 
+up_require(nfd 
     GIT_REPOSITORY git://github.com/mlabbe/nativefiledialog.git
-    GIT_TAG 67345b80ebb429ecc2aeda94c478b3bcc5f7888e #release_116
+    GIT_COMMIT 67345b80ebb429ecc2aeda94c478b3bcc5f7888e
+    GIT_TAG release_116
 )
-FetchContent_Declare(sapc
+up_require(sapc
     GIT_REPOSITORY git://github.com/potatoengine/sapc.git
-    GIT_TAG cfc3bb6d44e67d87d38d6c7406710bd26c1e2cb3
+    GIT_COMMIT cfc3bb6d44e67d87d38d6c7406710bd26c1e2cb3
 )
-FetchContent_Declare(tracy
+up_require(tracy
     GIT_REPOSITORY git://github.com/wolfpld/tracy.git
-    GIT_TAG 07778badcced109b8190805fbf2d7abfaef0d3b9 #v0.7.8
+    GIT_COMMIT 07778badcced109b8190805fbf2d7abfaef0d3b9
+    GIT_TAG v0.7.8
 )
-FetchContent_Declare(libuv
+up_require(libuv
     GIT_REPOSITORY git://github.com/libuv/libuv.git
-    GIT_TAG 1dff88e5161cba5c59276d2070d2e304e4dcb242 #v1.41.0
+    GIT_COMMIT 1dff88e5161cba5c59276d2070d2e304e4dcb242
+    GIT_TAG v1.41.0
 )
-FetchContent_Declare(nanofmt
+up_require(nanofmt
     GIT_REPOSITORY git://github.com/seanmiddleditch/nanofmt.git
-    GIT_TAG b979434328e1f0ec5e6ef977bc59a251c4bc9dfc
+    GIT_COMMIT b979434328e1f0ec5e6ef977bc59a251c4bc9dfc
 )
-FetchContent_Declare(dx12memalloc
+up_require(dx12memalloc
     GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator.git
+    GIT_COMMIT 71b33677a7c5fd3f2278198e93b900c25ef544ba
     GIT_TAG v1.0.0+vs2017
 )
 

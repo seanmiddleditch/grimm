@@ -391,7 +391,7 @@ void up::editor::PropertyGrid::_editAssetField(
         ImGui::OpenPopup(browserId);
     }
 
-    if (_assetLoader != nullptr && schema.operations->pointerAssign != nullptr) {
+    if (_assetLoader != nullptr && schema.operations != nullptr && schema.operations->pointerAssign != nullptr) {
         AssetId targetAssetId = assetId;
         if (up::assetBrowserPopup(browserId, targetAssetId, assetType, *_assetLoader) && targetAssetId != assetId) {
             *handle = _assetLoader->loadAssetSync(targetAssetId, assetType);

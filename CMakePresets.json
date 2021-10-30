@@ -7,7 +7,6 @@
       "cacheVariables": {
         "UP_OUTPUT_DIR": "${sourceDir}/out",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps",
         "FETCHCONTENT_QUIET": true
       },
       "binaryDir": "${sourceDir}/out/${presetName}",
@@ -19,6 +18,44 @@
       "environment": {
         "UP_CXXFLAGS": "/W3 /WX /w34295 /w34189",
         "CXXFLAGS": "/FC /Zi"
+      },
+      "cacheVariables": {
+        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/windows"
+      },
+      "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": "Windows" } }
+    },
+    {
+      "name": "linux",
+      "hidden": true,
+      "environment": {
+        "UP_CXXFLAGS": "-Wall -Werror"
+      },
+      "cacheVariables": {
+        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/linux"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": "Linux",
+          "intelliSenseMode": "linux-gcc-x64"
+        }
+      }
+    },
+    {
+      "name": "clang",
+      "hidden": true,
+      "environment": {
+        "CXXFLAGS": "$penv{CXXFLAGS} -stdlib=libc++ -fdiagnostics-absolute-paths -mssse3 -Wno-deprecated-volatile -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
+        "CXX": "clang++-12",
+        "CC": "clang-12"
+      }
+    },
+    {
+      "name": "gcc",
+      "hidden": true,
+      "environment": {
+        "CXXFLAGS": "$penv{CXXFLAGS} -fcoroutines -mssse3 -Wno-volatile -Wno-maybe-uninitialized -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
+        "CXX": "g++-11",
+        "CC": "gcc-11"
       }
     },
     {
@@ -61,6 +98,22 @@
       "name": "msvc-release-static",
       "displayName": "Microsoft Release Static",
       "inherits": [ "common", "msvc-release" ],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": false
+      }
+    },
+    {
+      "name": "wsl-clang-debug-static",
+      "displayName": "WSL-Clang Release Static",
+      "inherits": [ "common", "linux", "clang" ],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": false
+      }
+    },
+    {
+      "name": "wsl-gcc-debug-static",
+      "displayName": "WSL-GCC Release Static",
+      "inherits": [ "common", "linux", "gcc" ],
       "cacheVariables": {
         "BUILD_SHARED_LIBS": false
       }

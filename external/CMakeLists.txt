@@ -3,17 +3,31 @@
 set(OLD_TIDY ${CMAKE_CXX_CLANG_TIDY})
 set(CMAKE_CXX_CLANG_TIDY "")
 
-list(LENGTH UP_DEPENDENCIES COUNT)
+# Read in dependencies
+get_property(DEPENDENCIES GLOBAL PROPERTY UP_DEPENDENCY_LIST)
+
+list(LENGTH DEPENDENCIES COUNT)
 set(INDEX 0)
 
 # Include all the dependencies
 #
-message(STATUS "Updating dependencies (this might take some time!)")
-foreach(EXT ${UP_DEPENDENCIES})
+message(STATUS "Updating ${COUNT} dependencies (this might take some time!)")
+foreach(EXT ${DEPENDENCIES})
     math(EXPR INDEX "${INDEX}+1")
-    message(STATUS "[${INDEX}/${COUNT}] Updating ${EXT}")
 
-    include("${EXT}.cmake")
+    get_property(EXT_DESCRIPTION GLOBAL PROPERTY "UP_DEPENDENCY_DESCRIPTION_${EXT}")
+    if(NOT EXT_DESCRIPTION)
+        set(EXT_DESCRIPTION "${EXT}")
+    endif()
+
+    get_property(EXT_CMAKE_FILE GLOBAL PROPERTY "UP_DEPENDENCY_CMAKE_FILE_${EXT}")
+    if(NOT EXT_CMAKE_FILE)
+        set(EXT_CMAKE_FILE "${EXT}.cmake")
+    endif()
+
+    message(STATUS "[${INDEX}/${COUNT}] Updating ${EXT} (${EXT_DESCRIPTION})")
+
+    include("${EXT_CMAKE_FILE}")
 endforeach()
 message(STATUS "Finished updating dependencies")
 
