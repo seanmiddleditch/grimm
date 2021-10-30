@@ -1,7 +1,7 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "scene_doc.h"
-#include "components_schema.h"
+#include "scene_schema.h"
 
 #include "potato/game/world.h"
 #include "potato/reflex/serialize.h"
@@ -16,25 +16,48 @@
 #include <glm/vec3.hpp>
 #include <nlohmann/json.hpp>
 
-int up::SceneDocument::indexOf(EntityId entityId) const noexcept {
+auto up::SceneDatabase::createByName(string_view name) -> box<SceneComponent> {
+    for (EditComponent const& component : components()) {
+        reflex::TypeInfo const& typeInfo = component.typeInfo();
+        if (typeInfo.name == name) {
+            return createByType(component);
+        }
+    }
+
+    return nullptr;
+}
+
+auto up::SceneDatabase::createByType(EditComponent const& component) -> box<SceneComponent> {
+    reflex::TypeInfo const& typeInfo = component.typeInfo();
+
+    auto sceneComp = new_box<SceneComponent>();
+    sceneComp->name = string{typeInfo.name};
+    sceneComp->info = &component;
+    sceneComp->data.reset(operator new(typeInfo.size));
+    typeInfo.ops.defaultConstructor(sceneComp->data.get());
+    return sceneComp;
+}
+
+int up::SceneDocument::indexOf(SceneEntityId entityId) const noexcept {
     for (int index : indices()) {
-        if (_entities[index].id == entityId) {
+        if (_entities[index].sceneId == entityId) {
             return index;
         }
     }
     return -1;
 }
 
-up::EntityId up::SceneDocument::createEntity(string name, EntityId parentId) {
-    EntityId const id = _scene->world().createEntity();
-    _entities.push_back({.name = std::move(name), .id = id});
-    if (parentId != EntityId::None) {
+up::SceneEntityId up::SceneDocument::createEntity(string name, SceneEntityId parentId) {
+    SceneEntityId const id = _allocateEntityId();
+
+    _entities.push_back({.name = std::move(name), .sceneId = id});
+    if (parentId != SceneEntityId::None) {
         parentTo(id, parentId);
     }
     return id;
 }
 
-void up::SceneDocument::deleteEntity(EntityId targetId) {
+void up::SceneDocument::deleteEntity(SceneEntityId targetId) {
     auto const index = indexOf(targetId);
     if (index == -1) {
         return;
@@ -42,26 +65,25 @@ void up::SceneDocument::deleteEntity(EntityId targetId) {
 
     // recursively delete childen - we have to buffer this since deleting a child
     // would mutate the list we're walking
-    vector<EntityId> deleted{targetId};
+    vector<SceneEntityId> deleted{targetId};
     _deleteEntityAt(index, deleted);
 
-    for (EntityId const childId : deleted) {
-        _entities.erase(_entities.begin() + indexOf(childId));
-        _scene->world().deleteEntity(childId);
+    for (SceneEntityId const entityId : deleted) {
+        _entities.erase(_entities.begin() + indexOf(entityId));
     }
 }
 
-void up::SceneDocument::_deleteEntityAt(int index, vector<EntityId>& out_deleted) {
+void up::SceneDocument::_deleteEntityAt(int index, vector<SceneEntityId>& out_deleted) {
     // reparent to ensure we're unlinked from a parent's chain
-    parentTo(_entities[index].id, EntityId::None);
+    parentTo(_entities[index].sceneId, SceneEntityId::None);
 
     while (_entities[index].firstChild != -1) {
-        out_deleted.push_back(_entities[_entities[index].firstChild].id);
+        out_deleted.push_back(_entities[_entities[index].firstChild].sceneId);
         _deleteEntityAt(_entities[index].firstChild, out_deleted);
     }
 }
 
-void up::SceneDocument::parentTo(EntityId childId, EntityId parentId) {
+void up::SceneDocument::parentTo(SceneEntityId childId, SceneEntityId parentId) {
     int const childIndex = indexOf(childId);
     if (childIndex == -1) {
         return;
@@ -112,6 +134,24 @@ void up::SceneDocument::parentTo(EntityId childId, EntityId parentId) {
     }
 }
 
+auto up::SceneDocument::addNewComponent(SceneEntityId entityId, EditComponent const& component) -> SceneComponent* {
+    int const index = indexOf(entityId);
+    if (index == -1) {
+        return nullptr;
+    }
+    SceneEntity& entity = _entities[index];
+
+    reflex::TypeInfo const& typeInfo = component.typeInfo();
+
+    auto& sceneComp = entity.components.push_back(_database.createByType(component));
+    sceneComp->name = string{typeInfo.name};
+    sceneComp->parent = entityId;
+    sceneComp->info = &component;
+    sceneComp->data.reset(operator new(typeInfo.size));
+    typeInfo.ops.defaultConstructor(sceneComp->data.get());
+    return sceneComp.get();
+}
+
 void up::SceneDocument::createTestObjects(
     Mesh::Handle const& cube,
     Material::Handle const& mat,
@@ -120,31 +160,73 @@ void up::SceneDocument::createTestObjects(
 
     constexpr int numObjects = 100;
 
+    auto addComponentData = [this]<typename ComponentT>(SceneEntityId entityId, ComponentT&& component) {
+        auto comp = _database.createByName(reflex::getTypeInfo<ComponentT>().name);
+        *static_cast<ComponentT*>(comp->data.get()) = std::forward<ComponentT>(component);
+    };
+
     auto const rootId = createEntity("Root");
 
     auto const centerId = createEntity("Center", rootId);
-    _scene->world().addComponent(
+    addComponentData(
         centerId,
-        components::Transform{.position = {0, 5, 0}, .rotation = glm::identity<glm::quat>()});
-    _scene->world().addComponent(centerId, components::Mesh{cube, mat});
-    _scene->world().addComponent(centerId, components::Ding{2, 0, {ding}});
+        scene::components::Transform{.position = {0, 5, 0}, .rotation = glm::identity<glm::quat>()});
+    addComponentData(centerId, scene::components::Mesh{.mesh = cube, .material = mat});
+    addComponentData(centerId, scene::components::Ding{.period = 2, .sound = {ding}});
 
     auto const ringId = createEntity("Ring", rootId);
     for (size_t i = 0; i <= numObjects; ++i) {
         float p = static_cast<float>(i) / static_cast<float>(numObjects);
         float r = p * 2.f * pi;
         auto const id = createEntity("Orbit", ringId);
-        _scene->world().addComponent(
+        addComponentData(
             id,
-            components::Transform{
+            scene::components::Transform{
                 .position =
                     {(20 + glm::cos(r) * 10.f) * glm::sin(r),
                      1 + glm::sin(r * 10.f) * 5.f,
                      (20 + glm::sin(r) * 10.f) * glm::cos(r)},
                 .rotation = glm::identity<glm::quat>()});
-        _scene->world().addComponent(id, components::Mesh{cube, mat});
-        _scene->world().addComponent(id, components::Wave{0, r});
-        _scene->world().addComponent(id, components::Spin{glm::sin(r) * 2.f - 1.f});
+        addComponentData(id, scene::components::Mesh{.mesh = cube, .material = mat});
+        addComponentData(id, scene::components::Wave{.offset = r});
+        addComponentData(id, scene::components::Spin{.radians = glm::sin(r) * 2.f - 1.f});
+    }
+}
+
+void up::SceneDocument::syncPreview(Scene& scene) {
+    for (auto& entity : _entities) {
+        if (entity.previewId == EntityId::None) {
+            entity.previewId = scene.world().createEntity();
+        }
+
+        for (auto& component : entity.components) {
+            switch (component->state) {
+                case SceneComponent::State::Idle:
+                    break;
+                case SceneComponent::State::New:
+                    component->info->syncAdd(scene, entity.previewId, *component);
+                    component->state = SceneComponent::State::Idle;
+                    break;
+                case SceneComponent::State::Pending:
+                    component->info->syncUpdate(scene, entity.previewId, *component);
+                    component->state = SceneComponent::State::Idle;
+                    break;
+                case SceneComponent::State::Removed:
+                    component->info->syncRemove(scene, entity.previewId, *component);
+                    component->state = SceneComponent::State::Idle;
+                    break;
+            }
+        }
+    }
+}
+
+void up::SceneDocument::syncGame(Scene& scene) const {
+    for (auto& entity : _entities) {
+        EntityId entityId = scene.world().createEntity();
+
+        for (auto& component : entity.components) {
+            component->info->syncGame(scene, entityId, *component);
+        }
     }
 }
 
@@ -160,13 +242,11 @@ void up::SceneDocument::_toJson(nlohmann::json& el, int index) const {
     el["name"] = ent.name;
 
     nlohmann::json& components = el["components"] = nlohmann::json::array();
-    _scene->world().interrogateEntityUnsafe(
-        ent.id,
-        [&components](EntityId entity, ArchetypeId archetype, reflex::TypeInfo const* typeInfo, auto* data) {
-            nlohmann::json compEl = nlohmann::json::object();
-            reflex::encodeToJsonRaw(compEl, *typeInfo->schema, data);
-            components.push_back(std::move(compEl));
-        });
+    for (auto& component : ent.components) {
+        nlohmann::json compEl = nlohmann::json::object();
+        reflex::encodeToJsonRaw(compEl, *component->info->typeInfo().schema, component->data.get());
+        components.push_back(std::move(compEl));
+    }
 
     if (ent.firstChild != -1) {
         nlohmann::json& children = el["children"] = nlohmann::json::array();
@@ -193,7 +273,12 @@ void up::SceneDocument::_fromJson(nlohmann::json const& el, int index, AssetLoad
         _entities[index].name = el["name"].get<string>();
     }
 
-    _entities[index].id = _scene->world().createEntity();
+    if (el.contains("id") && el["id"].is_number_integer()) {
+        _entities[index].sceneId = _consumeEntityId(SceneEntityId{el["id"].get<uint64>()});
+    }
+    else {
+        _entities[index].sceneId = _allocateEntityId();
+    }
 
     if (el.contains("components") && el["components"].is_array()) {
         for (nlohmann::json const& compEl : el["components"]) {
@@ -202,25 +287,31 @@ void up::SceneDocument::_fromJson(nlohmann::json const& el, int index, AssetLoad
             }
 
             auto const name = compEl["$schema"].get<string_view>();
-            reflex::TypeInfo const* const compType = _scene->universe().findComponentByName(name);
-            if (compType == nullptr) {
+            box<SceneComponent> component = _database.createByName(name);
+            if (component == nullptr) {
                 continue;
             }
 
-            void* const compData = _scene->world().addComponentDefault(_entities[index].id, *compType);
-            if (compData == nullptr) {
-                continue;
+            if (compEl.contains("name") && compEl["name"].is_string()) {
+                auto name = compEl["name"].get<string>();
+                if (!name.empty()) {
+                    component->name = std::move(name);
+                }
             }
 
-            reflex::decodeFromJsonRaw(compEl, *compType->schema, compData);
+            component->parent = _entities[index].sceneId;
 
-            for (reflex::SchemaField const& field : compType->schema->fields) {
+            reflex::decodeFromJsonRaw(compEl, *component->info->typeInfo().schema, component->data.get());
+
+            for (reflex::SchemaField const& field : component->info->typeInfo().schema->fields) {
                 if (field.schema->primitive == reflex::SchemaPrimitive::AssetRef) {
-                    auto* const assetHandle =
-                        reinterpret_cast<UntypedAssetHandle*>(static_cast<char*>(compData) + field.offset);
+                    auto* const assetHandle = reinterpret_cast<UntypedAssetHandle*>(
+                        reinterpret_cast<char*>(component->data.get()) + field.offset);
                     *assetHandle = assetLoader.loadAssetSync(assetHandle->assetId());
                 }
             }
+
+            _entities[index].components.push_back(std::move(component));
         }
     }
 
@@ -239,4 +330,17 @@ void up::SceneDocument::_fromJson(nlohmann::json const& el, int index, AssetLoad
             _fromJson(childEl, childIndex, assetLoader);
         }
     }
+}
+
+auto up::SceneDocument::_allocateEntityId() -> SceneEntityId {
+    SceneEntityId const id = _nextEntityId;
+    _nextEntityId = SceneEntityId{to_underlying(_nextEntityId) + 1};
+    return id;
+}
+
+auto up::SceneDocument::_consumeEntityId(SceneEntityId entityId) -> SceneEntityId {
+    if (to_underlying(entityId) >= to_underlying(_nextEntityId)) {
+        _nextEntityId = SceneEntityId{to_underlying(entityId) + 1};
+    }
+    return entityId;
 }

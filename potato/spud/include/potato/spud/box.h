@@ -24,7 +24,15 @@ struct up::_detail::box_traits {
     using pointer = T*;
     using reference = T&;
 
-    static void _deallocate(T* ptr) { delete ptr; }
+    static void _deallocate(pointer ptr) { delete ptr; }
+};
+
+template <>
+struct up::_detail::box_traits<void> {
+    using pointer = void*;
+    using reference = void;
+
+    static void _deallocate(pointer ptr) { operator delete(ptr); }
 };
 
 /// <summary> An owning non-copyable pointer to a heap-allocated object, analogous to std::unique_ptr but without custom
@@ -112,8 +120,7 @@ private:
 
 template <typename T>
 void up::box<T>::reset(pointer ptr) noexcept {
-    // NOLINTNEXTLINE(bugprone-sizeof-expression)
-    static_assert(sizeof(T) > 0, "box can not delete incomplete type");
+    static_assert(is_type_complete_v<T>, "box can not delete incomplete type");
     this->_deallocate(_ptr);
     _ptr = ptr;
 }

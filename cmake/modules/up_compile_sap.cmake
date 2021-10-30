@@ -12,7 +12,7 @@ function(up_compile_sap TARGET)
     cmake_parse_arguments(ARG "" "" "SCHEMAS" ${ARGN})
 
     set(GEN_TGT "generate_sap_schemas_${TARGET}")
-    set(OUT_FILES)
+    set(JSON_FILES)
 
     up_get_target_shortname(${TARGET} SHORT_NAME)
 
@@ -30,14 +30,14 @@ function(up_compile_sap TARGET)
     foreach(FILE ${ARG_SCHEMAS})
         get_filename_component(FILE_NAME ${FILE} NAME_WE)
 
-        SET(SCHEMA_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}")
-        SET(JSON_FILE "gen/sap/${FILE_NAME}.json")
-        SET(DEP_FILE "gen/sap/${FILE_NAME}.json.d")
+        set(SCHEMA_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}")
+        set(JSON_FILE "gen/sap/${FILE_NAME}.json")
+        set(DEP_FILE "gen/sap/${FILE_NAME}.json.d")
 
-        SET(GENERATED_SOURCE_FILE "gen/src/${FILE_NAME}_gen.cpp")
-        SET(GENERATED_HEADER_FILE "gen/inc/${FILE_NAME}_schema.h")
+        list(APPEND JSON_FILES "${CMAKE_CURRENT_BINARY_DIR}/${JSON_FILE}")
 
-        target_sources(${TARGET} PRIVATE "${JSON_FILE}" "${GENERATED_SOURCE_FILE}" "${GENERATED_HEADER_FILE}")
+        set(GENERATED_SOURCE_FILE "gen/src/${FILE_NAME}_gen.cpp")
+        set(GENERATED_HEADER_FILE "gen/inc/${FILE_NAME}_schema.h")
 
         add_custom_command(
             OUTPUT "${JSON_FILE}"
@@ -49,6 +49,7 @@ function(up_compile_sap TARGET)
             DEPENDS sapc
             DEPFILE "${DEP_FILE}"
             COMMAND_EXPAND_LISTS
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         )
         add_custom_command(
             OUTPUT "${GENERATED_HEADER_FILE}"
@@ -60,6 +61,7 @@ function(up_compile_sap TARGET)
                     -D EXPORT_MACRO "UP_$<UPPER_CASE:${SHORT_NAME}>_API"
             MAIN_DEPENDENCY "${JSON_FILE}"
             DEPENDS potato_bin_codegen
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         )
         add_custom_command(
             OUTPUT "${GENERATED_SOURCE_FILE}"
@@ -70,6 +72,13 @@ function(up_compile_sap TARGET)
                     -D MODULE_HEADER "${FILE_NAME}_schema.h"
             MAIN_DEPENDENCY "${JSON_FILE}"
             DEPENDS potato_bin_codegen
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        )
+        
+        target_sources(${TARGET} PRIVATE
+            "${CMAKE_CURRENT_BINARY_DIR}/${JSON_FILE}"
+            "${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_SOURCE_FILE}"
+            "${CMAKE_CURRENT_BINARY_DIR}/${GENERATED_HEADER_FILE}"
         )
     endforeach()
 

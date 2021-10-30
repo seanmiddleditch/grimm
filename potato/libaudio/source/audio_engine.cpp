@@ -15,7 +15,7 @@ namespace up {
         class AudioEngineImpl final : public AudioEngine {
         public:
             explicit AudioEngineImpl();
-            ~AudioEngineImpl() override;
+            ~AudioEngineImpl();
 
             void registerAssetBackends(AssetLoader& assetLoader) override;
             auto play(SoundResource const* sound) -> PlayHandle override;

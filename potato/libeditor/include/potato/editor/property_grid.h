@@ -29,7 +29,7 @@ namespace up::inline editor {
         bool beginItem(char const* label);
         void endItem();
 
-        void editObjectRaw(reflex::Schema const& schema, void* object) { _editProperties(schema, object); }
+        bool editObjectRaw(reflex::Schema const& schema, void* object) { return _editProperties(schema, object); }
 
         template <typename T>
         void editObject(T& value) {
@@ -40,28 +40,29 @@ namespace up::inline editor {
         bool _beginProperty(reflex::SchemaField const& field, void* object);
         void _endProperty();
 
-        void _editProperties(reflex::Schema const& schema, void* object);
-        void _editProperty(reflex::SchemaField const& field, void* object);
+        bool _editProperties(reflex::Schema const& schema, void* object);
+        bool _editProperty(reflex::SchemaField const& field, void* object);
 
-        void _editField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
-        void _drawObjectEditor(reflex::Schema const& schema, void* object);
-        void _editArrayField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
+        bool _editField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
+        bool _drawObjectEditor(reflex::Schema const& schema, void* object);
+        bool _editArrayField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
 
-        void _editIntegerField(reflex::SchemaField const& field, int& value) noexcept;
+        bool _editIntegerField(reflex::SchemaField const& field, int& value) noexcept;
         template <integral T>
-        void _editIntegerField(reflex::SchemaField const& field, T& value) noexcept {
+        bool _editIntegerField(reflex::SchemaField const& field, T& value) noexcept {
             int tmp = static_cast<int>(value);
-            _editIntegerField(field, tmp);
+            bool const edit = _editIntegerField(field, tmp);
             value = static_cast<T>(tmp);
+            return edit;
         }
-        void _editFloatField(reflex::SchemaField const& field, float& value) noexcept;
-        void _editFloatField(reflex::SchemaField const& field, double& value) noexcept;
-        void _editVec3Field(reflex::SchemaField const& field, glm::vec3& value) noexcept;
-        void _editMat4x4Field(reflex::SchemaField const& field, glm::mat4x4& value) noexcept;
-        void _editQuatField(reflex::SchemaField const& field, glm::quat& value) noexcept;
-        void _editStringField(reflex::SchemaField const& field, string& value) noexcept;
-        void _editAssetField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
-        void _editUuidField(reflex::SchemaField const& field, UUID& value) noexcept;
+        bool _editFloatField(reflex::SchemaField const& field, float& value) noexcept;
+        bool _editFloatField(reflex::SchemaField const& field, double& value) noexcept;
+        bool _editVec3Field(reflex::SchemaField const& field, glm::vec3& value) noexcept;
+        bool _editMat4x4Field(reflex::SchemaField const& field, glm::mat4x4& value) noexcept;
+        bool _editQuatField(reflex::SchemaField const& field, glm::quat& value) noexcept;
+        bool _editStringField(reflex::SchemaField const& field, string& value) noexcept;
+        bool _editAssetField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
+        bool _editUuidField(reflex::SchemaField const& field, UUID& value) noexcept;
 
         AssetLoader* _assetLoader = nullptr;
     };

@@ -46,7 +46,7 @@ namespace up {
             vector<up::byte> data,
             view<MeshBuffer> buffers,
             view<MeshChannel> channels);
-        UP_RENDER_API ~Mesh() override;
+        UP_RENDER_API ~Mesh();
 
         UP_RENDER_API static auto createFromBuffer(AssetKey key, view<byte>) -> rc<Mesh>;
 

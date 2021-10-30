@@ -3,6 +3,7 @@
 #pragma once
 
 #include "potato/game/query.h"
+#include "potato/game/space.h"
 #include "potato/game/universe.h"
 #include "potato/runtime/stream.h"
 #include "potato/spud/box.h"
@@ -22,7 +23,7 @@ namespace up {
     class RenderContext;
     class AudioEngine;
 
-    class Scene : public shared<Scene> {
+    class Scene : public Space {
     public:
         explicit Scene(Universe& universe, AudioEngine& audioEngine);
         ~Scene();
@@ -46,9 +47,10 @@ namespace up {
         Scene(Scene const&) = delete;
         Scene& operator=(Scene const&) = delete;
 
-        void tick(float frameTime);
+        void update(float frameTime) override;
+        void render(Renderer& renderer) override;
+
         void flush();
-        void render(Renderer& renderer);
 
         bool load(Stream file);
         void save(Stream file);

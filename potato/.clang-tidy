@@ -56,5 +56,8 @@ Checks: >-
     -readability-uppercase-literal-suffix,
     -readability-use-anyofallof,
     -bugprone-reserved-identifier,
-HeaderFilterRegex: "(private/.*|public/potato/.*)"
+CheckOptions:
+    - key:      modernize-use-override.IgnoreDestructors
+      value:    1
+HeaderFilterRegex: "(source/.*|include/potato/.*)"
 WarningsAsErrors: "*"

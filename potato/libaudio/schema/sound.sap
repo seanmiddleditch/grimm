@@ -1,0 +1,10 @@
+module sound;
+
+import common;
+import tools;
+
+[cxximport("up::SoundResource", "potato/audio/sound_resource.h")]
+[AssetType("potato.asset.sound")]
+using SoundAsset;
+
+using SoundRef = AssetRef<SoundAsset>;

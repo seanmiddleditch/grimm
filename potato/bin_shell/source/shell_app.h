@@ -2,6 +2,7 @@
 
 #include "camera.h"
 #include "log_history.h"
+#include "scene_doc.h"
 #include "settings.h"
 #include "ui/action.h"
 #include "ui/command_palette.h"
@@ -76,7 +77,7 @@ namespace up::shell {
         void _openAssetEditor(UUID const& uuid);
 
         void _createScene();
-        void _createGame(rc<Scene> scene);
+        void _createGame(box<Scene> scene);
 
         void _executeRecon();
         void _loadManifest();
@@ -97,6 +98,7 @@ namespace up::shell {
         box<Universe> _universe;
         box<AudioEngine> _audio;
         box<Project> _project;
+        SceneDatabase _sceneDatabase;
         string _shellSettingsPath;
         unique_resource<SDL_Window*, SDL_DestroyWindow> _window;
         unique_resource<SDL_Cursor*, SDL_FreeCursor> _cursor;

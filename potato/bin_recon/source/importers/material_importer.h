@@ -8,7 +8,7 @@ namespace up {
     class MaterialImporter : public Importer {
     public:
         MaterialImporter();
-        ~MaterialImporter() override;
+        ~MaterialImporter();
 
         bool import(ImporterContext& ctx) override;
         string_view assetType(ImporterContext&) const noexcept override { return "potato.asset.material"_sv; }

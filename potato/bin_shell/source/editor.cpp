@@ -22,12 +22,8 @@ up::shell::Editor::Editor(zstring_view className) {
 }
 
 bool up::shell::Editor::updateUi() {
-    char editorTitle[128] = {
-        0,
-    };
-    char contentTitle[128] = {
-        0,
-    };
+    char editorTitle[128];
+    char contentTitle[128];
 
     nanofmt::format_to(editorTitle, "{}##{}", displayName(), this);
     nanofmt::format_to(contentTitle, "Document##{}", this);
