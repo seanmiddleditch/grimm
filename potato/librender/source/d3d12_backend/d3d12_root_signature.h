@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_pipeline_state.h"
 
+#include "potato/render/gpu_pipeline_state.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/vector.h"
@@ -13,7 +13,6 @@ namespace up::d3d12 {
 
     class CommandListD3D12;
     class DescriptorHeapD3D12;
-
 
     enum RootParamType : uint32 { Texture, Sampler, ConstValues, ConstBuffer, RootParamMax };
 
@@ -125,7 +124,6 @@ namespace up::d3d12 {
     };
 
     struct SignatureDesc {
-
         vector<SignatureParam> _params;
         vector<SignatureRange> _range;
         uint32 _offsets[RootParamType::RootParamMax];
@@ -136,7 +134,10 @@ namespace up::d3d12 {
             memset(&_offsets[0], 0xff, sizeof(_offsets));
         }
 
-        void initSamplers(uint32 offset, uint32 count, D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) {
+        void initSamplers(
+            uint32 offset,
+            uint32 count,
+            D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) {
             _range[1].initRange(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, count, 0, 0);
             _params[offset].initAsDescriptorTable(1, &_range[1]._range, visibility);
             _offsets[RootParamType::Sampler] = offset;
@@ -146,21 +147,26 @@ namespace up::d3d12 {
             _params[offset].initAsDescriptorTable(1, &_range[0]._range, visibility);
             _offsets[RootParamType::Texture] = offset;
         }
-        void initConstValues(uint32 offset, uint32 count, D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) {
+        void initConstValues(
+            uint32 offset,
+            uint32 count,
+            D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) {
             _params[offset].initAsConstants(count, 0, 0, visibility);
             _offsets[RootParamType::ConstValues] = offset;
         }
-        void initConstBuffer(uint32 offset, uint32 reg, D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL){
+        void initConstBuffer(
+            uint32 offset,
+            uint32 reg,
+            D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL) {
             _params[offset].initAsConstantBufferView(reg, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, visibility);
             if (_offsets[RootParamType::ConstBuffer] == 0xffffffff) {
                 _offsets[RootParamType::ConstBuffer] = offset;
             }
-        } 
+        }
     };
 
     class RootSignatureD3D12 : public shared<RootSignatureD3D12> {
     public:
-
         explicit RootSignatureD3D12();
         virtual ~RootSignatureD3D12();
 
@@ -176,7 +182,6 @@ namespace up::d3d12 {
         uint32 getRootOffset(RootParamType type) const { return _offsetMap[type]; }
 
     private:
-
         bool create(ID3D12Device* device, const SignatureDesc& desc);
 
     private:

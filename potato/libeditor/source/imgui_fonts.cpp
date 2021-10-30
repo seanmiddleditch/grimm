@@ -1,7 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "imgui_backend.h"
-#include "imgui_fonts.h"
+#include "potato/editor/imgui_fonts.h"
+
+#include "potato/editor/imgui_backend.h"
 
 #include <imgui.h>
 

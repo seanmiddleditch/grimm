@@ -1,12 +1,12 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "asset_loader.h"
-#include "asset.h"
-#include "filesystem.h"
-#include "path.h"
-#include "resource_manifest.h"
-#include "stream.h"
+#include "potato/runtime/asset_loader.h"
 
+#include "potato/runtime/asset.h"
+#include "potato/runtime/filesystem.h"
+#include "potato/runtime/path.h"
+#include "potato/runtime/resource_manifest.h"
+#include "potato/runtime/stream.h"
 #include "potato/spud/fixed_string_writer.h"
 #include "potato/spud/hash.h"
 #include "potato/spud/hash_fnv1a.h"

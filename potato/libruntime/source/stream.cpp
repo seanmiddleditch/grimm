@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "stream.h"
+#include "potato/runtime/stream.h"
 
 #include "potato/spud/string.h"
 #include "potato/spud/string_writer.h"

@@ -2,18 +2,16 @@
 
 #pragma once
 
-#include "camera.h"
-#include "camera_controller.h"
-#include "editor.h"
-#include "scene_doc.h"
-#include "selection.h"
-
 #include "potato/editor/property_grid.h"
 #include "potato/render/camera.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
-#include "potato/render/renderer.h"
+#include "potato/shell/camera.h"
+#include "potato/shell/camera_controller.h"
+#include "potato/shell/editor.h"
+#include "potato/shell/scene_doc.h"
+#include "potato/shell/selection.h"
 #include "potato/spud/delegate.h"
 
 #include <glm/glm.hpp>

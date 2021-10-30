@@ -1,7 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "editor.h"
-
+#include "potato/shell/editor.h"
 #include "potato/runtime/logger.h"
 #include "potato/spud/hash.h"
 #include "potato/spud/rc.h"

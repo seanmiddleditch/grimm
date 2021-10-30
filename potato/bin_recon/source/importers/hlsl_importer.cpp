@@ -1,6 +1,7 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "hlsl_importer.h"
+#include "../importer_context.h"
 
 #include "potato/runtime/com_ptr.h"
 #include "potato/runtime/filesystem.h"

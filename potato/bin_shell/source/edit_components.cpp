@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "edit_components.h"
-#include "scene_doc.h"
 
 #include "potato/game/world.h"
+#include "potato/shell/scene_doc.h"
 
 auto up::TransformEditComponent::data(SceneComponent const& component) noexcept -> scene::components::Transform& {
     return *static_cast<scene::components::Transform*>(component.data.get());
@@ -67,4 +67,8 @@ auto up::SpinEditComponent::createFrom(scene::components::Spin const& sceneCompo
 
 auto up::DingEditComponent::createFrom(scene::components::Ding const& sceneComponent) const -> components::Ding {
     return {.period = sceneComponent.period, .time = 0, .sound = sceneComponent.sound};
+}
+
+auto up::BodyEditComponent::createFrom(scene::components::Body const& sceneComponent) const -> components::Body {
+    return {.linearVelocity = sceneComponent.linearVelocity};
 }

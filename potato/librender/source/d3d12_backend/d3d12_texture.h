@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_texture.h"
 
+#include "potato/render/gpu_texture.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/box.h"
 
@@ -21,7 +21,7 @@ namespace up::d3d12 {
         TextureD3D12(TextureD3D12&&) = delete;
         TextureD3D12& operator=(TextureD3D12&&) = delete;
 
-        bool create(RenderContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data); 
+        bool create(RenderContextD3D12 const& ctx, GpuTextureDesc const& desc, span<up::byte const> data);
 
         GpuTextureType type() const noexcept override;
         GpuFormat format() const noexcept override;
@@ -44,10 +44,9 @@ namespace up::d3d12 {
         ID3DResourcePtr _uploadTexture;
         com_ptr<D3D12MA::Allocation> _uploadAlloc;
 
-         // const buffer bits for now here while testing
+        // const buffer bits for now here while testing
         box<DescriptorHeapD3D12> _cbvHeap;
 
-        DXGI_FORMAT _format; 
-    
+        DXGI_FORMAT _format;
     };
 } // namespace up::d3d12

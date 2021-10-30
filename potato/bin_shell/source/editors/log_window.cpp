@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "log_window.h"
-#include "log_history.h"
 
 #include "potato/editor/imgui_ext.h"
+#include "potato/shell/log_history.h"
 #include "potato/spud/utility.h"
 
 #include <imgui.h>
@@ -128,7 +128,7 @@ void up::shell::LogWindow::content() {
 
         _stickyBottom = ImGui::IsWindowAppearing() || (ImGui::GetScrollY() >= ImGui::GetScrollMaxY());
         if (_stickyBottom) {
-            ImGui::SetScrollHere();
+            ImGui::ScrollToItem();
         }
 
         ImGui::EndTable();

@@ -1,7 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "importer_factory.h"
-#include "importer_configs_schema.h"
 #include "importers/copy_importer.h"
 #include "importers/folder_importer.h"
 #include "importers/hlsl_importer.h"
@@ -11,6 +10,7 @@
 #include "importers/model_importer.h"
 
 #include "potato/reflex/serialize.h"
+#include "potato/schema/importer_configs_schema.h"
 #include "potato/runtime/assertion.h"
 
 up::ImporterFactory::ImporterFactory() = default;

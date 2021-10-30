@@ -1,11 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "scene_editor.h"
-#include "camera.h"
-#include "camera_controller.h"
-#include "editor.h"
-#include "scene_doc.h"
-#include "selection.h"
 
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
@@ -22,6 +17,11 @@
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/renderer.h"
+#include "potato/shell/camera.h"
+#include "potato/shell/camera_controller.h"
+#include "potato/shell/editor.h"
+#include "potato/shell/scene_doc.h"
+#include "potato/shell/selection.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/spud/delegate.h"
@@ -315,10 +315,10 @@ void up::shell::SceneEditor::_inspector() {
         }
 
         if (ImGui::BeginPopupContextItem("##component_context_menu")) {
-            if (ImGui::IconMenuItem("Add", ICON_FA_PLUS_CIRCLE)) {
+            if (ImGui::MenuItemEx("Add", ICON_FA_PLUS_CIRCLE)) {
                 ImGui::OpenPopupEx(addComponentId);
             }
-            if (ImGui::IconMenuItem("Remove", ICON_FA_TRASH)) {
+            if (ImGui::MenuItemEx("Remove", ICON_FA_TRASH)) {
                 component = nullptr;
             }
             ImGui::EndPopup();
@@ -347,7 +347,7 @@ void up::shell::SceneEditor::_inspector() {
             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings |
                 ImGuiWindowFlags_NoMove)) {
         for (EditComponent const& component : _database.components()) {
-            if (ImGui::IconMenuItem(component.name().c_str())) {
+            if (ImGui::MenuItem(component.name().c_str())) {
                 _doc->addNewComponent(selectedId, component);
             }
         }
@@ -425,11 +425,11 @@ void up::shell::SceneEditor::_hierarchyShowIndex(int index) {
 
 void up::shell::SceneEditor::_hierarchyContext(SceneEntityId id) {
     if (ImGui::BeginPopupContextItem()) {
-        if (ImGui::IconMenuItem("New Entity", ICON_FA_PLUS)) {
+        if (ImGui::MenuItemEx("New Entity", ICON_FA_PLUS)) {
             _targetId = id;
             _create = true;
         }
-        if (ImGui::IconMenuItem("Delete", ICON_FA_TRASH, nullptr, false, id != SceneEntityId::None)) {
+        if (ImGui::MenuItemEx("Delete", ICON_FA_TRASH, nullptr, false, id != SceneEntityId::None)) {
             _targetId = id;
             _delete = true;
         }

@@ -3,13 +3,13 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_resource_view.h"
 
+#include "potato/render/gpu_resource_view.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/box.h"
 
 namespace up::d3d12 {
-    class DescriptorHeapD3D12; 
+    class DescriptorHeapD3D12;
     class ResourceViewD3D12 final : public GpuResourceView {
     public:
         explicit ResourceViewD3D12(GpuViewType type);

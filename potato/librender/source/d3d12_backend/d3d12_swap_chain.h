@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_swap_chain.h"
 
+#include "potato/render/gpu_swap_chain.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/box.h"
 
@@ -23,10 +23,15 @@ namespace up::d3d12 {
             IDXGIFactoryType* factory,
             ID3D12Device* device,
             ID3D12CommandQueue* queue,
-            DescriptorHeapD3D12* descHeap, 
+            DescriptorHeapD3D12* descHeap,
             void* nativeWindow);
 
-        bool create(IDXGIFactoryType* factory, ID3D12Device* device, ID3D12CommandQueue* queue, DescriptorHeapD3D12* descHeap, void* nativeWindow);
+        bool create(
+            IDXGIFactoryType* factory,
+            ID3D12Device* device,
+            ID3D12CommandQueue* queue,
+            DescriptorHeapD3D12* descHeap,
+            void* nativeWindow);
         void bind(GpuCommandList* cmd) override;
         void unbind(GpuCommandList* cmd) override;
         void present() override;
@@ -34,8 +39,7 @@ namespace up::d3d12 {
         rc<GpuTexture> getBuffer(int index) override;
         int getCurrentBufferIndex() override;
 
-        protected:
-
+    protected:
         void initBackBufferTargets(ID3D12Device* device);
 
     private:

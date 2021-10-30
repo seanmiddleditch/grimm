@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "editor_group.h"
-#include "editor.h"
 
+#include "potato/shell/editor.h"
 #include "potato/spud/sequence.h"
 #include "potato/spud/utility.h"
 

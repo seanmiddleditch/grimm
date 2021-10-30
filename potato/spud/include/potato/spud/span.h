@@ -8,10 +8,13 @@
 
 namespace up {
     template <typename T>
-    struct span;
+    class span;
 
     template <typename T>
     using view = span<T const>;
+
+    template <typename PointerT, typename ValueT = decltype(*declval<PointerT>())>
+    class deref_span;
 
     template <typename T>
     span(T*, T*) -> span<T>;
@@ -35,7 +38,7 @@ namespace up {
 /// <summary> A non-owning slice of an array. </summary>
 /// <typeparam name="T"> Type of the elements in the array. </typeparam>
 template <typename T>
-struct up::span {
+class up::span {
 public:
     using value_type = T;
     using iterator = T*;
@@ -111,6 +114,43 @@ public:
 private:
     pointer _begin = nullptr;
     pointer _end = nullptr;
+};
+
+template <typename PointerT, typename ValueT>
+class up::deref_span {
+public:
+    using value_type = ValueT;
+    using size_type = size_t;
+    using reference = ValueT&;
+
+    class iterator {
+    public:
+        constexpr explicit iterator(PointerT* ptr) noexcept : _ptr(ptr) { }
+
+        constexpr reference operator*() const noexcept { return **_ptr; }
+        constexpr iterator& operator++() noexcept {
+            ++_ptr;
+            return *this;
+        }
+
+        constexpr bool operator==(iterator it) const noexcept { return _ptr == it._ptr; }
+
+    private:
+        PointerT* _ptr = nullptr;
+    };
+
+    template <typename RangeT>
+    constexpr deref_span(RangeT const& range) noexcept : _first(range.data())
+                                                       , _last(_first + range.size()) { }
+
+    constexpr iterator begin() const noexcept { return iterator(_first); }
+    constexpr iterator end() const noexcept { return iterator(_last); }
+
+    constexpr size_type size() const noexcept { return _last - _first; }
+
+private:
+    PointerT* _first = nullptr;
+    PointerT* _last = nullptr;
 };
 
 template <typename HashAlgorithm, typename T>

@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "camera.h"
+#include "potato/shell/camera.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 

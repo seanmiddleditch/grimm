@@ -1,7 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "d3d12_device.h"
-#include "context.h"
 #include "d3d12_buffer.h"
 #include "d3d12_command_list.h"
 #include "d3d12_context.h"
@@ -16,6 +15,7 @@
 #include "d3d12_texture.h"
 #include "d3d12_utils.h"
 
+#include "potato/render/context.h"
 #include "potato/runtime/assertion.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/out_ptr.h"
@@ -192,7 +192,7 @@ auto up::d3d12::DeviceD3D12::createRenderTargetView(GpuTexture* resource) -> box
     // live with the resource -- consider wrapping it in a back-buffer object down the line.
     static uint32 __rtvcount = 0;
     auto rtv = new_box<ResourceViewD3D12>(GpuViewType::RTV);
-    rtv->create(_rtvHeap.get(), __rtvcount++%2);
+    rtv->create(_rtvHeap.get(), __rtvcount++ % 2);
 
     return rtv;
 }
@@ -338,6 +338,6 @@ auto up::d3d12::DeviceD3D12::getDebugShader(GpuShaderStage stage) -> view<unsign
 
 void up::d3d12::DeviceD3D12::debugDraw(delegate_ref<void(GpuCommandList& cmdList)> callback) {
     callback(*_mainCmdList.get());
- }
+}
 
-void up::d3d12::DeviceD3D12::registerAssetBackends(AssetLoader& assetLoader) {}
+void up::d3d12::DeviceD3D12::registerAssetBackends(AssetLoader& assetLoader) { }

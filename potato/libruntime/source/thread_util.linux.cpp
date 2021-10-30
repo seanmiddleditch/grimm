@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "thread_util.h"
+#include "potato/runtime/thread_util.h"
 
 #if !defined(_GNU_SOURCE)
 #    define _GNU_SOURCE // for glibc

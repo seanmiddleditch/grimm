@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "asset_browser_popup.h"
-#include "icons.h"
-#include "imgui_ext.h"
+#include "potato/editor/asset_browser_popup.h"
 
+#include "potato/editor/icons.h"
+#include "potato/editor/imgui_ext.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/path.h"
 #include "potato/runtime/resource_manifest.h"

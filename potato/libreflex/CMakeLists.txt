@@ -8,11 +8,13 @@ include(up_set_common_properties)
 up_set_common_properties(potato_libreflex)
 
 include(up_compile_sap)
-up_compile_sap(potato_libreflex SCHEMAS
-    schema/common.sap
-    schema/reflex.sap
-    schema/constraint.sap
-    schema/tools.sap
+up_compile_sap(potato_libreflex
+    PUBLIC
+    SCHEMAS
+        schema/common.sap
+        schema/reflex.sap
+        schema/constraint.sap
+        schema/tools.sap
 )
 
 target_sources(potato_libreflex PRIVATE
@@ -39,8 +41,10 @@ target_sources(potato_libreflex_test PRIVATE
     "tests/test_serialize.cpp"
 )
 
-up_compile_sap(potato_libreflex_test SCHEMAS
-    schema/reflex_test.sap
+up_compile_sap(potato_libreflex_test
+    PRIVATE
+    SCHEMAS
+        schema/reflex_test.sap
 )
 
 up_set_common_properties(potato_libreflex_test)

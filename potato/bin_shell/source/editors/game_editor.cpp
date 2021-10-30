@@ -1,9 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "game_editor.h"
-#include "camera.h"
-#include "camera_controller.h"
-#include "editor.h"
 
 #include "potato/editor/imgui_ext.h"
 #include "potato/render/camera.h"
@@ -13,6 +10,9 @@
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
 #include "potato/render/renderer.h"
+#include "potato/shell/camera.h"
+#include "potato/shell/camera_controller.h"
+#include "potato/shell/editor.h"
 
 #include <glm/glm.hpp>
 #include <SDL.h>
@@ -40,7 +40,7 @@ void up::shell::GameEditor::content() {
         auto const xPos =
             ImGui::GetWindowSize().x * 0.5f - ImGui::CalcTextSize(text).x * 0.5f - ImGui::GetStyle().ItemInnerSpacing.x;
         ImGui::SetCursorPosX(xPos);
-        if (ImGui::IconMenuItem(text, icon, "F5")) {
+        if (ImGui::MenuItemEx(text, icon, "F5")) {
             _paused = !_paused;
         }
         ImGui::TextColored(ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled), "Shift-ESC to release input");

@@ -1,20 +1,20 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "renderer.h"
-#include "context.h"
-#include "debug_draw.h"
-#include "gpu_buffer.h"
-#include "gpu_command_list.h"
-#include "gpu_device.h"
-#include "gpu_pipeline_state.h"
-#include "gpu_swap_chain.h"
-#include "gpu_texture.h"
-#include "gpu_renderable.h"
-#include "material.h"
-#include "mesh.h"
-#include "shader.h"
-#include "texture.h"
+#include "potato/render/renderer.h"
 
+#include "potato/render/context.h"
+#include "potato/render/debug_draw.h"
+#include "potato/render/gpu_buffer.h"
+#include "potato/render/gpu_command_list.h"
+#include "potato/render/gpu_device.h"
+#include "potato/render/gpu_pipeline_state.h"
+#include "potato/render/gpu_renderable.h"
+#include "potato/render/gpu_swap_chain.h"
+#include "potato/render/gpu_texture.h"
+#include "potato/render/material.h"
+#include "potato/render/mesh.h"
+#include "potato/render/shader.h"
+#include "potato/render/texture.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/stream.h"
 
@@ -24,7 +24,6 @@ constexpr int debug_vbo_size = 64 * 1024;
 constexpr double nano_to_seconds = 1.0 / 1000000000.0;
 
 up::Renderer::Renderer(rc<GpuDevice> device) : _device(std::move(device)) {
-
     //_debugLineMaterial = _loader.loadMaterialSync("materials/debug_line.mat");
     //_debugLineBuffer = _device->createBuffer(GpuBufferType::Vertex, debug_vbo_size);
 
@@ -79,7 +78,7 @@ void up::Renderer::flush() {
     for (auto& renderable : _rendarables) {
         _device->render(frame, renderable.get());
     }
-    _rendarables.clear(); 
+    _rendarables.clear();
     _device->endFrame(_swapChain.get());
 
     _device->execute(false);
@@ -91,7 +90,6 @@ void up::Renderer::quit() {
 }
 
 auto up::Renderer::createRendarable(IRenderable* pInterface) -> GpuRenderable* {
-
     auto renderable = _device->createRenderable(pInterface);
     return _rendarables.emplace_back(std::move(renderable)).get();
 }
@@ -223,16 +221,16 @@ bool up::Renderer::createSwapChain(void* nativeWindow) {
     if (!_swapChain)
         return false;
     return true;
- }
+}
 
 void up::Renderer::resizeBuffers(int width, int height) {
-     UP_ASSERT(_device != nullptr);
+    UP_ASSERT(_device != nullptr);
     _swapChain->resizeBuffers(*_device.get(), width, height);
- }
+}
 
 auto up::Renderer::getBackBuffer() -> rc<GpuTexture> {
-     return _swapChain->getBuffer(_swapChain->getCurrentBufferIndex());
- }
+    return _swapChain->getBuffer(_swapChain->getCurrentBufferIndex());
+}
 
 void up::Renderer::clearCommandList() {
     _device->clearCommandList();

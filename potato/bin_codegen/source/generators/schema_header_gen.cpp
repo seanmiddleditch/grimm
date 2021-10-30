@@ -62,7 +62,7 @@ void SchemaHeaderGenerator::writeIncludes() {
 
     _output << "// Module includes\n";
     for (auto const& imp : _module.imports) {
-        _output << "#include \"" << imp << "_schema.h\"\n";
+        _output << "#include \"potato/schema/" << imp << "_schema.h\"\n";
     }
 
     _output << "// Imported type includes\n";

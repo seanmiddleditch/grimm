@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_factory.h"
 
+#include "potato/render/gpu_factory.h"
 #include "potato/runtime/com_ptr.h"
 
 namespace up::d3d12 {

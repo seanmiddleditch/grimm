@@ -28,9 +28,9 @@ namespace up {
         static UP_GAME_API void addDemoSystem(Space& space, class AudioEngine& audio);
 
         template <typename SystemT, typename... Args>
-        void addSystem(Args&&... args) {
+        System& addSystem(Args&&... args) {
             UP_ASSERT(_state == State::New);
-            _systems.push_back(new_box<SystemT>(*this, std::forward<Args>(args)...));
+            return *_systems.push_back(new_box<SystemT>(*this, std::forward<Args>(args)...));
         }
 
         World& world() noexcept { return *_world; }

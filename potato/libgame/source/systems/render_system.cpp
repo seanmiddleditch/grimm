@@ -1,12 +1,52 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "render_system.h"
-#include "space.h"
-#include "world.h"
-
+#include "potato/game/query.h"
+#include "potato/game/space.h"
+#include "potato/game/system.h"
+#include "potato/game/world.h"
 #include "potato/render/context.h"
+#include "potato/render/renderer.h"
+#include "potato/schema/components_schema.h"
 
-void up::game::RenderSystem::start() {
+namespace {
+    using namespace up;
+
+    class MeshRenderer : public up::IRenderable {
+    public:
+        MeshRenderer(Query<components::Mesh, components::Transform>* meshQuery, World* world)
+            : _meshQuery(meshQuery)
+            , _world(world) { }
+
+        void onSchedule(up::RenderContext& ctx) override;
+        void onRender(up::RenderContext& ctx) override;
+
+    private:
+        Query<components::Mesh, components::Transform>* _meshQuery;
+        World* _world;
+    };
+
+    class RenderSystem final : public System {
+    public:
+        RenderSystem(Space& space, Renderer& renderer) : System(space), _renderer(renderer) { }
+
+        void start() override;
+        void stop() override;
+
+        void update(float deltaTime) override;
+        void render(Renderer&) override;
+
+    private:
+        Query<components::Mesh, components::Transform> _meshQuery;
+        box<MeshRenderer> _meshRenderer;
+        Renderer& _renderer;
+    };
+} // namespace
+
+namespace up {
+    void registerRenderSystem(Space& space, Renderer& renderer) { space.addSystem<RenderSystem>(renderer); }
+} // namespace up
+
+void RenderSystem::start() {
     space().world().createQuery(_meshQuery);
 
     if (!_meshRenderer) {
@@ -15,15 +55,15 @@ void up::game::RenderSystem::start() {
     _renderer.createRendarable(_meshRenderer.get());
 }
 
-void up::game::RenderSystem::stop() { }
+void RenderSystem::stop() { }
 
-void up::game::RenderSystem::update(float) { }
+void RenderSystem::update(float) { }
 
-void up::game::RenderSystem::render(Renderer&) { }
+void RenderSystem::render(Renderer&) { }
 
-void up::game::RenderSystem::MeshRenderer::onSchedule(up::RenderContext& ctx) { }
+void MeshRenderer::onSchedule(up::RenderContext& ctx) { }
 
-void up::game::RenderSystem::MeshRenderer::onRender(up::RenderContext& ctx) {
+void MeshRenderer::onRender(up::RenderContext& ctx) {
     _meshQuery->select(*_world, [&](EntityId, components::Mesh& mesh, components::Transform const& trans) {
         if (mesh.mesh.ready() && mesh.material.ready()) {
             mesh.mesh.asset()->render(ctx, mesh.material.asset(), trans.transform);

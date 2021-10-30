@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_command_list.h"
 
+#include "potato/render/gpu_command_list.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/box.h"
 
@@ -19,7 +19,10 @@ namespace up::d3d12 {
         CommandListD3D12(CommandListD3D12&&) = delete;
         CommandListD3D12& operator=(CommandListD3D12&&) = delete;
 
-        static box<CommandListD3D12> createCommandList(ID3D12Device* device, GpuPipelineState* pipelineState, D3D12_COMMAND_LIST_TYPE type);
+        static box<CommandListD3D12> createCommandList(
+            ID3D12Device* device,
+            GpuPipelineState* pipelineState,
+            D3D12_COMMAND_LIST_TYPE type);
 
         bool create(ID3D12Device* device, ID3D12PipelineState* pipelineState, D3D12_COMMAND_LIST_TYPE type);
 
@@ -44,7 +47,7 @@ namespace up::d3d12 {
         void clearRenderTarget(GpuResourceView* view, glm::vec4 color) override;
         void clearDepthStencil(GpuResourceView* view) override;
 
-        void start(GpuPipelineState* pipelineState) override; 
+        void start(GpuPipelineState* pipelineState) override;
         void finish() override;
         void clear(GpuPipelineState* pipelineState = nullptr) override;
 
@@ -52,7 +55,7 @@ namespace up::d3d12 {
         void unmap(GpuBuffer* buffer, span<byte const> data) override;
         void update(GpuBuffer* buffer, span<byte const> data, uint64 offset = 0) override;
 
-        void flush(ID3D12CommandQueue* pQueue); 
+        void flush(ID3D12CommandQueue* pQueue);
 
         ID3DCommandListType* getResource() const { return _commandList.get(); }
 
@@ -65,7 +68,7 @@ namespace up::d3d12 {
         ID3DCommandAllocatorPtr _commandAllocator;
         ID3DCommandListPtr _commandList;
 
-        // temp stuff to see if I can make this api works 
-        PipelineStateD3D12* _pipeline = nullptr; 
+        // temp stuff to see if I can make this api works
+        PipelineStateD3D12* _pipeline = nullptr;
     };
 } // namespace up::d3d12

@@ -1,12 +1,7 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "shell_app.h"
-#include "camera.h"
-#include "camera_controller.h"
-#include "components_schema.h"
 #include "edit_components.h"
-#include "recon_messages_schema.h"
-#include "scene_schema.h"
 #include "editors/asset_browser.h"
 #include "editors/game_editor.h"
 #include "editors/log_window.h"
@@ -33,6 +28,11 @@
 #include "potato/render/material.h"
 #include "potato/render/renderer.h"
 #include "potato/render/shader.h"
+#include "potato/schema/components_schema.h"
+#include "potato/schema/recon_messages_schema.h"
+#include "potato/schema/scene_schema.h"
+#include "potato/shell/camera.h"
+#include "potato/shell/camera_controller.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"
 #include "potato/runtime/path.h"
@@ -277,12 +277,14 @@ int up::shell::ShellApp::initialize() {
     _universe->registerComponent<components::Spin>("Spin");
     _universe->registerComponent<components::Ding>("Ding");
     _universe->registerComponent<components::Test>("Test");
+    _universe->registerComponent<components::Body>("Body");
 
     _sceneDatabase.registerComponent<TransformEditComponent>();
     _sceneDatabase.registerComponent<MeshEditComponent>();
     _sceneDatabase.registerComponent<WaveEditComponent>();
     _sceneDatabase.registerComponent<SpinEditComponent>();
     _sceneDatabase.registerComponent<DingEditComponent>();
+    _sceneDatabase.registerComponent<BodyEditComponent>();
 
     _editorFactories.push_back(
         AssetBrowser::createFactory(_assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {

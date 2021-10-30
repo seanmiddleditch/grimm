@@ -3,7 +3,8 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_common.h"
+
+#include "potato/render/gpu_common.h"
 
 #include <d3d12.h>
 
@@ -30,10 +31,9 @@ namespace up::d3d12 {
         }
     }
 #else
-    inline void SetName(ID3D12Object*, LPCWSTR) {}
-    inline void SetNameIndexed(ID3D12Object*, LPCWSTR, UINT) {}
+    inline void SetName(ID3D12Object*, LPCWSTR) { }
+    inline void SetNameIndexed(ID3D12Object*, LPCWSTR, UINT) { }
 #endif
-
 
     //------------------------------------------------------------------------------------------------
     // Row-by-row memcpy
@@ -137,12 +137,12 @@ namespace up::d3d12 {
                 Dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
                 Dst.PlacedFootprint = {};
                 Dst.SubresourceIndex = i + FirstSubresource;
-            
+
                 D3D12_TEXTURE_COPY_LOCATION Src = {};
                 Src.pResource = pIntermediate;
                 Src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
                 Src.PlacedFootprint = pLayouts[i];
-               
+
                 pCmdList->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
             }
         }
@@ -246,7 +246,7 @@ namespace up::d3d12 {
 
     // collection of common descriptors used in DX12
     class Desc {
-    public: 
+    public:
         class Buffer : public D3D12_RESOURCE_DESC {
         public:
             Buffer(uint32 size, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE, uint32 alignment = 0) noexcept {
@@ -266,7 +266,13 @@ namespace up::d3d12 {
 
         class Tex1D : public D3D12_RESOURCE_DESC {
         public:
-            Tex1D( DXGI_FORMAT format,uint32 width,uint32 arraySize = 1,uint16 mipLevels = 0,D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE,uint32 alignment = 0) noexcept {
+            Tex1D(
+                DXGI_FORMAT format,
+                uint32 width,
+                uint32 arraySize = 1,
+                uint16 mipLevels = 0,
+                D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE,
+                uint32 alignment = 0) noexcept {
                 Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
                 Alignment = alignment;
                 Width = width;
@@ -284,8 +290,15 @@ namespace up::d3d12 {
         class Tex2D : public D3D12_RESOURCE_DESC {
         public:
             Tex2D(
-                DXGI_FORMAT format,uint32 width,uint32 height,uint16 arraySize = 1,uint16 mipLevels = 0,uint sampleCount = 1,uint sampleQuality = 0,
-                        D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE,uint32 alignment = 0) noexcept {
+                DXGI_FORMAT format,
+                uint32 width,
+                uint32 height,
+                uint16 arraySize = 1,
+                uint16 mipLevels = 0,
+                uint sampleCount = 1,
+                uint sampleQuality = 0,
+                D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE,
+                uint32 alignment = 0) noexcept {
                 Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
                 Alignment = alignment;
                 Width = width;
@@ -301,9 +314,15 @@ namespace up::d3d12 {
         };
 
         class Tex3D : public D3D12_RESOURCE_DESC {
-        public: 
-            Tex3D(DXGI_FORMAT format,uint32 width,uint32 height,uint32 depth,uint16 mipLevels = 0,D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE,
-                    uint32 alignment = 0) noexcept {
+        public:
+            Tex3D(
+                DXGI_FORMAT format,
+                uint32 width,
+                uint32 height,
+                uint32 depth,
+                uint16 mipLevels = 0,
+                D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE,
+                uint32 alignment = 0) noexcept {
                 Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
                 Alignment = alignment;
                 Width = width;
@@ -320,9 +339,9 @@ namespace up::d3d12 {
     };
 
     class Heap {
-    public: 
+    public:
         class Basic : public D3D12_HEAP_PROPERTIES {
-        public: 
+        public:
             Basic(D3D12_HEAP_TYPE type, UINT creationNodeMask = 1, UINT nodeMask = 1) noexcept {
                 Type = type;
                 CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;

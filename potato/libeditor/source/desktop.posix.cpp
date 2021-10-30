@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "desktop.h"
+#include "potato/editor/desktop.h"
 
 #include "potato/runtime/assertion.h"
 

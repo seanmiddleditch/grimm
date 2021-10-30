@@ -1,12 +1,13 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "camera.h"
-#include "context.h"
-#include "gpu_buffer.h"
-#include "gpu_command_list.h"
-#include "gpu_device.h"
-#include "gpu_resource_view.h"
-#include "gpu_texture.h"
+#include "potato/render/camera.h"
+
+#include "potato/render/context.h"
+#include "potato/render/gpu_buffer.h"
+#include "potato/render/gpu_command_list.h"
+#include "potato/render/gpu_device.h"
+#include "potato/render/gpu_resource_view.h"
+#include "potato/render/gpu_texture.h"
 
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>

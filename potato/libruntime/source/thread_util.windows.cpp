@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "thread_util.h"
+#include "potato/runtime/thread_util.h"
 
 #include "potato/spud/platform_windows.h"
 

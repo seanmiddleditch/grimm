@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "shared_context.h"
+#include "potato/game/shared_context.h"
 
 #include "potato/spud/find.h"
 #include "potato/spud/sort.h"

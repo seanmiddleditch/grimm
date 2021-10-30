@@ -3,8 +3,8 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_device.h"
 
+#include "potato/render/gpu_device.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/unique_resource.h"
 
@@ -19,9 +19,7 @@ namespace up::d3d12 {
 
     class DeviceD3D12 final : public GpuDevice {
     public:
-        DeviceD3D12(
-            IDXGIFactoryPtr factory,
-            IDXGIAdapterPtr adapter);
+        DeviceD3D12(IDXGIFactoryPtr factory, IDXGIAdapterPtr adapter);
         virtual ~DeviceD3D12();
 
         DeviceD3D12(DeviceD3D12&&) = delete;
@@ -38,9 +36,9 @@ namespace up::d3d12 {
         rc<GpuTexture> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;
         box<GpuSampler> createSampler() override;
 
-        box<GpuResourceView> createShaderResourceView(GpuPipelineState* pipeline, GpuTexture* resource) override; 
+        box<GpuResourceView> createShaderResourceView(GpuPipelineState* pipeline, GpuTexture* resource) override;
         box<GpuResourceView> createRenderTargetView(GpuTexture* resource) override;
-        box<GpuResourceView> createDepthStencilView(GpuTexture* resource) override; 
+        box<GpuResourceView> createDepthStencilView(GpuTexture* resource) override;
 
         bool create();
         void render(const FrameData& frameData, GpuRenderable* renderable) override;
@@ -52,7 +50,7 @@ namespace up::d3d12 {
         void beginResourceCreation() override;
         void endResourceCreation() override;
 
-        void clearCommandList() override; 
+        void clearCommandList() override;
 
         view<unsigned char> getDebugShader(GpuShaderStage stage) override;
         void debugDraw(delegate_ref<void(GpuCommandList& cmdList)> callback) override;
@@ -60,9 +58,10 @@ namespace up::d3d12 {
         void registerAssetBackends(AssetLoader& assetLoader) override;
 
         ID3D12Device* getDevice() const { return _device.get(); }
+
     protected:
         void createDefaultSampler();
-        void createAllocator(); 
+        void createAllocator();
         void createFrameSync();
         void waitForFrame();
 
@@ -76,12 +75,12 @@ namespace up::d3d12 {
         box<DescriptorHeapD3D12> _samplerHeap;
 
         ID3DCommandQueuePtr _commandQueue;
-      
+
         // main command list -- for now we use single command list but that will most likely change
         // in the future
         box<CommandListD3D12> _mainCmdList;
         box<CommandListD3D12> _uploadCmdList;
-        box<RenderContextD3D12> _mainContext; 
+        box<RenderContextD3D12> _mainContext;
 
         // Synchronization objects.
         UINT _frameIndex;
@@ -90,7 +89,6 @@ namespace up::d3d12 {
         UINT64 _fenceValue;
 
         // allocator
-       com_ptr< D3D12MA::Allocator> _allocator;
-
+        com_ptr<D3D12MA::Allocator> _allocator;
     };
 } // namespace up::d3d12

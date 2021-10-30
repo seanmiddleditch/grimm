@@ -7,11 +7,11 @@
                     {
                         "$schema": "Mesh",
                         "material": {
-                            "$schema": "MaterialHandle",
+                            "$schema": "AssetRef",
                             "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                         },
                         "mesh": {
-                            "$schema": "MeshHandle",
+                            "$schema": "AssetRef",
                             "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                         }
                     },
@@ -22,18 +22,23 @@
                             5.0,
                             0.0
                         ],
-                        "rotation": null,
-                        "transform": null
+                        "rotation": null
                     },
                     {
                         "$schema": "Ding",
                         "period": 2.0,
                         "sound": {
-                            "$schema": "SoundHandle",
-                            "type": "potato.asset.sound",
+                            "$schema": "AssetRef",
                             "uuid": "df3a7c47-d06a-cc44-abc4-e928aa4ab035"
-                        },
-                        "time": 0.0
+                        }
+                    },
+                    {
+                        "$schema": "Body",
+                        "linearVelocity": [
+                            4.0,
+                            12.0,
+                            -9.0
+                        ]
                     }
                 ],
                 "name": "Center"
@@ -45,18 +50,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.0,
-                                "time": 0.0
+                                "offset": 0.0
                             },
                             {
                                 "$schema": "Spin",
@@ -69,8 +73,7 @@
                                     1.0,
                                     20.0
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -80,18 +83,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.06283185631036758,
-                                "time": 0.0
+                                "offset": 0.06283185631036758
                             },
                             {
                                 "$schema": "Spin",
@@ -104,8 +106,7 @@
                                     3.9389262199401855,
                                     20.587200164794922
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -115,18 +116,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.12566371262073517,
-                                "time": 0.0
+                                "offset": 0.12566371262073517
                             },
                             {
                                 "$schema": "Spin",
@@ -139,8 +139,7 @@
                                     5.755282878875732,
                                     21.085742950439453
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -150,18 +149,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.18849556148052216,
-                                "time": 0.0
+                                "offset": 0.18849556148052216
                             },
                             {
                                 "$schema": "Spin",
@@ -174,8 +172,7 @@
                                     5.755282402038574,
                                     21.48636817932129
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -185,18 +182,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.25132742524147034,
-                                "time": 0.0
+                                "offset": 0.25132742524147034
                             },
                             {
                                 "$schema": "Spin",
@@ -209,8 +205,7 @@
                                     3.9389259815216064,
                                     21.780431747436523
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -220,18 +215,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.3141592741012573,
-                                "time": 0.0
+                                "offset": 0.3141592741012573
                             },
                             {
                                 "$schema": "Spin",
@@ -244,8 +238,7 @@
                                     0.9999995827674866,
                                     21.96005630493164
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -255,18 +248,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.3769911229610443,
-                                "time": 0.0
+                                "offset": 0.3769911229610443
                             },
                             {
                                 "$schema": "Spin",
@@ -279,8 +271,7 @@
                                     -1.9389266967773438,
                                     22.018264770507813
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -290,18 +281,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.4398229718208313,
-                                "time": 0.0
+                                "offset": 0.4398229718208313
                             },
                             {
                                 "$schema": "Spin",
@@ -314,8 +304,7 @@
                                     -3.755282402038574,
                                     21.949108123779297
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -325,18 +314,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.5026548504829407,
-                                "time": 0.0
+                                "offset": 0.5026548504829407
                             },
                             {
                                 "$schema": "Spin",
@@ -349,8 +337,7 @@
                                     -3.755282402038574,
                                     21.747772216796875
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -360,18 +347,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.56548672914505,
-                                "time": 0.0
+                                "offset": 0.56548672914505
                             },
                             {
                                 "$schema": "Spin",
@@ -384,8 +370,7 @@
                                     -1.938924789428711,
                                     21.410694122314453
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -395,18 +380,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.6283185482025146,
-                                "time": 0.0
+                                "offset": 0.6283185482025146
                             },
                             {
                                 "$schema": "Spin",
@@ -419,8 +403,7 @@
                                     1.0000008344650269,
                                     20.935623168945313
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -430,18 +413,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.691150426864624,
-                                "time": 0.0
+                                "offset": 0.691150426864624
                             },
                             {
                                 "$schema": "Spin",
@@ -454,8 +436,7 @@
                                     3.9389281272888184,
                                     20.321701049804688
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -465,18 +446,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.7539822459220886,
-                                "time": 0.0
+                                "offset": 0.7539822459220886
                             },
                             {
                                 "$schema": "Spin",
@@ -489,8 +469,7 @@
                                     5.755282878875732,
                                     19.56950569152832
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -500,18 +479,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.8168140649795532,
-                                "time": 0.0
+                                "offset": 0.8168140649795532
                             },
                             {
                                 "$schema": "Spin",
@@ -524,8 +502,7 @@
                                     5.755283355712891,
                                     18.681076049804688
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -535,18 +512,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.8796459436416626,
-                                "time": 0.0
+                                "offset": 0.8796459436416626
                             },
                             {
                                 "$schema": "Spin",
@@ -559,8 +535,7 @@
                                     3.938927173614502,
                                     17.659915924072266
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -570,18 +545,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 0.9424778819084167,
-                                "time": 0.0
+                                "offset": 0.9424778819084167
                             },
                             {
                                 "$schema": "Spin",
@@ -594,8 +568,7 @@
                                     0.9999951124191284,
                                     16.510986328125
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -605,18 +578,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.0053097009658813,
-                                "time": 0.0
+                                "offset": 1.0053097009658813
                             },
                             {
                                 "$schema": "Spin",
@@ -629,8 +601,7 @@
                                     -1.938927412033081,
                                     15.240669250488281
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -640,18 +611,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.0681415796279907,
-                                "time": 0.0
+                                "offset": 1.0681415796279907
                             },
                             {
                                 "$schema": "Spin",
@@ -664,8 +634,7 @@
                                     -3.7552833557128906,
                                     13.856711387634277
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -675,18 +644,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.1309734582901,
-                                "time": 0.0
+                                "offset": 1.1309734582901
                             },
                             {
                                 "$schema": "Spin",
@@ -699,8 +667,7 @@
                                     -3.755281448364258,
                                     12.368149757385254
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -710,18 +677,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.19380521774292,
-                                "time": 0.0
+                                "offset": 1.19380521774292
                             },
                             {
                                 "$schema": "Spin",
@@ -734,8 +700,7 @@
                                     -1.9389259815216064,
                                     10.785225868225098
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -745,18 +710,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.2566370964050293,
-                                "time": 0.0
+                                "offset": 1.2566370964050293
                             },
                             {
                                 "$schema": "Spin",
@@ -769,8 +733,7 @@
                                     1.0000017881393433,
                                     9.11926555633545
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -780,18 +743,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.3194688558578491,
-                                "time": 0.0
+                                "offset": 1.3194688558578491
                             },
                             {
                                 "$schema": "Spin",
@@ -804,8 +766,7 @@
                                     3.938924789428711,
                                     7.382568359375
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -815,18 +776,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.382300853729248,
-                                "time": 0.0
+                                "offset": 1.382300853729248
                             },
                             {
                                 "$schema": "Spin",
@@ -839,8 +799,7 @@
                                     5.755283832550049,
                                     5.5882463455200195
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -850,18 +809,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.4451327323913574,
-                                "time": 0.0
+                                "offset": 1.4451327323913574
                             },
                             {
                                 "$schema": "Spin",
@@ -874,8 +832,7 @@
                                     5.7552809715271,
                                     3.750110387802124
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -885,18 +842,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.5079644918441772,
-                                "time": 0.0
+                                "offset": 1.5079644918441772
                             },
                             {
                                 "$schema": "Spin",
@@ -909,8 +865,7 @@
                                     3.9389243125915527,
                                     1.8824758529663086
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -920,18 +875,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.5707963705062866,
-                                "time": 0.0
+                                "offset": 1.5707963705062866
                             },
                             {
                                 "$schema": "Spin",
@@ -944,8 +898,7 @@
                                     0.9999966025352478,
                                     -1.3113416343912832e-06
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -955,18 +908,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.6336281299591064,
-                                "time": 0.0
+                                "offset": 1.6336281299591064
                             },
                             {
                                 "$schema": "Spin",
@@ -979,8 +931,7 @@
                                     -1.93892240524292,
                                     -1.8824750185012817
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -990,18 +941,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.6964601278305054,
-                                "time": 0.0
+                                "offset": 1.6964601278305054
                             },
                             {
                                 "$schema": "Spin",
@@ -1014,8 +964,7 @@
                                     -3.755284309387207,
                                     -3.7501168251037598
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1025,18 +974,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.7592918872833252,
-                                "time": 0.0
+                                "offset": 1.7592918872833252
                             },
                             {
                                 "$schema": "Spin",
@@ -1049,8 +997,7 @@
                                     -3.7552833557128906,
                                     -5.5882487297058105
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1060,18 +1007,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.8221237659454346,
-                                "time": 0.0
+                                "offset": 1.8221237659454346
                             },
                             {
                                 "$schema": "Spin",
@@ -1084,8 +1030,7 @@
                                     -1.938927173614502,
                                     -7.382567405700684
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1095,18 +1040,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.8849557638168335,
-                                "time": 0.0
+                                "offset": 1.8849557638168335
                             },
                             {
                                 "$schema": "Spin",
@@ -1119,8 +1063,7 @@
                                     1.0000097751617432,
                                     -9.119270324707031
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1130,18 +1073,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 1.9477875232696533,
-                                "time": 0.0
+                                "offset": 1.9477875232696533
                             },
                             {
                                 "$schema": "Spin",
@@ -1154,8 +1096,7 @@
                                     3.938927412033081,
                                     -10.785228729248047
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1165,18 +1106,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.0106194019317627,
-                                "time": 0.0
+                                "offset": 2.0106194019317627
                             },
                             {
                                 "$schema": "Spin",
@@ -1189,8 +1129,7 @@
                                     5.755283355712891,
                                     -12.368154525756836
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1200,18 +1139,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.073451280593872,
-                                "time": 0.0
+                                "offset": 2.073451280593872
                             },
                             {
                                 "$schema": "Spin",
@@ -1224,8 +1162,7 @@
                                     5.755281448364258,
                                     -13.85671615600586
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1235,18 +1172,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.1362831592559814,
-                                "time": 0.0
+                                "offset": 2.1362831592559814
                             },
                             {
                                 "$schema": "Spin",
@@ -1259,8 +1195,7 @@
                                     3.9389219284057617,
                                     -15.24067497253418
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1270,18 +1205,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.1991147994995117,
-                                "time": 0.0
+                                "offset": 2.1991147994995117
                             },
                             {
                                 "$schema": "Spin",
@@ -1294,8 +1228,7 @@
                                     1.0000028610229492,
                                     -16.510986328125
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1305,18 +1238,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.2619469165802,
-                                "time": 0.0
+                                "offset": 2.2619469165802
                             },
                             {
                                 "$schema": "Spin",
@@ -1329,8 +1261,7 @@
                                     -1.9389328956604004,
                                     -17.65991973876953
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1340,18 +1271,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.3247785568237305,
-                                "time": 0.0
+                                "offset": 2.3247785568237305
                             },
                             {
                                 "$schema": "Spin",
@@ -1364,8 +1294,7 @@
                                     -3.755282402038574,
                                     -18.681076049804688
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1375,18 +1304,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.38761043548584,
-                                "time": 0.0
+                                "offset": 2.38761043548584
                             },
                             {
                                 "$schema": "Spin",
@@ -1399,8 +1327,7 @@
                                     -3.755282402038574,
                                     -19.56950569152832
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1410,18 +1337,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.450442314147949,
-                                "time": 0.0
+                                "offset": 2.450442314147949
                             },
                             {
                                 "$schema": "Spin",
@@ -1434,8 +1360,7 @@
                                     -1.9389243125915527,
                                     -20.321701049804688
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1445,18 +1370,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.5132741928100586,
-                                "time": 0.0
+                                "offset": 2.5132741928100586
                             },
                             {
                                 "$schema": "Spin",
@@ -1469,8 +1393,7 @@
                                     1.000003457069397,
                                     -20.935623168945313
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1480,18 +1403,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.576106071472168,
-                                "time": 0.0
+                                "offset": 2.576106071472168
                             },
                             {
                                 "$schema": "Spin",
@@ -1504,8 +1426,7 @@
                                     3.938930034637451,
                                     -21.410694122314453
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1515,18 +1436,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.6389377117156982,
-                                "time": 0.0
+                                "offset": 2.6389377117156982
                             },
                             {
                                 "$schema": "Spin",
@@ -1539,8 +1459,7 @@
                                     5.755281448364258,
                                     -21.747772216796875
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1550,18 +1469,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.7017698287963867,
-                                "time": 0.0
+                                "offset": 2.7017698287963867
                             },
                             {
                                 "$schema": "Spin",
@@ -1574,8 +1492,7 @@
                                     5.755280494689941,
                                     -21.949108123779297
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1585,18 +1502,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.764601707458496,
-                                "time": 0.0
+                                "offset": 2.764601707458496
                             },
                             {
                                 "$schema": "Spin",
@@ -1609,8 +1525,7 @@
                                     3.9389193058013916,
                                     -22.018264770507813
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1620,18 +1535,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.8274333477020264,
-                                "time": 0.0
+                                "offset": 2.8274333477020264
                             },
                             {
                                 "$schema": "Spin",
@@ -1644,8 +1558,7 @@
                                     0.9999996423721313,
                                     -21.96005630493164
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1655,18 +1568,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.890265464782715,
-                                "time": 0.0
+                                "offset": 2.890265464782715
                             },
                             {
                                 "$schema": "Spin",
@@ -1679,8 +1591,7 @@
                                     -1.9389352798461914,
                                     -21.78042984008789
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1690,18 +1601,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 2.953097105026245,
-                                "time": 0.0
+                                "offset": 2.953097105026245
                             },
                             {
                                 "$schema": "Spin",
@@ -1714,8 +1624,7 @@
                                     -3.7552833557128906,
                                     -21.48636817932129
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1725,18 +1634,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.0159289836883545,
-                                "time": 0.0
+                                "offset": 3.0159289836883545
                             },
                             {
                                 "$schema": "Spin",
@@ -1749,8 +1657,7 @@
                                     -3.755281448364258,
                                     -21.085742950439453
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1760,18 +1667,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.078760862350464,
-                                "time": 0.0
+                                "offset": 3.078760862350464
                             },
                             {
                                 "$schema": "Spin",
@@ -1784,8 +1690,7 @@
                                     -1.9389216899871826,
                                     -20.587200164794922
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1795,18 +1700,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.1415927410125732,
-                                "time": 0.0
+                                "offset": 3.1415927410125732
                             },
                             {
                                 "$schema": "Spin",
@@ -1819,8 +1723,7 @@
                                     1.0000067949295044,
                                     -20.0
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1830,18 +1733,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.2044246196746826,
-                                "time": 0.0
+                                "offset": 3.2044246196746826
                             },
                             {
                                 "$schema": "Spin",
@@ -1854,8 +1756,7 @@
                                     3.9389328956604004,
                                     -19.333866119384766
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1865,18 +1766,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.267256259918213,
-                                "time": 0.0
+                                "offset": 3.267256259918213
                             },
                             {
                                 "$schema": "Spin",
@@ -1889,8 +1789,7 @@
                                     5.755279541015625,
                                     -18.598844528198242
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1900,18 +1799,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.3300881385803223,
-                                "time": 0.0
+                                "offset": 3.3300881385803223
                             },
                             {
                                 "$schema": "Spin",
@@ -1924,8 +1822,7 @@
                                     5.755285263061523,
                                     -17.805124282836914
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1935,18 +1832,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.3929202556610107,
-                                "time": 0.0
+                                "offset": 3.3929202556610107
                             },
                             {
                                 "$schema": "Spin",
@@ -1959,8 +1855,7 @@
                                     3.9389166831970215,
                                     -16.962892532348633
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -1970,18 +1865,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.45575213432312,
-                                "time": 0.0
+                                "offset": 3.45575213432312
                             },
                             {
                                 "$schema": "Spin",
@@ -1994,8 +1888,7 @@
                                     0.9999868273735046,
                                     -16.08220100402832
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2005,18 +1898,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.5185837745666504,
-                                "time": 0.0
+                                "offset": 3.5185837745666504
                             },
                             {
                                 "$schema": "Spin",
@@ -2029,8 +1921,7 @@
                                     -1.938922643661499,
                                     -15.172794342041016
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2040,18 +1931,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.5814156532287598,
-                                "time": 0.0
+                                "offset": 3.5814156532287598
                             },
                             {
                                 "$schema": "Spin",
@@ -2064,8 +1954,7 @@
                                     -3.755281448364258,
                                     -14.243974685668945
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2075,18 +1964,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.644247531890869,
-                                "time": 0.0
+                                "offset": 3.644247531890869
                             },
                             {
                                 "$schema": "Spin",
@@ -2099,8 +1987,7 @@
                                     -3.7552833557128906,
                                     -13.304492950439453
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2110,18 +1997,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.7070791721343994,
-                                "time": 0.0
+                                "offset": 3.7070791721343994
                             },
                             {
                                 "$schema": "Spin",
@@ -2134,8 +2020,7 @@
                                     -1.9389266967773438,
                                     -12.362424850463867
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2145,18 +2030,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.769911527633667,
-                                "time": 0.0
+                                "offset": 3.769911527633667
                             },
                             {
                                 "$schema": "Spin",
@@ -2169,8 +2053,7 @@
                                     1.0000195503234863,
                                     -11.42505168914795
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2180,18 +2063,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.8327431678771973,
-                                "time": 0.0
+                                "offset": 3.8327431678771973
                             },
                             {
                                 "$schema": "Spin",
@@ -2204,8 +2086,7 @@
                                     3.93892765045166,
                                     -10.49882698059082
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2215,18 +2096,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.8955750465393066,
-                                "time": 0.0
+                                "offset": 3.8955750465393066
                             },
                             {
                                 "$schema": "Spin",
@@ -2239,8 +2119,7 @@
                                     5.755283355712891,
                                     -9.58923625946045
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2250,18 +2129,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 3.958406925201416,
-                                "time": 0.0
+                                "offset": 3.958406925201416
                             },
                             {
                                 "$schema": "Spin",
@@ -2274,8 +2152,7 @@
                                     5.755281448364258,
                                     -8.7008056640625
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2285,18 +2162,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.021238803863525,
-                                "time": 0.0
+                                "offset": 4.021238803863525
                             },
                             {
                                 "$schema": "Spin",
@@ -2309,8 +2185,7 @@
                                     3.9389216899871826,
                                     -7.837040901184082
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2320,18 +2195,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.084070205688477,
-                                "time": 0.0
+                                "offset": 4.084070205688477
                             },
                             {
                                 "$schema": "Spin",
@@ -2344,8 +2218,7 @@
                                     1.0000121593475342,
                                     -7.000425815582275
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2355,18 +2228,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.146902561187744,
-                                "time": 0.0
+                                "offset": 4.146902561187744
                             },
                             {
                                 "$schema": "Spin",
@@ -2379,8 +2251,7 @@
                                     -1.9389328956604004,
                                     -6.192397594451904
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2390,18 +2261,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.2097344398498535,
-                                "time": 0.0
+                                "offset": 4.2097344398498535
                             },
                             {
                                 "$schema": "Spin",
@@ -2414,8 +2284,7 @@
                                     -3.7552852630615234,
                                     -5.413430690765381
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2425,18 +2294,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.272566318511963,
-                                "time": 0.0
+                                "offset": 4.272566318511963
                             },
                             {
                                 "$schema": "Spin",
@@ -2449,8 +2317,7 @@
                                     -3.755279064178467,
                                     -4.663015842437744
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2460,18 +2327,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.335398197174072,
-                                "time": 0.0
+                                "offset": 4.335398197174072
                             },
                             {
                                 "$schema": "Spin",
@@ -2484,8 +2350,7 @@
                                     -1.9389166831970215,
                                     -3.9397518634796143
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2495,18 +2360,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.398229598999023,
-                                "time": 0.0
+                                "offset": 4.398229598999023
                             },
                             {
                                 "$schema": "Spin",
@@ -2519,8 +2383,7 @@
                                     0.9999942183494568,
                                     -3.241414785385132
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2530,18 +2393,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.461061477661133,
-                                "time": 0.0
+                                "offset": 4.461061477661133
                             },
                             {
                                 "$schema": "Spin",
@@ -2554,8 +2416,7 @@
                                     3.938922643661499,
                                     -2.565030336380005
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2565,18 +2426,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.5238938331604,
-                                "time": 0.0
+                                "offset": 4.5238938331604
                             },
                             {
                                 "$schema": "Spin",
@@ -2589,8 +2449,7 @@
                                     5.7552876472473145,
                                     -1.9069993495941162
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2600,18 +2459,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.58672571182251,
-                                "time": 0.0
+                                "offset": 4.58672571182251
                             },
                             {
                                 "$schema": "Spin",
@@ -2624,8 +2482,7 @@
                                     5.755277156829834,
                                     -1.2632107734680176
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2635,18 +2492,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.649557113647461,
-                                "time": 0.0
+                                "offset": 4.649557113647461
                             },
                             {
                                 "$schema": "Spin",
@@ -2659,8 +2515,7 @@
                                     3.9389266967773438,
                                     -0.6291443705558777
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2670,18 +2525,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.71238899230957,
-                                "time": 0.0
+                                "offset": 4.71238899230957
                             },
                             {
                                 "$schema": "Spin",
@@ -2694,8 +2548,7 @@
                                     0.9999994039535522,
                                     1.1924880993774423e-07
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2705,18 +2558,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.77522087097168,
-                                "time": 0.0
+                                "offset": 4.77522087097168
                             },
                             {
                                 "$schema": "Spin",
@@ -2729,8 +2581,7 @@
                                     -1.9389276504516602,
                                     0.6291446089744568
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2740,18 +2591,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.838052749633789,
-                                "time": 0.0
+                                "offset": 4.838052749633789
                             },
                             {
                                 "$schema": "Spin",
@@ -2764,8 +2614,7 @@
                                     -3.7552833557128906,
                                     1.2632157802581787
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2775,18 +2624,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.900884628295898,
-                                "time": 0.0
+                                "offset": 4.900884628295898
                             },
                             {
                                 "$schema": "Spin",
@@ -2799,8 +2647,7 @@
                                     -3.755281448364258,
                                     1.907004475593567
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2810,18 +2657,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 4.963716506958008,
-                                "time": 0.0
+                                "offset": 4.963716506958008
                             },
                             {
                                 "$schema": "Spin",
@@ -2834,8 +2680,7 @@
                                     -1.9389216899871826,
                                     2.565030574798584
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2845,18 +2690,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.026548385620117,
-                                "time": 0.0
+                                "offset": 5.026548385620117
                             },
                             {
                                 "$schema": "Spin",
@@ -2869,8 +2713,7 @@
                                     1.0000070333480835,
                                     3.241415023803711
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2880,18 +2723,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.089380264282227,
-                                "time": 0.0
+                                "offset": 5.089380264282227
                             },
                             {
                                 "$schema": "Spin",
@@ -2904,8 +2746,7 @@
                                     3.9389331340789795,
                                     3.9397573471069336
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2915,18 +2756,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.152212142944336,
-                                "time": 0.0
+                                "offset": 5.152212142944336
                             },
                             {
                                 "$schema": "Spin",
@@ -2939,8 +2779,7 @@
                                     5.755285739898682,
                                     4.663021564483643
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2950,18 +2789,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.215044021606445,
-                                "time": 0.0
+                                "offset": 5.215044021606445
                             },
                             {
                                 "$schema": "Spin",
@@ -2974,8 +2812,7 @@
                                     5.755279064178467,
                                     5.413435935974121
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -2985,18 +2822,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.2778754234313965,
-                                "time": 0.0
+                                "offset": 5.2778754234313965
                             },
                             {
                                 "$schema": "Spin",
@@ -3009,8 +2845,7 @@
                                     3.938931941986084,
                                     6.1923980712890625
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3020,18 +2855,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.340707778930664,
-                                "time": 0.0
+                                "offset": 5.340707778930664
                             },
                             {
                                 "$schema": "Spin",
@@ -3044,8 +2878,7 @@
                                     0.9999865889549255,
                                     7.000426292419434
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3055,18 +2888,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.403539657592773,
-                                "time": 0.0
+                                "offset": 5.403539657592773
                             },
                             {
                                 "$schema": "Spin",
@@ -3079,8 +2911,7 @@
                                     -1.9389381408691406,
                                     7.837047576904297
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3090,18 +2921,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.466371536254883,
-                                "time": 0.0
+                                "offset": 5.466371536254883
                             },
                             {
                                 "$schema": "Spin",
@@ -3114,8 +2944,7 @@
                                     -3.7552876472473145,
                                     8.700813293457031
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3125,18 +2954,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.529203414916992,
-                                "time": 0.0
+                                "offset": 5.529203414916992
                             },
                             {
                                 "$schema": "Spin",
@@ -3149,8 +2977,7 @@
                                     -3.755277156829834,
                                     9.58924388885498
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3160,18 +2987,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.592034816741943,
-                                "time": 0.0
+                                "offset": 5.592034816741943
                             },
                             {
                                 "$schema": "Spin",
@@ -3184,8 +3010,7 @@
                                     -1.9389266967773438,
                                     10.49882698059082
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3195,18 +3020,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.654866695404053,
-                                "time": 0.0
+                                "offset": 5.654866695404053
                             },
                             {
                                 "$schema": "Spin",
@@ -3219,8 +3043,7 @@
                                     1.0000007152557373,
                                     11.425055503845215
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3230,18 +3053,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.71769905090332,
-                                "time": 0.0
+                                "offset": 5.71769905090332
                             },
                             {
                                 "$schema": "Spin",
@@ -3254,8 +3076,7 @@
                                     3.9389431476593018,
                                     12.36242961883545
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3265,18 +3086,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.78053092956543,
-                                "time": 0.0
+                                "offset": 5.78053092956543
                             },
                             {
                                 "$schema": "Spin",
@@ -3289,8 +3109,7 @@
                                     5.755289554595947,
                                     13.304499626159668
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3300,18 +3119,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.843362331390381,
-                                "time": 0.0
+                                "offset": 5.843362331390381
                             },
                             {
                                 "$schema": "Spin",
@@ -3324,8 +3142,7 @@
                                     5.755281448364258,
                                     14.243974685668945
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3335,18 +3152,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.90619421005249,
-                                "time": 0.0
+                                "offset": 5.90619421005249
                             },
                             {
                                 "$schema": "Spin",
@@ -3359,8 +3175,7 @@
                                     3.9389214515686035,
                                     15.172794342041016
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3370,18 +3185,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 5.9690260887146,
-                                "time": 0.0
+                                "offset": 5.9690260887146
                             },
                             {
                                 "$schema": "Spin",
@@ -3394,8 +3208,7 @@
                                     0.9999929070472717,
                                     16.082204818725586
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3405,18 +3218,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 6.031857967376709,
-                                "time": 0.0
+                                "offset": 6.031857967376709
                             },
                             {
                                 "$schema": "Spin",
@@ -3429,8 +3241,7 @@
                                     -1.9389331340789795,
                                     16.962894439697266
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3440,18 +3251,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 6.094690322875977,
-                                "time": 0.0
+                                "offset": 6.094690322875977
                             },
                             {
                                 "$schema": "Spin",
@@ -3464,8 +3274,7 @@
                                     -3.75529146194458,
                                     17.805130004882813
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3475,18 +3284,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 6.157521724700928,
-                                "time": 0.0
+                                "offset": 6.157521724700928
                             },
                             {
                                 "$schema": "Spin",
@@ -3499,8 +3307,7 @@
                                     -3.755279064178467,
                                     18.598846435546875
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3510,18 +3317,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 6.220353603363037,
-                                "time": 0.0
+                                "offset": 6.220353603363037
                             },
                             {
                                 "$schema": "Spin",
@@ -3534,8 +3340,7 @@
                                     -1.9389164447784424,
                                     19.33386993408203
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"
@@ -3545,18 +3350,17 @@
                             {
                                 "$schema": "Mesh",
                                 "material": {
-                                    "$schema": "MaterialHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "1fe16c8f-6225-f246-9df4-824e34a28913"
                                 },
                                 "mesh": {
-                                    "$schema": "MeshHandle",
+                                    "$schema": "AssetRef",
                                     "uuid": "8b589d73-8596-6a45-962b-4816b33d9ca3"
                                 }
                             },
                             {
                                 "$schema": "Wave",
-                                "offset": 6.2831854820251465,
-                                "time": 0.0
+                                "offset": 6.2831854820251465
                             },
                             {
                                 "$schema": "Spin",
@@ -3569,8 +3373,7 @@
                                     1.0000134706497192,
                                     20.000001907348633
                                 ],
-                                "rotation": null,
-                                "transform": null
+                                "rotation": null
                             }
                         ],
                         "name": "Orbit"

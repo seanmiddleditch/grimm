@@ -3,12 +3,12 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_factory.h"
 
+#include "potato/render/gpu_factory.h"
 #include "potato/runtime/com_ptr.h"
 
 namespace up::d3d12 {
-    // \brief: wrapper for D3D12 descriptor heaps 
+    // \brief: wrapper for D3D12 descriptor heaps
     class DescriptorHeapD3D12 {
     public:
         DescriptorHeapD3D12(ID3D12Device* device, const D3D12_DESCRIPTOR_HEAP_DESC& desc);
@@ -20,7 +20,7 @@ namespace up::d3d12 {
 
         virtual ~DescriptorHeapD3D12();
 
-        D3D12_CPU_DESCRIPTOR_HANDLE get_cpu(uint64 index); 
+        D3D12_CPU_DESCRIPTOR_HANDLE get_cpu(uint64 index);
         D3D12_GPU_DESCRIPTOR_HANDLE get_gpu(uint64 index);
 
         ID3D12DescriptorHeap* heap() const { return _heap.get(); }

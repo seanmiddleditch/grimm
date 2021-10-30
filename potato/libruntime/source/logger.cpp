@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "logger.h"
+#include "potato/runtime/logger.h"
 
 #if UP_PLATFORM_WINDOWS
 #    include "potato/spud/platform_windows.h"

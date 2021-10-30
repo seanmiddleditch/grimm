@@ -3,25 +3,26 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_pipeline_state.h"
 
+#include "potato/render/gpu_pipeline_state.h"
 #include "potato/runtime/com_ptr.h"
-#include "potato/spud/rc.h"
 #include "potato/spud/box.h"
+#include "potato/spud/rc.h"
 
 namespace up::d3d12 {
 
     class CommandListD3D12;
     class DescriptorHeapD3D12;
-    class RootSignatureD3D12; 
+    class RootSignatureD3D12;
 
     class PipelineStateD3D12 : public GpuPipelineState {
     public:
-
         explicit PipelineStateD3D12();
         virtual ~PipelineStateD3D12();
 
-        static box<PipelineStateD3D12> createGraphicsPipelineState(ID3D12Device* device, GpuPipelineStateDesc const& desc);
+        static box<PipelineStateD3D12> createGraphicsPipelineState(
+            ID3D12Device* device,
+            GpuPipelineStateDesc const& desc);
 
         bool create(ID3D12Device* device, GpuPipelineStateDesc const& desc);
 
@@ -32,7 +33,11 @@ namespace up::d3d12 {
         }
 
         void bindPipeline(ID3D12GraphicsCommandList* cmd);
-        void bindTexture(ID3D12GraphicsCommandList* cmd, uint32 offset, D3D12_GPU_DESCRIPTOR_HANDLE srv, D3D12_GPU_DESCRIPTOR_HANDLE sampler);
+        void bindTexture(
+            ID3D12GraphicsCommandList* cmd,
+            uint32 offset,
+            D3D12_GPU_DESCRIPTOR_HANDLE srv,
+            D3D12_GPU_DESCRIPTOR_HANDLE sampler);
         void bindConstBuffer(ID3D12GraphicsCommandList* cmd, uint32 offset, D3D12_GPU_VIRTUAL_ADDRESS cbv);
         void bindConstValues(ID3D12GraphicsCommandList* cmd, uint32 size, float* values);
 
@@ -41,7 +46,6 @@ namespace up::d3d12 {
         DescriptorHeapD3D12* descHeap() const { return _srvHeap.get(); }
 
     private:
-
         ID3DPipelineStatePtr _state;
         rc<RootSignatureD3D12> _signature;
 

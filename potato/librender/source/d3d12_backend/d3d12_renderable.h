@@ -3,15 +3,15 @@
 #pragma once
 
 #include "d3d12_platform.h"
-#include "gpu_renderable.h"
 
+#include "potato/render/gpu_renderable.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/box.h"
 
 namespace up {
     class IRenderable;
-    class RenderContext; 
-};
+    class RenderContext;
+}; // namespace up
 
 namespace up::d3d12 {
     class ContextD3D12;
@@ -24,7 +24,7 @@ namespace up::d3d12 {
         RenderableD3D12(RenderableD3D12&&) = delete;
         RenderableD3D12& operator=(RenderableD3D12&&) = delete;
 
-        bool create(); 
+        bool create();
         void onRender(RenderContext& ctx);
 
     private:
