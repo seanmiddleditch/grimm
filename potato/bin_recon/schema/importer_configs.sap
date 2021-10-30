@@ -1,0 +1,14 @@
+module importer_configs;
+
+import common;
+
+[cxximport("up::ImporterConfig", "importer.h")]
+using ImporterConfig;
+
+struct JsonImporterConfig : ImporterConfig {
+    string type;
+}
+
+struct CopyImporterConfig : ImporterConfig {
+    string type;
+}

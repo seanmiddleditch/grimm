@@ -1,8 +1,6 @@
-include(config.cmake)
-
 FetchContent_Populate(nfd)
 
-add_library(nfd STATIC)
+add_library(nfd STATIC EXCLUDE_FROM_ALL)
 target_sources(nfd PRIVATE
     "${nfd_SOURCE_DIR}/src/nfd_common.c"
     "$<$<PLATFORM_ID:Linux>:${nfd_SOURCE_DIR}/src/nfd_zenity.c>"

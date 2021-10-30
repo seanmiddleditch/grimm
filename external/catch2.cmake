@@ -1,5 +1,3 @@
-include(config.cmake)
-
 FetchContent_Populate(catch2)
 set(CATCH_ENABLE_WERROR OFF CACHE BOOL "disable catch2 -Werror mode")
 set(CATCH_INSTALL_DOCS OFF CACHE BOOL "disable catch2 docs")

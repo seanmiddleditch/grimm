@@ -1,5 +1,3 @@
-include(config.cmake)
-
 FetchContent_Populate(json)
 set(JSON_MultipleHeaders ON CACHE INTERNAL "use multiple json header build")
 set(JSON_BuildTests OFF CACHE INTERNAL "disable json tests")

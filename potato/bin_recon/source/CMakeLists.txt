@@ -1,0 +1,26 @@
+target_sources(potato_recon PRIVATE
+    "asset_database.cpp"
+    "asset_database.h"
+    "file_hash_cache.cpp"
+    "file_hash_cache.h"
+    "importer.cpp"
+    "importer.h"
+    "importer_context.cpp"
+    "importer_context.h"
+    "importer_factory.cpp"
+    "importer_factory.h"
+    "main.cpp"
+    "meta_file.cpp"
+    "meta_file.h"
+    "posql.h"
+    "posql.cpp"
+    "recon_app.cpp"
+    "recon_app.h"
+    "recon_config.cpp"
+    "recon_config.h"
+    "recon_log_sink.cpp"
+    "recon_log_sink.h"
+    "recon_queue.h"
+)
+
+add_subdirectory(importers)

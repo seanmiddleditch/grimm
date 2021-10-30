@@ -1,11 +1,9 @@
-include(config.cmake)
-
 ## Upstream flatbuffers CMake file is a mess and has (impossible to fully disable)
 ## warnings with all modern versions of CMake.
 
 FetchContent_Populate(flatbuffers)
 
-add_library(flatbuffers_flatlib STATIC)
+add_library(flatbuffers_flatlib STATIC EXCLUDE_FROM_ALL)
 add_library(flatbuffers::flatlib ALIAS flatbuffers_flatlib)
 target_include_directories(flatbuffers_flatlib
     PUBLIC ${flatbuffers_SOURCE_DIR}/include

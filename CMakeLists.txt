@@ -30,7 +30,6 @@ include(Dart)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(FETCHCONTENT_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps" CACHE PATH "Dependency cache directory")
 set(UP_TEST_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -45,9 +44,11 @@ endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
 include(GNUInstallDirs)
 
+include(depends.cmake)
+
 add_subdirectory(external)
-add_subdirectory(source)
-add_subdirectory(documentation)
+add_subdirectory(potato)
+add_subdirectory(docs)
 
 configure_file(
     scripts/config/tasks.vs.json.in
@@ -71,7 +72,7 @@ configure_file(
 )
 
 add_custom_target(potato_convert_all
-    COMMAND potato_recon -project "${CMAKE_CURRENT_SOURCE_DIR}/resources/sample.popr" -config "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/recon.config.json"
+    COMMAND potato_recon -path "${CMAKE_CURRENT_SOURCE_DIR}/resources" -config "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/recon.config.json"
     DEPENDS potato_recon
     COMMAND echo "Conversion complete!"
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
