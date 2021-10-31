@@ -111,7 +111,10 @@ namespace up {
     template <typename... Components>
     EntityId EntityManager::createEntity(identity_t<Components>&&... components) {
         auto const entityId = createEntity();
-        int const _[] = {(addComponent(entityId, std::move(components)), 0)...};
+        // invoke addComponent for each variadic argument given to us;
+        // this is the best way I can currently think to do this, the return
+        // values are unused
+        [[maybe_unused]] int const _[] = {(addComponent(entityId, std::move(components)), 0)...};
         return entityId;
     }
 
