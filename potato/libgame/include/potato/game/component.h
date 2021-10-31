@@ -21,8 +21,8 @@ namespace up {
 
     class ComponentCursor {
     public:
-        EntityId entityId = EntityId::None;
-        void* componentData = nullptr;
+        [[nodiscard]] EntityId entityId() const noexcept { return _entityId; }
+        [[nodiscard]] void* componentData() const noexcept { return _componentData; }
 
         [[nodiscard]] inline bool next() noexcept;
 
@@ -30,6 +30,8 @@ namespace up {
         explicit ComponentCursor(ComponentStorage& storage) : _storage(&storage) { }
 
         ComponentStorage* _storage = nullptr;
+        EntityId _entityId = EntityId::None;
+        void* _componentData = nullptr;
         uint32 _index = 0;
 
         friend ComponentStorage;
@@ -109,8 +111,8 @@ namespace up {
             uint32 const index = _index++;
             EntityId const entityId = _storage->_entities[index];
             if (entityId != EntityId::None) {
-                this->entityId = entityId;
-                this->componentData = _storage->getByIndexUnsafe(index);
+                _entityId = entityId;
+                _componentData = _storage->getByIndexUnsafe(index);
                 return true;
             }
         }
@@ -164,7 +166,7 @@ namespace up {
             return index;
         }
 
-        uint32 const index = static_cast<uint32>(_entities.size());
+        auto const index = static_cast<uint32>(_entities.size());
         _entities.push_back(entityId);
         return index;
     }

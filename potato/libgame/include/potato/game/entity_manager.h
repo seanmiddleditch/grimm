@@ -162,16 +162,16 @@ namespace up {
 
         auto cursor = componentStorages[0]->enumerateUnsafe();
         while (cursor.next()) {
-            componentData[0] = cursor.componentData;
+            componentData[0] = cursor.componentData();
 
             for (size_t index = 1; index != sizeof...(Components); ++index) {
-                componentData[index] = componentStorages[index]->getUnsafe(cursor.entityId);
+                componentData[index] = componentStorages[index]->getUnsafe(cursor.entityId());
                 if (componentData[index] == nullptr) {
                     goto skip;
                 }
             }
 
-            callback(cursor.entityId, *(static_cast<Components*>(componentData[Indices]))...);
+            callback(cursor.entityId(), *(static_cast<Components*>(componentData[Indices]))...);
 skip:;
         }
     }
