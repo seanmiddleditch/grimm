@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/spud/fixed_string.h"
-#include "potato/spud/string_view.h"
 #include "potato/spud/hash.h"
+#include "potato/spud/string_view.h"
 
 #include <catch2/catch.hpp>
 #include <iostream>

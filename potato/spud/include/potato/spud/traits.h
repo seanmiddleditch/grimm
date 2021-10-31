@@ -24,7 +24,7 @@ namespace up {
             using type = T;
         };
     } // namespace _detail
-    
+
     template <typename T>
     using identity_t = T;
 
