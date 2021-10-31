@@ -12,8 +12,9 @@ namespace up {
     namespace _detail::nameof {
 #if defined(__clang__) || defined(__GNUC__)
         consteval char const* find_equal_reverse(char const* str) {
-            while (*str != '=')
+            while (*str != '=') {
                 --str;
+            }
             return str;
         }
 #elif defined(_MSC_VER)
