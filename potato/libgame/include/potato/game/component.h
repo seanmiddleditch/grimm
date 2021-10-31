@@ -39,10 +39,10 @@ namespace up {
     public:
         virtual ~ComponentStorage() = default;
 
-        constexpr ComponentId componentId() const noexcept { return _id; }
-        zstring_view debugName() const noexcept { return _debugName; }
+        [[nodiscard]] constexpr ComponentId componentId() const noexcept { return _id; }
+        [[nodiscard]] virtual zstring_view debugName() const noexcept = 0;
 
-        size_t size() const noexcept { return _size; }
+        [[nodiscard]] size_t size() const noexcept { return _size; }
 
         inline void* add(EntityId entityId);
         inline bool remove(EntityId entityId);
@@ -55,7 +55,7 @@ namespace up {
     protected:
         static constexpr uint32 InvalidIndex = uint32(-1);
 
-        explicit ComponentStorage(ComponentId id, zstring_view debugName) noexcept : _id(id), _debugName(debugName) { }
+        explicit ComponentStorage(ComponentId id) noexcept : _id(id) { }
 
         virtual void* allocateComponentAt(uint32 index) = 0;
         virtual void* getByIndexUnsafe(uint32 index) noexcept = 0;
@@ -69,7 +69,6 @@ namespace up {
         hash_map<EntityId, uint32> _map;
         size_t _size = 0;
         ComponentId _id;
-        zstring_view _debugName;
 
         friend ComponentCursor;
     };
@@ -78,10 +77,12 @@ namespace up {
     class TypedComponentStorage final : public ComponentStorage {
     public:
         TypedComponentStorage() noexcept
-            : _name(nameof<ComponentT>())
-            , ComponentStorage(makeComponentId<ComponentT>(), _name.c_str()) { }
+            : ComponentStorage(makeComponentId<ComponentT>())
+            , _name(nameof<ComponentT>()) { }
 
     private:
+        zstring_view debugName() const noexcept override { return _name.c_str(); }
+
         void* allocateComponentAt(uint32 index) override;
         void* getByIndexUnsafe(uint32 index) noexcept override;
 
