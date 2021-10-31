@@ -24,7 +24,7 @@ namespace up {
         EntityId entityId = EntityId::None;
         void* componentData = nullptr;
 
-        inline [[nodiscard]] bool next() noexcept;
+        [[nodiscard]] inline bool next() noexcept;
 
     private:
         explicit ComponentCursor(ComponentStorage& storage) : _storage(&storage) { }
@@ -46,11 +46,11 @@ namespace up {
 
         inline void* add(EntityId entityId);
         inline bool remove(EntityId entityId);
-        inline [[nodiscard]] bool contains(EntityId entityId) const noexcept;
+        [[nodiscard]] inline bool contains(EntityId entityId) const noexcept;
 
-        inline [[nodiscard]] void* getUnsafe(EntityId entityId) noexcept;
+        [[nodiscard]] inline void* getUnsafe(EntityId entityId) noexcept;
 
-        inline [[nodiscard]] ComponentCursor enumerateUnsafe() noexcept;
+        [[nodiscard]] inline ComponentCursor enumerateUnsafe() noexcept;
 
     protected:
         static constexpr uint32 InvalidIndex = uint32(-1);
@@ -61,8 +61,8 @@ namespace up {
         virtual void* getByIndexUnsafe(uint32 index) noexcept = 0;
 
     private:
-        inline [[nodiscard]] uint32 allocateIndex(EntityId entityId);
-        inline [[nodiscard]] uint32 indexOf(EntityId entityId) const noexcept;
+        [[nodiscard]] inline uint32 allocateIndex(EntityId entityId);
+        [[nodiscard]] inline uint32 indexOf(EntityId entityId) const noexcept;
 
         vector<EntityId> _entities;
         vector<uint32> _free;
