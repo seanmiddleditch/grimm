@@ -60,12 +60,14 @@ TEST_CASE("potato.ecs.EntityManager", "[potato][ecs]") {
         entities.createEntity(Test1{'b'});
         EntityId bar = entities.createEntity(Test1{'c'});
         entities.createEntity(Test1{'d'});
-        EntityId last = entities.createEntity(Test1{'e'});
+        entities.createEntity(Test1{'e'});
 
-        auto* fooTest = entities.getComponentSlow<Test1>(foo);
-        REQUIRE(fooTest != nullptr);
+        {
+            auto* const fooTest = entities.getComponentSlow<Test1>(foo);
+            REQUIRE(fooTest != nullptr);
+        }
 
-        // delete some entities (not the last one!)
+        // delete some entities
         //
         entities.destroyEntity(foo);
         entities.destroyEntity(bar);
@@ -74,19 +76,6 @@ TEST_CASE("potato.ecs.EntityManager", "[potato][ecs]") {
         //
         CHECK(entities.getComponentSlow<Test1>(foo) == nullptr);
         CHECK(entities.getComponentSlow<Test1>(bar) == nullptr);
-
-        // overwrite emptied locations
-        //
-        entities.createEntity(Test1{'x'});
-        entities.createEntity(Test1{'x'});
-
-        // ensure that the first deleted entity was overwritten properly
-        //
-        CHECK(fooTest->a == 'e');
-
-        // ensure that the last entity was moved properly
-        //
-        CHECK(entities.getComponentSlow<Test1>(last)->a == 'e');
     }
 
     SECTION("remove components") {
