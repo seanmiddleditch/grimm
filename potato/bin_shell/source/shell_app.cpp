@@ -268,14 +268,6 @@ int up::shell::ShellApp::initialize() {
 
     _imguiBackend.createResources(*_device);
 
-    //_universe->registerComponent<components::Transform>("Transform");
-    //_universe->registerComponent<components::Mesh>("Mesh");
-    //_universe->registerComponent<components::Wave>("Wave");
-    //_universe->registerComponent<components::Spin>("Spin");
-    //_universe->registerComponent<components::Ding>("Ding");
-    //_universe->registerComponent<components::Test>("Test");
-    //_universe->registerComponent<components::Body>("Body");
-
     _sceneDatabase.registerComponent<TransformEditComponent>();
     _sceneDatabase.registerComponent<MeshEditComponent>();
     _sceneDatabase.registerComponent<WaveEditComponent>();
