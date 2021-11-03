@@ -21,7 +21,6 @@
         "CXXFLAGS": "/FC /Zi"
       },
       "cacheVariables": {
-        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/windows",
         "BUILD_SHARED_LIBS": true,
         "CMAKE_CXX_FLAGS_DEBUG": "$env{CXXFLAGS} /Od /Ob1"
       },
@@ -46,9 +45,6 @@
         "CXX": "g++-11",
         "CC": "gcc-11"
       },
-      "cacheVariables": {
-        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/linux"
-      },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
           "hostOS": "Linux",
@@ -64,9 +60,6 @@
         "CXXFLAGS": "-stdlib=libc++ -fdiagnostics-absolute-paths -mssse3 -Wno-deprecated-volatile -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
         "CXX": "clang++-12",
         "CC": "clang-12"
-      },
-      "cacheVariables": {
-        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/linux"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
