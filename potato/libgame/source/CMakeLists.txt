@@ -1,9 +1,7 @@
 target_sources(potato_libgame PRIVATE
-    "entity_id.h"
-    "shared_context.cpp"
+    "entity_manager.cpp"
     "space.cpp"
-    "universe.cpp"
-    "world.cpp"
 )
 
+add_subdirectory(components)
 add_subdirectory(systems)

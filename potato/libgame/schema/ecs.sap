@@ -1,4 +1,0 @@
-module ecs;
-
-[cxxnamespace("up::components")]
-use component : struct;

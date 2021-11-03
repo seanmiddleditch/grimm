@@ -3,8 +3,8 @@
 #pragma once
 
 #include "_export.h"
+#include "entity_manager.h"
 #include "system.h"
-#include "world.h"
 
 #include "potato/spud/box.h"
 #include "potato/spud/vector.h"
@@ -12,7 +12,7 @@
 namespace up {
     class Space {
     public:
-        UP_GAME_API Space(box<World> world);
+        UP_GAME_API Space();
         UP_GAME_API virtual ~Space();
 
         UP_GAME_API void start();
@@ -30,12 +30,12 @@ namespace up {
             return *_systems.push_back(new_box<SystemT>(*this, std::forward<Args>(args)...));
         }
 
-        World& world() noexcept { return *_world; }
+        EntityManager& entities() noexcept { return _entities; }
 
     private:
         enum class State { New, Starting, Started, Stopped };
 
-        box<World> _world;
+        EntityManager _entities;
         vector<box<System>> _systems;
         State _state = State::New;
     };

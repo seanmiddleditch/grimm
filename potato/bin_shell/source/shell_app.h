@@ -33,10 +33,8 @@ namespace up {
     class GpuSwapChain;
     class GpuTexture;
     class Scene;
-    class World;
     class Camera;
     class CameraController;
-    class Universe;
     class Project;
     class UUID;
 } // namespace up
@@ -96,7 +94,6 @@ namespace up::shell {
         rc<GpuSwapChain> _swapChain;
         box<Renderer> _renderer;
         box<RenderCamera> _uiRenderCamera;
-        box<Universe> _universe;
         box<AudioEngine> _audio;
         box<Project> _project;
         SceneDatabase _sceneDatabase;

@@ -1,14 +1,7 @@
 add_executable(potato_libgame_test)
 target_sources(potato_libgame_test PRIVATE
     "main.cpp"
-    "test_query.cpp"
-    "test_world.cpp"
-)
-
-up_compile_sap(potato_libgame_test
-    PRIVATE
-    SCHEMAS
-        test_components.sap
+    "test_entity_manager.cpp"
 )
 
 up_set_common_properties(potato_libgame_test)

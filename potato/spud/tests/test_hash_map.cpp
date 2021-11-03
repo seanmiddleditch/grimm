@@ -6,6 +6,14 @@
 #include <catch2/catch.hpp>
 
 namespace {
+    struct move_only {
+        move_only() = default;
+        move_only(move_only const&) = delete;
+        move_only(move_only&&) = default;
+        move_only& operator=(move_only const&) = delete;
+        move_only& operator=(move_only&&) = default;
+    };
+
     template <typename T>
     struct counted {
         counted(int& counter, T&& value) : _counter(&counter), _value(value) { ++*_counter; }
@@ -126,5 +134,14 @@ TEST_CASE("potato.spud.hash_map", "[potato][spud]") {
         }
 
         CHECK(values.empty());
+    }
+
+    SECTION("move-only") {
+        hash_map<int, move_only> values;
+        values.insert(0, move_only{});
+        values.insert(1, move_only{});
+        values.insert(0, move_only{});
+        values.erase(1);
+        values.clear();
     }
 }

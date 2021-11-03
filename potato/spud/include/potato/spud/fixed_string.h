@@ -69,7 +69,7 @@ namespace up {
     }
 
     template <typename HashAlgorithm, size_t Size>
-    void hash_append(HashAlgorithm& hasher, fixed_string<Size> const& string) {
-        hasher(string.data(), string.size());
+    constexpr void hash_append(HashAlgorithm& hasher, fixed_string<Size> const& string) noexcept {
+        hasher.append_bytes(string.data(), string.size());
     }
 } // namespace up

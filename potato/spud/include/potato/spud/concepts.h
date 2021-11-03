@@ -9,8 +9,8 @@ namespace up {
     concept same_as = std::is_same_v<T, U>;
 
     template <typename T, typename U>
-    concept convertible_to = requires(T const& t) {
-        static_cast<U>(t);
+    concept convertible_to = requires {
+        static_cast<U>(std::declval<T>());
     };
 
     template <typename T, typename U>

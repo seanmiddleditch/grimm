@@ -30,13 +30,13 @@ namespace up {
             Value value;
         };
 
-        template <typename Key, typename Value>
+        template <typename Key, typename Value, typename Backing = key_value<Key, Value>>
         class kv_proxy {
         public:
             using value_type = key_value<Key const&, Value&>;
 
             constexpr kv_proxy() noexcept = default;
-            constexpr explicit kv_proxy(key_value<Key, Value>* items, size_t index) noexcept
+            constexpr explicit kv_proxy(Backing* items, size_t index) noexcept
                 : _engaged(index != hash_table::constants::SENTINEL) {
                 if (_engaged) {
                     new (&_data.proxy) value_type{items[index].key, items[index].value};
@@ -94,6 +94,8 @@ namespace up {
     ///
     template <typename Key, typename Value, typename Hash = uhash<>, typename Equality = equality>
     class hash_map {
+        using item_type = _detail::hash_map::key_value<Key, Value>;
+
     public:
         using key_type = Key;
         using mapped_type = Value;
@@ -101,11 +103,11 @@ namespace up {
         using size_type = size_t;
         using hash_type = hash_result_t<Hash, Key>;
 
-        struct proxy_type : _detail::hash_map::kv_proxy<Key, Value> {
-            using _detail::hash_map::kv_proxy<Key, Value>::kv_proxy;
+        struct proxy_type : _detail::hash_map::kv_proxy<Key, Value, item_type> {
+            using _detail::hash_map::kv_proxy<Key, Value, item_type>::kv_proxy;
         };
-        struct const_proxy_type : _detail::hash_map::kv_proxy<Key, Value const> {
-            using _detail::hash_map::kv_proxy<Key, Value const>::kv_proxy;
+        struct const_proxy_type : _detail::hash_map::kv_proxy<Key, Value const, item_type> {
+            using _detail::hash_map::kv_proxy<Key, Value const, item_type>::kv_proxy;
         };
 
         constexpr hash_map() noexcept = default;
@@ -153,6 +155,12 @@ namespace up {
             return proxy_type{_items, index};
         }
 
+        template <convertible_to<Key> FindKey = Key>
+        [[nodiscard]] constexpr const_proxy_type find(FindKey const& key) const noexcept {
+            auto const index = _find(key, Hash{}(key));
+            return const_proxy_type{_items, index};
+        }
+
         template <convertible_to<Key> InsertKey = Key, convertible_to<Value> InsertValue = Value>
         constexpr bool insert(InsertKey&& key, InsertValue&& value);
 
@@ -160,7 +168,6 @@ namespace up {
         constexpr bool erase(EraseKey const& key) noexcept;
 
     private:
-        using item_type = _detail::hash_map::key_value<Key, Value>;
         using control_type = int8;
         using match_ops = _detail::hash_table::match_ops_sse;
         using memory_ops = _detail::hash_table::memory_ops<item_type>;
@@ -226,7 +233,7 @@ namespace up {
             _grow();
         }
 
-        return _insert(key, value, hash);
+        return _insert(std::forward<InsertKey>(key), std::forward<InsertValue>(value), hash);
     }
 
     template <typename Key, typename Value, typename Hash, typename Equality>

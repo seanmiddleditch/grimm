@@ -19,5 +19,4 @@ Important Pages
 - [Getting Started](getting-started.md)
 - [Coding Style](coding-style.md)
 - [Tracy](tracy.md)
-- [Architecutre: Entity Component System](ecs.md)
 - [License](license.md)

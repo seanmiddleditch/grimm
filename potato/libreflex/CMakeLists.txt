@@ -24,7 +24,7 @@ target_sources(potato_libreflex PRIVATE
     "include/potato/reflex/type.h"
     "include/potato/reflex/serialize.h"
     "source/serialize.cpp"
-)
+ "include/potato/reflex/typeid.h")
 
 target_link_libraries(potato_libreflex
     PUBLIC

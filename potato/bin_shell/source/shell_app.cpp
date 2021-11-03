@@ -13,10 +13,7 @@
 #include "potato/editor/imgui_backend.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/editor/project.h"
-#include "potato/game/query.h"
 #include "potato/game/space.h"
-#include "potato/game/universe.h"
-#include "potato/game/world.h"
 #include "potato/render/camera.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
@@ -29,7 +26,6 @@
 #include "potato/render/material.h"
 #include "potato/render/renderer.h"
 #include "potato/render/shader.h"
-#include "potato/schema/components_schema.h"
 #include "potato/schema/recon_messages_schema.h"
 #include "potato/schema/scene_schema.h"
 #include "potato/shell/camera.h"
@@ -65,7 +61,7 @@
 #    undef Success
 #endif
 
-up::shell::ShellApp::ShellApp() : _universe(new_box<Universe>()), _editors(_actions), _logger("shell") { }
+up::shell::ShellApp::ShellApp() : _editors(_actions), _logger("shell") { }
 
 up::shell::ShellApp::~ShellApp() {
     _imguiBackend.releaseResources();
@@ -272,16 +268,6 @@ int up::shell::ShellApp::initialize() {
 
     _imguiBackend.createResources(*_device);
 
-    _universe = new_box<Universe>();
-
-    _universe->registerComponent<components::Transform>("Transform");
-    _universe->registerComponent<components::Mesh>("Mesh");
-    _universe->registerComponent<components::Wave>("Wave");
-    _universe->registerComponent<components::Spin>("Spin");
-    _universe->registerComponent<components::Ding>("Ding");
-    _universe->registerComponent<components::Test>("Test");
-    _universe->registerComponent<components::Body>("Body");
-
     _sceneDatabase.registerComponent<TransformEditComponent>();
     _sceneDatabase.registerComponent<MeshEditComponent>();
     _sceneDatabase.registerComponent<WaveEditComponent>();
@@ -294,8 +280,8 @@ int up::shell::ShellApp::initialize() {
             _openAssetEditor(uuid);
         }));
     _editorFactories.push_back(
-        SceneEditor::createFactory(*_universe, _sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
-            auto space = new_box<Space>(_universe->createWorld());
+        SceneEditor::createFactory(_sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
+            auto space = new_box<Space>();
             Space::addDemoSystem(*space, *_audio);
             doc.syncGame(*space);
             space->start();

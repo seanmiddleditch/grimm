@@ -9,6 +9,7 @@
 #include "potato/shell/camera.h"
 #include "potato/shell/camera_controller.h"
 #include "potato/shell/editor.h"
+#include "potato/spud/hash.h"
 
 namespace up {
     class Space;

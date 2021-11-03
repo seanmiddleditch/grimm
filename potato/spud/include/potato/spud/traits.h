@@ -25,6 +25,9 @@ namespace up {
         };
     } // namespace _detail
 
+    template <typename T>
+    using identity_t = T;
+
     template <typename, typename = void>
     constexpr bool is_type_complete_v = false;
 
