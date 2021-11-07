@@ -7,35 +7,61 @@
 #include "potato/game/system.h"
 
 #include <glm/gtx/rotate_vector.hpp>
+#include <btBulletDynamicsCommon.h>
 
 namespace up {
     namespace {
         class PhysicsSystem final : public System {
         public:
-            using System::System;
+            explicit PhysicsSystem(Space& space);
 
             void update(float) override;
 
         private:
-            glm::vec3 _gravity = {0, -9, 0};
+            btDefaultCollisionConfiguration _config;
+            btCollisionDispatcher _dispatcher;
+            btDbvtBroadphase _broadphase;
+            btSequentialImpulseConstraintSolver _solver;
+            btDiscreteDynamicsWorld _world;
+            float _physicsTickRate = 1.f / 60.f;
         };
     } // namespace
 
     void registerPhysicsSystem(Space& space) { space.addSystem<PhysicsSystem>(); }
 
-    void PhysicsSystem::update(float deltaTime) {
-        using namespace component;
+    PhysicsSystem::PhysicsSystem(Space& space)
+        : System(space)
+        , _dispatcher(&_config)
+        , _world(&_dispatcher, &_broadphase, &_solver, &_config) { }
 
-        space().entities().select<Transform, RigidBody>([this, deltaTime](EntityId, Transform& trans, RigidBody& body) {
-            if (trans.position.y > 0) {
-                body.linearVelocity += _gravity * deltaTime;
-                trans.position += body.linearVelocity * deltaTime;
+    void PhysicsSystem::update(float deltaTime) {
+        // HACK
+        //  initialize Bullet physics bodies
+        //  TODO: efficiently query new components or teleports; apply initial rotation
+        space().entities().select<component::Transform const, component::RigidBody>(
+            [&](EntityId, component::Transform const& trans, component::RigidBody& body) {
+                if (!body.body->isInWorld()) {
+                    _world.addRigidBody(body.body.get());
+
+                    btTransform& worldTrans = body.body->getWorldTransform();
+                    worldTrans.setOrigin({trans.position.x, trans.position.y, trans.position.z});
+                }
+            });
+
+        _world.stepSimulation(deltaTime, 12, _physicsTickRate);
+
+        // Apply physics motion to transforms
+        //  TODO: use btMotionState; apply rotation updates
+        space().entities().select<component::Transform, component::RigidBody const>(
+            [&](EntityId, component::Transform& trans, component::RigidBody const& body) {
+                btTransform const& worldTrans = body.body->getWorldTransform();
+                btVector3 const origin = worldTrans.getOrigin();
+                trans.position = {origin.x(), origin.y(), origin.z()};
 
                 if (trans.position.y <= 0.f) {
                     trans.position.y = 0.f;
-                    body.linearVelocity.y = 0.f;
+                    body.body->setLinearVelocity({0, 0, 0});
                 }
-            }
-        });
+            });
     }
 } // namespace up

@@ -17,6 +17,7 @@ target_link_libraries(potato_libgame
         potato::libreflex
         potato::librender
         potato::spud
+        libbullet3
         glm
 )
 

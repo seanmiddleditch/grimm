@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include <glm/vec3.hpp>
+#include "potato/spud/box.h"
+
+#include <BulletDynamics/Dynamics/btRigidBody.h>
 
 namespace up::component {
     struct RigidBody {
-        glm::vec3 linearVelocity;
+        box<btRigidBody> body;
     };
 } // namespace up::component
