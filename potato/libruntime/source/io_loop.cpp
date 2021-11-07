@@ -47,7 +47,7 @@ up::IOEvent::IOEvent(uv_loop_t* loop, Callback callback) {
 }
 
 void up::IOEvent::signal() {
-    UP_ASSERT(_state != nullptr);
+    UP_GUARD_VOID(_state != nullptr);
 
     uv_async_send(&_state->handle);
 }
@@ -85,8 +85,8 @@ up::IOStream::IOStream(uv_loop_t* loop, int fd) {
 }
 
 void up::IOStream::startRead(ReadCallback callback) {
-    UP_ASSERT(_state != nullptr);
-    UP_ASSERT(callback);
+    UP_GUARD_VOID(_state != nullptr);
+    UP_GUARD_VOID(callback);
 
     _state->readCallback = move(callback);
 
@@ -116,19 +116,19 @@ void up::IOStream::startRead(ReadCallback callback) {
 }
 
 void up::IOStream::stopRead() {
-    UP_ASSERT(_state != nullptr);
+    UP_GUARD_VOID(_state != nullptr);
 
     uv_read_stop(&_state->handle.stream);
 }
 
 void up::IOStream::onDisconnect(DisconnectCallback callback) {
-    UP_ASSERT(_state != nullptr);
+    UP_GUARD_VOID(_state != nullptr);
 
     _state->disconnectCallback = move(callback);
 }
 
 void up::IOStream::write(view<char> bytes) {
-    UP_ASSERT(_state != nullptr);
+    UP_GUARD_VOID(_state != nullptr);
 
     if (bytes.empty()) {
         return;
@@ -324,7 +324,7 @@ up::IOProcess up::IOLoop::createProcess() {
 }
 
 bool up::IOLoop::run(IORun run) {
-    UP_ASSERT(_state != nullptr);
+    UP_GUARD(_state != nullptr, false);
     return uv_run(
                &_state->loop,
                run == IORun::Poll          ? UV_RUN_NOWAIT
@@ -333,7 +333,7 @@ bool up::IOLoop::run(IORun run) {
 }
 
 void up::IOLoop::stop() noexcept {
-    UP_ASSERT(_state != nullptr);
+    UP_GUARD_VOID(_state != nullptr);
     uv_stop(&_state->loop);
 }
 

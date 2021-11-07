@@ -18,7 +18,7 @@ namespace up {
     Space::~Space() = default;
 
     void Space::start() {
-        UP_ASSERT(_state == State::New);
+        UP_GUARD_VOID(_state == State::New);
         _state = State::Starting;
 
         for (auto& system : _systems) {
@@ -29,7 +29,7 @@ namespace up {
     }
 
     void Space::stop() {
-        UP_ASSERT(_state == State::Started);
+        UP_GUARD_VOID(_state == State::Started);
         _state = State::Stopped;
 
         // stop in reverse order, to handle any hidden dependencies
@@ -39,14 +39,14 @@ namespace up {
     }
 
     void Space::update(float deltaTime) {
-        UP_ASSERT(_state == State::Started);
+        UP_GUARD_VOID(_state == State::Started);
         for (auto& system : _systems) {
             system->update(deltaTime);
         }
     }
 
     void Space::render(RenderContext& ctx) {
-        UP_ASSERT(_state == State::Started);
+        UP_GUARD_VOID(_state == State::Started);
         for (auto& system : _systems) {
             system->render(ctx);
         }

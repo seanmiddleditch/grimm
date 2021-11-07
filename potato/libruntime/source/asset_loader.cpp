@@ -85,7 +85,7 @@ auto up::AssetLoader::loadAssetSync(AssetId id, string_view type) -> UntypedAsse
 }
 
 void up::AssetLoader::registerBackend(box<AssetLoaderBackend> backend) {
-    UP_ASSERT(backend != nullptr);
+    UP_GUARD_VOID(backend != nullptr);
 
     _backends.push_back(std::move(backend));
 }

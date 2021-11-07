@@ -27,7 +27,7 @@ up::string_view up::path::extension(string_view path) noexcept {
 
 // extension must include the dot, e.g. .txt
 auto up::path::changeExtension(string_view path, string_view extension) -> string {
-    UP_ASSERT(extension.empty() || extension.front() == '.');
+    UP_GUARD(extension.empty() || extension.front() == '.', string{});
 
     auto const sepPos = path.find_last_of("/\\.");
     auto const pos = sepPos == string_view::npos || path[sepPos] != '.' ? path.size() : sepPos;

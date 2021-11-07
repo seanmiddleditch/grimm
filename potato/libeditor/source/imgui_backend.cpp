@@ -100,7 +100,7 @@ void up::ImguiBackend::endFrame() {
 }
 
 bool up::ImguiBackend::handleEvent(SDL_Event const& ev) {
-    UP_ASSERT(!_context.empty());
+    UP_GUARD(!_context.empty(), false);
 
     ImGui::SetCurrentContext(_context.get());
     ImGuiIO& io = ImGui::GetIO();
@@ -163,7 +163,7 @@ bool up::ImguiBackend::handleEvent(SDL_Event const& ev) {
 }
 
 void up::ImguiBackend::render(RenderContext& ctx) {
-    UP_ASSERT(!_context.empty());
+    UP_GUARD_VOID(!_context.empty());
 
     ImGui::SetCurrentContext(_context.get());
     ImGui::Render();
@@ -174,10 +174,10 @@ void up::ImguiBackend::render(RenderContext& ctx) {
 
     ImDrawData& data = *ImGui::GetDrawData();
 
-    UP_ASSERT(data.Valid, "ImguiBackend::draw() can only be called after Render() but before beginFrame()");
+    UP_GUARD_VOID(data.Valid, "ImguiBackend::draw() can only be called after Render() but before beginFrame()");
 
-    UP_ASSERT(data.TotalIdxCount * sizeof(ImDrawIdx) <= bufferSize, "Too many ImGui indices");
-    UP_ASSERT(data.TotalVtxCount * sizeof(ImDrawVert) <= bufferSize, "Too many ImGui verticies");
+    UP_GUARD_VOID(data.TotalIdxCount * sizeof(ImDrawIdx) <= bufferSize, "Too many ImGui indices");
+    UP_GUARD_VOID(data.TotalVtxCount * sizeof(ImDrawVert) <= bufferSize, "Too many ImGui verticies");
 
     ctx.commandList.setPipelineState(_pipelineState.get());
     ctx.commandList.setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
@@ -284,7 +284,7 @@ void up::ImguiBackend::_ensureContext() {
 }
 
 ImFont* up::ImguiBackend::getFont(int index) const noexcept {
-    UP_ASSERT(index >= 0 && index < static_cast<int>(ImGui::UpFont::Count_));
+    UP_GUARD(index >= 0 && index < static_cast<int>(ImGui::UpFont::Count_), _fonts[0]);
     return _fonts[index];
 }
 

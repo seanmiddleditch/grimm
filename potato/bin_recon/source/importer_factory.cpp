@@ -27,8 +27,8 @@ auto up::ImporterFactory::findImporterByName(string_view name) const noexcept ->
 }
 
 void up::ImporterFactory::registerImporter(box<Importer> importer) {
-    UP_ASSERT(!importer.empty());
-    UP_ASSERT(findImporterByName(importer->name()) == nullptr);
+    UP_GUARD_VOID(!importer.empty());
+    UP_GUARD_VOID(findImporterByName(importer->name()) == nullptr);
 
     _importers.push_back(std::move(importer));
 }

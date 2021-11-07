@@ -14,7 +14,7 @@ up::ReconClient::ReconClient() {
 }
 
 bool up::ReconClient::start(IOLoop& loop, zstring_view resourcesPath) {
-    UP_ASSERT(!resourcesPath.empty());
+    UP_GUARD(!resourcesPath.empty(), false);
 
     const char* const args[] = {"recon", "-path", resourcesPath.c_str(), "-server", nullptr};
 

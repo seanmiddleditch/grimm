@@ -188,10 +188,10 @@ bool ImGui::Potato::IconGridItem(
     bool selected,
     float width,
     float rounding) {
-    UP_ASSERT(label != nullptr);
-    UP_ASSERT(icon != nullptr);
-    UP_ASSERT(width > 0);
-    UP_ASSERT(rounding >= 0);
+    UP_GUARD(label != nullptr, false);
+    UP_GUARD(icon != nullptr, false);
+    UP_GUARD(width > 0, false);
+    UP_GUARD(rounding >= 0, false);
 
     ImGui::TableNextColumn();
 

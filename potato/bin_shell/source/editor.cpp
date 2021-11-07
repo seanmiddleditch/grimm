@@ -87,8 +87,8 @@ bool up::shell::Editor::updateUi() {
 }
 
 auto up::shell::Editor::addPanel(string title, PanelUpdate update) -> PanelId {
-    UP_ASSERT(!title.empty());
-    UP_ASSERT(update != nullptr);
+    UP_GUARD(!title.empty(), 0);
+    UP_GUARD(update != nullptr, 0);
 
     auto panel = new_box<Panel>();
     panel->title = std::move(title);
