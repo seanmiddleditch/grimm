@@ -37,16 +37,7 @@ namespace up::shell {
             box<Space> previewScene,
             SceneDatabase& database,
             AssetLoader& assetLoader,
-            HandlePlayClicked& onPlayClicked)
-            : Editor("SceneEditor"_zsv)
-            , _previewScene(std::move(previewScene))
-            , _doc(std::move(sceneDoc))
-            , _cameraController(_camera)
-            , _onPlayClicked(std::move(onPlayClicked))
-            , _database(database)
-            , _assetLoader(assetLoader) {
-            _camera.lookAt({0, 10, 15}, {0, 0, 0}, {0, 1, 0});
-        }
+            HandlePlayClicked onPlayClicked);
 
         zstring_view displayName() const override { return "Scene"_zsv; }
         zstring_view editorClass() const override { return editorName; }
