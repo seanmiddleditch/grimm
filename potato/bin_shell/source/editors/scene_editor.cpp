@@ -168,7 +168,6 @@ namespace up::shell {
         }
         ImGui::EndGroup();
 
-        ImGui::BeginChild("SceneContent", contentSize, false);
         {
             _sceneDimensions = {contentSize.x, contentSize.y};
 
@@ -209,8 +208,6 @@ namespace up::shell {
             }
 
             _cameraController.apply(_camera, movement, motion, io.DeltaTime);
-
-            ImGui::EndChild();
         }
     }
 
