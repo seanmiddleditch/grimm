@@ -153,12 +153,11 @@ namespace up {
         ComponentStorage* componentStorages[] = {_getComponent(makeComponentId<Components>())...};
         void* componentData[sizeof...(Components)] = {};
 
+#if !defined(NDEBUG)
         for (size_t index = 0; index != sizeof...(Components); ++index) {
-            UP_ASSERT(componentStorages[index] != nullptr);
-            if (componentStorages[index] == nullptr) {
-                return;
-            }
+            UP_GUARD_VOID(componentStorages[index] != nullptr);
         }
+#endif
 
         auto cursor = componentStorages[0]->enumerateUnsafe();
         while (cursor.next()) {

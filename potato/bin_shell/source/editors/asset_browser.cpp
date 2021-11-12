@@ -128,7 +128,7 @@ void up::shell::AssetBrowser::_showAssets(Entry const& folder) {
 }
 
 void up::shell::AssetBrowser::_showAsset(Entry const& asset) {
-    UP_ASSERT(asset.typeHash != folderTypeHash);
+    UP_GUARD_VOID(asset.typeHash != folderTypeHash);
 
     if (ImGui::IconGridItem(
             static_cast<ImGuiID>(asset.id),
@@ -182,7 +182,7 @@ void up::shell::AssetBrowser::_showAsset(Entry const& asset) {
 }
 
 void up::shell::AssetBrowser::_showFolder(Entry const& folder) {
-    UP_ASSERT(folder.typeHash == folderTypeHash);
+    UP_GUARD_VOID(folder.typeHash == folderTypeHash);
 
     if (ImGui::IconGridItem(
             static_cast<ImGuiID>(folder.id),
@@ -287,7 +287,7 @@ void up::shell::AssetBrowser::_showBreadcrumbs() {
 void up::shell::AssetBrowser::_showTreeFolder(int index) {
     int flags = 0;
 
-    UP_ASSERT(_entries[index].typeHash == folderTypeHash);
+    UP_GUARD_VOID(_entries[index].typeHash == folderTypeHash);
 
     bool const hasChildren = _entries[index].firstChild != -1;
     if (!hasChildren) {

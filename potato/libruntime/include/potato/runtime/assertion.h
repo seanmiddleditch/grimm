@@ -19,6 +19,9 @@
 #    define UP_GUARD(condition, retval, ...) \
         do { } \
         while (false)
+#    define UP_GUARD_VOID(condition, ...) \
+        do { } \
+        while (false)
 
 #elif _PREFAST_ // Microsoft's /analyze tool
 
@@ -61,6 +64,15 @@
             if (UP_UNLIKELY(!((condition)))) { \
                 uppriv_FORMAT_FAIL(#condition, ##__VA_ARGS__); \
                 return (retval); \
+            } \
+        } \
+        while (false)
+
+#    define UP_GUARD_VOID(condition, ...) \
+        do { \
+            if (UP_UNLIKELY(!((condition)))) { \
+                uppriv_FORMAT_FAIL(#condition, ##__VA_ARGS__); \
+                return; \
             } \
         } \
         while (false)

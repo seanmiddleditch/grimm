@@ -154,7 +154,7 @@ auto up::fs::fileStat(zstring_view path) -> IOReturn<Stat> {
 }
 
 auto up::fs::enumerate(zstring_view path, EnumerateCallback cb) -> EnumerateResult {
-    UP_ASSERT(!path.empty());
+    UP_GUARD(!path.empty(), EnumerateResult::Stop);
 
     auto iter = std::filesystem::recursive_directory_iterator(path.c_str());
     auto end = std::filesystem::recursive_directory_iterator();

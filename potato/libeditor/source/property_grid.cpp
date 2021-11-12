@@ -265,7 +265,7 @@ void up::editor::PropertyGrid::_endProperty() {
 }
 
 bool up::editor::PropertyGrid::_editProperties(reflex::Schema const& schema, void* object) {
-    UP_ASSERT(schema.primitive == reflex::SchemaPrimitive::Object);
+    UP_GUARD(schema.primitive == reflex::SchemaPrimitive::Object, false);
 
     bool edits = false;
 
@@ -380,7 +380,7 @@ bool up::editor::PropertyGrid::_editAssetField(
     reflex::Schema const& schema,
     void* object) {
     ImGui::BeginGroup();
-    UP_ASSERT(schema.primitive == reflex::SchemaPrimitive::AssetRef);
+    UP_GUARD(schema.primitive == reflex::SchemaPrimitive::AssetRef, false);
 
     zstring_view assetType{};
     if (auto const* const assetTypeAnno = queryAnnotation<schema::AssetType>(schema); assetTypeAnno != nullptr) {

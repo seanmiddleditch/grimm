@@ -19,7 +19,7 @@ extern "C" {
 
 namespace up {
     inline namespace posql {
-        enum class SqlResult { Ok = 0, Error };
+        enum class SqlResult { Ok = 0, Error, Invalid };
 
         namespace sqlutil {
             [[nodiscard]] sqlite3_stmt* compile(sqlite3* db, string_view sql);
@@ -133,7 +133,7 @@ namespace up {
 
             template <typename... T>
             [[nodiscard]] SqlResult execute(string_view sql, T const&... args) {
-                UP_ASSERT(_conn != nullptr);
+                UP_GUARD(_conn != nullptr, SqlResult::Invalid);
                 sqlite3_stmt* stmt = compile(sql, args...);
                 SqlResult const result = stmt ? SqlResult::Ok : SqlResult::Error;
                 sqlutil::destroy(stmt);
