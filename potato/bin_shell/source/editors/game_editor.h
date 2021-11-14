@@ -25,8 +25,8 @@ namespace up::shell {
             _camera.lookAt({0, 10, 15}, {0, 0, 0}, {0, 1, 0});
         }
 
-        zstring_view displayName() const override { return "Game"; }
-        zstring_view editorClass() const override { return "potato.editor.game"; }
+        zstring_view displayName() const override { return "Game"_zsv; }
+        zstring_view editorClass() const override { return "potato.editor.game"_zsv; }
         EditorId uniqueId() const override { return hash_value(this); }
 
     protected:
