@@ -79,9 +79,12 @@ namespace up::shell {
                 }
 #endif
 
-                return new_box<SceneEditor>(std::move(doc), std::move(space), _database, _assetLoader, [this](SceneDocument const& doc) {
-                    _onPlayClicked(doc);
-                });
+                return new_box<SceneEditor>(
+                    std::move(doc),
+                    std::move(space),
+                    _database,
+                    _assetLoader,
+                    [this](SceneDocument const& doc) { _onPlayClicked(doc); });
             }
 
         private:
