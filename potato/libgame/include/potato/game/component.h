@@ -6,6 +6,7 @@
 
 #include "potato/reflex/typeid.h"
 #include "potato/spud/delegate_ref.h"
+#include "potato/spud/find.h"
 #include "potato/spud/hash_map.h"
 #include "potato/spud/vector.h"
 #include "potato/spud/zstring_view.h"
@@ -37,6 +38,32 @@ namespace up {
         friend ComponentStorage;
     };
 
+    class RawComponentObserver {
+    public:
+        virtual ComponentId componentId() const = 0;
+        virtual void onAdd(EntityId entityId, void* data) = 0;
+        virtual void onRemove(EntityId entityId, void* data) = 0;
+
+    protected:
+        ~RawComponentObserver() = default;
+    };
+
+    template <typename ComponentT>
+    class ComponentObserver : public RawComponentObserver {
+    public:
+        ComponentId componentId() const final { return makeComponentId<ComponentT>(); }
+
+        virtual void onAdd(EntityId entityId, ComponentT& component) = 0;
+        virtual void onRemove(EntityId entityId, ComponentT& component) = 0;
+
+    protected:
+        ~ComponentObserver() = default;
+
+    private:
+        void onAdd(EntityId entityId, void* data) final { onAdd(entityId, *static_cast<ComponentT*>(data)); }
+        void onRemove(EntityId entityId, void* data) final { onRemove(entityId, *static_cast<ComponentT*>(data)); }
+    };
+
     class ComponentStorage {
     public:
         virtual ~ComponentStorage() = default;
@@ -46,7 +73,7 @@ namespace up {
 
         [[nodiscard]] size_t size() const noexcept { return _size; }
 
-        inline void* add(EntityId entityId);
+        inline void* add(EntityId entityId, void const* source);
         inline bool remove(EntityId entityId);
         [[nodiscard]] inline bool contains(EntityId entityId) const noexcept;
 
@@ -54,12 +81,15 @@ namespace up {
 
         [[nodiscard]] inline ComponentCursor enumerateUnsafe() noexcept;
 
+        inline void observe(RawComponentObserver* observer);
+        inline void unobserve(RawComponentObserver* observer);
+
     protected:
         static constexpr uint32 InvalidIndex = uint32(-1);
 
         explicit ComponentStorage(ComponentId id) noexcept : _id(id) { }
 
-        virtual void* allocateComponentAt(uint32 index) = 0;
+        virtual void* allocateComponentAt(uint32 index, void const* source) = 0;
         virtual void* getByIndexUnsafe(uint32 index) noexcept = 0;
 
     private:
@@ -68,6 +98,7 @@ namespace up {
 
         vector<EntityId> _entities;
         vector<uint32> _free;
+        vector<RawComponentObserver*> _observers;
         hash_map<EntityId, uint32> _map;
         size_t _size = 0;
         ComponentId _id;
@@ -85,7 +116,7 @@ namespace up {
     private:
         zstring_view debugName() const noexcept override { return _name.c_str(); }
 
-        void* allocateComponentAt(uint32 index) override;
+        void* allocateComponentAt(uint32 index, void const* source) override;
         void* getByIndexUnsafe(uint32 index) noexcept override;
 
         vector<ComponentT> _components;
@@ -99,7 +130,7 @@ namespace up {
             , ComponentStorage(makeComponentId<ComponentT>(), _name.c_str()) { }
 
     private:
-        void* allocateComponentAt(uint32 index) override { return &_empty; }
+        void* allocateComponentAt(uint32 index, void const*) override { return &_empty; }
         void* getByIndexUnsafe(uint32 index) noexcept override { return &_empty; }
 
         decltype(nameof<ComponentT>()) _name;
@@ -119,7 +150,7 @@ namespace up {
         return false;
     }
 
-    void* ComponentStorage::add(EntityId entityId) {
+    void* ComponentStorage::add(EntityId entityId, void const* source) {
         {
             uint32 const index = indexOf(entityId);
             if (index != InvalidIndex) {
@@ -130,21 +161,34 @@ namespace up {
         uint32 const index = allocateIndex(entityId);
         _map.insert(entityId, index);
         ++_size;
-        return allocateComponentAt(index);
+        void* component = allocateComponentAt(index, source);
+
+        for (RawComponentObserver* observer : _observers) {
+            observer->onAdd(entityId, component);
+        }
+
+        return component;
     }
 
     bool ComponentStorage::remove(EntityId entityId) {
-        if (_size != 0) {
-            uint32 const index = indexOf(entityId);
-            if (index != InvalidIndex) {
-                _entities[index] = {};
-                _map.erase(entityId);
-                _free.push_back(index);
-                --_size;
-                return true;
-            }
+        if (_size == 0) {
+            return false;
         }
-        return false;
+
+        uint32 const index = indexOf(entityId);
+        if (index == InvalidIndex) {
+            return false;
+        }
+
+        for (RawComponentObserver* observer : _observers) {
+            observer->onRemove(entityId, getByIndexUnsafe(index));
+        }
+
+        _entities[index] = {};
+        _map.erase(entityId);
+        _free.push_back(index);
+        --_size;
+        return true;
     }
 
     bool ComponentStorage::contains(EntityId entityId) const noexcept {
@@ -157,6 +201,21 @@ namespace up {
     }
 
     ComponentCursor ComponentStorage::enumerateUnsafe() noexcept { return ComponentCursor{*this}; }
+
+    void ComponentStorage::observe(RawComponentObserver* observer) {
+        UP_GUARD_VOID(observer != nullptr);
+        UP_GUARD_VOID(observer->componentId() == _id);
+        _observers.push_back(observer);
+    }
+
+    void ComponentStorage::unobserve(RawComponentObserver* observer) {
+        UP_GUARD_VOID(observer != nullptr);
+        UP_GUARD_VOID(observer->componentId() == _id);
+        auto const index = find(_observers, observer) - _observers.begin();
+        UP_GUARD_VOID(index != _observers.size());
+        _observers[index] = _observers.back();
+        _observers.pop_back();
+    }
 
     [[nodiscard]] uint32 ComponentStorage::allocateIndex(EntityId entityId) {
         if (!_free.empty()) {
@@ -177,9 +236,25 @@ namespace up {
     }
 
     template <typename ComponentT, bool IsEmptyComponent>
-    void* TypedComponentStorage<ComponentT, IsEmptyComponent>::allocateComponentAt(uint32 index) {
+    void* TypedComponentStorage<ComponentT, IsEmptyComponent>::allocateComponentAt(uint32 index, void const* source) {
         UP_ASSERT(index <= _components.size());
-        return index < _components.size() ? &_components[index] : &_components.emplace_back();
+        if (source != nullptr) {
+            if (index == _components.size()) {
+                _components.emplace_back(*static_cast<ComponentT const*>(source));
+            }
+            else {
+                _components[index] = *static_cast<ComponentT const*>(source);
+            }
+        }
+        else {
+            if (index == _components.size()) {
+                _components.emplace_back();
+            }
+            else {
+                _components[index] = ComponentT{};
+            }
+        }
+        return &_components[index];
     }
 
     template <typename ComponentT, bool IsEmptyComponent>

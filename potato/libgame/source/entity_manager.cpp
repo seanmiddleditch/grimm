@@ -44,6 +44,18 @@ namespace up {
         return component->remove(entityId);
     }
 
+    void EntityManager::observe(RawComponentObserver& observer) {
+        ComponentStorage* const component = _getComponent(observer.componentId());
+        UP_GUARD_VOID(component != nullptr);
+        component->observe(&observer);
+    }
+
+    void EntityManager::unobserve(RawComponentObserver& observer) {
+        ComponentStorage* const component = _getComponent(observer.componentId());
+        UP_GUARD_VOID(component != nullptr);
+        component->unobserve(&observer);
+    }
+
     ComponentStorage& EntityManager::_registerComponent(box<ComponentStorage> storage) {
         UP_ASSERT(storage != nullptr);
 
@@ -56,11 +68,11 @@ namespace up {
         return *result;
     }
 
-    void* EntityManager::_addComponentRaw(EntityId entityId, ComponentId componentId) {
+    void* EntityManager::_addComponentRaw(EntityId entityId, ComponentId componentId, void const* source) {
         UP_GUARD(_entities.contains(entityId), nullptr);
         ComponentStorage* const component = _getComponent(componentId);
         UP_GUARD(component != nullptr, nullptr);
-        return component->add(entityId);
+        return component->add(entityId, source);
     }
 
     ComponentStorage* EntityManager::_getComponent(ComponentId componentId) noexcept {
