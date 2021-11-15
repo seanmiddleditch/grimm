@@ -4,10 +4,10 @@
 
 #include "potato/spud/box.h"
 
-#include <BulletDynamics/Dynamics/btRigidBody.h>
+#include <glm/vec3.hpp>
 
 namespace up::component {
     struct RigidBody {
-        box<btRigidBody> body;
+        glm::vec3 linearVelocity{0.f, 0.f, 0.f};
     };
 } // namespace up::component
