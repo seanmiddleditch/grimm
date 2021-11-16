@@ -37,6 +37,6 @@ scene_component Ding {
 }
 
 scene_component Body {
-    vec3 linearVelocity = {0, 0, 0};
+    float mass = 1;
 }
 

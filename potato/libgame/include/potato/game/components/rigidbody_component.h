@@ -8,6 +8,6 @@
 
 namespace up::component {
     struct RigidBody {
-        glm::vec3 linearVelocity{0.f, 0.f, 0.f};
+        float mass = 1.f;
     };
 } // namespace up::component

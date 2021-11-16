@@ -72,5 +72,5 @@ auto up::DingEditComponent::createFrom(scene::components::Ding const& sceneCompo
 }
 
 auto up::BodyEditComponent::createFrom(scene::components::Body const& sceneComponent) const -> component::RigidBody {
-    return {.linearVelocity = sceneComponent.linearVelocity};
+    return {};
 }
