@@ -125,11 +125,14 @@ namespace up {
 
     template <typename ComponentT>
     class TypedComponentStorage<ComponentT, true> final : public ComponentStorage {
+    public:
         TypedComponentStorage() noexcept
-            : _name(nameof<ComponentT>())
-            , ComponentStorage(makeComponentId<ComponentT>(), _name.c_str()) { }
+            : ComponentStorage(makeComponentId<ComponentT>())
+            , _name(nameof<ComponentT>()) { }
 
     private:
+        zstring_view debugName() const noexcept override { return _name.c_str(); }
+
         void* allocateComponentAt(uint32 index, void const*) override { return &_empty; }
         void* getByIndexUnsafe(uint32 index) noexcept override { return &_empty; }
 
