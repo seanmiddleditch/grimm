@@ -72,10 +72,5 @@ auto up::DingEditComponent::createFrom(scene::components::Ding const& sceneCompo
 }
 
 auto up::BodyEditComponent::createFrom(scene::components::Body const& sceneComponent) const -> component::RigidBody {
-    static btBoxShape cube({0.5f, 0.5f, 0.5f});
-    box<btRigidBody> body;
-    body.reset(new btRigidBody(1.f, nullptr, &cube));
-    body->setLinearVelocity(
-        {sceneComponent.linearVelocity.x, sceneComponent.linearVelocity.y, sceneComponent.linearVelocity.z});
-    return {.body = std::move(body)};
+    return {};
 }

@@ -94,9 +94,15 @@ namespace up {
         template <typename Component>
         ComponentStorage& registerComponent();
 
+        /// Adds an observer for a specific component type
+        UP_GAME_API void observe(RawComponentObserver& observer);
+
+        /// Releases an observer
+        UP_GAME_API void unobserve(RawComponentObserver& observer);
+
     private:
         UP_GAME_API ComponentStorage& _registerComponent(box<ComponentStorage> storage);
-        UP_GAME_API void* _addComponentRaw(EntityId entityId, ComponentId componentId);
+        UP_GAME_API void* _addComponentRaw(EntityId entityId, ComponentId componentId, void const* source);
         UP_GAME_API ComponentStorage* _getComponent(ComponentId componentId) noexcept;
 
         template <typename Callback, typename... Components, size_t... Indices>
@@ -125,14 +131,14 @@ namespace up {
 
     template <typename Component>
     Component& EntityManager::addComponent(EntityId entityId, identity_t<Component>&& component) noexcept {
-        void* const data = _addComponentRaw(entityId, makeComponentId<Component>());
+        void* const data = _addComponentRaw(entityId, makeComponentId<Component>(), std::addressof(component));
         UP_ASSERT(data != nullptr);
-        return *static_cast<Component*>(data) = std::move(component);
+        return *static_cast<Component*>(data);
     }
 
     template <typename Component>
     Component& EntityManager::addComponent(EntityId entityId) noexcept {
-        void* const data = _addComponentRaw(entityId, makeComponentId<Component>());
+        void* const data = _addComponentRaw(entityId, makeComponentId<Component>(), nullptr);
         UP_ASSERT(data != nullptr);
         return *static_cast<Component*>(data);
     }

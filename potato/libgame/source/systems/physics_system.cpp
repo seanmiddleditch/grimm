@@ -11,57 +11,132 @@
 
 namespace up {
     namespace {
-        class PhysicsSystem final : public System {
-        public:
-            explicit PhysicsSystem(Space& space);
+        struct PhysicsWorld {
+            PhysicsWorld() : dispatcher(&config), world(&dispatcher, &broadphase, &solver, &config) { }
 
-            void update(float) override;
+            btRigidBody* addRigidBody(glm::vec3 position, float mass);
+
+            btDefaultCollisionConfiguration config;
+            btCollisionDispatcher dispatcher;
+            btDbvtBroadphase broadphase;
+            btSequentialImpulseConstraintSolver solver;
+            btDiscreteDynamicsWorld world;
+            btRigidBody* ground = nullptr;
+            float tickRate = 1.f / 60.f;
+        };
+
+        class RigidBodyObserver final : public ComponentObserver<component::RigidBody> {
+        public:
+            RigidBodyObserver(EntityManager& entities, PhysicsWorld& world) : _entities(entities), _world(world) { }
+
+            void onAdd(EntityId entityId, component::RigidBody& body) override;
+            void onRemove(EntityId entityId, component::RigidBody& body) override;
 
         private:
-            btDefaultCollisionConfiguration _config;
-            btCollisionDispatcher _dispatcher;
-            btDbvtBroadphase _broadphase;
-            btSequentialImpulseConstraintSolver _solver;
-            btDiscreteDynamicsWorld _world;
-            float _physicsTickRate = 1.f / 60.f;
+            EntityManager& _entities;
+            PhysicsWorld& _world;
+        };
+
+        struct BulletBody {
+            btRigidBody* body = nullptr;
+        };
+
+        class PhysicsSystem final : public System {
+        public:
+            explicit PhysicsSystem(Space& space) : System(space), _bodyObserver(space.entities(), _world) { }
+
+            void update(float) override;
+            void start() override;
+            void stop() override;
+
+        private:
+            PhysicsWorld _world;
+            RigidBodyObserver _bodyObserver;
         };
     } // namespace
 
     void registerPhysicsSystem(Space& space) { space.addSystem<PhysicsSystem>(); }
 
-    PhysicsSystem::PhysicsSystem(Space& space)
-        : System(space)
-        , _dispatcher(&_config)
-        , _world(&_dispatcher, &_broadphase, &_solver, &_config) { }
+    btRigidBody* PhysicsWorld::addRigidBody(glm::vec3 position, float mass) {
+        static btBoxShape cube({0.5f, 0.5f, 0.5f});
+
+        btVector3 localInertia(0.f, 0.f, 0.f);
+        cube.calculateLocalInertia(mass, localInertia);
+
+        box<btRigidBody> bulletBody;
+        bulletBody.reset(new btRigidBody(mass, nullptr, &cube, localInertia));
+
+        btTransform& worldTrans = bulletBody->getWorldTransform();
+        worldTrans.setOrigin({position.x, position.y, position.z});
+
+        // test impulse
+        bulletBody->applyImpulse({0.f, 5.f, 2.f}, {0.4f, 0.4f, 0.2f});
+
+        world.addRigidBody(bulletBody.get());
+
+        return bulletBody.release();
+    }
 
     void PhysicsSystem::update(float deltaTime) {
-        // HACK
-        //  initialize Bullet physics bodies
-        //  TODO: efficiently query new components or teleports; apply initial rotation
-        space().entities().select<component::Transform const, component::RigidBody>(
-            [&](EntityId, component::Transform const& trans, component::RigidBody& body) {
-                if (!body.body->isInWorld()) {
-                    _world.addRigidBody(body.body.get());
-
-                    btTransform& worldTrans = body.body->getWorldTransform();
-                    worldTrans.setOrigin({trans.position.x, trans.position.y, trans.position.z});
-                }
-            });
-
-        _world.stepSimulation(deltaTime, 12, _physicsTickRate);
+        _world.world.stepSimulation(deltaTime, 12, _world.tickRate);
 
         // Apply physics motion to transforms
-        //  TODO: use btMotionState; apply rotation updates
-        space().entities().select<component::Transform, component::RigidBody const>(
-            [&](EntityId, component::Transform& trans, component::RigidBody const& body) {
-                btTransform const& worldTrans = body.body->getWorldTransform();
-                btVector3 const origin = worldTrans.getOrigin();
+        //  TODO: be smarter/faster about this (btMotionState?)
+        space().entities().select<component::Transform, component::RigidBody, BulletBody const>(
+            [&](EntityId, component::Transform& trans, component::RigidBody& body, BulletBody const& bulletBody) {
+                UP_GUARD_VOID(bulletBody.body != nullptr);
+
+                btTransform const& worldTrans = bulletBody.body->getWorldTransform();
+                btVector3 const& origin = worldTrans.getOrigin();
                 trans.position = {origin.x(), origin.y(), origin.z()};
 
-                if (trans.position.y <= 0.f) {
-                    trans.position.y = 0.f;
-                    body.body->setLinearVelocity({0, 0, 0});
-                }
+                btQuaternion const& rot = worldTrans.getRotation();
+                trans.rotation = {rot.x(), rot.y(), rot.z(), rot.w()};
             });
+    }
+
+    void PhysicsSystem::start() {
+        static btStaticPlaneShape groundPlane({0.f, 1.f, 0.f}, 1.f);
+        _world.ground = new btRigidBody(0.f, nullptr, &groundPlane);
+        _world.world.addRigidBody(_world.ground);
+
+        space().entities().registerComponent<BulletBody>();
+        space().entities().observe(_bodyObserver);
+
+        space().entities().select<component::RigidBody>([&](EntityId entityId, component::RigidBody& body) {
+            auto* const transform = space().entities().getComponentSlow<component::Transform>(entityId);
+            glm::vec3 position = transform != nullptr ? transform->position : glm::vec3{0.f, 0.f, 0.f};
+
+            auto& bulletBody = space().entities().addComponent<BulletBody>(entityId);
+            bulletBody.body = _world.addRigidBody(position, body.mass);
+        });
+    }
+
+    void PhysicsSystem::stop() {
+        space().entities().unobserve(_bodyObserver);
+
+        _world.world.removeRigidBody(_world.ground);
+        delete _world.ground;
+        _world.ground = nullptr;
+    }
+
+    void RigidBodyObserver::onAdd(EntityId entityId, component::RigidBody& body) {
+        auto* const transform = _entities.getComponentSlow<component::Transform>(entityId);
+        glm::vec3 position = transform != nullptr ? transform->position : glm::vec3{0.f, 0.f, 0.f};
+
+        auto& bulletBody = _entities.addComponent<BulletBody>(entityId);
+        bulletBody.body = _world.addRigidBody(position, body.mass);
+    }
+
+    void RigidBodyObserver::onRemove(EntityId entityId, component::RigidBody& body) {
+        auto* const bulletBody = _entities.getComponentSlow<BulletBody>(entityId);
+        if (bulletBody == nullptr) {
+            return;
+        }
+
+        _world.world.removeRigidBody(bulletBody->body);
+        delete bulletBody->body;
+
+        _entities.removeComponent<BulletBody>(entityId);
     }
 } // namespace up
