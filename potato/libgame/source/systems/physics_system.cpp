@@ -102,7 +102,7 @@ namespace up {
             auto* const transform = space().entities().getComponentSlow<component::Transform>(entityId);
             glm::vec3 position = transform != nullptr ? transform->position : glm::vec3{0.f, 0.f, 0.f};
 
-            BulletBody& bulletBody = space().entities().addComponent<BulletBody>(entityId);
+            auto& bulletBody = space().entities().addComponent<BulletBody>(entityId);
             bulletBody.body = _world.addRigidBody(position, body.linearVelocity);
         });
     }
@@ -113,12 +113,12 @@ namespace up {
         auto* const transform = _entities.getComponentSlow<component::Transform>(entityId);
         glm::vec3 position = transform != nullptr ? transform->position : glm::vec3{0.f, 0.f, 0.f};
 
-        BulletBody& bulletBody = _entities.addComponent<BulletBody>(entityId);
+        auto& bulletBody = _entities.addComponent<BulletBody>(entityId);
         bulletBody.body = _world.addRigidBody(position, body.linearVelocity);
     }
 
     void RigidBodyObserver::onRemove(EntityId entityId, component::RigidBody& body) {
-        BulletBody* bulletBody = _entities.getComponentSlow<BulletBody>(entityId);
+        auto* const bulletBody = _entities.getComponentSlow<BulletBody>(entityId);
         if (bulletBody == nullptr) {
             return;
         }

@@ -211,7 +211,7 @@ namespace up {
     void ComponentStorage::unobserve(RawComponentObserver* observer) {
         UP_GUARD_VOID(observer != nullptr);
         UP_GUARD_VOID(observer->componentId() == _id);
-        auto const index = find(_observers, observer) - _observers.begin();
+        size_t const index = find(_observers, observer) - _observers.begin();
         UP_GUARD_VOID(index != _observers.size());
         _observers[index] = _observers.back();
         _observers.pop_back();
