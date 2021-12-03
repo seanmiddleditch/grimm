@@ -133,7 +133,6 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
         if (_space != nullptr) {
             _space->render(ctx);
         }
-        renderer.flushDebugDraw(deltaTime);
         renderer.endFrame(deltaTime);
     }
 }

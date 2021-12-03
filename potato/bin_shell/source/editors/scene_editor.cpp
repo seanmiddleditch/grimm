@@ -238,7 +238,6 @@ namespace up::shell {
             }
             _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
             _previewScene->render(ctx);
-            renderer.flushDebugDraw(deltaTime);
             renderer.endFrame(deltaTime);
         }
     }
