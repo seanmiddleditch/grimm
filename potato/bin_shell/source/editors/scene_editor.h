@@ -3,7 +3,6 @@
 #pragma once
 
 #include "potato/editor/property_grid.h"
-#include "potato/render/camera.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
@@ -63,7 +62,6 @@ namespace up::shell {
         box<Space> _previewScene;
         box<SceneDocument> _doc;
         box<GpuResourceView> _bufferView;
-        box<RenderCamera> _renderCamera;
         Camera _camera;
         ArcBallCameraController _cameraController;
         SelectionState _selection;

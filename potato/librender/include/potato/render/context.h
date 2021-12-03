@@ -4,16 +4,37 @@
 
 #include "_export.h"
 
-namespace up {
-    class GpuCommandList;
-    class GpuDevice;
-} // namespace up
+#include "potato/spud/box.h"
+#include "potato/spud/platform.h"
+#include "potato/spud/rc.h"
+
+#include <glm/fwd.hpp>
 
 namespace up {
+    class GpuBuffer;
+    class GpuCommandList;
+    class GpuDevice;
+    class GpuResourceView;
+    class GpuTexture;
+
     class RenderContext {
     public:
+        UP_RENDER_API RenderContext(GpuDevice& device, GpuCommandList& commands, double frameTime);
+        UP_RENDER_API ~RenderContext();
+
+        UP_RENDER_API void bindBackBuffer(rc<GpuTexture> target, rc<GpuTexture> depthStencil = nullptr);
+        UP_RENDER_API void UP_VECTORCALL applyCameraPerspective(glm::vec3 position, glm::mat4x4 transform);
+        UP_RENDER_API void applyCameraScreen();
+
         double frameTime = 0;
         GpuCommandList& commandList;
         GpuDevice& device;
+
+    private:
+        box<GpuBuffer> _cameraDataBuffer;
+        rc<GpuTexture> _backBuffer;
+        rc<GpuTexture> _depthStencilBuffer;
+        box<GpuResourceView> _rtv;
+        box<GpuResourceView> _dsv;
     };
 } // namespace up

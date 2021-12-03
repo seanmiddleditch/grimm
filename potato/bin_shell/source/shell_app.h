@@ -26,7 +26,6 @@
 
 namespace up {
     class Renderer;
-    class RenderCamera;
     class Node;
     class Model;
     class GpuDevice;
@@ -93,7 +92,6 @@ namespace up::shell {
         rc<GpuDevice> _device;
         rc<GpuSwapChain> _swapChain;
         box<Renderer> _renderer;
-        box<RenderCamera> _uiRenderCamera;
         box<AudioEngine> _audio;
         box<Project> _project;
         SceneDatabase _sceneDatabase;

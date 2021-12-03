@@ -3,7 +3,6 @@
 #pragma once
 
 #include "potato/game/space.h"
-#include "potato/render/camera.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
 #include "potato/shell/camera.h"
@@ -13,6 +12,7 @@
 
 namespace up {
     class Space;
+    class GpuDevice;
 }
 
 namespace up::shell {
@@ -42,7 +42,6 @@ namespace up::shell {
         box<Space> _space;
         rc<GpuTexture> _buffer;
         box<GpuResourceView> _bufferView;
-        box<RenderCamera> _renderCamera;
         Camera _camera;
         FlyCameraController _cameraController;
         glm::ivec2 _viewDimensions = {0, 0};

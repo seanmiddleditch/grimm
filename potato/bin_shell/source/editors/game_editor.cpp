@@ -3,7 +3,6 @@
 #include "game_editor.h"
 
 #include "potato/editor/imgui_ext.h"
-#include "potato/render/camera.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
 #include "potato/render/gpu_device.h"
@@ -120,16 +119,12 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
         _resize(renderer.device(), _viewDimensions);
     }
 
-    if (_renderCamera == nullptr) {
-        _renderCamera = new_box<RenderCamera>();
-    }
-
     if (_buffer != nullptr) {
         renderer.beginFrame();
         auto ctx = renderer.context();
 
-        _renderCamera->resetBackBuffer(_buffer);
-        _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
+        ctx.bindBackBuffer(_buffer);
+        ctx.applyCameraPerspective(_camera.position(), _camera.matrix());
         if (_space != nullptr) {
             _space->render(ctx);
         }

@@ -121,7 +121,7 @@ void up::Renderer::_flushDebugDraw(float frameTime) {
 }
 
 auto up::Renderer::context() -> RenderContext {
-    return RenderContext{_frameTimestamp, *_commandList, *_device};
+    return RenderContext{*_device, *_commandList, _frameTimestamp};
 }
 
 namespace up {

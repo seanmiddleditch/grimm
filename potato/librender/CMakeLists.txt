@@ -8,7 +8,6 @@ add_library(potato_librender)
 add_library(potato::librender ALIAS potato_librender)
 
 target_sources(potato_librender PRIVATE
-    "source/camera.cpp"
     "source/debug_draw.cpp"
     "source/image.cpp"
     "source/material.cpp"
@@ -17,6 +16,7 @@ target_sources(potato_librender PRIVATE
     "source/stb_impl.cpp"
     "source/texture.cpp"
     "source/null_backend/null_objects.cpp"
+    "source/context.cpp"
 )
 
 include(up_compile_shader)

@@ -7,7 +7,6 @@
 #include "potato/editor/imgui_ext.h"
 #include "potato/game/space.h"
 #include "potato/reflex/serialize.h"
-#include "potato/render/camera.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
 #include "potato/render/gpu_device.h"
@@ -224,19 +223,15 @@ namespace up::shell {
             _resize(renderer.device(), _sceneDimensions);
         }
 
-        if (_renderCamera == nullptr) {
-            _renderCamera = new_box<RenderCamera>();
-        }
-
         if (_buffer != nullptr) {
             renderer.beginFrame();
             auto ctx = renderer.context();
 
-            _renderCamera->resetBackBuffer(_buffer);
+            ctx.bindBackBuffer(_buffer);
             if (_enableGrid) {
                 _drawGrid();
             }
-            _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
+            ctx.applyCameraPerspective(_camera.position(), _camera.matrix());
             _previewScene->render(ctx);
             renderer.endFrame(deltaTime);
         }
