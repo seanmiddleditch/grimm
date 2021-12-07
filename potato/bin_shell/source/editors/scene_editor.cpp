@@ -5,6 +5,8 @@
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/game/components/camera_component.h"
+#include "potato/game/components/transform_component.h"
 #include "potato/game/space.h"
 #include "potato/reflex/serialize.h"
 #include "potato/render/context.h"
@@ -223,6 +225,19 @@ namespace up::shell {
             _resize(renderer.device(), _sceneDimensions);
         }
 
+        if (_cameraId == EntityId::None) {
+            _cameraId = _previewScene->entities().createEntity();
+            _previewScene->entities().addComponent<component::Camera>(_cameraId);
+            _previewScene->entities().addComponent<component::Transform>(_cameraId);
+        }
+
+        if (component::Transform* cameraTrans =
+                _previewScene->entities().getComponentSlow<component::Transform>(_cameraId);
+            cameraTrans != nullptr) {
+            cameraTrans->position = _camera.position();
+            cameraTrans->rotation = _camera.rotation();
+        }
+
         if (_buffer != nullptr) {
             renderer.beginFrame();
             auto ctx = renderer.context();
@@ -231,7 +246,6 @@ namespace up::shell {
             if (_enableGrid) {
                 _drawGrid();
             }
-            ctx.applyCameraPerspective(_camera.position(), _camera.matrix());
             _previewScene->render(ctx);
             renderer.endFrame(deltaTime);
         }

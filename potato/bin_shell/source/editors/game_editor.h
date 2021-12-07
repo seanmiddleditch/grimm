@@ -44,6 +44,7 @@ namespace up::shell {
         box<GpuResourceView> _bufferView;
         Camera _camera;
         FlyCameraController _cameraController;
+        EntityId _cameraId = EntityId::None;
         glm::ivec2 _viewDimensions = {0, 0};
         bool _isInputBound = false;
         bool _paused = false;

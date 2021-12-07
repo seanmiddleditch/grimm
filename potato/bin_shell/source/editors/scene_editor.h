@@ -72,6 +72,7 @@ namespace up::shell {
         bool _create = false;
         bool _delete = false;
         SceneEntityId _targetId = SceneEntityId::None;
+        EntityId _cameraId = EntityId::None;
         SceneDatabase& _database;
         AssetLoader& _assetLoader;
     };

@@ -23,7 +23,7 @@ namespace up {
         UP_RENDER_API ~RenderContext();
 
         UP_RENDER_API void bindBackBuffer(rc<GpuTexture> target, rc<GpuTexture> depthStencil = nullptr);
-        UP_RENDER_API void UP_VECTORCALL applyCameraPerspective(glm::vec3 position, glm::mat4x4 transform);
+        UP_RENDER_API void UP_VECTORCALL applyCameraPerspective(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
         UP_RENDER_API void applyCameraScreen();
 
         double frameTime = 0;
@@ -31,6 +31,8 @@ namespace up {
         GpuDevice& device;
 
     private:
+        void UP_VECTORCALL _applyCamera(glm::vec3 position, glm::mat4x4 cameraMatrix);
+
         box<GpuBuffer> _cameraDataBuffer;
         rc<GpuTexture> _backBuffer;
         rc<GpuTexture> _depthStencilBuffer;

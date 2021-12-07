@@ -3,6 +3,8 @@
 #include "game_editor.h"
 
 #include "potato/editor/imgui_ext.h"
+#include "potato/game/components/camera_component.h"
+#include "potato/game/components/transform_component.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
 #include "potato/render/gpu_device.h"
@@ -119,12 +121,24 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
         _resize(renderer.device(), _viewDimensions);
     }
 
+    if (_cameraId == EntityId::None) {
+        _cameraId = _space->entities().createEntity();
+        _space->entities().addComponent<component::Camera>(_cameraId);
+        _space->entities().addComponent<component::Transform>(_cameraId);
+    }
+
+    if (component::Transform* cameraTrans = _space->entities().getComponentSlow<component::Transform>(_cameraId);
+        cameraTrans != nullptr) {
+        cameraTrans->position = _camera.position();
+        cameraTrans->rotation = _camera.rotation();
+    }
+
     if (_buffer != nullptr) {
         renderer.beginFrame();
         auto ctx = renderer.context();
 
         ctx.bindBackBuffer(_buffer);
-        ctx.applyCameraPerspective(_camera.position(), _camera.matrix());
+        // FIXME ctx.applyCameraPerspective(_camera.position(), _camera.matrix());
         if (_space != nullptr) {
             _space->render(ctx);
         }

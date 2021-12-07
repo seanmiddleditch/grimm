@@ -53,7 +53,17 @@ namespace up {
         }
     }
 
-    void UP_VECTORCALL RenderContext::applyCameraPerspective(glm::vec3 position, glm::mat4x4 transform) {
+    void UP_VECTORCALL RenderContext::applyCameraPerspective(glm::vec3 position, glm::vec3 forward, glm::vec3 up) {
+        glm::vec3 const right = normalize(cross(forward, up));
+        up = cross(right, forward);
+        glm::mat4x4 const cameraMatrix = lookAtRH(position, position + forward, up);
+
+        _applyCamera(position, cameraMatrix);
+    }
+
+    void RenderContext::applyCameraScreen() { _applyCamera(glm::vec3{}, glm::identity<glm::mat4x4>()); }
+
+    void UP_VECTORCALL RenderContext::_applyCamera(glm::vec3 position, glm::mat4x4 cameraMatrix) {
         if (_cameraDataBuffer == nullptr) {
             _cameraDataBuffer = device.createBuffer(GpuBufferType::Constant, sizeof(CameraData));
         }
@@ -73,8 +83,8 @@ namespace up {
         auto projection = glm::perspectiveFovRH_ZO(glm::radians(fovDeg), viewport.width, viewport.height, nearZ, farZ);
 
         auto data = CameraData{
-            .worldViewProjection = transform * projection,
-            .worldView = transpose(transform),
+            .worldViewProjection = cameraMatrix * projection,
+            .worldView = transpose(cameraMatrix),
             .viewProjection = transpose(projection),
             .cameraPosition = position,
             .nearFar = {nearZ, farZ},
@@ -92,6 +102,4 @@ namespace up {
         commandList.setViewport(viewport);
     }
 
-    void RenderContext::applyCameraScreen() { applyCameraPerspective(glm::vec3{}, glm::identity<glm::mat4x4>());
-    }
 } // namespace up

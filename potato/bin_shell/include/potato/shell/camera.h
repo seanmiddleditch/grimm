@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace up {
     class Camera {
@@ -20,6 +21,7 @@ namespace up {
         glm::vec3 up() const noexcept { return _up; }
         glm::vec3 right() const noexcept { return _right; }
         glm::mat4x4 matrix() const noexcept { return _matrix; }
+        glm::quat rotation() const noexcept { return glm::conjugate(glm::toQuat(_matrix)); }
 
     private:
         glm::vec3 _position = {0, 0, 0};
