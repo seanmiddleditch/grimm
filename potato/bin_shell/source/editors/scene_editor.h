@@ -6,7 +6,6 @@
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
-#include "potato/shell/camera.h"
 #include "potato/shell/camera_controller.h"
 #include "potato/shell/editor.h"
 #include "potato/shell/scene_doc.h"
@@ -62,7 +61,7 @@ namespace up::shell {
         box<Space> _previewScene;
         box<SceneDocument> _doc;
         box<GpuResourceView> _bufferView;
-        Camera _camera;
+        Transform _camera;
         ArcBallCameraController _cameraController;
         SelectionState _selection;
         PropertyGrid _propertyGrid;

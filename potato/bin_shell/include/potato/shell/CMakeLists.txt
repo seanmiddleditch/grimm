@@ -1,6 +1,5 @@
 target_sources(potato_shell PRIVATE
     "_export.h"
-    "camera.h"
     "camera_controller.h"
     "editor.h"
     "log_history.h"

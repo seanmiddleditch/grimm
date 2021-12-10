@@ -17,7 +17,6 @@
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/camera.h"
 #include "potato/shell/camera_controller.h"
 #include "potato/shell/editor.h"
 #include "potato/shell/scene_doc.h"
@@ -109,7 +108,8 @@ namespace up::shell {
         , _database(database)
         , _assetLoader(assetLoader) {
         UP_ASSERT(_onPlayClicked);
-        _camera.lookAt({0, 10, 15}, {0, 0, 0}, {0, 1, 0});
+        _camera.position = {0, 10, 15};
+        _camera.lookAt({0, 0, 0});
     }
 
     auto SceneEditor::createFactory(
@@ -234,8 +234,8 @@ namespace up::shell {
         if (component::Transform* cameraTrans =
                 _previewScene->entities().getComponentSlow<component::Transform>(_cameraId);
             cameraTrans != nullptr) {
-            cameraTrans->position = _camera.position();
-            cameraTrans->rotation = _camera.rotation();
+            cameraTrans->position = _camera.position;
+            cameraTrans->rotation = _camera.rotation;
         }
 
         if (_buffer != nullptr) {
@@ -258,7 +258,7 @@ namespace up::shell {
         // pixels on the screen; this doesn't really accomplish that, though.
         // Improvements welcome.
         //
-        auto const cameraPos = _camera.position();
+        auto const cameraPos = _camera.position;
         auto const logDist = std::log2(std::abs(cameraPos.y));
         auto const spacing = std::max(1, static_cast<int>(logDist) - 3);
 

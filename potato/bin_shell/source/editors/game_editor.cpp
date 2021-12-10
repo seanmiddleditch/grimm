@@ -11,7 +11,6 @@
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/camera.h"
 #include "potato/shell/camera_controller.h"
 #include "potato/shell/editor.h"
 
@@ -129,8 +128,8 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
 
     if (component::Transform* cameraTrans = _space->entities().getComponentSlow<component::Transform>(_cameraId);
         cameraTrans != nullptr) {
-        cameraTrans->position = _camera.position();
-        cameraTrans->rotation = _camera.rotation();
+        cameraTrans->position = _camera.position;
+        cameraTrans->rotation = _camera.rotation;
     }
 
     if (_buffer != nullptr) {

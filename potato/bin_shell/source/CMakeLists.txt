@@ -1,5 +1,4 @@
 target_sources(potato_shell PRIVATE
-    "camera.cpp"
     "camera_controller.cpp"
     "edit_components.h"
     "edit_components.cpp"

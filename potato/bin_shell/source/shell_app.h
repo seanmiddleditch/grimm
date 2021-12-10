@@ -8,7 +8,6 @@
 #include "potato/editor/hotkeys.h"
 #include "potato/editor/imgui_backend.h"
 #include "potato/recon/recon_client.h"
-#include "potato/shell/camera.h"
 #include "potato/shell/log_history.h"
 #include "potato/shell/scene_doc.h"
 #include "potato/shell/ui/action.h"
