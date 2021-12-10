@@ -12,15 +12,16 @@ auto up::TransformEditComponent::data(SceneComponent const& component) noexcept 
 }
 
 bool up::TransformEditComponent::syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const {
-    space.entities().addComponent(
-        entityId,
-        TransformComponent{.position = data(component).position, .rotation = data(component).rotation});
+    auto& trans = space.entities().addComponent<TransformComponent>(entityId);
+    trans.position = data(component).position;
+    trans.rotation = data(component).rotation;
     return true;
 }
 
 bool up::TransformEditComponent::syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const {
-    *space.entities().getComponentSlow<TransformComponent>(entityId) =
-        TransformComponent{.position = data(component).position, .rotation = data(component).rotation};
+    auto& trans = *space.entities().getComponentSlow<TransformComponent>(entityId);
+    trans.position = data(component).position;
+    trans.rotation = data(component).rotation;
     return true;
 }
 

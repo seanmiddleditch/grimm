@@ -39,7 +39,7 @@ namespace up {
                 transform.rotation = glm::quat({pitch, yaw, angles.z});
 
                 // update movement speed from wheel
-                flyCam.moveMetersPerSec = glm::clamp(flyCam.moveMetersPerSec + flyCam.relativeMotion.z, 0.1f, 20.f);
+                flyCam.moveMetersPerSec = glm::clamp(flyCam.moveMetersPerSec + flyCam.relativeMotion.z, 0.1f, 200.f);
 
                 // clear out applied motion/movement
                 flyCam.relativeMotion = {0.f, 0.f, 0.f};

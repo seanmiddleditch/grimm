@@ -21,7 +21,7 @@ namespace up {
 
     void TransformSystem::update(float) {
         space().entities().select<TransformComponent>([&](EntityId, TransformComponent& trans) {
-            trans.transform = glm::translate(trans.position) * glm::mat4_cast(trans.rotation);
+            trans.matrix = glm::translate(trans.position) * glm::mat4_cast(trans.rotation);
         });
     }
 } // namespace up

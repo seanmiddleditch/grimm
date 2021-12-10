@@ -32,7 +32,7 @@ namespace up {
         space().entities().select<MeshComponent, TransformComponent const>(
             [&](EntityId, MeshComponent& mesh, TransformComponent const& trans) {
                 if (mesh.mesh.ready() && mesh.material.ready()) {
-                    mesh.mesh.asset()->render(ctx, mesh.material.asset(), trans.transform);
+                    mesh.mesh.asset()->render(ctx, mesh.material.asset(), trans.matrix);
                 }
             });
     }
