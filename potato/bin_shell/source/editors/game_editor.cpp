@@ -4,14 +4,15 @@
 
 #include "potato/editor/imgui_ext.h"
 #include "potato/game/components/camera_component.h"
+#include "potato/game/components/camera_controllers.h"
 #include "potato/game/components/transform_component.h"
+#include "potato/game/transform.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/camera_controller.h"
 #include "potato/shell/editor.h"
 
 #include <glm/glm.hpp>
@@ -76,7 +77,10 @@ void up::shell::GameEditor::content() {
             static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_W)) -
                 static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_S))};
 
-        _cameraController.apply(_camera, relMove, relMotion, io.DeltaTime);
+        _space->entities().select<component::FlyCamera>([&](EntityId, component::FlyCamera& cam) {
+            cam.relativeMovement = relMove;
+            cam.relativeMotion = relMotion;
+        });
     }
     else {
         if (ctx->ActiveId == contentId) {
@@ -123,13 +127,15 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
     if (_cameraId == EntityId::None) {
         _cameraId = _space->entities().createEntity();
         _space->entities().addComponent<component::Camera>(_cameraId);
-        _space->entities().addComponent<component::Transform>(_cameraId);
-    }
+        _space->entities().addComponent<component::FlyCamera>(_cameraId);
+        auto& trans = _space->entities().addComponent<component::Transform>(_cameraId);
 
-    if (component::Transform* cameraTrans = _space->entities().getComponentSlow<component::Transform>(_cameraId);
-        cameraTrans != nullptr) {
-        cameraTrans->position = _camera.position;
-        cameraTrans->rotation = _camera.rotation;
+        Transform t;
+        t.position = {0, 10, 15};
+        t.lookAt({0, 0, 0});
+
+        trans.position = t.position;
+        trans.rotation = t.rotation;
     }
 
     if (_buffer != nullptr) {
@@ -137,7 +143,6 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
         auto ctx = renderer.context();
 
         ctx.bindBackBuffer(_buffer);
-        // FIXME ctx.applyCameraPerspective(_camera.position(), _camera.matrix());
         if (_space != nullptr) {
             _space->render(ctx);
         }

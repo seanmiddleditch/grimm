@@ -2,6 +2,7 @@
 
 #include "potato/game/components/demo_components.h"
 #include "potato/game/components/camera_component.h"
+#include "potato/game/components/camera_controllers.h"
 #include "potato/game/components/mesh_component.h"
 #include "potato/game/components/rigidbody_component.h"
 #include "potato/game/components/transform_component.h"
@@ -12,6 +13,7 @@ namespace up {
     void registerComponents(Space& space) {
         space.entities().registerComponent<component::Transform>();
         space.entities().registerComponent<component::Camera>();
+        space.entities().registerComponent<component::FlyCamera>();
         space.entities().registerComponent<component::Mesh>();
         space.entities().registerComponent<component::RigidBody>();
         space.entities().registerComponent<component::Wave>();

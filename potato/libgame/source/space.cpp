@@ -3,6 +3,7 @@
 #include "potato/game/space.h"
 
 namespace up {
+    extern void registerCameraSystem(Space& space);
     extern void registerDemoSystem(Space& space, AudioEngine& audioEngine);
     extern void registerPhysicsSystem(Space& space);
     extern void registerRenderSystem(Space& space);
@@ -11,6 +12,7 @@ namespace up {
 
     Space::Space() {
         registerComponents(*this);
+        registerCameraSystem(*this);
         registerTransformSystem(*this);
         registerRenderSystem(*this);
     }

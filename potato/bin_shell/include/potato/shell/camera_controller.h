@@ -20,20 +20,6 @@ namespace up {
             float frameTime) noexcept = 0;
     };
 
-    class FlyCameraController : public CameraController {
-    public:
-        explicit FlyCameraController(Transform const& transform) noexcept;
-        void apply(Transform& transform, glm::vec3 relativeMovement, glm::vec3 relativeMotion, float frameTime) noexcept
-            override;
-
-    private:
-        float _moveSpeedPerSec = 10;
-        float _rotateRadiansPerSec = 1;
-        float _yaw = 0;
-        float _pitch = 0;
-        float _speed = 1;
-    };
-
     class ArcBallCameraController : public CameraController {
     public:
         explicit ArcBallCameraController(Transform const& transform) noexcept;

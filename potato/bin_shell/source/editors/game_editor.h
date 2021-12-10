@@ -5,9 +5,10 @@
 #include "potato/game/space.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
-#include "potato/shell/camera_controller.h"
 #include "potato/shell/editor.h"
 #include "potato/spud/hash.h"
+
+#include <glm/vec2.hpp>
 
 namespace up {
     class Space;
@@ -19,10 +20,7 @@ namespace up::shell {
     public:
         explicit GameEditor(box<Space> space)
             : Editor("GameEditor"_zsv)
-            , _space(std::move(space))
-            , _cameraController(_camera) {
-            _camera.position = {0, 10, 15};
-            _camera.lookAt({0, 0, 0});
+            , _space(std::move(space)) {
         }
 
         zstring_view displayName() const override { return "Game"_zsv; }
@@ -42,8 +40,6 @@ namespace up::shell {
         box<Space> _space;
         rc<GpuTexture> _buffer;
         box<GpuResourceView> _bufferView;
-        Transform _camera;
-        FlyCameraController _cameraController;
         EntityId _cameraId = EntityId::None;
         glm::ivec2 _viewDimensions = {0, 0};
         bool _isInputBound = false;
