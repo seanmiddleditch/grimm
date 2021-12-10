@@ -6,8 +6,8 @@
 
 #include <glm/vec3.hpp>
 
-namespace up::component {
-    struct RigidBody {
+namespace up {
+    struct RigidBodyComponent {
         float mass = 1.f;
     };
-} // namespace up::component
+} // namespace up

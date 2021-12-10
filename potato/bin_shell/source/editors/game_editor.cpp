@@ -77,7 +77,7 @@ void up::shell::GameEditor::content() {
             static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_W)) -
                 static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_S))};
 
-        _space->entities().select<component::FlyCamera>([&](EntityId, component::FlyCamera& cam) {
+        _space->entities().select<FlyCameraComponent>([&](EntityId, FlyCameraComponent& cam) {
             cam.relativeMovement = relMove;
             cam.relativeMotion = relMotion;
         });
@@ -126,9 +126,9 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
 
     if (_cameraId == EntityId::None) {
         _cameraId = _space->entities().createEntity();
-        _space->entities().addComponent<component::Camera>(_cameraId);
-        _space->entities().addComponent<component::FlyCamera>(_cameraId);
-        auto& trans = _space->entities().addComponent<component::Transform>(_cameraId);
+        _space->entities().addComponent<CameraComponent>(_cameraId);
+        _space->entities().addComponent<FlyCameraComponent>(_cameraId);
+        auto& trans = _space->entities().addComponent<TransformComponent>(_cameraId);
 
         Transform t;
         t.position = {0, 10, 15};

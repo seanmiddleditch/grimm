@@ -5,19 +5,19 @@
 #include "potato/audio/sound_resource.h"
 #include "potato/runtime/asset.h"
 
-namespace up::component {
-    struct Wave {
+namespace up {
+    struct DemoWaveComponent {
         float time = 0.f;
         float offset = 0.f;
     };
 
-    struct Spin {
+    struct DemoSpinComponent {
         float radians = 0.f;
     };
 
-    struct Ding {
+    struct DemoDingComponent {
         float period = 1;
         float time = 0;
         AssetHandle<SoundResource> sound;
     };
-} // namespace up::component
+} // namespace up

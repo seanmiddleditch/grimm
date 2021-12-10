@@ -6,9 +6,9 @@
 #include "potato/render/mesh.h"
 #include "potato/runtime/asset.h"
 
-namespace up::component {
-    struct Mesh {
+namespace up {
+    struct MeshComponent {
         AssetHandle<up::Mesh> mesh;
         AssetHandle<Material> material;
     };
-} // namespace up::component
+} // namespace up

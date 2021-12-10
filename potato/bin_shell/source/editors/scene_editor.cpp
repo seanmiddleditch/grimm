@@ -227,12 +227,12 @@ namespace up::shell {
 
         if (_cameraId == EntityId::None) {
             _cameraId = _previewScene->entities().createEntity();
-            _previewScene->entities().addComponent<component::Camera>(_cameraId);
-            _previewScene->entities().addComponent<component::Transform>(_cameraId);
+            _previewScene->entities().addComponent<CameraComponent>(_cameraId);
+            _previewScene->entities().addComponent<TransformComponent>(_cameraId);
         }
 
-        if (component::Transform* cameraTrans =
-                _previewScene->entities().getComponentSlow<component::Transform>(_cameraId);
+        if (TransformComponent* cameraTrans =
+                _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
             cameraTrans != nullptr) {
             cameraTrans->position = _camera.position;
             cameraTrans->rotation = _camera.rotation;

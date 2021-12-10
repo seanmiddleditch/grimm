@@ -2,6 +2,6 @@
 
 #pragma once
 
-namespace up::component {
-    struct Camera { };
-} // namespace up::component
+namespace up {
+    struct CameraComponent { };
+} // namespace up
