@@ -70,12 +70,9 @@ void up::shell::GameEditor::content() {
         relMotion.z = io.MouseWheel > 0.f ? 1.f : io.MouseWheel < 0 ? -1.f : 0.f;
 
         relMove = {
-            static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_D)) -
-                static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_A)),
-            static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_SPACE)) -
-                static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_C)),
-            static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_W)) -
-                static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_S))};
+            static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_D)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_A)),
+            static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_SPACE)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_C)),
+            static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_W)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_S))};
 
         _space->entities().select<FlyCameraComponent>([&](EntityId, FlyCameraComponent& cam) {
             cam.relativeMovement = relMove;
@@ -94,7 +91,7 @@ void up::shell::GameEditor::content() {
         return;
     }
 
-    if (ImGui::BeginChild("GameContent", contentSize, false)) {
+    if (ImGui::BeginChild("GameContent", contentSize, false, ImGuiWindowFlags_NoScrollWithMouse)) {
         _viewDimensions = {contentSize.x, contentSize.y};
 
         auto const pos = ImGui::GetCursorScreenPos();

@@ -17,7 +17,7 @@
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/camera_controller.h"
+#include "potato/shell/arcball.h"
 #include "potato/shell/editor.h"
 #include "potato/shell/scene_doc.h"
 #include "potato/shell/selection.h"
@@ -28,6 +28,7 @@
 
 #include <glm/glm.hpp>
 #include <nlohmann/json.hpp>
+#include <SDL.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -103,13 +104,13 @@ namespace up::shell {
         : Editor("SceneEditor"_zsv)
         , _previewScene(std::move(previewScene))
         , _doc(std::move(sceneDoc))
-        , _cameraController(_camera)
         , _onPlayClicked(std::move(onPlayClicked))
         , _database(database)
         , _assetLoader(assetLoader) {
         UP_ASSERT(_onPlayClicked);
-        _camera.position = {0, 10, 15};
-        _camera.lookAt({0, 0, 0});
+        _arcballCamera.setTarget({0, 0, 0});
+        _arcballCamera.setBoom(40.f);
+        _arcballCamera.setYawPitch(0.f, -0.25f * glm::pi<float>());
     }
 
     auto SceneEditor::createFactory(
@@ -194,8 +195,17 @@ namespace up::shell {
                 nullptr,
                 (int)ImGuiButtonFlags_PressedOnClick | (int)ImGuiButtonFlags_MouseButtonRight |
                     (int)ImGuiButtonFlags_MouseButtonMiddle);
+            ImGui::SetItemUsingMouseWheel();
             if (ImGui::IsItemActive()) {
                 ImGui::CaptureMouseFromApp();
+
+                movement = {
+                    static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_D)) -
+                        static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_A)),
+                    static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_SPACE)) -
+                        static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_C)),
+                    static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_W)) -
+                        static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_S))};
 
                 if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
                     motion.x = io.MouseDelta.x / contentSize.x * 2;
@@ -211,7 +221,7 @@ namespace up::shell {
                 motion.z = io.MouseWheel > 0.f ? 1.f : io.MouseWheel < 0 ? -1.f : 0.f;
             }
 
-            _cameraController.apply(_camera, movement, motion, io.DeltaTime);
+            _arcballCamera.handleInput(movement, motion, io.DeltaTime);
         }
     }
 
@@ -231,11 +241,9 @@ namespace up::shell {
             _previewScene->entities().addComponent<TransformComponent>(_cameraId);
         }
 
-        if (TransformComponent* cameraTrans =
-                _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
+        if (TransformComponent* cameraTrans = _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
             cameraTrans != nullptr) {
-            cameraTrans->position = _camera.position;
-            cameraTrans->rotation = _camera.rotation;
+            _arcballCamera.applyTransform(*cameraTrans);
         }
 
         if (_buffer != nullptr) {
@@ -258,7 +266,13 @@ namespace up::shell {
         // pixels on the screen; this doesn't really accomplish that, though.
         // Improvements welcome.
         //
-        auto const cameraPos = _camera.position;
+        TransformComponent const* const cameraTrans =
+            _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
+        if (cameraTrans == nullptr) {
+            return;
+        }
+
+        auto const cameraPos = cameraTrans->position;
         auto const logDist = std::log2(std::abs(cameraPos.y));
         auto const spacing = std::max(1, static_cast<int>(logDist) - 3);
 

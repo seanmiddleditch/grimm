@@ -27,7 +27,6 @@
 #include "potato/render/shader.h"
 #include "potato/schema/recon_messages_schema.h"
 #include "potato/schema/scene_schema.h"
-#include "potato/shell/camera_controller.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"
 #include "potato/runtime/path.h"
