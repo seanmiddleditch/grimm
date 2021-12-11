@@ -62,22 +62,25 @@ void up::shell::GameEditor::content() {
         ImGui::SetActiveID(contentId, ctx->CurrentWindow);
         ImGui::SetCaptureRelativeMouseMode(true);
 
-        glm::vec3 relMotion = {0, 0, 0};
-        glm::vec3 relMove = {0, 0, 0};
+        int mouseRelX = 0;
+        int mouseRelY = 0;
+        SDL_GetRelativeMouseState(&mouseRelX, &mouseRelY);
 
-        relMotion.x = io.MouseDelta.x / io.DisplaySize.x;
-        relMotion.y = io.MouseDelta.y / io.DisplaySize.y;
-        relMotion.z = io.MouseWheel > 0.f ? 1.f : io.MouseWheel < 0 ? -1.f : 0.f;
+        glm::vec3 const relMotion = {
+            mouseRelX / io.DisplaySize.x,
+            mouseRelY / io.DisplaySize.y,
+            static_cast<float>(io.MouseWheel > 0.f) - static_cast<float>(io.MouseWheel < 0.f)};
 
-        relMove = {
+        glm::vec3 const relMove = {
             static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_D)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_A)),
             static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_SPACE)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_C)),
             static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_W)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_S))};
 
-        _space->entities().select<FlyCameraComponent>([&](EntityId, FlyCameraComponent& cam) {
-            cam.relativeMovement = relMove;
-            cam.relativeMotion = relMotion;
-        });
+        _space->entities().select<FlyCameraComponent>(
+            [&](EntityId, FlyCameraComponent& cam) {
+                cam.relativeMovement = relMove;
+                cam.relativeMotion = relMotion;
+            });
     }
     else {
         if (ctx->ActiveId == contentId) {

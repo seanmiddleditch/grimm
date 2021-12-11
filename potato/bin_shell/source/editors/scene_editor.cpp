@@ -110,7 +110,7 @@ namespace up::shell {
         UP_ASSERT(_onPlayClicked);
         _arcballCamera.setTarget({0, 0, 0});
         _arcballCamera.setBoom(40.f);
-        _arcballCamera.setYawPitch(0.f, -0.25f * glm::pi<float>());
+        _arcballCamera.setYawPitch(0.f, -glm::quarter_pi<float>());
     }
 
     auto SceneEditor::createFactory(

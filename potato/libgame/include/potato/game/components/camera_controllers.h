@@ -8,6 +8,8 @@ namespace up {
     struct FlyCameraComponent {
         glm::vec3 relativeMovement = {0.f, 0.f, 0.f};
         glm::vec3 relativeMotion = {0.f, 0.f, 0.f};
+        float pitch = 0.f;
+        float yaw = 0.f;
         float moveMetersPerSec = 80.f;
         float rotateRadiansPerSec = 1.f;
     };

@@ -6,7 +6,9 @@
 #include "potato/game/space.h"
 #include "potato/game/system.h"
 
+#include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 namespace up {
     namespace {
@@ -24,19 +26,21 @@ namespace up {
         space().entities().select<TransformComponent, FlyCameraComponent>(
             [frameTime](EntityId, TransformComponent& transform, FlyCameraComponent& flyCam) {
                 // apply movement to transform
-                glm::vec3 const move = transform.right() * flyCam.relativeMovement.x +
-                    transform.up() * flyCam.relativeMovement.y + transform.forward() * flyCam.relativeMovement.z;
-                transform.position += move * flyCam.moveMetersPerSec * frameTime;
+                glm::vec3 moveScale = glm::vec3{1, 1, -1} * flyCam.moveMetersPerSec * frameTime;
+                transform.position += glm::rotate(transform.rotation, flyCam.relativeMovement * moveScale);
 
-                // apply mouse rotation to transform
-                const glm::vec3 angles = glm::eulerAngles(transform.rotation);
-                const float yaw =
-                    glm::mod(angles.y - flyCam.relativeMotion.x * flyCam.rotateRadiansPerSec, glm::two_pi<float>());
-                const float pitch = glm::clamp(
-                    angles.x - flyCam.relativeMotion.y * flyCam.rotateRadiansPerSec,
-                    -glm::half_pi<float>() * 0.9f,
-                    glm::half_pi<float>() * 0.9f);
-                transform.rotation = glm::quat({pitch, yaw, angles.z});
+                // apply horizontal mouse movement
+                flyCam.yaw += std::fmodf(-flyCam.relativeMotion.x * flyCam.rotateRadiansPerSec, glm::two_pi<float>());
+                if (flyCam.yaw < 0.f) {
+                    flyCam.yaw += glm::two_pi<float>();
+                }
+
+                // apply vertical mouse movement; clamp pitch to only look straight up or down (but not upside down)
+                flyCam.pitch = glm::clamp(
+                    flyCam.pitch - flyCam.relativeMotion.y * flyCam.rotateRadiansPerSec,
+                    -glm::half_pi<float>(),
+                    glm::half_pi<float>());
+                transform.rotation = glm::quat({flyCam.pitch, flyCam.yaw, 0});
 
                 // update movement speed from wheel
                 flyCam.moveMetersPerSec = glm::clamp(flyCam.moveMetersPerSec + flyCam.relativeMotion.z, 0.1f, 200.f);
