@@ -35,8 +35,8 @@ namespace up {
 
         space().entities().select<TransformComponent, DemoWaveComponent>(
             [&](EntityId, TransformComponent& trans, DemoWaveComponent&) {
-            trans.position = glm::rotateY(trans.position, deltaTime);
-        });
+                trans.position = glm::rotateY(trans.position, deltaTime);
+            });
 
         space().entities().select<TransformComponent, DemoSpinComponent const>(
             [&](EntityId, TransformComponent& trans, DemoSpinComponent const& spin) {

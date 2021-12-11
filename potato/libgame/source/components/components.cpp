@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "potato/game/components/demo_components.h"
 #include "potato/game/components/camera_component.h"
 #include "potato/game/components/camera_controllers.h"
+#include "potato/game/components/demo_components.h"
 #include "potato/game/components/mesh_component.h"
 #include "potato/game/components/rigidbody_component.h"
 #include "potato/game/components/transform_component.h"

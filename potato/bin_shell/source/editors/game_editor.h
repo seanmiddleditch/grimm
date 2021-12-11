@@ -13,15 +13,12 @@
 namespace up {
     class Space;
     class GpuDevice;
-}
+} // namespace up
 
 namespace up::shell {
     class GameEditor : public Editor {
     public:
-        explicit GameEditor(box<Space> space)
-            : Editor("GameEditor"_zsv)
-            , _space(std::move(space)) {
-        }
+        explicit GameEditor(box<Space> space) : Editor("GameEditor"_zsv), _space(std::move(space)) { }
 
         zstring_view displayName() const override { return "Game"_zsv; }
         zstring_view editorClass() const override { return "potato.editor.game"_zsv; }

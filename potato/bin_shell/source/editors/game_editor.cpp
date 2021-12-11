@@ -76,11 +76,10 @@ void up::shell::GameEditor::content() {
             static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_SPACE)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_C)),
             static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_W)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_S))};
 
-        _space->entities().select<FlyCameraComponent>(
-            [&](EntityId, FlyCameraComponent& cam) {
-                cam.relativeMovement = relMove;
-                cam.relativeMotion = relMotion;
-            });
+        _space->entities().select<FlyCameraComponent>([&](EntityId, FlyCameraComponent& cam) {
+            cam.relativeMovement = relMove;
+            cam.relativeMotion = relMotion;
+        });
     }
     else {
         if (ctx->ActiveId == contentId) {
