@@ -3,27 +3,22 @@
 #pragma once
 
 #include "potato/game/space.h"
-#include "potato/render/camera.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
-#include "potato/shell/camera.h"
-#include "potato/shell/camera_controller.h"
 #include "potato/shell/editor.h"
 #include "potato/spud/hash.h"
 
+#include <glm/vec2.hpp>
+
 namespace up {
     class Space;
-}
+    class GpuDevice;
+} // namespace up
 
 namespace up::shell {
     class GameEditor : public Editor {
     public:
-        explicit GameEditor(box<Space> space)
-            : Editor("GameEditor"_zsv)
-            , _space(std::move(space))
-            , _cameraController(_camera) {
-            _camera.lookAt({0, 10, 15}, {0, 0, 0}, {0, 1, 0});
-        }
+        explicit GameEditor(box<Space> space) : Editor("GameEditor"_zsv), _space(std::move(space)) { }
 
         zstring_view displayName() const override { return "Game"_zsv; }
         zstring_view editorClass() const override { return "potato.editor.game"_zsv; }
@@ -42,9 +37,7 @@ namespace up::shell {
         box<Space> _space;
         rc<GpuTexture> _buffer;
         box<GpuResourceView> _bufferView;
-        box<RenderCamera> _renderCamera;
-        Camera _camera;
-        FlyCameraController _cameraController;
+        EntityId _cameraId = EntityId::None;
         glm::ivec2 _viewDimensions = {0, 0};
         bool _isInputBound = false;
         bool _paused = false;

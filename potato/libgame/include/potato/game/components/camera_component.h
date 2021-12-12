@@ -2,12 +2,6 @@
 
 #pragma once
 
-#include "potato/spud/box.h"
-
-#include <glm/vec3.hpp>
-
 namespace up {
-    struct RigidBodyComponent {
-        float mass = 1.f;
-    };
+    struct CameraComponent { };
 } // namespace up

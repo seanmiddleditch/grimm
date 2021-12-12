@@ -25,12 +25,12 @@ namespace up {
             float tickRate = 1.f / 60.f;
         };
 
-        class RigidBodyObserver final : public ComponentObserver<component::RigidBody> {
+        class RigidBodyObserver final : public ComponentObserver<RigidBodyComponent> {
         public:
             RigidBodyObserver(EntityManager& entities, PhysicsWorld& world) : _entities(entities), _world(world) { }
 
-            void onAdd(EntityId entityId, component::RigidBody& body) override;
-            void onRemove(EntityId entityId, component::RigidBody& body) override;
+            void onAdd(EntityId entityId, RigidBodyComponent& body) override;
+            void onRemove(EntityId entityId, RigidBodyComponent& body) override;
 
         private:
             EntityManager& _entities;
@@ -82,8 +82,8 @@ namespace up {
 
         // Apply physics motion to transforms
         //  TODO: be smarter/faster about this (btMotionState?)
-        space().entities().select<component::Transform, component::RigidBody, BulletBody const>(
-            [&](EntityId, component::Transform& trans, component::RigidBody& body, BulletBody const& bulletBody) {
+        space().entities().select<TransformComponent, RigidBodyComponent, BulletBody const>(
+            [&](EntityId, TransformComponent& trans, RigidBodyComponent& body, BulletBody const& bulletBody) {
                 UP_GUARD_VOID(bulletBody.body != nullptr);
 
                 btTransform const& worldTrans = bulletBody.body->getWorldTransform();
@@ -103,8 +103,8 @@ namespace up {
         space().entities().registerComponent<BulletBody>();
         space().entities().observe(_bodyObserver);
 
-        space().entities().select<component::RigidBody>([&](EntityId entityId, component::RigidBody& body) {
-            auto* const transform = space().entities().getComponentSlow<component::Transform>(entityId);
+        space().entities().select<RigidBodyComponent>([&](EntityId entityId, RigidBodyComponent& body) {
+            auto* const transform = space().entities().getComponentSlow<TransformComponent>(entityId);
             glm::vec3 position = transform != nullptr ? transform->position : glm::vec3{0.f, 0.f, 0.f};
 
             auto& bulletBody = space().entities().addComponent<BulletBody>(entityId);
@@ -120,15 +120,15 @@ namespace up {
         _world.ground = nullptr;
     }
 
-    void RigidBodyObserver::onAdd(EntityId entityId, component::RigidBody& body) {
-        auto* const transform = _entities.getComponentSlow<component::Transform>(entityId);
+    void RigidBodyObserver::onAdd(EntityId entityId, RigidBodyComponent& body) {
+        auto* const transform = _entities.getComponentSlow<TransformComponent>(entityId);
         glm::vec3 position = transform != nullptr ? transform->position : glm::vec3{0.f, 0.f, 0.f};
 
         auto& bulletBody = _entities.addComponent<BulletBody>(entityId);
         bulletBody.body = _world.addRigidBody(position, body.mass);
     }
 
-    void RigidBodyObserver::onRemove(EntityId entityId, component::RigidBody& body) {
+    void RigidBodyObserver::onRemove(EntityId entityId, RigidBodyComponent& body) {
         auto* const bulletBody = _entities.getComponentSlow<BulletBody>(entityId);
         if (bulletBody == nullptr) {
             return;

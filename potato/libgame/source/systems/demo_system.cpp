@@ -27,21 +27,23 @@ namespace up {
     DemoSystem::DemoSystem(Space& space, AudioEngine& audioEngine) : System(space), _audioEngine(audioEngine) { }
 
     void DemoSystem::update(float deltaTime) {
-        using namespace component;
+        space().entities().select<TransformComponent, DemoWaveComponent>(
+            [&](EntityId, TransformComponent& trans, DemoWaveComponent& wave) {
+                wave.offset += deltaTime * .2f;
+                trans.position.y = 1 + 5 * glm::sin(wave.offset * 10);
+            });
 
-        space().entities().select<Transform, Wave>([&](EntityId, Transform& trans, Wave& wave) {
-            wave.offset += deltaTime * .2f;
-            trans.position.y = 1 + 5 * glm::sin(wave.offset * 10);
-        });
+        space().entities().select<TransformComponent, DemoWaveComponent>(
+            [&](EntityId, TransformComponent& trans, DemoWaveComponent&) {
+                trans.position = glm::rotateY(trans.position, deltaTime);
+            });
 
-        space().entities().select<Transform, Wave>(
-            [&](EntityId, Transform& trans, Wave&) { trans.position = glm::rotateY(trans.position, deltaTime); });
+        space().entities().select<TransformComponent, DemoSpinComponent const>(
+            [&](EntityId, TransformComponent& trans, DemoSpinComponent const& spin) {
+                trans.rotation = glm::angleAxis(spin.radians * deltaTime, glm::vec3(0.f, 1.f, 0.f)) * trans.rotation;
+            });
 
-        space().entities().select<Transform, Spin const>([&](EntityId, Transform& trans, Spin const& spin) {
-            trans.rotation = glm::angleAxis(spin.radians * deltaTime, glm::vec3(0.f, 1.f, 0.f)) * trans.rotation;
-        });
-
-        space().entities().select<Ding>([&, this](EntityId, Ding& ding) {
+        space().entities().select<DemoDingComponent>([&, this](EntityId, DemoDingComponent& ding) {
             ding.time += deltaTime;
             if (ding.time > ding.period) {
                 ding.time -= ding.period;

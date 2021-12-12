@@ -169,7 +169,7 @@ void up::ImguiBackend::render(RenderContext& ctx) {
     ImGui::Render();
 
     if (_pipelineState.empty()) {
-        createResources(ctx.device);
+        createResources(ctx.device());
     }
 
     ImDrawData& data = *ImGui::GetDrawData();
@@ -179,11 +179,11 @@ void up::ImguiBackend::render(RenderContext& ctx) {
     UP_GUARD_VOID(data.TotalIdxCount * sizeof(ImDrawIdx) <= bufferSize, "Too many ImGui indices");
     UP_GUARD_VOID(data.TotalVtxCount * sizeof(ImDrawVert) <= bufferSize, "Too many ImGui verticies");
 
-    ctx.commandList.setPipelineState(_pipelineState.get());
-    ctx.commandList.setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
+    ctx.commandList().setPipelineState(_pipelineState.get());
+    ctx.commandList().setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
 
-    auto indices = ctx.commandList.map(_indexBuffer.get(), bufferSize);
-    auto vertices = ctx.commandList.map(_vertexBuffer.get(), bufferSize);
+    auto indices = ctx.commandList().map(_indexBuffer.get(), bufferSize);
+    auto vertices = ctx.commandList().map(_vertexBuffer.get(), bufferSize);
 
     uint32 indexOffset = 0;
     uint32 vertexOffset = 0;
@@ -198,8 +198,8 @@ void up::ImguiBackend::render(RenderContext& ctx) {
         vertexOffset += list.VtxBuffer.Size * sizeof(ImDrawVert);
     }
 
-    ctx.commandList.unmap(_indexBuffer.get(), indices);
-    ctx.commandList.unmap(_vertexBuffer.get(), vertices);
+    ctx.commandList().unmap(_indexBuffer.get(), indices);
+    ctx.commandList().unmap(_vertexBuffer.get(), vertices);
 
     float L = data.DisplayPos.x;
     float R = data.DisplayPos.x + data.DisplaySize.x;
@@ -212,14 +212,14 @@ void up::ImguiBackend::render(RenderContext& ctx) {
         {(R + L) / (L - R), (T + B) / (B - T), 0.5f, 1.0f},
     };
 
-    auto constants = ctx.commandList.map(_constantBuffer.get(), sizeof(mvp));
+    auto constants = ctx.commandList().map(_constantBuffer.get(), sizeof(mvp));
     std::memcpy(constants.data(), mvp, constants.size());
-    ctx.commandList.unmap(_constantBuffer.get(), constants);
+    ctx.commandList().unmap(_constantBuffer.get(), constants);
 
-    ctx.commandList.bindIndexBuffer(_indexBuffer.get(), GpuIndexFormat::Unsigned16, 0);
-    ctx.commandList.bindVertexBuffer(0, _vertexBuffer.get(), sizeof(ImDrawVert));
-    ctx.commandList.bindConstantBuffer(0, _constantBuffer.get(), GpuShaderStage::Vertex);
-    ctx.commandList.bindSampler(0, _sampler.get(), GpuShaderStage::Pixel);
+    ctx.commandList().bindIndexBuffer(_indexBuffer.get(), GpuIndexFormat::Unsigned16, 0);
+    ctx.commandList().bindVertexBuffer(0, _vertexBuffer.get(), sizeof(ImDrawVert));
+    ctx.commandList().bindConstantBuffer(0, _constantBuffer.get(), GpuShaderStage::Vertex);
+    ctx.commandList().bindSampler(0, _sampler.get(), GpuShaderStage::Pixel);
 
     GpuViewportDesc viewport;
     viewport.width = data.DisplaySize.x;
@@ -228,7 +228,7 @@ void up::ImguiBackend::render(RenderContext& ctx) {
     viewport.topY = 0;
     viewport.minDepth = 0;
     viewport.maxDepth = 1;
-    ctx.commandList.setViewport(viewport);
+    ctx.commandList().setViewport(viewport);
 
     indexOffset = 0;
     vertexOffset = 0;
@@ -247,16 +247,16 @@ void up::ImguiBackend::render(RenderContext& ctx) {
             }
 
             auto const srv = static_cast<GpuResourceView*>(cmd.TextureId);
-            ctx.commandList.bindShaderResource(0, srv != nullptr ? srv : _srv.get(), GpuShaderStage::Pixel);
+            ctx.commandList().bindShaderResource(0, srv != nullptr ? srv : _srv.get(), GpuShaderStage::Pixel);
 
             GpuClipRect scissor;
             scissor.left = (uint32)cmd.ClipRect.x - (uint32)pos.x;
             scissor.top = (uint32)cmd.ClipRect.y - (uint32)pos.y;
             scissor.right = (uint32)cmd.ClipRect.z - (uint32)pos.x;
             scissor.bottom = (uint32)cmd.ClipRect.w - (uint32)pos.y;
-            ctx.commandList.setClipRect(scissor);
+            ctx.commandList().setClipRect(scissor);
 
-            ctx.commandList.drawIndexed(cmd.ElemCount, indexOffset, vertexOffset);
+            ctx.commandList().drawIndexed(cmd.ElemCount, indexOffset, vertexOffset);
 
             indexOffset += cmd.ElemCount;
         }

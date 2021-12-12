@@ -5,9 +5,10 @@
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/game/components/camera_component.h"
+#include "potato/game/components/transform_component.h"
 #include "potato/game/space.h"
 #include "potato/reflex/serialize.h"
-#include "potato/render/camera.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
 #include "potato/render/gpu_device.h"
@@ -16,8 +17,7 @@
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/camera.h"
-#include "potato/shell/camera_controller.h"
+#include "potato/shell/arcball.h"
 #include "potato/shell/editor.h"
 #include "potato/shell/scene_doc.h"
 #include "potato/shell/selection.h"
@@ -28,6 +28,7 @@
 
 #include <glm/glm.hpp>
 #include <nlohmann/json.hpp>
+#include <SDL.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -103,12 +104,13 @@ namespace up::shell {
         : Editor("SceneEditor"_zsv)
         , _previewScene(std::move(previewScene))
         , _doc(std::move(sceneDoc))
-        , _cameraController(_camera)
         , _onPlayClicked(std::move(onPlayClicked))
         , _database(database)
         , _assetLoader(assetLoader) {
         UP_ASSERT(_onPlayClicked);
-        _camera.lookAt({0, 10, 15}, {0, 0, 0}, {0, 1, 0});
+        _arcballCamera.setTarget({0, 0, 0});
+        _arcballCamera.setBoom(40.f);
+        _arcballCamera.setYawPitch(0.f, -glm::quarter_pi<float>());
     }
 
     auto SceneEditor::createFactory(
@@ -193,8 +195,17 @@ namespace up::shell {
                 nullptr,
                 (int)ImGuiButtonFlags_PressedOnClick | (int)ImGuiButtonFlags_MouseButtonRight |
                     (int)ImGuiButtonFlags_MouseButtonMiddle);
+            ImGui::SetItemUsingMouseWheel();
             if (ImGui::IsItemActive()) {
                 ImGui::CaptureMouseFromApp();
+
+                movement = {
+                    static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_D)) -
+                        static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_A)),
+                    static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_SPACE)) -
+                        static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_C)),
+                    static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_W)) -
+                        static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_S))};
 
                 if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
                     motion.x = io.MouseDelta.x / contentSize.x * 2;
@@ -210,7 +221,7 @@ namespace up::shell {
                 motion.z = io.MouseWheel > 0.f ? 1.f : io.MouseWheel < 0 ? -1.f : 0.f;
             }
 
-            _cameraController.apply(_camera, movement, motion, io.DeltaTime);
+            _arcballCamera.handleInput(movement, motion, io.DeltaTime);
         }
     }
 
@@ -224,21 +235,26 @@ namespace up::shell {
             _resize(renderer.device(), _sceneDimensions);
         }
 
-        if (_renderCamera == nullptr) {
-            _renderCamera = new_box<RenderCamera>();
+        if (_cameraId == EntityId::None) {
+            _cameraId = _previewScene->entities().createEntity();
+            _previewScene->entities().addComponent<CameraComponent>(_cameraId);
+            _previewScene->entities().addComponent<TransformComponent>(_cameraId);
+        }
+
+        if (auto* const cameraTrans = _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
+            cameraTrans != nullptr) {
+            _arcballCamera.applyTransform(*cameraTrans);
         }
 
         if (_buffer != nullptr) {
             renderer.beginFrame();
             auto ctx = renderer.context();
 
-            _renderCamera->resetBackBuffer(_buffer);
+            ctx.bindBackBuffer(_buffer);
             if (_enableGrid) {
                 _drawGrid();
             }
-            _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
             _previewScene->render(ctx);
-            renderer.flushDebugDraw(deltaTime);
             renderer.endFrame(deltaTime);
         }
     }
@@ -250,7 +266,13 @@ namespace up::shell {
         // pixels on the screen; this doesn't really accomplish that, though.
         // Improvements welcome.
         //
-        auto const cameraPos = _camera.position();
+        TransformComponent const* const cameraTrans =
+            _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
+        if (cameraTrans == nullptr) {
+            return;
+        }
+
+        auto const cameraPos = cameraTrans->position;
         auto const logDist = std::log2(std::abs(cameraPos.y));
         auto const spacing = std::max(1, static_cast<int>(logDist) - 3);
 

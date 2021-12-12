@@ -26,7 +26,6 @@ namespace up {
         Renderer& operator=(Renderer const&) = delete;
 
         UP_RENDER_API void beginFrame();
-        UP_RENDER_API void flushDebugDraw(float frameTime);
         UP_RENDER_API void endFrame(float frameTime);
 
         UP_RENDER_API RenderContext context();
@@ -37,6 +36,8 @@ namespace up {
         UP_RENDER_API void registerAssetBackends(AssetLoader& assetLoader);
 
     private:
+        void _flushDebugDraw(float frameTime);
+
         rc<GpuDevice> _device;
         box<GpuCommandList> _commandList;
         box<GpuBuffer> _frameDataBuffer;

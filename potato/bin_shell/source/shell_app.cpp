@@ -14,7 +14,6 @@
 #include "potato/editor/imgui_ext.h"
 #include "potato/editor/project.h"
 #include "potato/game/space.h"
-#include "potato/render/camera.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
 #include "potato/render/gpu_command_list.h"
@@ -28,8 +27,6 @@
 #include "potato/render/shader.h"
 #include "potato/schema/recon_messages_schema.h"
 #include "potato/schema/scene_schema.h"
-#include "potato/shell/camera.h"
-#include "potato/shell/camera_controller.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"
 #include "potato/runtime/path.h"
@@ -67,7 +64,6 @@ up::shell::ShellApp::~ShellApp() {
     _imguiBackend.releaseResources();
 
     _renderer.reset();
-    _uiRenderCamera.reset();
     _swapChain.reset();
     _window.reset();
 
@@ -263,9 +259,6 @@ int up::shell::ShellApp::initialize() {
         return 1;
     }
 
-    _uiRenderCamera = new_box<RenderCamera>();
-    _uiRenderCamera->resetBackBuffer(_swapChain->getBuffer(0));
-
     _imguiBackend.createResources(*_device);
 
     _sceneDatabase.registerComponent<TransformEditComponent>();
@@ -453,10 +446,8 @@ void up::shell::ShellApp::_onWindowSizeChanged() {
     int width = 0;
     int height = 0;
     SDL_GetWindowSize(_window.get(), &width, &height);
-    _uiRenderCamera->resetBackBuffer(nullptr);
     _renderer->commandList().clear();
     _swapChain->resizeBuffers(width, height);
-    _uiRenderCamera->resetBackBuffer(_swapChain->getBuffer(0));
 
     _logger.info("Window resized: {}x{}", width, height);
 }
@@ -576,8 +567,8 @@ void up::shell::ShellApp::_render() {
     _renderer->beginFrame();
     auto ctx = _renderer->context();
 
-    _uiRenderCamera->resetBackBuffer(_swapChain->getBuffer(0));
-    _uiRenderCamera->beginFrame(ctx, {}, glm::identity<glm::mat4x4>());
+    ctx.bindBackBuffer(_swapChain->getBuffer(0));
+    ctx.applyCameraScreen();
     _imguiBackend.render(ctx);
     _renderer->endFrame(_lastFrameTime);
 

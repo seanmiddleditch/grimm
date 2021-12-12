@@ -20,10 +20,8 @@ namespace up {
     void registerTransformSystem(Space& space) { space.addSystem<TransformSystem>(); }
 
     void TransformSystem::update(float) {
-        using namespace component;
-
-        space().entities().select<Transform>([&](EntityId, Transform& trans) {
-            trans.transform = glm::translate(trans.position) * glm::mat4_cast(trans.rotation);
+        space().entities().select<TransformComponent>([&](EntityId, TransformComponent& trans) {
+            trans.matrix = glm::translate(trans.position) * glm::mat4_cast(trans.rotation);
         });
     }
 } // namespace up

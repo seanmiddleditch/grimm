@@ -2,14 +2,14 @@
 
 #pragma once
 
+#include "potato/game/transform.h"
+
 #include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
-namespace up::component {
-    struct Transform {
-        glm::vec3 position;
-        glm::quat rotation;
-        glm::mat4x4 transform;
+namespace up {
+    struct TransformComponent : Transform {
+        glm::mat4x4 matrix = {};
     };
-} // namespace up::component
+} // namespace up

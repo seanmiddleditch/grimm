@@ -63,19 +63,19 @@ namespace up {
         bool syncGame(Space& space, EntityId entityId, SceneComponent const& component) const override;
     };
 
-    class WaveEditComponent final : public SimpleEditComponent<scene::components::Wave, component::Wave> {
-        component::Wave createFrom(scene::components::Wave const& sceneComponent) const override;
+    class WaveEditComponent final : public SimpleEditComponent<scene::components::Wave, DemoWaveComponent> {
+        DemoWaveComponent createFrom(scene::components::Wave const& sceneComponent) const override;
     };
 
-    class SpinEditComponent final : public SimpleEditComponent<scene::components::Spin, component::Spin> {
-        component::Spin createFrom(scene::components::Spin const& sceneComponent) const override;
+    class SpinEditComponent final : public SimpleEditComponent<scene::components::Spin, DemoSpinComponent> {
+        DemoSpinComponent createFrom(scene::components::Spin const& sceneComponent) const override;
     };
 
-    class DingEditComponent final : public SimpleEditComponent<scene::components::Ding, component::Ding> {
-        component::Ding createFrom(scene::components::Ding const& sceneComponent) const override;
+    class DingEditComponent final : public SimpleEditComponent<scene::components::Ding, DemoDingComponent> {
+        DemoDingComponent createFrom(scene::components::Ding const& sceneComponent) const override;
     };
 
-    class BodyEditComponent final : public SimpleEditComponent<scene::components::Body, component::RigidBody> {
-        component::RigidBody createFrom(scene::components::Body const& sceneComponent) const override;
+    class BodyEditComponent final : public SimpleEditComponent<scene::components::Body, RigidBodyComponent> {
+        RigidBodyComponent createFrom(scene::components::Body const& sceneComponent) const override;
     };
 } // namespace up

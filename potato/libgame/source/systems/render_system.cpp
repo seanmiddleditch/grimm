@@ -1,5 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
+#include "potato/game/components/camera_component.h"
 #include "potato/game/components/mesh_component.h"
 #include "potato/game/components/transform_component.h"
 #include "potato/game/entity_manager.h"
@@ -23,12 +24,15 @@ namespace up {
     void RenderSystem::update(float) { }
 
     void RenderSystem::render(RenderContext& ctx) {
-        using namespace component;
+        space().entities().select<CameraComponent, TransformComponent const>(
+            [&](EntityId, CameraComponent& camera, TransformComponent const& trans) {
+                ctx.applyCameraPerspective(trans.position, trans.forward(), trans.up());
+            });
 
-        space().entities().select<component::Mesh, Transform const>(
-            [&](EntityId, component::Mesh& mesh, Transform const& trans) {
+        space().entities().select<MeshComponent, TransformComponent const>(
+            [&](EntityId, MeshComponent& mesh, TransformComponent const& trans) {
                 if (mesh.mesh.ready() && mesh.material.ready()) {
-                    mesh.mesh.asset()->render(ctx, mesh.material.asset(), trans.transform);
+                    mesh.mesh.asset()->render(ctx, mesh.material.asset(), trans.matrix);
                 }
             });
     }

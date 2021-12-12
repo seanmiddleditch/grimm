@@ -12,20 +12,21 @@ auto up::TransformEditComponent::data(SceneComponent const& component) noexcept 
 }
 
 bool up::TransformEditComponent::syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const {
-    space.entities().addComponent(
-        entityId,
-        component::Transform{.position = data(component).position, .rotation = data(component).rotation});
+    auto& trans = space.entities().addComponent<TransformComponent>(entityId);
+    trans.position = data(component).position;
+    trans.rotation = data(component).rotation;
     return true;
 }
 
 bool up::TransformEditComponent::syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const {
-    *space.entities().getComponentSlow<component::Transform>(entityId) =
-        component::Transform{.position = data(component).position, .rotation = data(component).rotation};
+    auto& trans = *space.entities().getComponentSlow<TransformComponent>(entityId);
+    trans.position = data(component).position;
+    trans.rotation = data(component).rotation;
     return true;
 }
 
 bool up::TransformEditComponent::syncRemove(Space& space, EntityId entityId, SceneComponent const& component) const {
-    space.entities().removeComponent<component::Transform>(entityId);
+    space.entities().removeComponent<TransformComponent>(entityId);
     return true;
 }
 
@@ -40,18 +41,18 @@ auto up::MeshEditComponent::data(SceneComponent const& component) noexcept -> sc
 bool up::MeshEditComponent::syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const {
     space.entities().addComponent(
         entityId,
-        component::Mesh{.mesh = data(component).mesh, .material = data(component).material});
+        MeshComponent{.mesh = data(component).mesh, .material = data(component).material});
     return true;
 }
 
 bool up::MeshEditComponent::syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const {
-    *space.entities().getComponentSlow<component::Mesh>(entityId) =
-        component::Mesh{.mesh = data(component).mesh, .material = data(component).material};
+    *space.entities().getComponentSlow<MeshComponent>(entityId) =
+        MeshComponent{.mesh = data(component).mesh, .material = data(component).material};
     return true;
 }
 
 bool up::MeshEditComponent::syncRemove(Space& space, EntityId entityId, SceneComponent const& component) const {
-    space.entities().removeComponent<component::Mesh>(entityId);
+    space.entities().removeComponent<MeshComponent>(entityId);
     return true;
 }
 
@@ -59,18 +60,18 @@ bool up::MeshEditComponent::syncGame(Space& space, EntityId entityId, SceneCompo
     return syncAdd(space, entityId, component);
 }
 
-auto up::WaveEditComponent::createFrom(scene::components::Wave const& sceneComponent) const -> component::Wave {
+auto up::WaveEditComponent::createFrom(scene::components::Wave const& sceneComponent) const -> DemoWaveComponent {
     return {.time = 0, .offset = sceneComponent.offset};
 }
 
-auto up::SpinEditComponent::createFrom(scene::components::Spin const& sceneComponent) const -> component::Spin {
+auto up::SpinEditComponent::createFrom(scene::components::Spin const& sceneComponent) const -> DemoSpinComponent {
     return {.radians = sceneComponent.radians};
 }
 
-auto up::DingEditComponent::createFrom(scene::components::Ding const& sceneComponent) const -> component::Ding {
+auto up::DingEditComponent::createFrom(scene::components::Ding const& sceneComponent) const -> DemoDingComponent {
     return {.period = sceneComponent.period, .time = 0, .sound = sceneComponent.sound};
 }
 
-auto up::BodyEditComponent::createFrom(scene::components::Body const& sceneComponent) const -> component::RigidBody {
+auto up::BodyEditComponent::createFrom(scene::components::Body const& sceneComponent) const -> RigidBodyComponent {
     return {};
 }

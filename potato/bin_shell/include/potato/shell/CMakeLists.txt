@@ -1,7 +1,6 @@
 target_sources(potato_shell PRIVATE
+    "arcball.h"
     "_export.h"
-    "camera.h"
-    "camera_controller.h"
     "editor.h"
     "log_history.h"
     "scene_doc.h"

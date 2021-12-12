@@ -3,15 +3,16 @@
 #include "game_editor.h"
 
 #include "potato/editor/imgui_ext.h"
-#include "potato/render/camera.h"
+#include "potato/game/components/camera_component.h"
+#include "potato/game/components/camera_controllers.h"
+#include "potato/game/components/transform_component.h"
+#include "potato/game/transform.h"
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/camera.h"
-#include "potato/shell/camera_controller.h"
 #include "potato/shell/editor.h"
 
 #include <glm/glm.hpp>
@@ -61,22 +62,24 @@ void up::shell::GameEditor::content() {
         ImGui::SetActiveID(contentId, ctx->CurrentWindow);
         ImGui::SetCaptureRelativeMouseMode(true);
 
-        glm::vec3 relMotion = {0, 0, 0};
-        glm::vec3 relMove = {0, 0, 0};
+        int mouseRelX = 0;
+        int mouseRelY = 0;
+        SDL_GetRelativeMouseState(&mouseRelX, &mouseRelY);
 
-        relMotion.x = io.MouseDelta.x / io.DisplaySize.x;
-        relMotion.y = io.MouseDelta.y / io.DisplaySize.y;
-        relMotion.z = io.MouseWheel > 0.f ? 1.f : io.MouseWheel < 0 ? -1.f : 0.f;
+        glm::vec3 const relMotion = {
+            static_cast<float>(mouseRelX) / io.DisplaySize.x,
+            static_cast<float>(mouseRelY) / io.DisplaySize.y,
+            static_cast<float>(io.MouseWheel > 0.f) - static_cast<float>(io.MouseWheel < 0.f)};
 
-        relMove = {
-            static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_D)) -
-                static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_A)),
-            static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_SPACE)) -
-                static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_C)),
-            static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_W)) -
-                static_cast<int>(ImGui::IsKeyPressed(SDL_SCANCODE_S))};
+        glm::vec3 const relMove = {
+            static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_D)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_A)),
+            static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_SPACE)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_C)),
+            static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_W)) - static_cast<int>(ImGui::IsKeyDown(SDL_SCANCODE_S))};
 
-        _cameraController.apply(_camera, relMove, relMotion, io.DeltaTime);
+        _space->entities().select<FlyCameraComponent>([&](EntityId, FlyCameraComponent& cam) {
+            cam.relativeMovement = relMove;
+            cam.relativeMotion = relMotion;
+        });
     }
     else {
         if (ctx->ActiveId == contentId) {
@@ -90,7 +93,7 @@ void up::shell::GameEditor::content() {
         return;
     }
 
-    if (ImGui::BeginChild("GameContent", contentSize, false)) {
+    if (ImGui::BeginChild("GameContent", contentSize, false, ImGuiWindowFlags_NoScrollWithMouse)) {
         _viewDimensions = {contentSize.x, contentSize.y};
 
         auto const pos = ImGui::GetCursorScreenPos();
@@ -120,20 +123,28 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
         _resize(renderer.device(), _viewDimensions);
     }
 
-    if (_renderCamera == nullptr) {
-        _renderCamera = new_box<RenderCamera>();
+    if (_cameraId == EntityId::None) {
+        _cameraId = _space->entities().createEntity();
+        _space->entities().addComponent<CameraComponent>(_cameraId);
+        _space->entities().addComponent<FlyCameraComponent>(_cameraId);
+        auto& trans = _space->entities().addComponent<TransformComponent>(_cameraId);
+
+        Transform t;
+        t.position = {0, 10, 15};
+        t.lookAt({0, 0, 0});
+
+        trans.position = t.position;
+        trans.rotation = t.rotation;
     }
 
     if (_buffer != nullptr) {
         renderer.beginFrame();
         auto ctx = renderer.context();
 
-        _renderCamera->resetBackBuffer(_buffer);
-        _renderCamera->beginFrame(ctx, _camera.position(), _camera.matrix());
+        ctx.bindBackBuffer(_buffer);
         if (_space != nullptr) {
             _space->render(ctx);
         }
-        renderer.flushDebugDraw(deltaTime);
         renderer.endFrame(deltaTime);
     }
 }

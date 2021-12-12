@@ -45,21 +45,21 @@ void up::Material::bindMaterialToRender(RenderContext& ctx) {
         pipelineDesc.vertShader = _vertexShader.asset()->content();
         pipelineDesc.pixelShader = _pixelShader.asset()->content();
         pipelineDesc.inputLayout = layout;
-        _state = ctx.device.createPipelineState(pipelineDesc);
+        _state = ctx.device().createPipelineState(pipelineDesc);
 
         int texIndex = 0;
         for (auto const& tex : _textures) {
-            _srvs[texIndex] = ctx.device.createShaderResourceView(&tex.asset()->texture());
-            _samplers[texIndex++] = ctx.device.createSampler();
+            _srvs[texIndex] = ctx.device().createShaderResourceView(&tex.asset()->texture());
+            _samplers[texIndex++] = ctx.device().createSampler();
         }
     }
 
-    ctx.commandList.setPipelineState(_state.get());
+    ctx.commandList().setPipelineState(_state.get());
 
     int texIndex = 0;
     for (auto const& srv : _srvs) {
-        ctx.commandList.bindSampler(texIndex, _samplers[texIndex].get(), GpuShaderStage::Pixel);
-        ctx.commandList.bindShaderResource(texIndex++, srv.get(), GpuShaderStage::Pixel);
+        ctx.commandList().bindSampler(texIndex, _samplers[texIndex].get(), GpuShaderStage::Pixel);
+        ctx.commandList().bindShaderResource(texIndex++, srv.get(), GpuShaderStage::Pixel);
     }
 }
 

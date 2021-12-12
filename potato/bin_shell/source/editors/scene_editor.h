@@ -3,12 +3,10 @@
 #pragma once
 
 #include "potato/editor/property_grid.h"
-#include "potato/render/camera.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_texture.h"
-#include "potato/shell/camera.h"
-#include "potato/shell/camera_controller.h"
+#include "potato/shell/arcball.h"
 #include "potato/shell/editor.h"
 #include "potato/shell/scene_doc.h"
 #include "potato/shell/selection.h"
@@ -63,9 +61,7 @@ namespace up::shell {
         box<Space> _previewScene;
         box<SceneDocument> _doc;
         box<GpuResourceView> _bufferView;
-        box<RenderCamera> _renderCamera;
-        Camera _camera;
-        ArcBallCameraController _cameraController;
+        ArcBallCameraController _arcballCamera;
         SelectionState _selection;
         PropertyGrid _propertyGrid;
         HandlePlayClicked _onPlayClicked;
@@ -74,6 +70,7 @@ namespace up::shell {
         bool _create = false;
         bool _delete = false;
         SceneEntityId _targetId = SceneEntityId::None;
+        EntityId _cameraId = EntityId::None;
         SceneDatabase& _database;
         AssetLoader& _assetLoader;
     };
