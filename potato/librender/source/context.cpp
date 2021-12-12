@@ -23,10 +23,9 @@ namespace {
 } // namespace
 
 namespace up {
-    RenderContext::RenderContext(GpuDevice& device, GpuCommandList& commands, double frameTime)
+    RenderContext::RenderContext(GpuDevice& device, GpuCommandList& commands)
         : _device(device)
-        , _commandList(commands)
-        , _frameTime(frameTime) { }
+        , _commandList(commands) { }
 
     RenderContext::~RenderContext() = default;
 

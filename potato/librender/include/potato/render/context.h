@@ -19,7 +19,7 @@ namespace up {
 
     class RenderContext {
     public:
-        UP_RENDER_API RenderContext(GpuDevice& device, GpuCommandList& commands, double frameTime);
+        UP_RENDER_API RenderContext(GpuDevice& device, GpuCommandList& commands);
         UP_RENDER_API ~RenderContext();
 
         UP_RENDER_API void bindBackBuffer(rc<GpuTexture> target, rc<GpuTexture> depthStencil = nullptr);
@@ -39,6 +39,5 @@ namespace up {
         rc<GpuTexture> _depthStencilBuffer;
         box<GpuResourceView> _rtv;
         box<GpuResourceView> _dsv;
-        double _frameTime = 0;
     };
 } // namespace up
