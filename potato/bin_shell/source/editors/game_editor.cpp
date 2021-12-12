@@ -67,8 +67,8 @@ void up::shell::GameEditor::content() {
         SDL_GetRelativeMouseState(&mouseRelX, &mouseRelY);
 
         glm::vec3 const relMotion = {
-            mouseRelX / io.DisplaySize.x,
-            mouseRelY / io.DisplaySize.y,
+            static_cast<float>(mouseRelX) / io.DisplaySize.x,
+            static_cast<float>(mouseRelY) / io.DisplaySize.y,
             static_cast<float>(io.MouseWheel > 0.f) - static_cast<float>(io.MouseWheel < 0.f)};
 
         glm::vec3 const relMove = {
