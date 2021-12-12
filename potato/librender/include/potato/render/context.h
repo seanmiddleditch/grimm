@@ -32,13 +32,13 @@ namespace up {
     private:
         void UP_VECTORCALL _applyCamera(glm::vec3 position, glm::mat4x4 cameraMatrix);
 
-        double _frameTime = 0;
-        GpuCommandList& _commandList;
         GpuDevice& _device;
+        GpuCommandList& _commandList;
         box<GpuBuffer> _cameraDataBuffer;
         rc<GpuTexture> _backBuffer;
         rc<GpuTexture> _depthStencilBuffer;
         box<GpuResourceView> _rtv;
         box<GpuResourceView> _dsv;
+        double _frameTime = 0;
     };
 } // namespace up

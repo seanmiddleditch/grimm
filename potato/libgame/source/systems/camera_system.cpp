@@ -30,7 +30,7 @@ namespace up {
                 transform.position += glm::rotate(transform.rotation, flyCam.relativeMovement * moveScale);
 
                 // apply horizontal mouse movement
-                flyCam.yaw += std::fmodf(-flyCam.relativeMotion.x * flyCam.rotateRadiansPerSec, glm::two_pi<float>());
+                flyCam.yaw += std::fmod(-flyCam.relativeMotion.x * flyCam.rotateRadiansPerSec, glm::two_pi<float>());
                 if (flyCam.yaw < 0.f) {
                     flyCam.yaw += glm::two_pi<float>();
                 }
