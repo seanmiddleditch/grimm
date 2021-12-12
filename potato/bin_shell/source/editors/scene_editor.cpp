@@ -241,7 +241,7 @@ namespace up::shell {
             _previewScene->entities().addComponent<TransformComponent>(_cameraId);
         }
 
-        if (TransformComponent* cameraTrans = _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
+        if (auto* const cameraTrans = _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
             cameraTrans != nullptr) {
             _arcballCamera.applyTransform(*cameraTrans);
         }
