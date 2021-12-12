@@ -10,6 +10,6 @@
 
 namespace up {
     struct TransformComponent : Transform {
-        glm::mat4x4 matrix;
+        glm::mat4x4 matrix = {};
     };
 } // namespace up

@@ -26,13 +26,15 @@ namespace up {
         UP_RENDER_API void UP_VECTORCALL applyCameraPerspective(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
         UP_RENDER_API void applyCameraScreen();
 
-        double frameTime = 0;
-        GpuCommandList& commandList;
-        GpuDevice& device;
+        GpuCommandList& commandList() noexcept { return _commandList; }
+        GpuDevice& device() noexcept { return _device; }
 
     private:
         void UP_VECTORCALL _applyCamera(glm::vec3 position, glm::mat4x4 cameraMatrix);
 
+        double _frameTime = 0;
+        GpuCommandList& _commandList;
+        GpuDevice& _device;
         box<GpuBuffer> _cameraDataBuffer;
         rc<GpuTexture> _backBuffer;
         rc<GpuTexture> _depthStencilBuffer;
