@@ -10,8 +10,8 @@
 
 namespace up {
     struct Transform {
-        glm::vec3 position;
-        glm::quat rotation;
+        glm::vec3 position = {0, 0, 0};
+        glm::quat rotation = glm::identity<glm::quat>();
         float scale = 1.f;
 
         glm::vec3 UP_VECTORCALL forward() const noexcept { return rotation * glm::vec3{0.f, 0.f, -1.f}; }
