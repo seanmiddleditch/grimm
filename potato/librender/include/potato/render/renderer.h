@@ -10,7 +10,7 @@
 #include "potato/spud/zstring_view.h"
 
 namespace up {
-    class GpuBuffer;
+    class GpuResource;
     class GpuCommandList;
     class GpuPipelineState;
     class GpuDevice;
@@ -26,25 +26,25 @@ namespace up {
         Renderer& operator=(Renderer const&) = delete;
 
         UP_RENDER_API void beginFrame();
-        UP_RENDER_API void endFrame(float frameTime);
 
         UP_RENDER_API RenderContext context();
-
         GpuDevice& device() const noexcept { return *_device; }
-        GpuCommandList& commandList() const noexcept { return *_commandList; }
+        float frameTimestep() const noexcept { return static_cast<float>(_frameTimestep); }
 
+        UP_RENDER_API rc<GpuCommandList> createCommandList() const noexcept;
         UP_RENDER_API void registerAssetBackends(AssetLoader& assetLoader);
 
-    private:
-        void _flushDebugDraw(float frameTime);
+        UP_RENDER_API void beginImguiFrame();
+        UP_RENDER_API void renderImgui(GpuCommandList& commandList);
 
+        UP_RENDER_API void renderDebugDraw(GpuCommandList& commandList);
+
+    private:
         rc<GpuDevice> _device;
-        box<GpuCommandList> _commandList;
-        box<GpuBuffer> _frameDataBuffer;
-        box<GpuPipelineState> _debugState;
-        box<GpuBuffer> _debugBuffer;
+        rc<GpuResource> _frameDataBuffer;
         uint32 _frameCounter = 0;
         uint64 _startTimestamp = 0;
         double _frameTimestamp = 0;
+        double _frameTimestep = 0;
     };
 } // namespace up

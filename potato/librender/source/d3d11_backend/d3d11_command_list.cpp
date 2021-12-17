@@ -1,7 +1,7 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "d3d11_command_list.h"
 #include "d3d11_buffer.h"
+#include "d3d11_command_list.h"
 #include "d3d11_pipeline_state.h"
 #include "d3d11_platform.h"
 #include "d3d11_resource_view.h"
@@ -17,14 +17,14 @@ up::d3d11::CommandListD3D11::CommandListD3D11(com_ptr<ID3D11DeviceContext> conte
 up::d3d11::CommandListD3D11::~CommandListD3D11() = default;
 
 auto up::d3d11::CommandListD3D11::createCommandList(ID3D11Device* device, GpuPipelineState* pipelineState)
-    -> box<CommandListD3D11> {
+    -> rc<CommandListD3D11> {
     com_ptr<ID3D11DeviceContext> context;
     HRESULT hr = device->CreateDeferredContext(0, out_ptr(context));
     if (FAILED(hr) || context == nullptr) {
         return nullptr;
     }
 
-    return new_box<CommandListD3D11>(std::move(context));
+    return new_shared<CommandListD3D11>(std::move(context));
 }
 
 void up::d3d11::CommandListD3D11::setPipelineState(GpuPipelineState* state) {
@@ -42,33 +42,34 @@ void up::d3d11::CommandListD3D11::setPipelineState(GpuPipelineState* state) {
     _context->OMSetDepthStencilState(params.depthStencilState.get(), 0);
 }
 
-void up::d3d11::CommandListD3D11::bindRenderTarget(up::uint32 index, GpuResourceView* view) {
-    UP_ASSERT(index < maxRenderTargetBindings);
+void up::d3d11::CommandListD3D11::bindRenderTargets(span<GpuResourceView* const> renderTargets, GpuResourceView* depthStencil) {
+    UP_ASSERT(renderTargets.size() < maxRenderTargetBindings);
 
-    if (view == nullptr) {
-        _rtv[index].reset();
-        return;
+    size_t index = 0;
+    for (; index != renderTargets.size(); ++index) {
+        auto rtv = static_cast<ResourceViewD3D11*>(renderTargets[index]);
+        UP_ASSERT(rtv->type() == GpuViewType::RTV);
+        _rtv[index] = rtv->getView().as<ID3D11RenderTargetView>();
+    }
+    for (; index != maxRenderTargetBindings; ++index) {
+        _rtv[index] = nullptr;
     }
 
-    auto rtv = static_cast<ResourceViewD3D11*>(view);
-    UP_ASSERT(rtv->type() == GpuViewType::RTV);
-
-    _rtv[index] = rtv->getView().as<ID3D11RenderTargetView>();
+    if (depthStencil != nullptr) {
+        auto dsv = static_cast<ResourceViewD3D11*>(depthStencil);
+        UP_GUARD_VOID(dsv->type() == GpuViewType::DSV);
+        _dsv = dsv->getView().as<ID3D11DepthStencilView>();
+    }
+    else {
+        _dsv = nullptr;
+    }
 
     _bindingsDirty = true;
 }
 
-void up::d3d11::CommandListD3D11::bindDepthStencil(GpuResourceView* view) {
-    auto dsv = static_cast<ResourceViewD3D11*>(view);
-    UP_ASSERT(dsv->type() == GpuViewType::DSV);
-
-    _dsv = dsv->getView().as<ID3D11DepthStencilView>();
-    _bindingsDirty = true;
-}
-
-void up::d3d11::CommandListD3D11::bindIndexBuffer(GpuBuffer* buffer, GpuIndexFormat indexType, up::uint32 offset) {
-    UP_ASSERT(buffer != nullptr);
-    UP_ASSERT(buffer->type() == GpuBufferType::Index);
+void up::d3d11::CommandListD3D11::bindIndexBuffer(GpuResource* buffer, GpuIndexFormat indexType, up::uint32 offset) {
+    UP_GUARD_VOID(buffer != nullptr);
+    UP_GUARD_VOID(buffer->bufferType() == GpuBufferType::Index);
 
     auto d3dBuffer = static_cast<BufferD3D11*>(buffer);
     auto* d3d11Buffer = static_cast<ID3D11Buffer*>(d3dBuffer->buffer().get());
@@ -79,11 +80,11 @@ void up::d3d11::CommandListD3D11::bindIndexBuffer(GpuBuffer* buffer, GpuIndexFor
 
 void up::d3d11::CommandListD3D11::bindVertexBuffer(
     up::uint32 slot,
-    GpuBuffer* buffer,
+    GpuResource* buffer,
     up::uint64 stride,
     up::uint64 offset) {
-    UP_ASSERT(buffer != nullptr);
-    UP_ASSERT(buffer->type() == GpuBufferType::Vertex);
+    UP_GUARD_VOID(buffer != nullptr);
+    UP_GUARD_VOID(buffer->bufferType() == GpuBufferType::Vertex);
 
     auto d3dBuffer = static_cast<BufferD3D11*>(buffer);
     auto* d3d11Buffer = static_cast<ID3D11Buffer*>(d3dBuffer->buffer().get());
@@ -93,9 +94,9 @@ void up::d3d11::CommandListD3D11::bindVertexBuffer(
     _context->IASetVertexBuffers(slot, 1, &d3d11Buffer, &d3dStride, &d3dOffset);
 }
 
-void up::d3d11::CommandListD3D11::bindConstantBuffer(up::uint32 slot, GpuBuffer* buffer, GpuShaderStage stage) {
-    UP_ASSERT(buffer != nullptr);
-    UP_ASSERT(buffer->type() == GpuBufferType::Constant);
+void up::d3d11::CommandListD3D11::bindConstantBuffer(up::uint32 slot, GpuResource* buffer, GpuShaderStage stage) {
+    UP_GUARD_VOID(buffer != nullptr);
+    UP_GUARD_VOID(buffer->bufferType() == GpuBufferType::Constant);
 
     auto d3dBuffer = static_cast<BufferD3D11*>(buffer);
     auto* d3d11Buffer = static_cast<ID3D11Buffer*>(d3dBuffer->buffer().get());
@@ -109,7 +110,7 @@ void up::d3d11::CommandListD3D11::bindConstantBuffer(up::uint32 slot, GpuBuffer*
 }
 
 void up::d3d11::CommandListD3D11::bindShaderResource(up::uint32 slot, GpuResourceView* view, GpuShaderStage stage) {
-    UP_ASSERT(view != nullptr);
+    UP_GUARD_VOID(view != nullptr);
 
     auto buffer = static_cast<ResourceViewD3D11*>(view);
     auto* srv = static_cast<ID3D11ShaderResourceView*>(buffer->getView().get());
@@ -123,7 +124,7 @@ void up::d3d11::CommandListD3D11::bindShaderResource(up::uint32 slot, GpuResourc
 }
 
 void up::d3d11::CommandListD3D11::bindSampler(up::uint32 slot, GpuSampler* sampler, GpuShaderStage stage) {
-    UP_ASSERT(sampler != nullptr);
+    UP_GUARD_VOID(sampler != nullptr);
 
     auto d3dSampler = static_cast<SamplerD3D11*>(sampler);
     auto* nativeSampler = static_cast<ID3D11SamplerState*>(d3dSampler->get().get());
@@ -198,11 +199,7 @@ void up::d3d11::CommandListD3D11::clearDepthStencil(GpuResourceView* view) {
         0);
 }
 
-void up::d3d11::CommandListD3D11::finish() {
-    _context->FinishCommandList(FALSE, out_ptr(_commands));
-}
-
-void up::d3d11::CommandListD3D11::clear(GpuPipelineState* pipelineState) {
+void up::d3d11::CommandListD3D11::begin(GpuPipelineState* pipelineState) {
     _context->ClearState();
     _context->RSSetScissorRects(0, nullptr);
     _commands.reset();
@@ -211,7 +208,11 @@ void up::d3d11::CommandListD3D11::clear(GpuPipelineState* pipelineState) {
     }
 }
 
-auto up::d3d11::CommandListD3D11::map(GpuBuffer* buffer, up::uint64 size, up::uint64 offset) -> span<up::byte> {
+void up::d3d11::CommandListD3D11::finish() {
+    _context->FinishCommandList(FALSE, out_ptr(_commands));
+}
+
+auto up::d3d11::CommandListD3D11::map(GpuResource* buffer, up::uint64 size, up::uint64 offset) -> span<up::byte> {
     if (buffer == nullptr) {
         return {};
     }
@@ -231,7 +232,7 @@ auto up::d3d11::CommandListD3D11::map(GpuBuffer* buffer, up::uint64 size, up::ui
     return {static_cast<up::byte*>(sub.pData) + offset, static_cast<std::size_t>(size)};
 }
 
-void up::d3d11::CommandListD3D11::unmap(GpuBuffer* buffer, span<up::byte const> data) {
+void up::d3d11::CommandListD3D11::unmap(GpuResource* buffer, span<up::byte const> data) {
     if (buffer == nullptr) {
         return;
     }
@@ -241,7 +242,7 @@ void up::d3d11::CommandListD3D11::unmap(GpuBuffer* buffer, span<up::byte const> 
     _context->Unmap(d3dBuffer, 0);
 }
 
-void up::d3d11::CommandListD3D11::update(GpuBuffer* buffer, span<up::byte const> data, up::uint64 offset) {
+void up::d3d11::CommandListD3D11::update(GpuResource* buffer, span<up::byte const> data, up::uint64 offset) {
     if (buffer == nullptr) {
         return;
     }

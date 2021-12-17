@@ -37,11 +37,11 @@ namespace up {
         UP_RENDER_API void bindMaterialToRender(RenderContext& ctx);
 
     private:
-        box<GpuPipelineState> _state;
+        rc<GpuPipelineState> _state;
         Shader::Handle _vertexShader;
         Shader::Handle _pixelShader;
         vector<Texture::Handle> _textures;
         vector<box<GpuResourceView>> _srvs;
-        vector<box<GpuSampler>> _samplers;
+        vector<rc<GpuSampler>> _samplers;
     };
 } // namespace up

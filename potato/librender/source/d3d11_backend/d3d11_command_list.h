@@ -17,15 +17,14 @@ namespace up::d3d11 {
         CommandListD3D11(CommandListD3D11&&) = delete;
         CommandListD3D11& operator=(CommandListD3D11&&) = delete;
 
-        static box<CommandListD3D11> createCommandList(ID3D11Device* device, GpuPipelineState* pipelineState);
+        static rc<CommandListD3D11> createCommandList(ID3D11Device* device, GpuPipelineState* pipelineState);
 
         void setPipelineState(GpuPipelineState* state) override;
 
-        void bindRenderTarget(uint32 index, GpuResourceView* view) override;
-        void bindDepthStencil(GpuResourceView* view) override;
-        void bindIndexBuffer(GpuBuffer* buffer, GpuIndexFormat indexType, uint32 offset = 0) override;
-        void bindVertexBuffer(uint32 slot, GpuBuffer* buffer, uint64 stride, uint64 offset = 0) override;
-        void bindConstantBuffer(uint32 slot, GpuBuffer* buffer, GpuShaderStage stage) override;
+        void bindRenderTargets(span<GpuResourceView* const> renderTargets, GpuResourceView* depthStencil) override;
+        void bindIndexBuffer(GpuResource* buffer, GpuIndexFormat indexType, uint32 offset = 0) override;
+        void bindVertexBuffer(uint32 slot, GpuResource* buffer, uint64 stride, uint64 offset = 0) override;
+        void bindConstantBuffer(uint32 slot, GpuResource* buffer, GpuShaderStage stage) override;
         void bindShaderResource(uint32 slot, GpuResourceView* view, GpuShaderStage stage) override;
         void bindSampler(uint32 slot, GpuSampler* sampler, GpuShaderStage stage) override;
         void setClipRect(GpuClipRect rect) override;
@@ -39,12 +38,12 @@ namespace up::d3d11 {
         void clearRenderTarget(GpuResourceView* view, glm::vec4 color) override;
         void clearDepthStencil(GpuResourceView* view) override;
 
+        void begin(GpuPipelineState* pipelineState = nullptr) override;
         void finish() override;
-        void clear(GpuPipelineState* pipelineState = nullptr) override;
 
-        span<byte> map(GpuBuffer* buffer, uint64 size, uint64 offset = 0) override;
-        void unmap(GpuBuffer* buffer, span<byte const> data) override;
-        void update(GpuBuffer* buffer, span<byte const> data, uint64 offset = 0) override;
+        span<byte> map(GpuResource* buffer, uint64 size, uint64 offset = 0) override;
+        void unmap(GpuResource* buffer, span<byte const> data) override;
+        void update(GpuResource* buffer, span<byte const> data, uint64 offset = 0) override;
 
         com_ptr<ID3D11DeviceContext> const& deviceContext() const { return _context; }
         com_ptr<ID3D11CommandList> const& commandList() const { return _commands; }

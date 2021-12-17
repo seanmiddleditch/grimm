@@ -59,9 +59,9 @@ namespace up {
         uint32 indexCount() const noexcept { return static_cast<uint32>(_indices.size()); }
 
     private:
-        box<GpuBuffer> _ibo;
-        box<GpuBuffer> _vbo;
-        box<GpuBuffer> _transformBuffer; // FIXME: this has no business being here
+        rc<GpuResource> _ibo;
+        rc<GpuResource> _vbo;
+        rc<GpuResource> _transformBuffer; // FIXME: this has no business being here
         vector<MeshBuffer> _buffers;
         vector<MeshChannel> _channels;
         vector<uint16> _indices;

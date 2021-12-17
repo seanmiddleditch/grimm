@@ -5,7 +5,9 @@
 #include "potato/runtime/assertion.h"
 #include "potato/spud/out_ptr.h"
 
-up::d3d11::PipelineStateD3D11::PipelineStateD3D11(PipelineStateParamsD3D11 params) : _params(std::move(params)) {
+up::d3d11::PipelineStateD3D11::PipelineStateD3D11(rc<PipelineLayoutD3D11> layout, PipelineStateParamsD3D11 params)
+    : _layout(std::move(layout))
+    , _params(std::move(params)) {
     UP_ASSERT(_params.rasterState != nullptr);
     UP_ASSERT(_params.depthStencilState != nullptr);
     UP_ASSERT(_params.blendState != nullptr);
@@ -16,7 +18,7 @@ up::d3d11::PipelineStateD3D11::PipelineStateD3D11(PipelineStateParamsD3D11 param
 up::d3d11::PipelineStateD3D11::~PipelineStateD3D11() = default;
 
 auto up::d3d11::PipelineStateD3D11::createGraphicsPipelineState(GpuPipelineStateDesc const& desc, ID3D11Device* device)
-    -> box<PipelineStateD3D11> {
+    -> rc<PipelineStateD3D11> {
     UP_ASSERT(device != nullptr);
 
     D3D11_RASTERIZER_DESC rasterDesc = {};
@@ -100,5 +102,7 @@ auto up::d3d11::PipelineStateD3D11::createGraphicsPipelineState(GpuPipelineState
         return nullptr;
     }
 
-    return new_box<PipelineStateD3D11>(std::move(params));
+    return new_shared<PipelineStateD3D11>(
+        rc<PipelineLayoutD3D11>(rc_acquire, static_cast<PipelineLayoutD3D11*>(desc.layout)),
+        std::move(params));
 }

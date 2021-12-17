@@ -9,6 +9,9 @@
 #include "potato/spud/unique_resource.h"
 
 namespace up::d3d11 {
+    class DebugDrawRendererD3D11;
+    class ImguiRendererD3D11;
+
     class DeviceD3D11 final : public GpuDevice {
     public:
         DeviceD3D11(
@@ -24,20 +27,22 @@ namespace up::d3d11 {
         static rc<GpuDevice> createDevice(com_ptr<IDXGIFactory2> factory, com_ptr<IDXGIAdapter1> adapter);
 
         rc<GpuSwapChain> createSwapChain(void* nativeWindow) override;
-        box<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) override;
-        box<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
-        box<GpuBuffer> createBuffer(GpuBufferType type, uint64 size) override;
-        rc<GpuTexture> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;
-        box<GpuSampler> createSampler() override;
+        rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) override;
+        rc<GpuPipelineLayout> createPipelineLayout(GpuPipelineLayoutDesc const& desc) override;
+        rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
+        rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) override;
+        rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;
+        rc<GpuSampler> createSampler() override;
 
         void execute(GpuCommandList* commandList) override;
 
-        box<GpuResourceView> createRenderTargetView(GpuTexture* renderTarget) override;
-        box<GpuResourceView> createDepthStencilView(GpuTexture* depthStencilBuffer) override;
-        box<GpuResourceView> createShaderResourceView(GpuBuffer* resource) override;
-        box<GpuResourceView> createShaderResourceView(GpuTexture* texture) override;
+        box<GpuResourceView> createRenderTargetView(GpuResource* renderTarget) override;
+        box<GpuResourceView> createDepthStencilView(GpuResource* depthStencilBuffer) override;
+        box<GpuResourceView> createShaderResourceView(GpuResource* resource) override;
 
-        view<unsigned char> getDebugShader(GpuShaderStage stage) override;
+        void beginImguiFrame(ImGuiContext& context) override;
+        void renderImgui(ImGuiContext& context, GpuCommandList& commandList) override;
+        void renderDebugDraw(GpuCommandList& commandList) override;
 
         void registerAssetBackends(AssetLoader& assetLoader) override;
 
@@ -46,5 +51,7 @@ namespace up::d3d11 {
         com_ptr<IDXGIAdapter1> _adaptor;
         com_ptr<ID3D11Device> _device;
         com_ptr<ID3D11DeviceContext> _context;
+        box<DebugDrawRendererD3D11> _debugDrawer;
+        box<ImguiRendererD3D11> _imguiBackend;
     };
 } // namespace up::d3d11

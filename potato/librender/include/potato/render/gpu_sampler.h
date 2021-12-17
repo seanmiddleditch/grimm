@@ -2,12 +2,14 @@
 
 #pragma once
 
+#include "potato/spud/rc.h"
+
 namespace up {
-    class GpuSampler {
+    class GpuSampler : public shared<GpuSampler> {
     public:
         GpuSampler() = default;
         virtual ~GpuSampler() = default;
-
+        
         GpuSampler(GpuSampler&&) = delete;
         GpuSampler& operator=(GpuSampler&&) = delete;
     };

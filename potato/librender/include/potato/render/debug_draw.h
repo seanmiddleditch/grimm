@@ -13,7 +13,6 @@
 #include <glm/vec4.hpp>
 
 namespace up {
-
     struct DebugDrawVertex {
         glm::vec3 position;
         glm::vec4 color;

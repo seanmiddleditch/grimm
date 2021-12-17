@@ -9,7 +9,7 @@
 #include "potato/spud/rc.h"
 
 namespace up {
-    class GpuTexture;
+    class GpuResource;
 }
 
 namespace up {
@@ -17,13 +17,13 @@ namespace up {
     public:
         static constexpr zstring_view assetTypeName = "potato.asset.texture"_zsv;
 
-        UP_RENDER_API explicit Texture(AssetKey key, Image image, rc<GpuTexture> texture);
+        UP_RENDER_API explicit Texture(AssetKey key, Image image, rc<GpuResource> texture);
         UP_RENDER_API ~Texture();
 
-        GpuTexture& texture() const noexcept { return *_texture; }
+        GpuResource& texture() const noexcept { return *_texture; }
 
     private:
-        rc<GpuTexture> _texture;
+        rc<GpuResource> _texture;
         Image _image;
     };
 } // namespace up

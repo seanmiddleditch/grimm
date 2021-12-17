@@ -8,15 +8,20 @@
 #include "potato/spud/int_types.h"
 #include "potato/spud/rc.h"
 
+struct ImGuiContext;
+
 namespace up {
-    class GpuBuffer;
     class GpuCommandList;
+    class GpuPipelineLayout;
     class GpuPipelineState;
+    class GpuResource;
     class GpuResourceView;
     class GpuSampler;
     class GpuSwapChain;
     class GpuTexture;
     class AssetLoader;
+    class DebugDrawRenderer;
+    class ImguiRenderer;
 
     struct GpuPipelineStateDesc;
     struct GpuTextureDesc;
@@ -30,20 +35,22 @@ namespace up {
         GpuDevice& operator=(GpuDevice&&) = delete;
 
         virtual rc<GpuSwapChain> createSwapChain(void* nativeWindow) = 0;
-        virtual box<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) = 0;
-        virtual box<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) = 0;
-        virtual box<GpuBuffer> createBuffer(GpuBufferType type, uint64 size) = 0;
-        virtual rc<GpuTexture> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) = 0;
-        virtual box<GpuSampler> createSampler() = 0;
+        virtual rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) = 0;
+        virtual rc<GpuPipelineLayout> createPipelineLayout(GpuPipelineLayoutDesc const& desc) = 0;
+        virtual rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) = 0;
+        virtual rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) = 0;
+        virtual rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) = 0;
+        virtual rc<GpuSampler> createSampler() = 0;
 
         virtual void execute(GpuCommandList* commandList) = 0;
 
-        virtual box<GpuResourceView> createRenderTargetView(GpuTexture* renderTarget) = 0;
-        virtual box<GpuResourceView> createDepthStencilView(GpuTexture* depthStencilBuffer) = 0;
-        virtual box<GpuResourceView> createShaderResourceView(GpuBuffer* resource) = 0;
-        virtual box<GpuResourceView> createShaderResourceView(GpuTexture* texture) = 0;
+        virtual box<GpuResourceView> createRenderTargetView(GpuResource* renderTarget) = 0;
+        virtual box<GpuResourceView> createDepthStencilView(GpuResource* depthStencilBuffer) = 0;
+        virtual box<GpuResourceView> createShaderResourceView(GpuResource* resource) = 0;
 
-        virtual view<unsigned char> getDebugShader(GpuShaderStage stage) = 0;
+        virtual void beginImguiFrame(ImGuiContext& context) = 0;
+        virtual void renderImgui(ImGuiContext& context, GpuCommandList& commandList) = 0;
+        virtual void renderDebugDraw(GpuCommandList& commandList) = 0;
 
         virtual void registerAssetBackends(AssetLoader& assetLoader) = 0;
     };

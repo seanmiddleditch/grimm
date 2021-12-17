@@ -2,11 +2,11 @@
 
 #include "potato/render/context.h"
 
-#include "potato/render/gpu_buffer.h"
 #include "potato/render/gpu_command_list.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource_view.h"
-#include "potato/render/gpu_texture.h"
+#include "potato/render/gpu_resource.h"
+#include "potato/render/renderer.h"
 
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,13 +23,14 @@ namespace {
 } // namespace
 
 namespace up {
-    RenderContext::RenderContext(GpuDevice& device, GpuCommandList& commands)
-        : _device(device)
-        , _commandList(commands) { }
+    RenderContext::RenderContext(Renderer& renderer, GpuDevice& device, rc<GpuCommandList> commandList)
+        : _renderer(renderer)
+        , _device(device)
+        , _commandList(std::move(commandList)) { }
 
     RenderContext::~RenderContext() = default;
 
-    void RenderContext::bindBackBuffer(rc<GpuTexture> target, rc<GpuTexture> depthStencil) {
+    void RenderContext::bindBackBuffer(rc<GpuResource> target, rc<GpuResource> depthStencil) {
         _backBuffer = std::move(target);
         _depthStencilBuffer = std::move(depthStencil);
 
@@ -62,6 +63,11 @@ namespace up {
 
     void RenderContext::applyCameraScreen() { _applyCamera(glm::vec3{}, glm::identity<glm::mat4x4>()); }
 
+    void RenderContext::finish() {
+        _commandList->finish();
+        _device.execute(_commandList.get());
+    }
+
     void UP_VECTORCALL RenderContext::_applyCamera(glm::vec3 position, glm::mat4x4 cameraMatrix) {
         if (_cameraDataBuffer == nullptr) {
             _cameraDataBuffer = _device.createBuffer(GpuBufferType::Constant, sizeof(CameraData));
@@ -89,16 +95,16 @@ namespace up {
             .nearFar = {nearZ, farZ},
         };
 
-        _commandList.update(_cameraDataBuffer.get(), span{&data, 1}.as_bytes());
+        _commandList->update(_cameraDataBuffer.get(), span{&data, 1}.as_bytes());
 
         constexpr glm::vec4 clearColor{0.f, 0.f, 0.1f, 1.f};
 
-        _commandList.clearRenderTarget(_rtv.get(), clearColor);
-        _commandList.clearDepthStencil(_dsv.get());
-        _commandList.bindRenderTarget(0, _rtv.get());
-        _commandList.bindDepthStencil(_dsv.get());
-        _commandList.bindConstantBuffer(1, _cameraDataBuffer.get(), GpuShaderStage::All);
-        _commandList.setViewport(viewport);
+        _commandList->clearRenderTarget(_rtv.get(), clearColor);
+        _commandList->clearDepthStencil(_dsv.get());
+        GpuResourceView* const rtv = _rtv.get();
+        _commandList->bindRenderTargets(span{&rtv, 1}, _dsv.get());
+        _commandList->bindConstantBuffer(1, _cameraDataBuffer.get(), GpuShaderStage::All);
+        _commandList->setViewport(viewport);
     }
 
 } // namespace up

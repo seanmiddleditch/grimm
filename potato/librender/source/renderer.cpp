@@ -4,12 +4,11 @@
 
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
-#include "potato/render/gpu_buffer.h"
 #include "potato/render/gpu_command_list.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_pipeline_state.h"
+#include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_swap_chain.h"
-#include "potato/render/gpu_texture.h"
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/shader.h"
@@ -28,31 +27,7 @@ namespace {
     };
 } // namespace
 
-up::Renderer::Renderer(rc<GpuDevice> device) : _device(std::move(device)) {
-    _commandList = _device->createCommandList();
-
-    // Create the debug pipeline
-    GpuPipelineStateDesc pipelineDesc;
-
-    GpuInputLayoutElement const layout[] = {
-        {GpuFormat::R32G32B32Float, GpuShaderSemantic::Position, 0, 0},
-        {GpuFormat::R32G32B32Float, GpuShaderSemantic::Color, 0, 0},
-        {GpuFormat::R32G32B32Float, GpuShaderSemantic::Normal, 0, 0},
-        {GpuFormat::R32G32B32Float, GpuShaderSemantic::Tangent, 0, 0},
-        {GpuFormat::R32G32Float, GpuShaderSemantic::TexCoord, 0, 0},
-    };
-
-    pipelineDesc.enableDepthTest = true;
-    pipelineDesc.enableDepthWrite = true;
-    pipelineDesc.vertShader = _device->getDebugShader(GpuShaderStage::Vertex).as_bytes();
-    pipelineDesc.pixelShader = _device->getDebugShader(GpuShaderStage::Pixel).as_bytes();
-    pipelineDesc.inputLayout = layout;
-
-    // Check to support null renderer; should this be explicit?
-    if (!pipelineDesc.vertShader.empty() && !pipelineDesc.pixelShader.empty()) {
-        _debugState = _device->createPipelineState(pipelineDesc);
-    }
-}
+up::Renderer::Renderer(rc<GpuDevice> device) : _device(std::move(device)) { }
 
 up::Renderer::~Renderer() = default;
 
@@ -69,59 +44,26 @@ void up::Renderer::beginFrame() {
     }
 
     double const now = static_cast<double>(nowNanoseconds - _startTimestamp) * nanoToSeconds;
-    FrameData frame = {_frameCounter++, static_cast<float>(now - _frameTimestamp), now};
+    _frameTimestep = static_cast<float>(now - _frameTimestamp);
     _frameTimestamp = now;
 
-    _commandList->clear();
-    _commandList->update(_frameDataBuffer.get(), view<byte>{reinterpret_cast<byte*>(&frame), sizeof(frame)});
-    _commandList->bindConstantBuffer(0, _frameDataBuffer.get(), GpuShaderStage::All);
-}
-
-void up::Renderer::endFrame(float frameTime) {
-    _flushDebugDraw(frameTime);
-
-    _commandList->finish();
-    _device->execute(_commandList.get());
-}
-
-void up::Renderer::_flushDebugDraw(float frameTime) {
-    static constexpr uint32 bufferSize = 64 * 1024;
-    static constexpr uint32 maxVertsPerChunk = bufferSize / sizeof(DebugDrawVertex);
-
-    if (_debugState.empty()) {
-        up::flushDebugDraw(frameTime);
-        return;
-    }
-
-    if (_debugBuffer == nullptr) {
-        _debugBuffer = _device->createBuffer(GpuBufferType::Vertex, bufferSize);
-    }
-
-    _commandList->setPipelineState(_debugState.get());
-    _commandList->bindVertexBuffer(0, _debugBuffer.get(), sizeof(DebugDrawVertex));
-    _commandList->setPrimitiveTopology(GpuPrimitiveTopology::Lines);
-
-    dumpDebugDraw([this](auto debugVertices) {
-        if (debugVertices.empty()) {
-            return;
-        }
-
-        uint32 vertCount = min(static_cast<uint32>(debugVertices.size()), maxVertsPerChunk);
-        uint32 offset = 0;
-        while (offset < debugVertices.size()) {
-            _commandList->update(_debugBuffer.get(), debugVertices.subspan(offset, vertCount).as_bytes());
-            _commandList->draw(vertCount);
-
-            offset += vertCount;
-            vertCount = min(static_cast<uint32>(debugVertices.size()) - offset, maxVertsPerChunk);
-        }
-    });
-
-    up::flushDebugDraw(frameTime);
+    ++_frameCounter;
 }
 
 auto up::Renderer::context() -> RenderContext {
-    return RenderContext{*_device, *_commandList};
+    return RenderContext{*this, *_device, createCommandList()};
+}
+
+auto up::Renderer::createCommandList() const noexcept -> rc<GpuCommandList> {
+    rc<GpuCommandList> commandList = _device->createCommandList();
+
+    FrameData frame = {_frameCounter, static_cast<float>(_frameTimestep), _frameTimestamp};
+
+    commandList->begin();
+    commandList->update(_frameDataBuffer.get(), view<byte>{reinterpret_cast<byte*>(&frame), sizeof(frame)});
+    commandList->bindConstantBuffer(0, _frameDataBuffer.get(), GpuShaderStage::All);
+
+    return commandList;
 }
 
 namespace up {
@@ -207,4 +149,9 @@ void up::Renderer::registerAssetBackends(AssetLoader& assetLoader) {
     assetLoader.registerBackend(new_box<ShaderAssetLoaderBackend>());
     assetLoader.registerBackend(new_box<TextureAssetLoaderBackend>(*this));
     _device->registerAssetBackends(assetLoader);
+}
+
+void up::Renderer::renderDebugDraw(GpuCommandList& commandList) {
+    _device->renderDebugDraw(commandList);
+    flushDebugDraw(static_cast<float>(_frameTimestep));
 }
