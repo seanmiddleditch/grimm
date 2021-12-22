@@ -189,10 +189,6 @@ namespace up::d3d11 {
         _debugDrawer->render(commandList);
     }
 
-    auto DeviceD3D11::createPipelineLayout(GpuPipelineLayoutDesc const& desc) -> rc<GpuPipelineLayout> {
-        return new_shared<PipelineLayoutD3D11>();
-    }
-
     auto DeviceD3D11::createPipelineState(GpuPipelineStateDesc const& desc) -> rc<GpuPipelineState> {
         return PipelineStateD3D11::createGraphicsPipelineState(desc, _device.get());
     }

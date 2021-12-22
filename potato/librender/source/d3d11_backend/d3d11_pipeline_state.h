@@ -18,11 +18,9 @@ namespace up::d3d11 {
         com_ptr<ID3D11PixelShader> pixelShader;
     };
 
-    class PipelineLayoutD3D11 : public GpuPipelineLayout { };
-
     class PipelineStateD3D11 : public GpuPipelineState {
     public:
-        explicit PipelineStateD3D11(rc<PipelineLayoutD3D11> layout, PipelineStateParamsD3D11 params);
+        explicit PipelineStateD3D11(PipelineStateParamsD3D11 params);
         virtual ~PipelineStateD3D11();
 
         static rc<PipelineStateD3D11> createGraphicsPipelineState(
@@ -34,7 +32,6 @@ namespace up::d3d11 {
     private:
         static constexpr uint32 maxInputLayoutElements = 32;
 
-        rc<PipelineLayoutD3D11> _layout;
         PipelineStateParamsD3D11 _params;
     };
 } // namespace up::d3d11

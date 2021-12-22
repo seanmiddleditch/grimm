@@ -42,7 +42,9 @@ void up::d3d11::CommandListD3D11::setPipelineState(GpuPipelineState* state) {
     _context->OMSetDepthStencilState(params.depthStencilState.get(), 0);
 }
 
-void up::d3d11::CommandListD3D11::bindRenderTargets(span<GpuResourceView* const> renderTargets, GpuResourceView* depthStencil) {
+void up::d3d11::CommandListD3D11::bindRenderTargets(
+    span<GpuResourceView* const> renderTargets,
+    GpuResourceView* depthStencil) {
     UP_ASSERT(renderTargets.size() < maxRenderTargetBindings);
 
     size_t index = 0;

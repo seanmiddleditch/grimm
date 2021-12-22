@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "potato/spud/flags.h"
 #include "potato/spud/int_types.h"
 #include "potato/spud/span.h"
 
@@ -32,14 +33,11 @@ namespace up {
         Vertex,
     };
 
-    enum class GpuResourceType {
-        Buffer,
-        Texture
-    };
+    enum class GpuResourceType { Buffer, Texture };
 
     enum class GpuIndexFormat { Unsigned16, Unsigned32 };
 
-    enum class GpuShaderStage { Vertex = 1 << 0, Pixel = 1 << 1, All = Vertex | Pixel };
+    UP_DEFINE_FLAGS(GpuShaderStage, uint8_t, Vertex = 1 << 0, Pixel = 1 << 1, All = Vertex | Pixel);
 
     enum class GpuTextureType {
         Texture2D,
@@ -80,35 +78,12 @@ namespace up {
     };
 
     struct GpuPipelineStateDesc {
-        class GpuPipelineLayout* layout = nullptr;
         bool enableScissor = false;
         bool enableDepthWrite = false;
         bool enableDepthTest = false;
         span<byte const> vertShader;
         span<byte const> pixelShader;
         span<GpuInputLayoutElement const> inputLayout;
-    };
-
-    struct GpuBindLayoutEntryDesc {
-        GpuBindType type = GpuBindType::Constant;
-        GpuShaderStage stages = GpuShaderStage::Vertex;
-    };
-
-    struct GpuBindLayoutDesc {
-        span<GpuBindLayoutEntryDesc const> entries;
-    };
-
-    struct GpuBindGroupDesc {
-        class GpuBindLayout* layout = nullptr;
-        span<class GpuResource* const> resources;
-    };
-
-    struct GpuPipelineLayoutEntryDesc {
-        class GpuBindLayout* layout = nullptr;
-    };
-
-    struct GpuPipelineLayoutDesc {
-        span<GpuPipelineLayoutEntryDesc const> entries;
     };
 
 } // namespace up

@@ -23,9 +23,6 @@ namespace up::d3d11 {
     void DebugDrawRendererD3D11::render(GpuCommandList& commandList) {
         if (_debugState.empty()) {
             // Create the debug pipeline
-            GpuPipelineLayoutDesc pipeLayoutDesc;
-            auto pipeLayout = _device.createPipelineLayout(pipeLayoutDesc);
-
             GpuInputLayoutElement const inputLayout[] = {
                 {GpuFormat::R32G32B32Float, GpuShaderSemantic::Position, 0, 0},
                 {GpuFormat::R32G32B32Float, GpuShaderSemantic::Color, 0, 0},
@@ -35,7 +32,6 @@ namespace up::d3d11 {
             };
 
             GpuPipelineStateDesc pipelineDesc;
-            pipelineDesc.layout = pipeLayout.get();
             pipelineDesc.enableDepthTest = true;
             pipelineDesc.enableDepthWrite = true;
             pipelineDesc.vertShader = span{g_vertex_main}.as_bytes();

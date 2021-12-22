@@ -134,11 +134,7 @@ namespace up::d3d11 {
             {GpuFormat::R8G8B8A8UnsignedNormalized, GpuShaderSemantic::Color, 0, 0},
         };
 
-        GpuPipelineLayoutDesc pipeLayoutDesc;
-        rc<GpuPipelineLayout> pipeLayout = _device.createPipelineLayout(pipeLayoutDesc);
-
         GpuPipelineStateDesc desc;
-        desc.layout = pipeLayout.get();
         desc.enableScissor = true;
         desc.vertShader = span{g_vertex_main}.as_bytes();
         desc.pixelShader = span{g_pixel_main}.as_bytes();

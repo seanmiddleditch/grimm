@@ -27,7 +27,9 @@ namespace up {
 
         virtual void setPipelineState(GpuPipelineState* state) = 0;
 
-        virtual void bindRenderTargets(span<GpuResourceView* const> renderTargets, GpuResourceView* depthStencil = nullptr) = 0;
+        virtual void bindRenderTargets(
+            span<GpuResourceView* const> renderTargets,
+            GpuResourceView* depthStencil = nullptr) = 0;
         virtual void bindIndexBuffer(GpuResource* buffer, GpuIndexFormat indexType, uint32 offset = 0) = 0;
         virtual void bindVertexBuffer(uint32 slot, GpuResource* buffer, uint64 stride, uint64 offset = 0) = 0;
         virtual void bindConstantBuffer(uint32 slot, GpuResource* buffer, GpuShaderStage stage) = 0;

@@ -18,10 +18,6 @@ namespace up::null {
         return new_shared<CommandListNull>();
     }
 
-    rc<GpuPipelineLayout> DeviceNull::createPipelineLayout(GpuPipelineLayoutDesc const& desc) {
-        return new_shared<PipelineLayoutNull>();
-    }
-
     auto DeviceNull::createPipelineState(GpuPipelineStateDesc const&) -> rc<GpuPipelineState> {
         return new_shared<PipelineStateNull>();
     }
@@ -47,7 +43,6 @@ namespace up::null {
     }
 
     auto DeviceNull::createSampler() -> rc<GpuSampler> { return new_shared<SamplerNull>(); }
-
 
     void DeviceNull::beginImguiFrame(ImGuiContext&) { }
 

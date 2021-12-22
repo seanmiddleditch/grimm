@@ -2,20 +2,11 @@
 
 #pragma once
 
-#include "potato/spud/rc.h"
-
 #include "gpu_common.h"
 
+#include "potato/spud/rc.h"
+
 namespace up {
-    class GpuPipelineLayout : public shared<GpuPipelineLayout> {
-    public:
-        GpuPipelineLayout() = default;
-        virtual ~GpuPipelineLayout() = default;
-
-        GpuPipelineLayout(GpuPipelineLayout&&) = delete;
-        GpuPipelineLayout& operator=(GpuPipelineLayout&&) = delete;
-    };
-
     class GpuPipelineState : public shared<GpuPipelineState> {
     public:
         GpuPipelineState() = default;

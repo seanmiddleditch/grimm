@@ -26,7 +26,6 @@ namespace up::null {
     public:
         rc<GpuSwapChain> createSwapChain(void* nativeWindow) override;
         rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) override;
-        rc<GpuPipelineLayout> createPipelineLayout(GpuPipelineLayoutDesc const& desc) override;
         rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
         rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) override;
         rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;
@@ -62,8 +61,6 @@ namespace up::null {
         rc<GpuResource> getBuffer(int index) override;
         int getCurrentBufferIndex() override;
     };
-
-    class PipelineLayoutNull final : public GpuPipelineLayout { };
 
     class PipelineStateNull final : public GpuPipelineState { };
 

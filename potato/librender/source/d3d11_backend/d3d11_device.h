@@ -28,7 +28,6 @@ namespace up::d3d11 {
 
         rc<GpuSwapChain> createSwapChain(void* nativeWindow) override;
         rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) override;
-        rc<GpuPipelineLayout> createPipelineLayout(GpuPipelineLayoutDesc const& desc) override;
         rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
         rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) override;
         rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;

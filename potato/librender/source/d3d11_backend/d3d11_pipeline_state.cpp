@@ -5,9 +5,7 @@
 #include "potato/runtime/assertion.h"
 #include "potato/spud/out_ptr.h"
 
-up::d3d11::PipelineStateD3D11::PipelineStateD3D11(rc<PipelineLayoutD3D11> layout, PipelineStateParamsD3D11 params)
-    : _layout(std::move(layout))
-    , _params(std::move(params)) {
+up::d3d11::PipelineStateD3D11::PipelineStateD3D11(PipelineStateParamsD3D11 params) : _params(std::move(params)) {
     UP_ASSERT(_params.rasterState != nullptr);
     UP_ASSERT(_params.depthStencilState != nullptr);
     UP_ASSERT(_params.blendState != nullptr);
@@ -102,7 +100,5 @@ auto up::d3d11::PipelineStateD3D11::createGraphicsPipelineState(GpuPipelineState
         return nullptr;
     }
 
-    return new_shared<PipelineStateD3D11>(
-        rc<PipelineLayoutD3D11>(rc_acquire, static_cast<PipelineLayoutD3D11*>(desc.layout)),
-        std::move(params));
+    return new_shared<PipelineStateD3D11>(std::move(params));
 }
