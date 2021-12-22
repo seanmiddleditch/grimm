@@ -15,9 +15,9 @@
 #include <glm/mat4x4.hpp>
 
 namespace up {
-    class GpuBuffer;
     class CommandList;
     class GpuDevice;
+    class GpuResource;
 } // namespace up
 
 namespace up {
