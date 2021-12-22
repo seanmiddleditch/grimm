@@ -51,7 +51,7 @@ void up::Renderer::beginFrame() {
 }
 
 auto up::Renderer::context() -> RenderContext {
-    return RenderContext{*this, *_device, createCommandList()};
+    return RenderContext{*_device, createCommandList()};
 }
 
 auto up::Renderer::createCommandList() const noexcept -> rc<GpuCommandList> {

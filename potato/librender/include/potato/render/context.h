@@ -20,7 +20,7 @@ namespace up {
 
     class RenderContext {
     public:
-        UP_RENDER_API RenderContext(Renderer& renderer, GpuDevice& device, rc<GpuCommandList> commandList);
+        UP_RENDER_API RenderContext(GpuDevice& device, rc<GpuCommandList> commandList);
         UP_RENDER_API ~RenderContext();
 
         UP_RENDER_API void bindBackBuffer(rc<GpuResource> target, rc<GpuResource> depthStencil = nullptr);
@@ -35,7 +35,6 @@ namespace up {
     private:
         void UP_VECTORCALL _applyCamera(glm::vec3 position, glm::mat4x4 cameraMatrix);
 
-        Renderer& _renderer;
         GpuDevice& _device;
         rc<GpuCommandList> _commandList;
         rc<GpuResource> _cameraDataBuffer;

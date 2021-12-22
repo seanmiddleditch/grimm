@@ -23,9 +23,8 @@ namespace {
 } // namespace
 
 namespace up {
-    RenderContext::RenderContext(Renderer& renderer, GpuDevice& device, rc<GpuCommandList> commandList)
-        : _renderer(renderer)
-        , _device(device)
+    RenderContext::RenderContext(GpuDevice& device, rc<GpuCommandList> commandList)
+        : _device(device)
         , _commandList(std::move(commandList)) { }
 
     RenderContext::~RenderContext() = default;
