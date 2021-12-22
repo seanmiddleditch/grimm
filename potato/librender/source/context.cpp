@@ -4,8 +4,8 @@
 
 #include "potato/render/gpu_command_list.h"
 #include "potato/render/gpu_device.h"
-#include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_resource.h"
+#include "potato/render/gpu_resource_view.h"
 #include "potato/render/renderer.h"
 
 #include <glm/gtc/constants.hpp>

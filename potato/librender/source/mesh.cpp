@@ -4,9 +4,9 @@
 
 #include "potato/flatbuffer/model_generated.h"
 #include "potato/render/context.h"
-#include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_command_list.h"
 #include "potato/render/gpu_device.h"
+#include "potato/render/gpu_resource.h"
 #include "potato/render/material.h"
 #include "potato/spud/sequence.h"
 

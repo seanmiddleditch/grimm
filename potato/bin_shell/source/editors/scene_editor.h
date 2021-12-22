@@ -4,8 +4,8 @@
 
 #include "potato/editor/property_grid.h"
 #include "potato/render/gpu_device.h"
-#include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_resource.h"
+#include "potato/render/gpu_resource_view.h"
 #include "potato/shell/arcball.h"
 #include "potato/shell/editor.h"
 #include "potato/shell/scene_doc.h"

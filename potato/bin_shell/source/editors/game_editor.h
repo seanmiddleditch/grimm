@@ -3,8 +3,8 @@
 #pragma once
 
 #include "potato/game/space.h"
-#include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_resource.h"
+#include "potato/render/gpu_resource_view.h"
 #include "potato/shell/editor.h"
 #include "potato/spud/hash.h"
 

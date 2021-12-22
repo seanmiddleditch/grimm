@@ -9,7 +9,7 @@ namespace up {
     public:
         GpuSampler() = default;
         virtual ~GpuSampler() = default;
-        
+
         GpuSampler(GpuSampler&&) = delete;
         GpuSampler& operator=(GpuSampler&&) = delete;
     };
