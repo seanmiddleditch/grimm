@@ -1,6 +1,5 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-
 #include "d3d12_factory.h"
 #include "d3d12_device.h"
 #include "d3d12_platform.h"
@@ -18,7 +17,6 @@ up::d3d12::FactoryD3D12::~FactoryD3D12() = default;
 
 #if defined(UP_GPU_ENABLE_D3D12)
 auto up::CreateFactoryD3D12() -> box<GpuDeviceFactory> {
-
     UINT dxgiFactoryFlags = 0;
 
 #    if defined(_DEBUG)

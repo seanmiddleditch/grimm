@@ -13,7 +13,7 @@
 #include "potato/spud/int_types.h"
 #include "potato/spud/out_ptr.h"
 
-up::d3d12::CommandListD3D12::CommandListD3D12() {}
+up::d3d12::CommandListD3D12::CommandListD3D12() { }
 
 up::d3d12::CommandListD3D12::~CommandListD3D12() = default;
 
@@ -190,9 +190,7 @@ void up::d3d12::CommandListD3D12::start(GpuPipelineState* pipelineState) {
 }
 
 void up::d3d12::CommandListD3D12::finish() {
-    if (FAILED(_commandList->Close())) {
-
-    }
+    if (FAILED(_commandList->Close())) { }
 }
 
 void up::d3d12::CommandListD3D12::clear(GpuPipelineState* pipelineState) {
@@ -241,4 +239,4 @@ void up::d3d12::CommandListD3D12::update(GpuBuffer* buffer, span<up::byte const>
     unmap(buffer, target);
 }
 
-void up::d3d12::CommandListD3D12::_flushBindings() {}
+void up::d3d12::CommandListD3D12::_flushBindings() { }

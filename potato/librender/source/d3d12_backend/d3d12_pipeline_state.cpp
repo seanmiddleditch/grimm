@@ -66,18 +66,15 @@ static D3D12_DEPTH_STENCIL_DESC defeaultDepthStencilState() {
     return desc;
 }
 
+up::d3d12::PipelineStateD3D12::PipelineStateD3D12() { }
 
-up::d3d12::PipelineStateD3D12::PipelineStateD3D12()  {
-}
-
-up::d3d12::PipelineStateD3D12::~PipelineStateD3D12() {
-};
+up::d3d12::PipelineStateD3D12::~PipelineStateD3D12(){};
 
 auto up::d3d12::PipelineStateD3D12::createGraphicsPipelineState(ID3D12Device* device, GpuPipelineStateDesc const& desc)
     -> box<PipelineStateD3D12> {
     UP_ASSERT(device != nullptr);
     auto pso = new_box<PipelineStateD3D12>();
-    pso->create(device, desc); 
+    pso->create(device, desc);
     return pso;
 }
 
@@ -128,10 +125,9 @@ bool up::d3d12::PipelineStateD3D12::create(ID3D12Device* device, GpuPipelineStat
 
     return true;
 }
-    
 
 void up::d3d12::PipelineStateD3D12::bindPipeline(ID3D12GraphicsCommandList* cmd) {
-    UP_ASSERT(cmd!=nullptr);
+    UP_ASSERT(cmd != nullptr);
 
     cmd->SetGraphicsRootSignature(_signature->signature());
     cmd->SetPipelineState(_state.get());
@@ -139,7 +135,7 @@ void up::d3d12::PipelineStateD3D12::bindPipeline(ID3D12GraphicsCommandList* cmd)
     // Setup blend factor
     const float blend_factor[4] = {0.f, 0.f, 0.f, 0.f};
     cmd->OMSetBlendFactor(blend_factor);
-    
+
     ID3D12DescriptorHeap* ppHeaps[] = {_srvHeap->heap(), _samplerHeap};
     cmd->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
@@ -151,7 +147,7 @@ void up::d3d12::PipelineStateD3D12::bindTexture(
     D3D12_GPU_DESCRIPTOR_HANDLE sampler) {
     UP_ASSERT(cmd != nullptr);
 
-    uint32 srvOffset = _signature->getRootOffset(RootParamType::Texture); 
+    uint32 srvOffset = _signature->getRootOffset(RootParamType::Texture);
     uint32 samplerOffset = _signature->getRootOffset(RootParamType::Sampler);
     cmd->SetGraphicsRootDescriptorTable(srvOffset, srv);
     cmd->SetGraphicsRootDescriptorTable(samplerOffset, sampler);

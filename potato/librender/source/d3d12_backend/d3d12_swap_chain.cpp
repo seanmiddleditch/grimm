@@ -1,13 +1,12 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "d3d12_swap_chain.h"
-#include "d3d12_desc_heap.h"
-#include "d3d12_platform.h"
-#include "d3d12_texture.h"
-#include "d3d12_resource_view.h"
-#include "d3d12_device.h"
-
 #include "d3d12_command_list.h"
+#include "d3d12_desc_heap.h"
+#include "d3d12_device.h"
+#include "d3d12_platform.h"
+#include "d3d12_resource_view.h"
+#include "d3d12_texture.h"
 
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/box.h"
@@ -20,8 +19,7 @@ auto up::d3d12::SwapChainD3D12::createSwapChain(
     ID3DDeviceType* device,
     ID3D12CommandQueue* queue,
     DescriptorHeapD3D12* descHeap,
-    void* nativeWindow)
-    -> rc<GpuSwapChain> {
+    void* nativeWindow) -> rc<GpuSwapChain> {
     auto swapchain = new_shared<SwapChainD3D12>();
     swapchain->create(factory, device, queue, descHeap, nativeWindow);
     return swapchain;
@@ -33,7 +31,6 @@ auto up::d3d12::SwapChainD3D12::create(
     ID3D12CommandQueue* queue,
     DescriptorHeapD3D12* descHeap,
     void* nativeWindow) -> bool {
-
     DXGI_SWAP_CHAIN_DESC1 desc = {0};
     desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     desc.SampleDesc.Count = 1;
@@ -51,7 +48,7 @@ auto up::d3d12::SwapChainD3D12::create(
     if (FAILED(hr) || swapChain == nullptr) {
         return false;
     }
-   _swapChain = swapChain.as<IDXGISwapChainType>();
+    _swapChain = swapChain.as<IDXGISwapChainType>();
 
     factory->MakeWindowAssociation(window, DXGI_MWA_NO_ALT_ENTER);
 
@@ -98,7 +95,8 @@ void up::d3d12::SwapChainD3D12::unbind(GpuCommandList* cmd) {
     // Indicate that the back buffer will be used as a render target.
     D3D12_RESOURCE_BARRIER barrier = InitTransitionBarrier(
         _backBuffer[_bufferIndex].get(),
-        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        D3D12_RESOURCE_STATE_RENDER_TARGET,
+        D3D12_RESOURCE_STATE_PRESENT);
     cl->getResource()->ResourceBarrier(1, &barrier);
 }
 
@@ -108,12 +106,12 @@ void up::d3d12::SwapChainD3D12::present() {
 }
 
 void up::d3d12::SwapChainD3D12::resizeBuffers(GpuDevice& device, int width, int height) {
-
     for (uint32 i = 0; i < kNumFrames; i++) {
         _backBuffer[i].reset();
     }
 
-    _swapChain->ResizeBuffers(kNumFrames, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
+    _swapChain
+        ->ResizeBuffers(kNumFrames, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
 
     initBackBufferTargets(static_cast<DeviceD3D12&>(device).getDevice());
 

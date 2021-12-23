@@ -8,12 +8,9 @@
 
 #include <D3D12MemAlloc.h>
 
-up::d3d12::BufferD3D12::BufferD3D12() noexcept
-{}
+up::d3d12::BufferD3D12::BufferD3D12() noexcept { }
 
-auto up::d3d12::BufferD3D12::create(D3D12MA::Allocator& allocator, GpuBufferType type, uint64 size)
-    -> bool {
-
+auto up::d3d12::BufferD3D12::create(D3D12MA::Allocator& allocator, GpuBufferType type, uint64 size) -> bool {
     // const buffers have to be multiples of 256
     if (type == GpuBufferType::Constant) {
         size = 256 * ((size / 256) + 1);
@@ -36,10 +33,10 @@ auto up::d3d12::BufferD3D12::create(D3D12MA::Allocator& allocator, GpuBufferType
     allocator.CreateResource(
         &vertexBufferAllocDesc,
         &vertexBufferResourceDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ, 
-        nullptr, 
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
         out_ptr(_allocation),
-        __uuidof(ID3D12Resource), 
+        __uuidof(ID3D12Resource),
         out_ptr(_buffer));
 
     _size = size;
