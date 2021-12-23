@@ -30,10 +30,6 @@ include(up_headerify)
 up_headerify(potato_libeditor "roboto_font" "data/fonts/roboto/Roboto-Regular.ttf")
 up_headerify(potato_libeditor "fontawesome_font" "data/fonts/fontawesome5/fa-solid-900.ttf")
 
-include(up_compile_shader)
-up_compile_shader(potato_libeditor STAGE vertex HLSL "data/shaders/imgui.hlsl")
-up_compile_shader(potato_libeditor STAGE pixel HLSL "data/shaders/imgui.hlsl")
-
 include(up_set_common_properties)
 up_set_common_properties(potato_libeditor)
 

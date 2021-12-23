@@ -10,8 +10,8 @@
 #include "potato/render/context.h"
 #include "potato/render/debug_draw.h"
 #include "potato/render/gpu_device.h"
+#include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_resource_view.h"
-#include "potato/render/gpu_texture.h"
 #include "potato/render/renderer.h"
 #include "potato/shell/editor.h"
 
@@ -145,7 +145,8 @@ void up::shell::GameEditor::render(Renderer& renderer, float deltaTime) {
         if (_space != nullptr) {
             _space->render(ctx);
         }
-        renderer.endFrame(deltaTime);
+
+        ctx.finish();
     }
 }
 

@@ -19,9 +19,9 @@
 #include "potato/render/gpu_command_list.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_factory.h"
+#include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_swap_chain.h"
-#include "potato/render/gpu_texture.h"
 #include "potato/render/material.h"
 #include "potato/render/renderer.h"
 #include "potato/render/shader.h"
@@ -61,8 +61,6 @@
 up::shell::ShellApp::ShellApp() : _editors(_actions), _logger("shell") { }
 
 up::shell::ShellApp::~ShellApp() {
-    _imguiBackend.releaseResources();
-
     _renderer.reset();
     _swapChain.reset();
     _window.reset();
@@ -259,8 +257,6 @@ int up::shell::ShellApp::initialize() {
         return 1;
     }
 
-    _imguiBackend.createResources(*_device);
-
     _sceneDatabase.registerComponent<TransformEditComponent>();
     _sceneDatabase.registerComponent<MeshEditComponent>();
     _sceneDatabase.registerComponent<WaveEditComponent>();
@@ -411,7 +407,7 @@ void up::shell::ShellApp::run() {
         imguiIO.DisplaySize.x = static_cast<float>(width);
         imguiIO.DisplaySize.y = static_cast<float>(height);
 
-        _imguiBackend.beginFrame();
+        _imguiBackend.beginFrame(*_device);
 
         _displayUI();
 
@@ -446,7 +442,6 @@ void up::shell::ShellApp::_onWindowSizeChanged() {
     int width = 0;
     int height = 0;
     SDL_GetWindowSize(_window.get(), &width, &height);
-    _renderer->commandList().clear();
     _swapChain->resizeBuffers(width, height);
 
     _logger.info("Window resized: {}x{}", width, height);
@@ -569,8 +564,8 @@ void up::shell::ShellApp::_render() {
 
     ctx.bindBackBuffer(_swapChain->getBuffer(0));
     ctx.applyCameraScreen();
-    _imguiBackend.render(ctx);
-    _renderer->endFrame(_lastFrameTime);
+    _imguiBackend.render(*_device, ctx.commandList());
+    ctx.finish();
 
     _swapChain->present();
     FrameMark;

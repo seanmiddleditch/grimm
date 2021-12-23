@@ -11,32 +11,35 @@
 #include <glm/fwd.hpp>
 
 namespace up {
-    class GpuBuffer;
+    class GpuResource;
     class GpuCommandList;
     class GpuDevice;
     class GpuResourceView;
-    class GpuTexture;
+    class GpuResource;
+    class Renderer;
 
     class RenderContext {
     public:
-        UP_RENDER_API RenderContext(GpuDevice& device, GpuCommandList& commands);
+        UP_RENDER_API RenderContext(GpuDevice& device, rc<GpuCommandList> commandList);
         UP_RENDER_API ~RenderContext();
 
-        UP_RENDER_API void bindBackBuffer(rc<GpuTexture> target, rc<GpuTexture> depthStencil = nullptr);
+        UP_RENDER_API void bindBackBuffer(rc<GpuResource> target, rc<GpuResource> depthStencil = nullptr);
         UP_RENDER_API void UP_VECTORCALL applyCameraPerspective(glm::vec3 position, glm::vec3 forward, glm::vec3 up);
         UP_RENDER_API void applyCameraScreen();
 
-        GpuCommandList& commandList() noexcept { return _commandList; }
+        UP_RENDER_API void finish();
+
+        GpuCommandList& commandList() noexcept { return *_commandList; }
         GpuDevice& device() noexcept { return _device; }
 
     private:
         void UP_VECTORCALL _applyCamera(glm::vec3 position, glm::mat4x4 cameraMatrix);
 
         GpuDevice& _device;
-        GpuCommandList& _commandList;
-        box<GpuBuffer> _cameraDataBuffer;
-        rc<GpuTexture> _backBuffer;
-        rc<GpuTexture> _depthStencilBuffer;
+        rc<GpuCommandList> _commandList;
+        rc<GpuResource> _cameraDataBuffer;
+        rc<GpuResource> _backBuffer;
+        rc<GpuResource> _depthStencilBuffer;
         box<GpuResourceView> _rtv;
         box<GpuResourceView> _dsv;
     };

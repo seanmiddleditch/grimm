@@ -3,9 +3,9 @@
 #include "potato/render/texture.h"
 
 #include "potato/render/context.h"
-#include "potato/render/gpu_texture.h"
+#include "potato/render/gpu_resource.h"
 
-up::Texture::Texture(AssetKey key, Image image, rc<GpuTexture> texture)
+up::Texture::Texture(AssetKey key, Image image, rc<GpuResource> texture)
     : AssetBase(std::move(key))
     , _texture(std::move(texture))
     , _image(std::move(image)) { }

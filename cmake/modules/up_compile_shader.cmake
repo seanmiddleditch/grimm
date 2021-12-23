@@ -1,28 +1,23 @@
 function(up_compile_shader TARGET)
-    cmake_parse_arguments(ARG "" "STAGE;PROFILE;ENTRY;HLSL;NAME" "" ${ARGN})
+    cmake_parse_arguments(ARG "" "PROFILE;ENTRY" "HLSL" ${ARGN})
 
-    if(NOT ARG_STAGE)
+    if(NOT ARG_PROFILE)
         message(FATAL_ERROR "up_compiler_shader requires STAGE parameter")
     endif()
     if(NOT ARG_HLSL)
         message(FATAL_ERROR "up_compiler_shader requires HLSL parameter")
     endif()
-
-    if(NOT ARG_PROFILE)
-        if(ARG_STAGE STREQUAL "pixel")
-            set(ARG_PROFILE ps_5_0)
-        else()
-            set(ARG_PROFILE vs_5_0)
-        endif()
+    
+    if(ARG_PROFILE MATCHES "^ps_")
+        set(STAGE "pixel")
+    elseif(ARG_PROFILE MATCHES "^vs_")
+        set(STAGE "vertex")
+    else()
+        message(FATAL_ERROR "Unrecognized stage for profile `${ARG_PROFILE}`")
     endif()
 
     if(NOT ARG_ENTRY)
-        set(ARG_ENTRY "${ARG_STAGE}_main")
-    endif()
-
-    if(NOT ARG_NAME)
-        get_filename_component(BASENAME "${ARG_HLSL}" NAME_WE)
-        set(ARG_NAME "${BASENAME}_${ARG_STAGE}")
+        set(ARG_ENTRY "${STAGE}_main")
     endif()
 
     if(WIN32)
@@ -33,16 +28,20 @@ function(up_compile_shader TARGET)
         )
 
         set(OUT_HEADER_DIR "${CMAKE_CURRENT_BINARY_DIR}/gen/inc")
-        set(OUT_HEADER "${OUT_HEADER_DIR}/potato/shader/${ARG_NAME}_shader.h")
-
         file(MAKE_DIRECTORY "${OUT_HEADER_DIR}")
-        add_custom_command(
-            OUTPUT "${OUT_HEADER}"
-            COMMAND ${FXC_PATH} /nologo /O3 /Zi /T "${ARG_PROFILE}" /E "${ARG_ENTRY}" /Fh "${OUT_HEADER}" "${ARG_HLSL}"
-            MAIN_DEPENDENCY "${ARG_HLSL}"
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        )
-        target_sources(${TARGET} PRIVATE "${OUT_HEADER}")
-        target_include_directories(${TARGET} PRIVATE "${OUT_HEADER_DIR}")
+
+        foreach(HLSL_SHADER ${ARG_HLSL})
+            get_filename_component(BASENAME "${HLSL_SHADER}" NAME_WE)
+            set(OUT_HEADER "${OUT_HEADER_DIR}/potato/shader/${BASENAME}_${ARG_PROFILE}_shader.h")
+
+            add_custom_command(
+                OUTPUT "${OUT_HEADER}"
+                COMMAND ${FXC_PATH} /nologo /O3 /Zi /T "${ARG_PROFILE}" /E "${ARG_ENTRY}" /Fh "${OUT_HEADER}" "${HLSL_SHADER}"
+                MAIN_DEPENDENCY "${HLSL_SHADER}"
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            )
+            target_sources(${TARGET} PRIVATE "${OUT_HEADER}")
+            target_include_directories(${TARGET} PRIVATE "${OUT_HEADER_DIR}")
+        endforeach()
     endif()
 endfunction()

@@ -4,8 +4,8 @@
 
 #include "potato/editor/property_grid.h"
 #include "potato/render/gpu_device.h"
+#include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_resource_view.h"
-#include "potato/render/gpu_texture.h"
 #include "potato/shell/arcball.h"
 #include "potato/shell/editor.h"
 #include "potato/shell/scene_doc.h"
@@ -57,7 +57,7 @@ namespace up::shell {
         void _hierarchyContext(SceneEntityId id);
         void _save();
 
-        rc<GpuTexture> _buffer;
+        rc<GpuResource> _buffer;
         box<Space> _previewScene;
         box<SceneDocument> _doc;
         box<GpuResourceView> _bufferView;

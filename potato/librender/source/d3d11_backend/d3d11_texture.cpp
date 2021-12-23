@@ -11,7 +11,7 @@ up::d3d11::TextureD3D11::TextureD3D11(com_ptr<ID3D11Resource> texture) : _textur
 
 up::d3d11::TextureD3D11::~TextureD3D11() = default;
 
-auto up::d3d11::TextureD3D11::type() const noexcept -> GpuTextureType {
+auto up::d3d11::TextureD3D11::textureType() const noexcept -> GpuTextureType {
     com_ptr<ID3D11Texture2D> texture2D;
     if (SUCCEEDED(_texture->QueryInterface(__uuidof(ID3D11Texture2D), out_ptr(texture2D)))) {
         return GpuTextureType::Texture2D;

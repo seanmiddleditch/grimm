@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(render VERSION 0.1 LANGUAGES CXX)
 
+include(up_compile_shader)
+include(up_set_common_properties)
+include(up_copy_library_import)
+include(up_compile_flat_schema)
+
 find_package(Assimp REQUIRED)
 find_package(SDL2 REQUIRED)
 
@@ -15,21 +20,13 @@ target_sources(potato_librender PRIVATE
     "source/renderer.cpp"
     "source/stb_impl.cpp"
     "source/texture.cpp"
-    "source/null_backend/null_objects.cpp"
     "source/context.cpp"
+    "include/potato/render/gpu_resource.h"
 )
 
-include(up_compile_shader)
-up_compile_shader(potato_librender STAGE vertex HLSL "data/shaders/debug.hlsl")
-up_compile_shader(potato_librender STAGE pixel HLSL "data/shaders/debug.hlsl")
-
-include(up_set_common_properties)
 up_set_common_properties(potato_librender)
-
-include(up_copy_library_import)
 up_copy_library_import(assimp potato_librender)
 
-include(up_compile_flat_schema)
 up_compile_flat_schema(potato_librender
     NAME render
     SCHEMAS
@@ -56,35 +53,32 @@ target_link_libraries(potato_librender
         SDL2
 )
 
-set(UP_GPU_D3D11_SOURCES
-    "source/d3d11_backend/d3d11_buffer.cpp"
-    "source/d3d11_backend/d3d11_command_list.cpp"
-    "source/d3d11_backend/d3d11_device.cpp"
-    "source/d3d11_backend/d3d11_factory.cpp"
-    "source/d3d11_backend/d3d11_resource_view.cpp"
-    "source/d3d11_backend/d3d11_sampler.cpp"
-    "source/d3d11_backend/d3d11_swap_chain.cpp"
-    "source/d3d11_backend/d3d11_platform.cpp"
-    "source/d3d11_backend/d3d11_pipeline_state.cpp"
-    "source/d3d11_backend/d3d11_texture.cpp"
-)
+add_subdirectory("source/null_backend")
 
-find_library(DXGI_PATH dxgi)
-find_library(D3D11_PATH d3d11)
-if(D3D11_PATH AND DXGI_PATH)
+if(UP_BUILD_D3D11)
+    find_library(DXGI_PATH dxgi REQUIRED)
+    find_library(D3D11_PATH d3d11 REQUIRED)
+
+    add_subdirectory("source/d3d11_backend")
+
+    up_compile_shader(potato_librender
+        PROFILE vs_5_0
+        HLSL
+            "data/shaders/debug.hlsl"
+            "data/shaders/imgui.hlsl"
+    )
+    up_compile_shader(potato_librender
+        PROFILE ps_5_0
+        HLSL
+            "data/shaders/debug.hlsl"
+            "data/shaders/imgui.hlsl"
+    )
+
     target_link_libraries(potato_librender PRIVATE ${D3D11_PATH} ${DXGI_PATH})
     target_sources(potato_librender PRIVATE ${UP_GPU_D3D11_SOURCES})
-    target_compile_definitions(potato_librender PUBLIC UP_GPU_ENABLE_D3D11=1)
+    target_compile_definitions(potato_librender PUBLIC UP_GPU_ENABLE_D3D11=1 UP_GPU_ENABLE_D3D=1)
     set_target_properties(potato_librender PROPERTIES UP_GPU_ENABLE_D3D11 ON)
-else()
-    # HEADER_FILE_ONLY is not consistently working for me,
-    # so I'm adding a fake target to get the .cpp files registered
-    # but unbuilt
-    #
-
-    add_library(potato_librender_d3d11 INTERFACE)
-    target_sources(potato_librender_d3d11 INTERFACE ${UP_GPU_D3D11_SOURCES})
-endif(D3D11_PATH AND DXGI_PATH)
+endif()
 
 add_executable(potato_librender_test)
 target_sources(potato_librender_test PRIVATE

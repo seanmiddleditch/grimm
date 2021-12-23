@@ -4,12 +4,12 @@
 
 #include "d3d11_platform.h"
 
-#include "potato/render/gpu_texture.h"
+#include "potato/render/gpu_resource.h"
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/box.h"
 
 namespace up::d3d11 {
-    class TextureD3D11 final : public GpuTexture {
+    class TextureD3D11 final : public GpuResource {
     public:
         explicit TextureD3D11(com_ptr<ID3D11Resource> texture);
         virtual ~TextureD3D11();
@@ -17,7 +17,10 @@ namespace up::d3d11 {
         TextureD3D11(TextureD3D11&&) = delete;
         TextureD3D11& operator=(TextureD3D11&&) = delete;
 
-        GpuTextureType type() const noexcept override;
+        GpuResourceType resourceType() const noexcept override { return GpuResourceType::Texture; }
+        GpuBufferType bufferType() const noexcept override { return GpuBufferType::Constant; }
+        size_t size() const noexcept override { return 0; }
+        GpuTextureType textureType() const noexcept override;
         GpuFormat format() const noexcept override;
         glm::ivec3 dimensions() const noexcept override;
 

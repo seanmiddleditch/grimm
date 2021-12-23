@@ -16,7 +16,7 @@ up::d3d11::PipelineStateD3D11::PipelineStateD3D11(PipelineStateParamsD3D11 param
 up::d3d11::PipelineStateD3D11::~PipelineStateD3D11() = default;
 
 auto up::d3d11::PipelineStateD3D11::createGraphicsPipelineState(GpuPipelineStateDesc const& desc, ID3D11Device* device)
-    -> box<PipelineStateD3D11> {
+    -> rc<PipelineStateD3D11> {
     UP_ASSERT(device != nullptr);
 
     D3D11_RASTERIZER_DESC rasterDesc = {};
@@ -100,5 +100,5 @@ auto up::d3d11::PipelineStateD3D11::createGraphicsPipelineState(GpuPipelineState
         return nullptr;
     }
 
-    return new_box<PipelineStateD3D11>(std::move(params));
+    return new_shared<PipelineStateD3D11>(std::move(params));
 }

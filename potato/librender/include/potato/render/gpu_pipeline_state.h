@@ -4,8 +4,10 @@
 
 #include "gpu_common.h"
 
+#include "potato/spud/rc.h"
+
 namespace up {
-    class GpuPipelineState {
+    class GpuPipelineState : public shared<GpuPipelineState> {
     public:
         GpuPipelineState() = default;
         virtual ~GpuPipelineState() = default;

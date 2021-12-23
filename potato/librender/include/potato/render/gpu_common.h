@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "potato/spud/flags.h"
 #include "potato/spud/int_types.h"
 #include "potato/spud/span.h"
 
@@ -32,9 +33,11 @@ namespace up {
         Vertex,
     };
 
+    enum class GpuResourceType { Buffer, Texture };
+
     enum class GpuIndexFormat { Unsigned16, Unsigned32 };
 
-    enum class GpuShaderStage { Vertex = 1 << 0, Pixel = 1 << 1, All = Vertex | Pixel };
+    UP_DEFINE_FLAGS(GpuShaderStage, uint8_t, Vertex = 1 << 0, Pixel = 1 << 1, All = Vertex | Pixel);
 
     enum class GpuTextureType {
         Texture2D,
@@ -45,6 +48,13 @@ namespace up {
     enum class GpuPrimitiveTopology {
         Triangles,
         Lines,
+    };
+
+    enum class GpuBindType {
+        Constant,
+        UnorderedAccess,
+        Texture,
+        Sampler,
     };
 
     struct GpuClipRect {

@@ -3,8 +3,8 @@
 #pragma once
 
 #include "potato/game/space.h"
+#include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_resource_view.h"
-#include "potato/render/gpu_texture.h"
 #include "potato/shell/editor.h"
 #include "potato/spud/hash.h"
 
@@ -35,7 +35,7 @@ namespace up::shell {
         void _resize(GpuDevice& device, glm::ivec2 size);
 
         box<Space> _space;
-        rc<GpuTexture> _buffer;
+        rc<GpuResource> _buffer;
         box<GpuResourceView> _bufferView;
         EntityId _cameraId = EntityId::None;
         glm::ivec2 _viewDimensions = {0, 0};

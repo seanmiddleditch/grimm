@@ -2,7 +2,6 @@
 
 #include "potato/render/debug_draw.h"
 
-#include "potato/render/gpu_buffer.h"
 #include "potato/render/gpu_command_list.h"
 #include "potato/render/gpu_pipeline_state.h"
 #include "potato/spud/vector.h"

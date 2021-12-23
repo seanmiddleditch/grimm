@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include "potato/render/gpu_buffer.h"
+#include "potato/render/debug_draw.h"
 #include "potato/render/gpu_command_list.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_factory.h"
 #include "potato/render/gpu_pipeline_state.h"
+#include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_resource_view.h"
 #include "potato/render/gpu_sampler.h"
 #include "potato/render/gpu_swap_chain.h"
-#include "potato/render/gpu_texture.h"
 
 namespace up::null {
     class DeviceNull;
@@ -25,18 +25,19 @@ namespace up::null {
     class DeviceNull final : public GpuDevice {
     public:
         rc<GpuSwapChain> createSwapChain(void* nativeWindow) override;
-        box<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) override;
-        box<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
-        box<GpuBuffer> createBuffer(GpuBufferType type, uint64 size) override;
-        rc<GpuTexture> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;
-        box<GpuSampler> createSampler() override;
+        rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) override;
+        rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
+        rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) override;
+        rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;
+        rc<GpuSampler> createSampler() override;
 
-        box<GpuResourceView> createRenderTargetView(GpuTexture* renderTarget) override;
-        box<GpuResourceView> createDepthStencilView(GpuTexture* depthStencilBuffer) override;
-        box<GpuResourceView> createShaderResourceView(GpuBuffer* buffer) override;
-        box<GpuResourceView> createShaderResourceView(GpuTexture* texture) override;
+        box<GpuResourceView> createRenderTargetView(GpuResource* renderTarget) override;
+        box<GpuResourceView> createDepthStencilView(GpuResource* depthStencilBuffer) override;
+        box<GpuResourceView> createShaderResourceView(GpuResource* resource) override;
 
-        view<unsigned char> getDebugShader(GpuShaderStage stage) override;
+        void beginImguiFrame(ImGuiContext& context) override;
+        void renderImgui(ImGuiContext& context, GpuCommandList& commandList) override;
+        void renderDebugDraw(GpuCommandList& commandList) override;
 
         void execute(GpuCommandList* commands) override { }
 
@@ -57,7 +58,7 @@ namespace up::null {
     public:
         void present() override { }
         void resizeBuffers(int width, int height) override { }
-        rc<GpuTexture> getBuffer(int index) override;
+        rc<GpuResource> getBuffer(int index) override;
         int getCurrentBufferIndex() override;
     };
 
@@ -73,18 +74,17 @@ namespace up::null {
         void draw(uint32 vertexCount, uint32 firstVertex = 0) override { }
         void drawIndexed(uint32 indexCount, uint32 firstIndex = 0, uint32 baseIndex = 0) override { }
 
+        void begin(GpuPipelineState* = nullptr) override { }
         void finish() override { }
-        void clear(GpuPipelineState* pipelineState = nullptr) override { }
 
-        span<byte> map(GpuBuffer* resource, uint64 size, uint64 offset = 0) override { return {}; }
-        void unmap(GpuBuffer* resource, span<byte const> data) override { }
-        void update(GpuBuffer* resource, span<byte const> data, uint64 offset = 0) override { }
+        span<byte> map(GpuResource* resource, uint64 size, uint64 offset = 0) override { return {}; }
+        void unmap(GpuResource* resource, span<byte const> data) override { }
+        void update(GpuResource* resource, span<byte const> data, uint64 offset = 0) override { }
 
-        void bindRenderTarget(uint32 index, GpuResourceView* view) override { }
-        void bindDepthStencil(GpuResourceView* view) override { }
-        void bindIndexBuffer(GpuBuffer* buffer, GpuIndexFormat indexType, uint32 offset = 0) override { }
-        void bindVertexBuffer(uint32 slot, GpuBuffer* buffer, uint64 stride, uint64 offset = 0) override { }
-        void bindConstantBuffer(uint32 slot, GpuBuffer* buffer, GpuShaderStage stage) override { }
+        void bindRenderTargets(span<GpuResourceView* const> renderTargets, GpuResourceView* depthStencil) override { }
+        void bindIndexBuffer(GpuResource* buffer, GpuIndexFormat indexType, uint32 offset = 0) override { }
+        void bindVertexBuffer(uint32 slot, GpuResource* buffer, uint64 stride, uint64 offset = 0) override { }
+        void bindConstantBuffer(uint32 slot, GpuResource* buffer, GpuShaderStage stage) override { }
         void bindShaderResource(uint32 slot, GpuResourceView* view, GpuShaderStage stage) override { }
         void bindSampler(uint32 slot, GpuSampler* sampler, GpuShaderStage stage) override { }
         void setPrimitiveTopology(GpuPrimitiveTopology topology) override { }
@@ -92,20 +92,27 @@ namespace up::null {
         void setClipRect(GpuClipRect rect) override { }
     };
 
-    class BufferNull final : public GpuBuffer {
+    class BufferNull final : public GpuResource {
     public:
         BufferNull(GpuBufferType type) : _type(type) { }
 
-        GpuBufferType type() const noexcept override { return _type; }
+        GpuResourceType resourceType() const noexcept override { return GpuResourceType::Buffer; }
+        GpuBufferType bufferType() const noexcept override { return _type; }
         uint64 size() const noexcept override { return 0; }
+        GpuTextureType textureType() const noexcept override { return GpuTextureType::Texture2D; }
+        GpuFormat format() const noexcept override { return GpuFormat::Unknown; }
+        glm::ivec3 dimensions() const noexcept override { return {1, 1, 0}; }
 
     private:
         GpuBufferType _type;
     };
 
-    class TextureNull final : public GpuTexture {
+    class TextureNull final : public GpuResource {
     public:
-        GpuTextureType type() const noexcept override { return GpuTextureType::Texture2D; }
+        GpuResourceType resourceType() const noexcept override { return GpuResourceType::Texture; }
+        GpuBufferType bufferType() const noexcept override { return GpuBufferType::Constant; }
+        uint64 size() const noexcept override { return 0; }
+        GpuTextureType textureType() const noexcept override { return GpuTextureType::Texture2D; }
         GpuFormat format() const noexcept override { return GpuFormat::Unknown; }
         glm::ivec3 dimensions() const noexcept override { return {1, 1, 0}; }
     };

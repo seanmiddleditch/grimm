@@ -8,6 +8,7 @@ add_library(potato::spud ALIAS potato_spud)
 #    "include/potato/spud/_hash_table.h"
 #    "include/potato/spud/enumerate.h"
 #    "include/potato/spud/erase.h"
+#    "include/potato/spud/flags.h"
 #    "include/potato/spud/generator.h"
 #    "include/potato/spud/map.h"
 #    "include/potato/spud/overload.h"
