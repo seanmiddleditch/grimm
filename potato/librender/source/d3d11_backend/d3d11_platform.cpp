@@ -32,6 +32,10 @@ auto up::d3d11::toNative(GpuFormat format) noexcept -> DXGI_FORMAT {
             return DXGI_FORMAT_R32G32_FLOAT;
         case GpuFormat::R8G8B8A8UnsignedNormalized:
             return DXGI_FORMAT_R8G8B8A8_UNORM;
+        case GpuFormat::R8G8UnsignedNormalized:
+            return DXGI_FORMAT_R8G8_UNORM;
+        case GpuFormat::R8UnsignedNormalized:
+            return DXGI_FORMAT_R8_UNORM;
         case GpuFormat::D32Float:
             return DXGI_FORMAT_D32_FLOAT;
         default:
@@ -50,6 +54,10 @@ auto up::d3d11::fromNative(DXGI_FORMAT format) noexcept -> GpuFormat {
             return GpuFormat::R32G32Float;
         case DXGI_FORMAT_R8G8B8A8_UNORM:
             return GpuFormat::R8G8B8A8UnsignedNormalized;
+        case DXGI_FORMAT_R8G8_UNORM:
+            return GpuFormat::R8G8UnsignedNormalized;
+        case DXGI_FORMAT_R8_UNORM:
+            return GpuFormat::R8UnsignedNormalized;
         case DXGI_FORMAT_D32_FLOAT:
             return GpuFormat::D32Float;
         default:
@@ -68,6 +76,10 @@ auto up::d3d11::toByteSize(GpuFormat format) noexcept -> up::uint32 {
         case GpuFormat::R8G8B8A8UnsignedNormalized:
         case GpuFormat::D32Float:
             return 4;
+        case GpuFormat::R8G8UnsignedNormalized:
+            return 2;
+        case GpuFormat::R8UnsignedNormalized:
+            return 1;
         default:
             UP_UNREACHABLE("Unknown Format");
             return 0;

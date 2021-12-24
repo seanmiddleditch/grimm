@@ -28,7 +28,7 @@ namespace up::null {
         rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) override;
         rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
         rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) override;
-        rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;
+        rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data) override;
         rc<GpuSampler> createSampler() override;
 
         box<GpuResourceView> createRenderTargetView(GpuResource* renderTarget) override;
@@ -40,8 +40,6 @@ namespace up::null {
         void renderDebugDraw(GpuCommandList& commandList) override;
 
         void execute(GpuCommandList* commands) override { }
-
-        void registerAssetBackends(AssetLoader& assetLoader) override { }
     };
 
     class ResourceViewNull final : public GpuResourceView {

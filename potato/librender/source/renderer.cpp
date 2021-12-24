@@ -109,36 +109,6 @@ namespace up {
                 return up::new_shared<Shader>(ctx.key, std::move(contents));
             }
         };
-
-        class TextureAssetLoaderBackend : public AssetLoaderBackend {
-        public:
-            TextureAssetLoaderBackend(Renderer& renderer) : _renderer(renderer) { }
-
-            zstring_view typeName() const noexcept override { return Texture::assetTypeName; }
-            rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
-                auto img = loadImage(ctx.stream);
-                ctx.stream.close();
-                if (img.data().empty()) {
-                    return nullptr;
-                }
-
-                GpuTextureDesc desc = {};
-                desc.type = GpuTextureType::Texture2D;
-                desc.format = GpuFormat::R8G8B8A8UnsignedNormalized;
-                desc.width = img.header().width;
-                desc.height = img.header().height;
-
-                auto tex = _renderer.device().createTexture2D(desc, img.data());
-                if (tex == nullptr) {
-                    return nullptr;
-                }
-
-                return new_shared<Texture>(ctx.key, std::move(img), std::move(tex));
-            }
-
-        private:
-            Renderer& _renderer;
-        };
     } // namespace
 } // namespace up
 
@@ -147,8 +117,6 @@ void up::Renderer::registerAssetBackends(AssetLoader& assetLoader) {
     assetLoader.registerBackend(new_box<MeshAssetLoaderBackend>());
     assetLoader.registerBackend(new_box<MaterialAssetLoaderBackend>());
     assetLoader.registerBackend(new_box<ShaderAssetLoaderBackend>());
-    assetLoader.registerBackend(new_box<TextureAssetLoaderBackend>(*this));
-    _device->registerAssetBackends(assetLoader);
 }
 
 void up::Renderer::renderDebugDraw(GpuCommandList& commandList) {

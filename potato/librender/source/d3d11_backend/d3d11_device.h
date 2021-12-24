@@ -30,7 +30,7 @@ namespace up::d3d11 {
         rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) override;
         rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
         rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) override;
-        rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) override;
+        rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data) override;
         rc<GpuSampler> createSampler() override;
 
         void execute(GpuCommandList* commandList) override;
@@ -42,8 +42,6 @@ namespace up::d3d11 {
         void beginImguiFrame(ImGuiContext& context) override;
         void renderImgui(ImGuiContext& context, GpuCommandList& commandList) override;
         void renderDebugDraw(GpuCommandList& commandList) override;
-
-        void registerAssetBackends(AssetLoader& assetLoader) override;
 
     private:
         com_ptr<IDXGIFactory2> _factory;

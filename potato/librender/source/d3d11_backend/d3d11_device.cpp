@@ -222,11 +222,7 @@ namespace up::d3d11 {
         return new_shared<BufferD3D11>(type, size, std::move(buffer));
     }
 
-    auto DeviceD3D11::createTexture2D(GpuTextureDesc const& desc, span<up::byte const> data) -> rc<GpuResource> {
-        auto bytesPerPixel = toByteSize(desc.format);
-
-        UP_ASSERT(data.empty() || data.size() == desc.width * desc.height * bytesPerPixel);
-
+    auto DeviceD3D11::createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data) -> rc<GpuResource> {
         D3D11_TEXTURE2D_DESC nativeDesc = {};
         nativeDesc.Format = toNative(desc.format);
         nativeDesc.Width = desc.width;
@@ -245,12 +241,18 @@ namespace up::d3d11 {
         nativeDesc.SampleDesc.Count = 1;
         nativeDesc.SampleDesc.Quality = 0;
 
-        D3D11_SUBRESOURCE_DATA init = {};
-        init.pSysMem = data.data();
-        init.SysMemPitch = desc.width * bytesPerPixel;
-
         com_ptr<ID3D11Texture2D> texture;
-        HRESULT hr = _device->CreateTexture2D(&nativeDesc, data.empty() ? nullptr : &init, out_ptr(texture));
+        HRESULT hr = ([&]() {
+            if (!data.data.empty()) {
+                UP_ASSERT(data.pitch * desc.height <= data.data.size());
+
+                D3D11_SUBRESOURCE_DATA init = {};
+                init.pSysMem = data.data.data();
+                init.SysMemPitch = data.pitch;
+                return _device->CreateTexture2D(&nativeDesc, &init, out_ptr(texture));
+            }
+            return _device->CreateTexture2D(&nativeDesc, nullptr, out_ptr(texture));
+        }());
         if (!SUCCEEDED(hr)) {
             return nullptr;
         }
@@ -287,6 +289,4 @@ namespace up::d3d11 {
 
         _context->ExecuteCommandList(deferred->commandList().get(), FALSE);
     }
-
-    void DeviceD3D11::registerAssetBackends(AssetLoader& assetLoader) { }
 } // namespace up::d3d11

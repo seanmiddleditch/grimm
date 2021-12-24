@@ -14,7 +14,6 @@ add_library(potato::librender ALIAS potato_librender)
 
 target_sources(potato_librender PRIVATE
     "source/debug_draw.cpp"
-    "source/image.cpp"
     "source/material.cpp"
     "source/mesh.cpp"
     "source/renderer.cpp"

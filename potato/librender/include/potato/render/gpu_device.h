@@ -38,7 +38,7 @@ namespace up {
         virtual rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) = 0;
         virtual rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) = 0;
         virtual rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) = 0;
-        virtual rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, span<byte const> data) = 0;
+        virtual rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data = {}) = 0;
         virtual rc<GpuSampler> createSampler() = 0;
 
         virtual void execute(GpuCommandList* commandList) = 0;
@@ -50,7 +50,5 @@ namespace up {
         virtual void beginImguiFrame(ImGuiContext& context) = 0;
         virtual void renderImgui(ImGuiContext& context, GpuCommandList& commandList) = 0;
         virtual void renderDebugDraw(GpuCommandList& commandList) = 0;
-
-        virtual void registerAssetBackends(AssetLoader& assetLoader) = 0;
     };
 } // namespace up

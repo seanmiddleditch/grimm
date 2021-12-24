@@ -163,8 +163,11 @@ namespace up::d3d11 {
         texDesc.width = fontWidth;
         texDesc.height = fontHeight;
 
-        auto font =
-            _device.createTexture2D(texDesc, span{pixels, static_cast<uint32>(fontWidth * fontHeight * 4)}.as_bytes());
+        GpuDataDesc texData;
+        texData.pitch = fontWidth * 4;
+        texData.data = span{pixels, static_cast<uint32>(fontHeight * texData.pitch)}.as_bytes();
+
+        auto font = _device.createTexture2D(texDesc, texData);
         _srv = _device.createShaderResourceView(font.get());
 
         _sampler = _device.createSampler();

@@ -248,6 +248,7 @@ int up::shell::ShellApp::initialize() {
 
     _renderer = new_box<Renderer>(_device);
     _renderer->registerAssetBackends(_assetLoader);
+    Texture::registerLoader(_assetLoader, *_device);
 
 #if UP_PLATFORM_WINDOWS
     _swapChain = _device->createSwapChain(wmInfo.info.win.window);
