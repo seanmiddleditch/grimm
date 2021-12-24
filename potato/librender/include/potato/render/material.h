@@ -36,6 +36,8 @@ namespace up {
 
         UP_RENDER_API void bindMaterialToRender(RenderContext& ctx);
 
+        static UP_RENDER_API void registerLoader(AssetLoader& assetLoader, GpuDevice& device);
+
     private:
         rc<GpuPipelineState> _state;
         Shader::Handle _vertexShader;

@@ -246,6 +246,7 @@ int up::shell::ShellApp::initialize() {
         return 1;
     }
 
+    Material::registerLoader(_assetLoader, *_device);
     Mesh::registerLoader(_assetLoader, *_device);
     Texture::registerLoader(_assetLoader, *_device);
 
