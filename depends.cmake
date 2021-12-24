@@ -86,3 +86,12 @@ up_require(nanofmt
     GIT_REPOSITORY git://github.com/seanmiddleditch/nanofmt.git
     GIT_COMMIT b979434328e1f0ec5e6ef977bc59a251c4bc9dfc
 )
+if(UP_BUILD_D3D12)
+    up_require(dx12memalloc
+        GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator.git
+        GIT_COMMIT 23e4d91f66397b49e84115e5d1b91fd64c3df24a
+        CMAKE_FILE dx12memalloc.cmake
+    )
+endif()
+
+
