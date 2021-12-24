@@ -14,11 +14,15 @@
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/stream.h"
 #include "potato/spud/string.h"
+#include "potato/spud/enumerate.h"
+#include "potato/spud/sequence.h"
 
 namespace up {
     namespace {
         class MaterialLoader : public AssetLoaderBackend {
         public:
+            explicit MaterialLoader(GpuDevice& device) : _device(device) { }
+
             zstring_view typeName() const noexcept override { return Material::assetTypeName; }
             rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
                 vector<byte> contents;
@@ -27,61 +31,39 @@ namespace up {
                 }
                 ctx.stream.close();
 
-                return Material::createFromBuffer(ctx.key, contents, ctx.loader);
+                return Material::createFromBuffer(_device, ctx.key, contents, ctx.loader);
             }
+
+        private:
+            GpuDevice& _device;
         };
     } // namespace
 
     Material::Material(
         AssetKey key,
-        Shader::Handle vertexShader,
-        Shader::Handle pixelShader,
-        vector<Texture::Handle> textures)
+        rc<GpuPipelineState> pipelineState,
+        vector<Texture::Handle> textures,
+        vector<box<GpuResourceView>> srvs,
+        vector<rc<GpuSampler>> samplers)
         : AssetBase(std::move(key))
-        , _vertexShader(std::move(vertexShader))
-        , _pixelShader(std::move(pixelShader))
+        , _pipelineState(std::move(pipelineState))
         , _textures(std::move(textures))
-        , _srvs(_textures.size())
-        , _samplers(_textures.size()) { }
+        , _srvs(std::move(srvs))
+        , _samplers(std::move(samplers)) { }
 
     Material::~Material() = default;
 
     void Material::bindMaterialToRender(RenderContext& ctx) {
-        if (_state == nullptr) {
-            GpuPipelineStateDesc pipelineDesc;
+        ctx.commandList().setPipelineState(_pipelineState.get());
 
-            GpuInputLayoutElement layout[] = {
-                {GpuFormat::R32G32B32Float, GpuShaderSemantic::Position, 0, 0},
-                {GpuFormat::R32G32B32Float, GpuShaderSemantic::Color, 0, 0},
-                {GpuFormat::R32G32B32Float, GpuShaderSemantic::Normal, 0, 0},
-                {GpuFormat::R32G32B32Float, GpuShaderSemantic::Tangent, 0, 0},
-                {GpuFormat::R32G32Float, GpuShaderSemantic::TexCoord, 0, 0},
-            };
-
-            pipelineDesc.enableDepthTest = true;
-            pipelineDesc.enableDepthWrite = true;
-            pipelineDesc.vertShader = _vertexShader.asset()->content();
-            pipelineDesc.pixelShader = _pixelShader.asset()->content();
-            pipelineDesc.inputLayout = layout;
-            _state = ctx.device().createPipelineState(pipelineDesc);
-
-            int texIndex = 0;
-            for (auto const& tex : _textures) {
-                _srvs[texIndex] = ctx.device().createShaderResourceView(&tex.asset()->texture());
-                _samplers[texIndex++] = ctx.device().createSampler();
-            }
-        }
-
-        ctx.commandList().setPipelineState(_state.get());
-
-        int texIndex = 0;
-        for (auto const& srv : _srvs) {
-            ctx.commandList().bindSampler(texIndex, _samplers[texIndex].get(), GpuShaderStage::Pixel);
-            ctx.commandList().bindShaderResource(texIndex++, srv.get(), GpuShaderStage::Pixel);
+        for (auto index : sequence(static_cast<uint32>(_srvs.size()))) {
+            ctx.commandList().bindSampler(index, _samplers[index].get(), GpuShaderStage::Pixel);
+            ctx.commandList().bindShaderResource(index, _srvs[index].get(), GpuShaderStage::Pixel);
         }
     }
 
-    auto Material::createFromBuffer(AssetKey key, view<byte> buffer, AssetLoader& assetLoader) -> rc<Material> {
+    auto Material::createFromBuffer(GpuDevice& device, AssetKey key, view<byte> buffer, AssetLoader& assetLoader)
+        -> rc<Material> {
         flatbuffers::Verifier verifier(reinterpret_cast<uint8 const*>(buffer.data()), buffer.size());
         if (!flat::VerifyMaterialBuffer(verifier)) {
             return {};
@@ -118,10 +100,35 @@ namespace up {
             textures.push_back(std::move(tex));
         }
 
-        return new_shared<Material>(std::move(key), std::move(vertex), std::move(pixel), std::move(textures));
+        GpuPipelineStateDesc pipelineDesc;
+
+        GpuInputLayoutElement layout[] = {
+            {GpuFormat::R32G32B32Float, GpuShaderSemantic::Position, 0, 0},
+            {GpuFormat::R32G32B32Float, GpuShaderSemantic::Color, 0, 0},
+            {GpuFormat::R32G32B32Float, GpuShaderSemantic::Normal, 0, 0},
+            {GpuFormat::R32G32B32Float, GpuShaderSemantic::Tangent, 0, 0},
+            {GpuFormat::R32G32Float, GpuShaderSemantic::TexCoord, 0, 0},
+        };
+
+        pipelineDesc.enableDepthTest = true;
+        pipelineDesc.enableDepthWrite = true;
+        pipelineDesc.vertShader = vertex.asset()->content();
+        pipelineDesc.pixelShader = pixel.asset()->content();
+        pipelineDesc.inputLayout = layout;
+        auto pipelineState = device.createPipelineState(pipelineDesc);
+
+        vector<box<GpuResourceView>> srvs(textures.size());
+        vector<rc<GpuSampler>> samplers(textures.size());
+
+        for (auto const& [index, texture] : enumerate(textures)) {
+            srvs[index] = device.createShaderResourceView(&texture.asset()->texture());
+            samplers[index] = device.createSampler();
+        }
+
+        return new_shared<Material>(std::move(key), std::move(pipelineState), std::move(textures), std::move(srvs), std::move(samplers));
     }
 
-    void Material::registerLoader(AssetLoader& assetLoader, GpuDevice&) {
-        assetLoader.registerBackend(new_box<MaterialLoader>());
+    void Material::registerLoader(AssetLoader& assetLoader, GpuDevice& device) {
+        assetLoader.registerBackend(new_box<MaterialLoader>(device));
     }
 } // namespace up
