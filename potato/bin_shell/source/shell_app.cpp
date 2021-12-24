@@ -419,6 +419,8 @@ void up::shell::ShellApp::run() {
 
         _render();
 
+        _assetLoader.collectDoomedAssets();
+
         if (_closeProject) {
             _reconClient.stop();
             _closeProject = false;
