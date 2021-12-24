@@ -21,7 +21,7 @@ target_sources(potato_librender PRIVATE
     "source/texture.cpp"
     "source/context.cpp"
     "include/potato/render/gpu_resource.h"
-)
+ "source/shader.cpp")
 
 up_set_common_properties(potato_librender)
 up_copy_library_import(assimp potato_librender)

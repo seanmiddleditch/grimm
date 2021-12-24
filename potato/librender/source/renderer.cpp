@@ -66,29 +66,6 @@ auto up::Renderer::createCommandList() const noexcept -> rc<GpuCommandList> {
     return commandList;
 }
 
-namespace up {
-    namespace {
-        class ShaderAssetLoaderBackend : public AssetLoaderBackend {
-        public:
-            zstring_view typeName() const noexcept override { return Shader::assetTypeName; }
-            rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
-                vector<byte> contents;
-                if (auto rs = readBinary(ctx.stream, contents); rs != IOResult::Success) {
-                    return nullptr;
-                }
-                ctx.stream.close();
-
-                return up::new_shared<Shader>(ctx.key, std::move(contents));
-            }
-        };
-    } // namespace
-} // namespace up
-
-void up::Renderer::registerAssetBackends(AssetLoader& assetLoader) {
-    UP_ASSERT(_device != nullptr);
-    assetLoader.registerBackend(new_box<ShaderAssetLoaderBackend>());
-}
-
 void up::Renderer::renderDebugDraw(GpuCommandList& commandList) {
     _device->renderDebugDraw(commandList);
     flushDebugDraw(static_cast<float>(_frameTimestep));

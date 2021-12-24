@@ -33,6 +33,10 @@ namespace up {
         virtual rc<Asset> loadFromStream(AssetLoadContext const& ctx) = 0;
     };
 
+    class BlobAssetLoaderBackend {
+
+    };
+
     class AssetLoader : private AssetTracker {
     public:
         UP_RUNTIME_API AssetLoader();

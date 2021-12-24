@@ -246,12 +246,7 @@ int up::shell::ShellApp::initialize() {
         return 1;
     }
 
-    Material::registerLoader(_assetLoader, *_device);
-    Mesh::registerLoader(_assetLoader, *_device);
-    Texture::registerLoader(_assetLoader, *_device);
-
     _renderer = new_box<Renderer>(_device);
-    _renderer->registerAssetBackends(_assetLoader);
 
 #if UP_PLATFORM_WINDOWS
     _swapChain = _device->createSwapChain(wmInfo.info.win.window);
@@ -260,6 +255,11 @@ int up::shell::ShellApp::initialize() {
         _errorDialog("Failed to create swap chain");
         return 1;
     }
+
+    Material::registerLoader(_assetLoader, *_device);
+    Mesh::registerLoader(_assetLoader, *_device);
+    Shader::registerLoader(_assetLoader, *_device);
+    Texture::registerLoader(_assetLoader, *_device);
 
     _sceneDatabase.registerComponent<TransformEditComponent>();
     _sceneDatabase.registerComponent<MeshEditComponent>();

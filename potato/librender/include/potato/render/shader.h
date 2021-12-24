@@ -2,11 +2,15 @@
 
 #pragma once
 
+#include "_export.h"
+
 #include "potato/runtime/asset.h"
 #include "potato/spud/int_types.h"
 #include "potato/spud/vector.h"
 
 namespace up {
+    class AssetLoader;
+    class GpuDevice;
     class RenderContext;
 
     class Shader : public AssetBase<Shader> {
@@ -18,6 +22,8 @@ namespace up {
             , _content(std::move(shader)) { }
 
         view<byte> content() const noexcept { return _content; }
+
+        static UP_RENDER_API void registerLoader(AssetLoader& assetLoader, GpuDevice& device);
 
     private:
         vector<byte> _content;
