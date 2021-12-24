@@ -140,9 +140,9 @@ namespace up::d3d11 {
         desc.pixelShader = span{g_pixel_main}.as_bytes();
         desc.inputLayout = inputLayout;
 
-        _indexBuffer = _device.createBuffer(GpuBufferType::Index, bufferSize);
-        _vertexBuffer = _device.createBuffer(GpuBufferType::Vertex, bufferSize);
-        _constantBuffer = _device.createBuffer(GpuBufferType::Constant, sizeof(float) * 16);
+        _indexBuffer = _device.createBuffer({.type = GpuBufferType::Index, .size = bufferSize}, {});
+        _vertexBuffer = _device.createBuffer({.type = GpuBufferType::Vertex, .size = bufferSize}, {});
+        _constantBuffer = _device.createBuffer({.type = GpuBufferType::Constant, .size = sizeof(float) * 16}, {});
         _pipelineState = _device.createPipelineState(desc);
 
         ImGuiContext* const oldContext = ImGui::GetCurrentContext();

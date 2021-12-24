@@ -73,6 +73,11 @@ namespace up {
         int index;
     };
 
+    struct GpuBufferDesc {
+        GpuBufferType type = GpuBufferType::Constant;
+        uint32 size = 0;
+    };
+
     struct GpuTextureDesc {
         GpuFormat format = GpuFormat::Unknown;
         GpuTextureType type = GpuTextureType::DepthStencil;

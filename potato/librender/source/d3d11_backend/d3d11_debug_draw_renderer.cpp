@@ -45,7 +45,7 @@ namespace up::d3d11 {
         }
 
         if (_debugBuffer == nullptr) {
-            _debugBuffer = _device.createBuffer(GpuBufferType::Vertex, bufferSize);
+            _debugBuffer = _device.createBuffer({.type = GpuBufferType::Vertex, .size = bufferSize}, {});
         }
 
         commandList.setPipelineState(_debugState.get());

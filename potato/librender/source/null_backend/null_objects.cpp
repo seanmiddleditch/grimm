@@ -34,8 +34,8 @@ namespace up::null {
         return new_box<ResourceViewNull>(GpuViewType::SRV);
     }
 
-    auto DeviceNull::createBuffer(GpuBufferType type, up::uint64 size) -> rc<GpuResource> {
-        return new_shared<BufferNull>(type);
+    auto DeviceNull::createBuffer(GpuBufferDesc const& desc, GpuDataDesc const& data) -> rc<GpuResource> {
+        return new_shared<BufferNull>(desc.type);
     }
 
     auto DeviceNull::createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data) -> rc<GpuResource> {

@@ -31,6 +31,8 @@ namespace up {
 
         class MeshLoader : public AssetLoaderBackend {
         public:
+            explicit MeshLoader(GpuDevice& device) noexcept : _device(device) { }
+
             zstring_view typeName() const noexcept override { return Mesh::assetTypeName; }
             rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
                 vector<byte> contents;
@@ -39,22 +41,29 @@ namespace up {
                 }
                 ctx.stream.close();
 
-                return Mesh::createFromBuffer(ctx.key, contents);
+                return Mesh::createFromBuffer(_device, ctx.key, contents);
             }
+
+        private:
+            GpuDevice& _device;
         };
     } // namespace
 
     Mesh::Mesh(
         AssetKey key,
-        vector<uint16> indices,
-        vector<byte> data,
+        rc<GpuResource> ibo,
+        rc<GpuResource> vbo,
+        rc<GpuResource> cbo,
         view<MeshBuffer> buffers,
-        view<MeshChannel> channels)
+        view<MeshChannel> channels,
+        uint32 indexCount)
         : AssetBase(std::move(key))
+        , _ibo(std::move(ibo))
+        , _vbo(std::move(vbo))
+        , _cbo(std::move(cbo))
         , _buffers(buffers.begin(), buffers.end())
         , _channels(channels.begin(), channels.end())
-        , _indices(std::move(indices))
-        , _data(std::move(data)) { }
+        , _indexCount(indexCount) { }
 
     Mesh::~Mesh() = default;
 
@@ -71,27 +80,7 @@ namespace up {
         inputLayout = inputLayout.first(size);
     }
 
-    void Mesh::updateVertexBuffers(RenderContext& ctx) {
-        if (_ibo == nullptr) {
-            _ibo = ctx.device().createBuffer(GpuBufferType::Index, _indices.size() * sizeof(uint16));
-            ctx.commandList().update(_ibo.get(), _indices.as_bytes(), 0);
-        }
-        if (_vbo == nullptr) {
-            _vbo = ctx.device().createBuffer(GpuBufferType::Vertex, _data.size());
-            ctx.commandList().update(_vbo.get(), _data, 0);
-        }
-    }
-
-    void Mesh::bindVertexBuffers(RenderContext& ctx) {
-        ctx.commandList().bindIndexBuffer(_ibo.get(), GpuIndexFormat::Unsigned16, 0);
-
-        for (auto i : sequence(_buffers.size())) {
-            ctx.commandList()
-                .bindVertexBuffer(static_cast<uint32>(i), _vbo.get(), _buffers[i].stride, _buffers[i].offset);
-        }
-    }
-
-    auto Mesh::createFromBuffer(AssetKey key, view<byte> buffer) -> rc<Mesh> {
+    auto Mesh::createFromBuffer(GpuDevice& device, AssetKey key, view<byte> buffer) -> rc<Mesh> {
         flatbuffers::Verifier verifier(reinterpret_cast<uint8 const*>(buffer.data()), buffer.size());
         if (!schema::VerifyModelBuffer(verifier)) {
             return {};
@@ -140,8 +129,8 @@ namespace up {
         vector<uint16> indices;
         indices.reserve(flatMesh->indices()->size());
 
-        vector<VertData> data;
-        data.reserve(numVertices);
+        vector<VertData> vertices;
+        vertices.reserve(numVertices);
 
         auto flatIndices = flatMesh->indices();
         auto flatVerts = flatMesh->vertices();
@@ -155,7 +144,7 @@ namespace up {
         }
 
         for (uint32 i = 0; i != numVertices; ++i) {
-            VertData& vert = data.emplace_back();
+            VertData& vert = vertices.emplace_back();
 
             auto pos = *flatVerts->Get(i);
             vert.pos.x = pos.x();
@@ -190,39 +179,48 @@ namespace up {
             }
         }
 
+        auto indexBuffer = device.createBuffer(
+            {.type = GpuBufferType::Index, .size = static_cast<uint>(indices.size() * sizeof(uint16))},
+            {.data = indices.as_bytes()});
+        auto vertexBuffer = device.createBuffer(
+            {.type = GpuBufferType::Vertex, .size = static_cast<uint>(vertices.size() * sizeof(VertData))},
+            {.data = vertices.as_bytes()});
+        auto transformBuffer = device.createBuffer({.type = GpuBufferType::Constant, .size = sizeof(Trans)});
+
         return new_shared<Mesh>(
             std::move(key),
-            std::move(indices),
-            vector(data.as_bytes()),
+            std::move(indexBuffer),
+            std::move(vertexBuffer),
+            std::move(transformBuffer),
             span{&bufferDesc, 1},
-            channels);
+            channels,
+            static_cast<uint32>(indices.size()));
     }
 
     void UP_VECTORCALL Mesh::render(RenderContext& ctx, Material* material, glm::mat4x4 transform) {
-        if (_transformBuffer == nullptr) {
-            _transformBuffer = ctx.device().createBuffer(GpuBufferType::Constant, sizeof(Trans));
-        }
-
         auto trans = Trans{
             .modelWorld = transpose(transform),
             .worldModel = glm::inverse(transform),
         };
 
-        updateVertexBuffers(ctx);
-        ctx.commandList().update(_transformBuffer.get(), span{&trans, 1}.as_bytes());
+        ctx.commandList().update(_cbo.get(), span{&trans, 1}.as_bytes());
 
         if (material != nullptr) {
             material->bindMaterialToRender(ctx);
         }
 
-        bindVertexBuffers(ctx);
-        ctx.commandList().bindConstantBuffer(2, _transformBuffer.get(), GpuShaderStage::All);
+        ctx.commandList().bindIndexBuffer(_ibo.get(), GpuIndexFormat::Unsigned16, 0);
+        for (auto i : sequence(_buffers.size())) {
+            ctx.commandList()
+                .bindVertexBuffer(static_cast<uint32>(i), _vbo.get(), _buffers[i].stride, _buffers[i].offset);
+        }
+        ctx.commandList().bindConstantBuffer(2, _cbo.get(), GpuShaderStage::All);
         ctx.commandList().setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
         ctx.commandList().drawIndexed(static_cast<uint32>(indexCount()));
     }
 
-    void Mesh::registerLoader(AssetLoader& assetLoader, GpuDevice&) {
-        assetLoader.registerBackend(new_box<MeshLoader>());
+    void Mesh::registerLoader(AssetLoader& assetLoader, GpuDevice& device) {
+        assetLoader.registerBackend(new_box<MeshLoader>(device));
     }
 
 } // namespace up

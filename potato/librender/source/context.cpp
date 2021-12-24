@@ -69,7 +69,7 @@ namespace up {
 
     void UP_VECTORCALL RenderContext::_applyCamera(glm::vec3 position, glm::mat4x4 cameraMatrix) {
         if (_cameraDataBuffer == nullptr) {
-            _cameraDataBuffer = _device.createBuffer(GpuBufferType::Constant, sizeof(CameraData));
+            _cameraDataBuffer = _device.createBuffer({.type = GpuBufferType::Constant, .size = sizeof(CameraData)}, {});
         }
 
         auto const dimensions = _backBuffer != nullptr ? _backBuffer->dimensions() : glm::ivec3{};

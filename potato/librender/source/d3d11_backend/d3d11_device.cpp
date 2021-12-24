@@ -193,33 +193,40 @@ namespace up::d3d11 {
         return PipelineStateD3D11::createGraphicsPipelineState(desc, _device.get());
     }
 
-    auto DeviceD3D11::createBuffer(GpuBufferType type, up::uint64 size) -> rc<GpuResource> {
-        D3D11_BUFFER_DESC desc = {};
-        desc.Usage = D3D11_USAGE_DYNAMIC;
-        desc.ByteWidth = static_cast<UINT>(size);
-        desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-        switch (type) {
+    auto DeviceD3D11::createBuffer(GpuBufferDesc const& desc, GpuDataDesc const& data) -> rc<GpuResource> {
+        D3D11_BUFFER_DESC d3d11Desc = {};
+        d3d11Desc.Usage = D3D11_USAGE_DYNAMIC;
+        d3d11Desc.ByteWidth = static_cast<UINT>(desc.size);
+        d3d11Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        switch (desc.type) {
             case GpuBufferType::Index:
-                desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+                d3d11Desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
                 break;
             case GpuBufferType::Vertex:
-                desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+                d3d11Desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
                 break;
             case GpuBufferType::Constant:
-                desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+                d3d11Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
                 break;
             default:
-                desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+                d3d11Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
                 break;
         }
 
         com_ptr<ID3D11Buffer> buffer;
-        HRESULT hr = _device->CreateBuffer(&desc, nullptr, out_ptr(buffer));
+        HRESULT hr = ([&] {
+            if (!data.data.empty()) {
+                D3D11_SUBRESOURCE_DATA init = {};
+                init.pSysMem = data.data.data();
+                return _device->CreateBuffer(&d3d11Desc, &init, out_ptr(buffer));
+            }
+            return _device->CreateBuffer(&d3d11Desc, nullptr, out_ptr(buffer));
+        }());
         if (!SUCCEEDED(hr)) {
             return nullptr;
         }
 
-        return new_shared<BufferD3D11>(type, size, std::move(buffer));
+        return new_shared<BufferD3D11>(desc.type, desc.size, std::move(buffer));
     }
 
     auto DeviceD3D11::createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data) -> rc<GpuResource> {

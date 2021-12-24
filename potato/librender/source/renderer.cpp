@@ -35,7 +35,7 @@ void up::Renderer::beginFrame() {
     constexpr double nanoToSeconds = 1.0 / 1000000000.0;
 
     if (_frameDataBuffer == nullptr) {
-        _frameDataBuffer = _device->createBuffer(GpuBufferType::Constant, sizeof(FrameData));
+        _frameDataBuffer = _device->createBuffer({.type = GpuBufferType::Constant, .size = sizeof(FrameData)}, {});
     }
 
     uint64 nowNanoseconds = std::chrono::high_resolution_clock::now().time_since_epoch().count();

@@ -37,7 +37,7 @@ namespace up {
         virtual rc<GpuSwapChain> createSwapChain(void* nativeWindow) = 0;
         virtual rc<GpuCommandList> createCommandList(GpuPipelineState* pipelineState = nullptr) = 0;
         virtual rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) = 0;
-        virtual rc<GpuResource> createBuffer(GpuBufferType type, uint64 size) = 0;
+        virtual rc<GpuResource> createBuffer(GpuBufferDesc const& desc, GpuDataDesc const& data = {}) = 0;
         virtual rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data = {}) = 0;
         virtual rc<GpuSampler> createSampler() = 0;
 
