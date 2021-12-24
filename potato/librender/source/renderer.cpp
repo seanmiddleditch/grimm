@@ -68,20 +68,6 @@ auto up::Renderer::createCommandList() const noexcept -> rc<GpuCommandList> {
 
 namespace up {
     namespace {
-        class MeshAssetLoaderBackend : public AssetLoaderBackend {
-        public:
-            zstring_view typeName() const noexcept override { return Mesh::assetTypeName; }
-            rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
-                vector<byte> contents;
-                if (auto rs = readBinary(ctx.stream, contents); rs != IOResult::Success) {
-                    return nullptr;
-                }
-                ctx.stream.close();
-
-                return Mesh::createFromBuffer(ctx.key, contents);
-            }
-        };
-
         class MaterialAssetLoaderBackend : public AssetLoaderBackend {
         public:
             zstring_view typeName() const noexcept override { return Material::assetTypeName; }
@@ -114,7 +100,6 @@ namespace up {
 
 void up::Renderer::registerAssetBackends(AssetLoader& assetLoader) {
     UP_ASSERT(_device != nullptr);
-    assetLoader.registerBackend(new_box<MeshAssetLoaderBackend>());
     assetLoader.registerBackend(new_box<MaterialAssetLoaderBackend>());
     assetLoader.registerBackend(new_box<ShaderAssetLoaderBackend>());
 }

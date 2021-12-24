@@ -21,6 +21,8 @@ namespace up {
 } // namespace up
 
 namespace up {
+    class AssetLoader;
+    class GpuDevice;
     class RenderContext;
     class Material;
 
@@ -57,6 +59,8 @@ namespace up {
         UP_RENDER_API void UP_VECTORCALL render(RenderContext& ctx, Material* material, glm::mat4x4 transform);
 
         uint32 indexCount() const noexcept { return static_cast<uint32>(_indices.size()); }
+
+        static UP_RENDER_API void registerLoader(AssetLoader& assetLoader, GpuDevice& device);
 
     private:
         rc<GpuResource> _ibo;
