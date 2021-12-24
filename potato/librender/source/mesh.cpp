@@ -16,7 +16,7 @@
 
 namespace up {
     namespace {
-        struct alignas(16) Vert {
+        struct alignas(16) Vertex {
             glm::vec3 pos;
             glm::vec3 color;
             glm::vec3 normal;
@@ -24,7 +24,7 @@ namespace up {
             glm::vec2 uv;
         };
 
-        struct alignas(16) Trans {
+        struct alignas(16) Transforms {
             glm::mat4x4 modelWorld;
             glm::mat4x4 worldModel;
         };
@@ -54,31 +54,14 @@ namespace up {
         rc<GpuResource> ibo,
         rc<GpuResource> vbo,
         rc<GpuResource> cbo,
-        view<MeshBuffer> buffers,
-        view<MeshChannel> channels,
         uint32 indexCount)
         : AssetBase(std::move(key))
         , _ibo(std::move(ibo))
         , _vbo(std::move(vbo))
         , _cbo(std::move(cbo))
-        , _buffers(buffers.begin(), buffers.end())
-        , _channels(channels.begin(), channels.end())
         , _indexCount(indexCount) { }
 
     Mesh::~Mesh() = default;
-
-    void Mesh::populateLayout(span<GpuInputLayoutElement>& inputLayout) const noexcept {
-        auto size = inputLayout.size() < _channels.size() ? inputLayout.size() : _channels.size();
-
-        for (auto index : sequence(size)) {
-            inputLayout[index].format = _channels[index].format;
-            inputLayout[index].semantic = _channels[index].semantic;
-            inputLayout[index].semanticIndex = 0; // FIXME
-            inputLayout[index].slot = _channels[index].buffer;
-        }
-
-        inputLayout = inputLayout.first(size);
-    }
 
     auto Mesh::createFromBuffer(GpuDevice& device, AssetKey key, view<byte> buffer) -> rc<Mesh> {
         flatbuffers::Verifier verifier(reinterpret_cast<uint8 const*>(buffer.data()), buffer.size());
@@ -104,32 +87,12 @@ namespace up {
             return {};
         }
 
-        MeshChannel channels[] = {
-            {0, GpuFormat::R32G32B32Float, GpuShaderSemantic::Position},
-            {0, GpuFormat::R32G32B32Float, GpuShaderSemantic::Color},
-            {0, GpuFormat::R32G32B32Float, GpuShaderSemantic::Normal},
-            {0, GpuFormat::R32G32B32Float, GpuShaderSemantic::Tangent},
-            {0, GpuFormat::R32G32Float, GpuShaderSemantic::TexCoord},
-        };
-
-        struct VertData {
-            glm::vec3 pos = {0, 0, 0};
-            glm::vec3 color = {1, 1, 1};
-            glm::vec3 normal = {0, 0, 0};
-            glm::vec3 tangent = {0, 0, 0};
-            glm::vec3 uv = {0, 0, 0};
-        };
-
-        uint16 stride = sizeof(VertData);
         uint32 numVertices = flatMesh->vertices()->size();
-        uint32 size = numVertices * stride;
-
-        MeshBuffer bufferDesc = {size, 0, stride};
 
         vector<uint16> indices;
         indices.reserve(flatMesh->indices()->size());
 
-        vector<VertData> vertices;
+        vector<Vertex> vertices;
         vertices.reserve(numVertices);
 
         auto flatIndices = flatMesh->indices();
@@ -144,7 +107,7 @@ namespace up {
         }
 
         for (uint32 i = 0; i != numVertices; ++i) {
-            VertData& vert = vertices.emplace_back();
+            auto& vert = vertices.emplace_back();
 
             auto pos = *flatVerts->Get(i);
             vert.pos.x = pos.x();
@@ -183,22 +146,20 @@ namespace up {
             {.type = GpuBufferType::Index, .size = static_cast<uint>(indices.size() * sizeof(uint16))},
             {.data = indices.as_bytes()});
         auto vertexBuffer = device.createBuffer(
-            {.type = GpuBufferType::Vertex, .size = static_cast<uint>(vertices.size() * sizeof(VertData))},
+            {.type = GpuBufferType::Vertex, .size = static_cast<uint>(vertices.size() * sizeof(Vertex))},
             {.data = vertices.as_bytes()});
-        auto transformBuffer = device.createBuffer({.type = GpuBufferType::Constant, .size = sizeof(Trans)});
+        auto transformBuffer = device.createBuffer({.type = GpuBufferType::Constant, .size = sizeof(Transforms)});
 
         return new_shared<Mesh>(
             std::move(key),
             std::move(indexBuffer),
             std::move(vertexBuffer),
             std::move(transformBuffer),
-            span{&bufferDesc, 1},
-            channels,
             static_cast<uint32>(indices.size()));
     }
 
     void UP_VECTORCALL Mesh::render(RenderContext& ctx, Material* material, glm::mat4x4 transform) {
-        auto trans = Trans{
+        auto trans = Transforms{
             .modelWorld = transpose(transform),
             .worldModel = glm::inverse(transform),
         };
@@ -210,10 +171,7 @@ namespace up {
         }
 
         ctx.commandList().bindIndexBuffer(_ibo.get(), GpuIndexFormat::Unsigned16, 0);
-        for (auto i : sequence(_buffers.size())) {
-            ctx.commandList()
-                .bindVertexBuffer(static_cast<uint32>(i), _vbo.get(), _buffers[i].stride, _buffers[i].offset);
-        }
+        ctx.commandList().bindVertexBuffer(0, _vbo.get(), sizeof(Vertex), 0);
         ctx.commandList().bindConstantBuffer(2, _cbo.get(), GpuShaderStage::All);
         ctx.commandList().setPrimitiveTopology(GpuPrimitiveTopology::Triangles);
         ctx.commandList().drawIndexed(static_cast<uint32>(indexCount()));

@@ -26,18 +26,6 @@ namespace up {
     class RenderContext;
     class Material;
 
-    struct MeshBuffer {
-        uint32 size = 0;
-        uint32 offset = 0;
-        uint16 stride = 0;
-    };
-
-    struct MeshChannel {
-        uint8 buffer = 0;
-        GpuFormat format = GpuFormat::R32G32B32Float;
-        GpuShaderSemantic semantic = GpuShaderSemantic::Position;
-    };
-
     class Mesh : public AssetBase<Mesh> {
     public:
         static constexpr zstring_view assetTypeName = "potato.asset.model"_zsv;
@@ -47,14 +35,10 @@ namespace up {
             rc<GpuResource> ibo,
             rc<GpuResource> vbo,
             rc<GpuResource> cbo,
-            view<MeshBuffer> buffers,
-            view<MeshChannel> channels,
             uint32 indexCount);
         UP_RENDER_API ~Mesh();
 
         UP_RENDER_API static auto createFromBuffer(GpuDevice& device, AssetKey key, view<byte>) -> rc<Mesh>;
-
-        UP_RENDER_API void populateLayout(span<GpuInputLayoutElement>& inputLayout) const noexcept;
 
         UP_RENDER_API void UP_VECTORCALL render(RenderContext& ctx, Material* material, glm::mat4x4 transform);
 
@@ -66,8 +50,6 @@ namespace up {
         rc<GpuResource> _ibo;
         rc<GpuResource> _vbo;
         rc<GpuResource> _cbo; // FIXME: Transform buffer; this has no business being here
-        vector<MeshBuffer> _buffers;
-        vector<MeshChannel> _channels;
         uint32 _indexCount = 0;
     };
 } // namespace up
