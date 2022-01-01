@@ -1,6 +1,7 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "potato/render/shader.h"
+
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/stream.h"
 
@@ -19,7 +20,7 @@ namespace up {
                 return up::new_shared<Shader>(ctx.key, std::move(contents));
             }
         };
-    }
+    } // namespace
 
     void Shader::registerLoader(AssetLoader& assetLoader, GpuDevice&) {
         assetLoader.registerBackend(new_box<ShaderLoader>());

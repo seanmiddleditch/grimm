@@ -13,9 +13,9 @@
 #include "potato/render/texture.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/stream.h"
-#include "potato/spud/string.h"
 #include "potato/spud/enumerate.h"
 #include "potato/spud/sequence.h"
+#include "potato/spud/string.h"
 
 namespace up {
     namespace {
@@ -125,7 +125,12 @@ namespace up {
             samplers[index] = device.createSampler();
         }
 
-        return new_shared<Material>(std::move(key), std::move(pipelineState), std::move(textures), std::move(srvs), std::move(samplers));
+        return new_shared<Material>(
+            std::move(key),
+            std::move(pipelineState),
+            std::move(textures),
+            std::move(srvs),
+            std::move(samplers));
     }
 
     void Material::registerLoader(AssetLoader& assetLoader, GpuDevice& device) {

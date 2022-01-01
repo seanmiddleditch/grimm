@@ -49,12 +49,7 @@ namespace up {
         };
     } // namespace
 
-    Mesh::Mesh(
-        AssetKey key,
-        rc<GpuResource> ibo,
-        rc<GpuResource> vbo,
-        rc<GpuResource> cbo,
-        uint32 indexCount)
+    Mesh::Mesh(AssetKey key, rc<GpuResource> ibo, rc<GpuResource> vbo, rc<GpuResource> cbo, uint32 indexCount)
         : AssetBase(std::move(key))
         , _ibo(std::move(ibo))
         , _vbo(std::move(vbo))
