@@ -6,8 +6,8 @@ struct VS_Input {
     float2 uv : TEXCOORD0;
 };
 
-sampler sampler0;
-Texture2D texture0;
+SamplerState bilinearSampler : register(s1);
+Texture2D texture0 : register(t0);
 
 struct VS_Output {
     float4 position : SV_Position;
@@ -27,5 +27,5 @@ VS_Output vertex_main(VS_Input input) {
 }
 
 float4 pixel_main(VS_Output input) : SV_Target {
-    return float4(texture0.Sample(sampler0, input.uv).rgb, 1);
+    return float4(texture0.Sample(bilinearSampler, input.uv).rgb, 1);
 }

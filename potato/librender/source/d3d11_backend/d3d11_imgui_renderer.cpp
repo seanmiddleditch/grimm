@@ -167,9 +167,13 @@ namespace up::d3d11 {
         texData.pitch = fontWidth * 4;
         texData.data = span{pixels, static_cast<uint32>(fontHeight * texData.pitch)}.as_bytes();
 
+        GpuSamplerDesc samplerDesc;
+        samplerDesc.address = GpuTextureAddressMode::Clamp;
+        samplerDesc.filter = GpuFilter::MinMag_Point_Mip_Linear;
+
         auto font = _device.createTexture2D(texDesc, texData);
         _srv = _device.createShaderResourceView(font.get());
 
-        _sampler = _device.createSampler();
+        _sampler = _device.createSampler(samplerDesc);
     }
 } // namespace up::d3d11

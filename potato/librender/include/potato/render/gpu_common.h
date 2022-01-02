@@ -52,11 +52,14 @@ namespace up {
         Lines,
     };
 
-    enum class GpuBindType {
-        Constant,
-        UnorderedAccess,
-        Texture,
-        Sampler,
+    enum class GpuTextureAddressMode { Wrap, Clamp };
+
+    enum class GpuFilter {
+        MinMagMip_Point,
+        MinMag_Point_Mip_Linear,
+        MinMag_Linear_Mip_Point,
+        MinMagMip_Linear,
+        Anisotropic
     };
 
     struct GpuClipRect {
@@ -82,6 +85,11 @@ namespace up {
         GpuFormat format = GpuFormat::Unknown;
         GpuTextureType type = GpuTextureType::DepthStencil;
         uint32 width = 0, height = 0;
+    };
+
+    struct GpuSamplerDesc {
+        GpuTextureAddressMode address = GpuTextureAddressMode::Clamp; // separate uvw? uses?
+        GpuFilter filter = GpuFilter::MinMagMip_Linear;
     };
 
     struct GpuDataDesc {

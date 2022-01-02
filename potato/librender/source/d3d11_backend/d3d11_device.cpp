@@ -56,9 +56,9 @@ namespace up::d3d11 {
 
         D3D_FEATURE_LEVEL levels[] = {D3D_FEATURE_LEVEL_11_0};
 
-        com_ptr<ID3D11Device> device;
+        com_ptr<ID3D11Device> d3dDevice;
         com_ptr<ID3D11DeviceContext> context;
-        D3D11CreateDevice(
+        auto const deviceResult = D3D11CreateDevice(
             adapter.get(),
             D3D_DRIVER_TYPE_UNKNOWN,
             nullptr,
@@ -66,14 +66,21 @@ namespace up::d3d11 {
             levels,
             1,
             D3D11_SDK_VERSION,
-            out_ptr(device),
+            out_ptr(d3dDevice),
             nullptr,
             out_ptr(context));
-        if (device == nullptr || context == nullptr) {
+        if (FAILED(deviceResult)) {
+            return nullptr;
+        }
+        if (d3dDevice == nullptr || context == nullptr) {
             return nullptr;
         }
 
-        return new_shared<DeviceD3D11>(std::move(factory), std::move(adapter), std::move(device), std::move(context));
+        return new_shared<DeviceD3D11>(
+            std::move(factory),
+            std::move(adapter),
+            std::move(d3dDevice),
+            std::move(context));
     }
 
     auto DeviceD3D11::createSwapChain(void* nativeWindow) -> rc<GpuSwapChain> {
@@ -267,19 +274,19 @@ namespace up::d3d11 {
         return new_shared<TextureD3D11>(std::move(texture).as<ID3D11Resource>());
     }
 
-    auto DeviceD3D11::createSampler() -> rc<GpuSampler> {
-        D3D11_SAMPLER_DESC desc = {};
-        desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-        desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-        desc.MaxAnisotropy = 1;
-        desc.MaxLOD = 0;
-        desc.MinLOD = 0;
+    auto DeviceD3D11::createSampler(GpuSamplerDesc const& desc) -> rc<GpuSampler> {
+        D3D11_SAMPLER_DESC nativeDesc = {};
+        nativeDesc.AddressU = toNative(desc.address);
+        nativeDesc.AddressV = nativeDesc.AddressU;
+        nativeDesc.AddressW = nativeDesc.AddressU;
+        nativeDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+        nativeDesc.Filter = toNative(desc.filter);
+        nativeDesc.MaxAnisotropy = 1;
+        nativeDesc.MaxLOD = 9999;
+        nativeDesc.MinLOD = 0;
 
         com_ptr<ID3D11SamplerState> sampler;
-        HRESULT hr = _device->CreateSamplerState(&desc, out_ptr(sampler));
+        HRESULT hr = _device->CreateSamplerState(&nativeDesc, out_ptr(sampler));
         if (!SUCCEEDED(hr)) {
             return nullptr;
         }

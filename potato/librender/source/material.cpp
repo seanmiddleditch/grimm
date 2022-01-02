@@ -39,26 +39,18 @@ namespace up {
         };
     } // namespace
 
-    Material::Material(
-        AssetKey key,
-        rc<GpuPipelineState> pipelineState,
-        vector<Texture::Handle> textures,
-        vector<box<GpuResourceView>> srvs,
-        vector<rc<GpuSampler>> samplers)
+    Material::Material(AssetKey key, rc<GpuPipelineState> pipelineState, vector<Texture::Handle> textures)
         : AssetBase(std::move(key))
         , _pipelineState(std::move(pipelineState))
-        , _textures(std::move(textures))
-        , _srvs(std::move(srvs))
-        , _samplers(std::move(samplers)) { }
+        , _textures(std::move(textures)) { }
 
     Material::~Material() = default;
 
     void Material::bindMaterialToRender(RenderContext& ctx) {
         ctx.commandList().setPipelineState(_pipelineState.get());
 
-        for (auto index : sequence(static_cast<uint32>(_srvs.size()))) {
-            ctx.commandList().bindSampler(index, _samplers[index].get(), GpuShaderStage::Pixel);
-            ctx.commandList().bindShaderResource(index, _srvs[index].get(), GpuShaderStage::Pixel);
+        for (auto index : sequence(static_cast<uint32>(_textures.size()))) {
+            ctx.commandList().bindShaderResource(index, &_textures[index].asset()->srv(), GpuShaderStage::Pixel);
         }
     }
 
@@ -117,20 +109,7 @@ namespace up {
         pipelineDesc.inputLayout = layout;
         auto pipelineState = device.createPipelineState(pipelineDesc);
 
-        vector<box<GpuResourceView>> srvs(textures.size());
-        vector<rc<GpuSampler>> samplers(textures.size());
-
-        for (auto const& [index, texture] : enumerate(textures)) {
-            srvs[index] = device.createShaderResourceView(&texture.asset()->texture());
-            samplers[index] = device.createSampler();
-        }
-
-        return new_shared<Material>(
-            std::move(key),
-            std::move(pipelineState),
-            std::move(textures),
-            std::move(srvs),
-            std::move(samplers));
+        return new_shared<Material>(std::move(key), std::move(pipelineState), std::move(textures));
     }
 
     void Material::registerLoader(AssetLoader& assetLoader, GpuDevice& device) {

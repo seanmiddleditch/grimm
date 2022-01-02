@@ -31,7 +31,7 @@ namespace up::d3d11 {
         rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
         rc<GpuResource> createBuffer(GpuBufferDesc const& desc, GpuDataDesc const& data) override;
         rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data) override;
-        rc<GpuSampler> createSampler() override;
+        rc<GpuSampler> createSampler(GpuSamplerDesc const& desc) override;
 
         void execute(GpuCommandList* commandList) override;
 

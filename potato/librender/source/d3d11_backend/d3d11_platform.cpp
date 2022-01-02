@@ -44,6 +44,36 @@ auto up::d3d11::toNative(GpuFormat format) noexcept -> DXGI_FORMAT {
     }
 }
 
+auto up::d3d11::toNative(GpuTextureAddressMode address) noexcept -> D3D11_TEXTURE_ADDRESS_MODE {
+    switch (address) {
+        case GpuTextureAddressMode::Clamp:
+            return D3D11_TEXTURE_ADDRESS_CLAMP;
+        case GpuTextureAddressMode::Wrap:
+            return D3D11_TEXTURE_ADDRESS_WRAP;
+        default:
+            UP_UNREACHABLE("Unknown texture address mode");
+            return D3D11_TEXTURE_ADDRESS_CLAMP;
+    }
+}
+
+auto up::d3d11::toNative(GpuFilter filter) noexcept -> D3D11_FILTER {
+    switch (filter) {
+        case GpuFilter::MinMagMip_Point:
+            return D3D11_FILTER_MIN_MAG_MIP_POINT;
+        case GpuFilter::MinMagMip_Linear:
+            return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        case GpuFilter::MinMag_Point_Mip_Linear:
+            return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+        case GpuFilter::MinMag_Linear_Mip_Point:
+            return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+        case GpuFilter::Anisotropic:
+            return D3D11_FILTER_ANISOTROPIC;
+        default:
+            UP_UNREACHABLE("Unknown filter");
+            return D3D11_FILTER_MIN_MAG_MIP_POINT;
+    }
+}
+
 auto up::d3d11::fromNative(DXGI_FORMAT format) noexcept -> GpuFormat {
     switch (format) {
         case DXGI_FORMAT_R32G32B32A32_FLOAT:
