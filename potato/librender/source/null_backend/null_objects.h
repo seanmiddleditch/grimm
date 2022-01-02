@@ -56,8 +56,7 @@ namespace up::null {
     public:
         void present() override { }
         void resizeBuffers(int width, int height) override { }
-        rc<GpuResource> getBuffer(int index) override;
-        int getCurrentBufferIndex() override;
+        rc<GpuResource> getBuffer() override;
     };
 
     class PipelineStateNull final : public GpuPipelineState { };

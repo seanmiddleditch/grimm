@@ -21,11 +21,9 @@ namespace up::d3d11 {
 
         void present() override;
         void resizeBuffers(int width, int height) override;
-        rc<GpuResource> getBuffer(int index) override;
-        int getCurrentBufferIndex() override;
+        rc<GpuResource> getBuffer() override;
 
     private:
         com_ptr<IDXGISwapChain1> _swapChain;
-        int _bufferIndex = 0;
     };
 } // namespace up::d3d11

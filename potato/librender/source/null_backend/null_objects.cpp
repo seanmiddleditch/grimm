@@ -50,9 +50,7 @@ namespace up::null {
 
     void DeviceNull::renderDebugDraw(GpuCommandList&) { }
 
-    auto SwapChainNull::getBuffer(int index) -> rc<GpuResource> { return new_shared<TextureNull>(); }
-
-    int SwapChainNull::getCurrentBufferIndex() { return 0; }
+    auto SwapChainNull::getBuffer() -> rc<GpuResource> { return new_shared<TextureNull>(); }
 } // namespace up::null
 
 auto up::CreateFactoryNull() -> box<GpuDeviceFactory> {
