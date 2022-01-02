@@ -57,6 +57,7 @@ namespace up {
     enum class GpuFilter {
         MinMagMip_Point,
         MinMag_Point_Mip_Linear,
+        MinMag_Linear_Mip_Point,
         MinMagMip_Linear,
         Anisotropic
     };

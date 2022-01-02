@@ -45,8 +45,12 @@ void up::Renderer::beginFrame() {
     }
 
     if (_linearSampler == nullptr) {
-        _linearSampler = _device->createSampler(
-            {.address = GpuTextureAddressMode::Clamp, .filter = GpuFilter::MinMag_Point_Mip_Linear});
+        _linearSampler =
+            _device->createSampler({.address = GpuTextureAddressMode::Clamp, .filter = GpuFilter::MinMagMip_Point});
+    }
+    if (_bilinearSampler == nullptr) {
+        _bilinearSampler = _device->createSampler(
+            {.address = GpuTextureAddressMode::Clamp, .filter = GpuFilter::MinMag_Linear_Mip_Point});
     }
 
     double const now = static_cast<double>(nowNanoseconds - _startTimestamp) * nanoToSeconds;
@@ -69,6 +73,7 @@ auto up::Renderer::createCommandList() const noexcept -> rc<GpuCommandList> {
     commandList->update(_frameDataBuffer.get(), view<byte>{reinterpret_cast<byte*>(&frame), sizeof(frame)});
     commandList->bindConstantBuffer(0, _frameDataBuffer.get(), GpuShaderStage::All);
     commandList->bindSampler(0, _linearSampler.get(), GpuShaderStage::All);
+    commandList->bindSampler(1, _bilinearSampler.get(), GpuShaderStage::All);
 
     return commandList;
 }

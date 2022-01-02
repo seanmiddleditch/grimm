@@ -64,6 +64,8 @@ auto up::d3d11::toNative(GpuFilter filter) noexcept -> D3D11_FILTER {
             return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
         case GpuFilter::MinMag_Point_Mip_Linear:
             return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+        case GpuFilter::MinMag_Linear_Mip_Point:
+            return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
         case GpuFilter::Anisotropic:
             return D3D11_FILTER_ANISOTROPIC;
         default:
