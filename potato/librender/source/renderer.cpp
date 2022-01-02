@@ -8,6 +8,7 @@
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_pipeline_state.h"
 #include "potato/render/gpu_resource.h"
+#include "potato/render/gpu_sampler.h"
 #include "potato/render/gpu_swap_chain.h"
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
@@ -43,6 +44,11 @@ void up::Renderer::beginFrame() {
         _startTimestamp = nowNanoseconds;
     }
 
+    if (_linearSampler == nullptr) {
+        _linearSampler = _device->createSampler(
+            {.address = GpuTextureAddressMode::Clamp, .filter = GpuFilter::MinMag_Point_Mip_Linear});
+    }
+
     double const now = static_cast<double>(nowNanoseconds - _startTimestamp) * nanoToSeconds;
     _frameTimestep = static_cast<float>(now - _frameTimestamp);
     _frameTimestamp = now;
@@ -62,6 +68,7 @@ auto up::Renderer::createCommandList() const noexcept -> rc<GpuCommandList> {
     commandList->begin();
     commandList->update(_frameDataBuffer.get(), view<byte>{reinterpret_cast<byte*>(&frame), sizeof(frame)});
     commandList->bindConstantBuffer(0, _frameDataBuffer.get(), GpuShaderStage::All);
+    commandList->bindSampler(0, _linearSampler.get(), GpuShaderStage::All);
 
     return commandList;
 }

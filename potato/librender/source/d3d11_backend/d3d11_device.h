@@ -44,13 +44,10 @@ namespace up::d3d11 {
         void renderDebugDraw(GpuCommandList& commandList) override;
 
     private:
-        bool _createSamplers();
-
         com_ptr<IDXGIFactory2> _factory;
         com_ptr<IDXGIAdapter1> _adaptor;
         com_ptr<ID3D11Device> _device;
         com_ptr<ID3D11DeviceContext> _context;
-        com_ptr<ID3D11SamplerState> _linearSampler; // FIXME: this should be managed by the Renderer, not Device
         box<DebugDrawRendererD3D11> _debugDrawer;
         box<ImguiRendererD3D11> _imguiBackend;
     };

@@ -76,13 +76,11 @@ namespace up::d3d11 {
             return nullptr;
         }
 
-        auto device =
-            new_shared<DeviceD3D11>(std::move(factory), std::move(adapter), std::move(d3dDevice), std::move(context));
-        if (!device->_createSamplers()) {
-            return nullptr;
-        }
-
-        return device;
+        return new_shared<DeviceD3D11>(
+            std::move(factory),
+            std::move(adapter),
+            std::move(d3dDevice),
+            std::move(context));
     }
 
     auto DeviceD3D11::createSwapChain(void* nativeWindow) -> rc<GpuSwapChain> {
@@ -92,12 +90,7 @@ namespace up::d3d11 {
     }
 
     auto DeviceD3D11::createCommandList(GpuPipelineState* pipelineState) -> rc<GpuCommandList> {
-        auto commandList = CommandListD3D11::createCommandList(_device.get(), pipelineState);
-        auto* d3d11Context = commandList->deviceContext().get();
-        ID3D11SamplerState* const samplers[] = {_linearSampler.get()};
-        d3d11Context->VSSetSamplers(0, 1, samplers);
-        d3d11Context->PSSetSamplers(0, 1, samplers);
-        return commandList;
+        return CommandListD3D11::createCommandList(_device.get(), pipelineState);
     }
 
     auto DeviceD3D11::createRenderTargetView(GpuResource* renderTarget) -> box<GpuResourceView> {
@@ -309,24 +302,5 @@ namespace up::d3d11 {
         UP_ASSERT(deferred->commandList(), "Command list is still open");
 
         _context->ExecuteCommandList(deferred->commandList().get(), FALSE);
-    }
-
-    bool DeviceD3D11::_createSamplers() {
-        D3D11_SAMPLER_DESC desc = {};
-        desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-        desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-        desc.MaxAnisotropy = 1;
-        desc.MaxLOD = 0;
-        desc.MinLOD = 0;
-
-        HRESULT hr = _device->CreateSamplerState(&desc, out_ptr(_linearSampler));
-        if (FAILED(hr) || _linearSampler == nullptr) {
-            return false;
-        }
-
-        return true;
     }
 } // namespace up::d3d11

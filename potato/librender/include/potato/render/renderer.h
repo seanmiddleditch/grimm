@@ -14,6 +14,7 @@ namespace up {
     class GpuCommandList;
     class GpuPipelineState;
     class GpuDevice;
+    class GpuSampler;
     class RenderContext;
     class AssetLoader;
 
@@ -38,6 +39,7 @@ namespace up {
     private:
         rc<GpuDevice> _device;
         rc<GpuResource> _frameDataBuffer;
+        rc<GpuSampler> _linearSampler;
         uint32 _frameCounter = 0;
         uint64 _startTimestamp = 0;
         double _frameTimestamp = 0;
