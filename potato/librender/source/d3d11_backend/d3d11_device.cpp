@@ -276,13 +276,13 @@ namespace up::d3d11 {
 
     auto DeviceD3D11::createSampler(GpuSamplerDesc const& desc) -> rc<GpuSampler> {
         D3D11_SAMPLER_DESC nativeDesc = {};
-        nativeDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-        nativeDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-        nativeDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+        nativeDesc.AddressU = toNative(desc.address);
+        nativeDesc.AddressV = nativeDesc.AddressU;
+        nativeDesc.AddressW = nativeDesc.AddressU;
         nativeDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-        nativeDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        nativeDesc.Filter = toNative(desc.filter);
         nativeDesc.MaxAnisotropy = 1;
-        nativeDesc.MaxLOD = 0;
+        nativeDesc.MaxLOD = 9999;
         nativeDesc.MinLOD = 0;
 
         com_ptr<ID3D11SamplerState> sampler;
