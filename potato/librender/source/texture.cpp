@@ -55,7 +55,7 @@ namespace up {
                 }
 
                 GpuTextureDesc desc = {};
-                desc.usage = GpuUsage::ShaderResource;
+                desc.bind = GpuBindFlags::ShaderResource;
                 switch (channels) {
                     case 1:
                         desc.format = GpuFormat::R8UnsignedNormalized;

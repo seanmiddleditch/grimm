@@ -43,7 +43,7 @@ namespace up {
 
             GpuTextureDesc desc;
             desc.format = GpuFormat::D32Float;
-            desc.usage = GpuUsage::DepthStencil;
+            desc.bind = GpuBindFlags::DepthStencil;
             desc.width = static_cast<uint32>(dimensions.x);
             desc.height = static_cast<uint32>(dimensions.y);
 

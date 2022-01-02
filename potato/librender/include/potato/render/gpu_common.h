@@ -37,7 +37,7 @@ namespace up {
 
     enum class GpuResourceType { Buffer, Texture };
 
-    UP_DEFINE_FLAGS(GpuUsage, uint8_t, ShaderResource = 1 << 0, RenderTarget = 1 << 2, DepthStencil = 1 << 4);
+    UP_DEFINE_FLAGS(GpuBindFlags, uint8_t, ShaderResource = 1 << 0, RenderTarget = 1 << 2, DepthStencil = 1 << 4);
 
     enum class GpuIndexFormat { Unsigned16, Unsigned32 };
 
@@ -79,7 +79,7 @@ namespace up {
 
     struct GpuTextureDesc {
         GpuFormat format = GpuFormat::Unknown;
-        GpuUsage usage = GpuUsage::ShaderResource;
+        GpuBindFlags bind = GpuBindFlags::ShaderResource;
         uint32 width = 0, height = 0, depth = 0;
     };
 

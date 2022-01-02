@@ -245,13 +245,13 @@ namespace up::d3d11 {
         nativeDesc.SampleDesc.Count = 1;
         nativeDesc.SampleDesc.Quality = 0;
 
-        if ((desc.usage & GpuUsage::ShaderResource) != GpuUsage{}) {
+        if ((desc.bind & GpuBindFlags::ShaderResource) != GpuBindFlags{}) {
             nativeDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
         }
-        if ((desc.usage & GpuUsage::RenderTarget) != GpuUsage{}) {
+        if ((desc.bind & GpuBindFlags::RenderTarget) != GpuBindFlags{}) {
             nativeDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
         }
-        if ((desc.usage & GpuUsage::DepthStencil) != GpuUsage{}) {
+        if ((desc.bind & GpuBindFlags::DepthStencil) != GpuBindFlags{}) {
             nativeDesc.BindFlags |= D3D10_BIND_DEPTH_STENCIL;
         }
 

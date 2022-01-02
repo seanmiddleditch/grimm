@@ -295,7 +295,7 @@ namespace up::shell {
     void SceneEditor::_resize(GpuDevice& device, glm::ivec2 size) {
         GpuTextureDesc desc;
         desc.format = GpuFormat::R8G8B8A8UnsignedNormalized;
-        desc.usage = GpuUsage::ShaderResource | GpuUsage::RenderTarget;
+        desc.bind = GpuBindFlags::ShaderResource | GpuBindFlags::RenderTarget;
         desc.width = size.x;
         desc.height = size.y;
         _buffer = device.createTexture2D(desc, {});
