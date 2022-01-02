@@ -20,7 +20,6 @@ namespace up {
         virtual GpuResourceType resourceType() const noexcept = 0;
         virtual GpuBufferType bufferType() const noexcept = 0;
         virtual uint64 size() const noexcept = 0;
-        virtual GpuTextureType textureType() const noexcept = 0;
         virtual GpuFormat format() const noexcept = 0;
         virtual glm::ivec3 dimensions() const noexcept = 0;
     };

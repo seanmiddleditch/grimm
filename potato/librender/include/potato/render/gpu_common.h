@@ -37,15 +37,11 @@ namespace up {
 
     enum class GpuResourceType { Buffer, Texture };
 
+    UP_DEFINE_FLAGS(GpuUsage, uint8_t, ShaderResource = 1 << 0, RenderTarget = 1 << 2, DepthStencil = 1 << 4);
+
     enum class GpuIndexFormat { Unsigned16, Unsigned32 };
 
     UP_DEFINE_FLAGS(GpuShaderStage, uint8_t, Vertex = 1 << 0, Pixel = 1 << 1, All = Vertex | Pixel);
-
-    enum class GpuTextureType {
-        Texture2D,
-        Texture3D,
-        DepthStencil,
-    };
 
     enum class GpuPrimitiveTopology {
         Triangles,
@@ -83,8 +79,8 @@ namespace up {
 
     struct GpuTextureDesc {
         GpuFormat format = GpuFormat::Unknown;
-        GpuTextureType type = GpuTextureType::DepthStencil;
-        uint32 width = 0, height = 0;
+        GpuUsage usage = GpuUsage::ShaderResource;
+        uint32 width = 0, height = 0, depth = 0;
     };
 
     struct GpuSamplerDesc {
