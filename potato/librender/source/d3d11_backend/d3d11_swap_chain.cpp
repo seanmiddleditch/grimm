@@ -40,8 +40,8 @@ auto up::d3d11::SwapChainD3D11::createSwapChain(IDXGIFactory2* factory, ID3D11De
 }
 
 void up::d3d11::SwapChainD3D11::present() {
-    _swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
     _bufferIndex = (_bufferIndex + 1) % 2;
+    _swapChain->Present(0, DXGI_SWAP_EFFECT_FLIP_DISCARD);
 }
 
 void up::d3d11::SwapChainD3D11::resizeBuffers(int width, int height) {
