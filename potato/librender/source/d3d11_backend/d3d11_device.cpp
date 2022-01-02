@@ -56,9 +56,9 @@ namespace up::d3d11 {
 
         D3D_FEATURE_LEVEL levels[] = {D3D_FEATURE_LEVEL_11_0};
 
-        com_ptr<ID3D11Device> device;
+        com_ptr<ID3D11Device> d3dDevice;
         com_ptr<ID3D11DeviceContext> context;
-        D3D11CreateDevice(
+        auto const deviceResult = D3D11CreateDevice(
             adapter.get(),
             D3D_DRIVER_TYPE_UNKNOWN,
             nullptr,
@@ -66,14 +66,23 @@ namespace up::d3d11 {
             levels,
             1,
             D3D11_SDK_VERSION,
-            out_ptr(device),
+            out_ptr(d3dDevice),
             nullptr,
             out_ptr(context));
-        if (device == nullptr || context == nullptr) {
+        if (FAILED(deviceResult)) {
+            return nullptr;
+        }
+        if (d3dDevice == nullptr || context == nullptr) {
             return nullptr;
         }
 
-        return new_shared<DeviceD3D11>(std::move(factory), std::move(adapter), std::move(device), std::move(context));
+        auto device =
+            new_shared<DeviceD3D11>(std::move(factory), std::move(adapter), std::move(d3dDevice), std::move(context));
+        if (!device->_createSamplers()) {
+            return nullptr;
+        }
+
+        return device;
     }
 
     auto DeviceD3D11::createSwapChain(void* nativeWindow) -> rc<GpuSwapChain> {
@@ -83,7 +92,12 @@ namespace up::d3d11 {
     }
 
     auto DeviceD3D11::createCommandList(GpuPipelineState* pipelineState) -> rc<GpuCommandList> {
-        return CommandListD3D11::createCommandList(_device.get(), pipelineState);
+        auto commandList = CommandListD3D11::createCommandList(_device.get(), pipelineState);
+        auto* d3d11Context = commandList->deviceContext().get();
+        ID3D11SamplerState* const samplers[] = {_linearSampler.get()};
+        d3d11Context->VSSetSamplers(0, 1, samplers);
+        d3d11Context->PSSetSamplers(0, 1, samplers);
+        return commandList;
     }
 
     auto DeviceD3D11::createRenderTargetView(GpuResource* renderTarget) -> box<GpuResourceView> {
@@ -267,19 +281,19 @@ namespace up::d3d11 {
         return new_shared<TextureD3D11>(std::move(texture).as<ID3D11Resource>());
     }
 
-    auto DeviceD3D11::createSampler() -> rc<GpuSampler> {
-        D3D11_SAMPLER_DESC desc = {};
-        desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-        desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-        desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-        desc.MaxAnisotropy = 1;
-        desc.MaxLOD = 0;
-        desc.MinLOD = 0;
+    auto DeviceD3D11::createSampler(GpuSamplerDesc const& desc) -> rc<GpuSampler> {
+        D3D11_SAMPLER_DESC nativeDesc = {};
+        nativeDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+        nativeDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        nativeDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+        nativeDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+        nativeDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        nativeDesc.MaxAnisotropy = 1;
+        nativeDesc.MaxLOD = 0;
+        nativeDesc.MinLOD = 0;
 
         com_ptr<ID3D11SamplerState> sampler;
-        HRESULT hr = _device->CreateSamplerState(&desc, out_ptr(sampler));
+        HRESULT hr = _device->CreateSamplerState(&nativeDesc, out_ptr(sampler));
         if (!SUCCEEDED(hr)) {
             return nullptr;
         }
@@ -295,5 +309,24 @@ namespace up::d3d11 {
         UP_ASSERT(deferred->commandList(), "Command list is still open");
 
         _context->ExecuteCommandList(deferred->commandList().get(), FALSE);
+    }
+
+    bool DeviceD3D11::_createSamplers() {
+        D3D11_SAMPLER_DESC desc = {};
+        desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+        desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+        desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+        desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        desc.MaxAnisotropy = 1;
+        desc.MaxLOD = 0;
+        desc.MinLOD = 0;
+
+        HRESULT hr = _device->CreateSamplerState(&desc, out_ptr(_linearSampler));
+        if (FAILED(hr) || _linearSampler == nullptr) {
+            return false;
+        }
+
+        return true;
     }
 } // namespace up::d3d11

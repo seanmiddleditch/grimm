@@ -16,7 +16,6 @@ namespace up {
     class CommandList;
     class GpuDevice;
     class GpuPipelineState;
-    class GpuResourceView;
     class GpuSampler;
     class RenderContext;
 
@@ -27,9 +26,7 @@ namespace up {
         UP_RENDER_API explicit Material(
             AssetKey key,
             rc<GpuPipelineState> pipelineState,
-            vector<Texture::Handle> textures,
-            vector<box<GpuResourceView>> srvs,
-            vector<rc<GpuSampler>> samplers);
+            vector<Texture::Handle> textures);
         UP_RENDER_API ~Material();
 
         static UP_RENDER_API auto createFromBuffer(
@@ -45,7 +42,5 @@ namespace up {
     private:
         rc<GpuPipelineState> _pipelineState;
         vector<Texture::Handle> _textures;
-        vector<box<GpuResourceView>> _srvs;
-        vector<rc<GpuSampler>> _samplers;
     };
 } // namespace up

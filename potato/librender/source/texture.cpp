@@ -4,6 +4,7 @@
 
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource.h"
+#include "potato/render/gpu_resource_view.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/stream.h"
 #include "potato/spud/unique_resource.h"
@@ -79,7 +80,12 @@ namespace up {
                     return nullptr;
                 }
 
-                return new_shared<Texture>(ctx.key, std::move(tex));
+                auto srv = _device.createShaderResourceView(tex.get());
+                if (srv == nullptr) {
+                    return nullptr;
+                }
+
+                return new_shared<Texture>(ctx.key, std::move(tex), std::move(srv));
             }
 
         private:
@@ -87,9 +93,10 @@ namespace up {
         };
     } // namespace
 
-    Texture::Texture(AssetKey key, rc<GpuResource> texture)
+    Texture::Texture(AssetKey key, rc<GpuResource> texture, box<GpuResourceView> srv)
         : AssetBase(std::move(key))
-        , _texture(std::move(texture)) { }
+        , _texture(std::move(texture))
+        , _srv(std::move(srv)) { }
 
     Texture::~Texture() = default;
 

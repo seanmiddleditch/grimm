@@ -12,6 +12,8 @@
 namespace up::d3d11 {
     extern zstring_view toNative(GpuShaderSemantic semantic) noexcept;
     extern DXGI_FORMAT toNative(GpuFormat format) noexcept;
+    extern D3D11_TEXTURE_ADDRESS_MODE toNative(GpuTextureAddressMode address) noexcept;
+    extern D3D11_FILTER toNative(GpuFilter filter) noexcept;
     extern GpuFormat fromNative(DXGI_FORMAT format) noexcept;
     extern uint32 toByteSize(GpuFormat format) noexcept;
     extern DXGI_FORMAT toNative(GpuIndexFormat type) noexcept;

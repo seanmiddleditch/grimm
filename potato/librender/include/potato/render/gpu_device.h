@@ -39,7 +39,7 @@ namespace up {
         virtual rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) = 0;
         virtual rc<GpuResource> createBuffer(GpuBufferDesc const& desc, GpuDataDesc const& data = {}) = 0;
         virtual rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data = {}) = 0;
-        virtual rc<GpuSampler> createSampler() = 0;
+        virtual rc<GpuSampler> createSampler(GpuSamplerDesc const& desc) = 0;
 
         virtual void execute(GpuCommandList* commandList) = 0;
 

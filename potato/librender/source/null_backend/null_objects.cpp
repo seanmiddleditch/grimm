@@ -42,7 +42,7 @@ namespace up::null {
         return new_shared<TextureNull>();
     }
 
-    auto DeviceNull::createSampler() -> rc<GpuSampler> { return new_shared<SamplerNull>(); }
+    auto DeviceNull::createSampler(GpuSamplerDesc const& desc) -> rc<GpuSampler> { return new_shared<SamplerNull>(); }
 
     void DeviceNull::beginImguiFrame(ImGuiContext&) { }
 

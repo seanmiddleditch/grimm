@@ -29,7 +29,7 @@ namespace up::null {
         rc<GpuPipelineState> createPipelineState(GpuPipelineStateDesc const& desc) override;
         rc<GpuResource> createBuffer(GpuBufferDesc const& desc, GpuDataDesc const& data) override;
         rc<GpuResource> createTexture2D(GpuTextureDesc const& desc, GpuDataDesc const& data) override;
-        rc<GpuSampler> createSampler() override;
+        rc<GpuSampler> createSampler(GpuSamplerDesc const& desc) override;
 
         box<GpuResourceView> createRenderTargetView(GpuResource* renderTarget) override;
         box<GpuResourceView> createDepthStencilView(GpuResource* depthStencilBuffer) override;
