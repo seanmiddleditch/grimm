@@ -6,8 +6,8 @@ struct VS_Input {
     float2 uv : TEXCOORD0;
 };
 
-sampler sampler0;
-Texture2D texture0;
+sampler linearSampler : register(s0);
+Texture2D texture0 : register(t0);
 
 struct VS_Output {
     float4 position : SV_Position;
