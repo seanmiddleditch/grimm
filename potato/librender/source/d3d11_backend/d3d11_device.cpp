@@ -160,7 +160,7 @@ namespace up::d3d11 {
                 desc.Texture2D.MostDetailedMip = 0;
             }
             else {
-                UP_UNREACHABLE("unsupporte texture type");
+                UP_UNREACHABLE("unsupported texture type");
             }
 
             com_ptr<ID3D11ShaderResourceView> view;
@@ -244,14 +244,15 @@ namespace up::d3d11 {
         nativeDesc.BindFlags = 0;
         nativeDesc.SampleDesc.Count = 1;
         nativeDesc.SampleDesc.Quality = 0;
-        if ((desc.usage & GpuUsage::DepthStencil) != GpuUsage{}) {
-            nativeDesc.BindFlags |= D3D10_BIND_DEPTH_STENCIL;
-        }
+
         if ((desc.usage & GpuUsage::ShaderResource) != GpuUsage{}) {
             nativeDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
         }
         if ((desc.usage & GpuUsage::RenderTarget) != GpuUsage{}) {
             nativeDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+        }
+        if ((desc.usage & GpuUsage::DepthStencil) != GpuUsage{}) {
+            nativeDesc.BindFlags |= D3D10_BIND_DEPTH_STENCIL;
         }
 
         com_ptr<ID3D11Texture2D> texture;
