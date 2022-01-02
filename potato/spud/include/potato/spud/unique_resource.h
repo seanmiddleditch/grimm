@@ -26,7 +26,7 @@ public:
     unique_resource(unique_resource&& src) noexcept : _ptr(src._ptr) { src._ptr = nullptr; }
 
     unique_resource& operator=(unique_resource&& src) noexcept {
-        D(_ptr);
+        D(_ptr); // NOLINT(cppcoreguidelines-no-malloc)
         _ptr = src._ptr;
         src._ptr = nullptr;
         return *this;
@@ -34,7 +34,7 @@ public:
 
     unique_resource& operator=(pointer src) {
         if (_ptr != src) {
-            D(_ptr);
+            D(_ptr); // NOLINT(cppcoreguidelines-no-malloc)
             _ptr = src;
         }
         return *this;
@@ -50,13 +50,13 @@ public:
 
     void reset(pointer ptr) {
         if (ptr != _ptr) {
-            D(_ptr);
+            D(_ptr); // NOLINT(cppcoreguidelines-no-malloc)
             _ptr = ptr;
         }
     }
 
     void reset(std::nullptr_t = {}) {
-        D(_ptr);
+        D(_ptr); // NOLINT(cppcoreguidelines-no-malloc)
         _ptr = nullptr;
     }
 

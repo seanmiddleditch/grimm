@@ -33,7 +33,7 @@ namespace up {
         virtual rc<Asset> loadFromStream(AssetLoadContext const& ctx) = 0;
     };
 
-    class AssetLoader : private AssetTracker {
+    class AssetLoader {
     public:
         UP_RUNTIME_API AssetLoader();
         UP_RUNTIME_API ~AssetLoader();
@@ -55,11 +55,14 @@ namespace up {
 
         UP_RUNTIME_API void registerBackend(box<AssetLoaderBackend> backend);
 
+        // Note: managing the lifetime of doomed assets should be automatic/internal,
+        // based on load requests and such
+        UP_RUNTIME_API void collectDoomedAssets();
+
     private:
         Asset* _findAsset(AssetId id) const noexcept;
         string _makeCasPath(uint64 contentHash) const;
         AssetLoaderBackend* _findBackend(string_view type) const;
-        void onAssetReleased(Asset* asset) override;
 
         vector<box<AssetLoaderBackend>> _backends;
         vector<Asset*> _assets;

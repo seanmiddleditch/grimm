@@ -140,9 +140,9 @@ namespace up::d3d11 {
         desc.pixelShader = span{g_pixel_main}.as_bytes();
         desc.inputLayout = inputLayout;
 
-        _indexBuffer = _device.createBuffer(GpuBufferType::Index, bufferSize);
-        _vertexBuffer = _device.createBuffer(GpuBufferType::Vertex, bufferSize);
-        _constantBuffer = _device.createBuffer(GpuBufferType::Constant, sizeof(float) * 16);
+        _indexBuffer = _device.createBuffer({.type = GpuBufferType::Index, .size = bufferSize}, {});
+        _vertexBuffer = _device.createBuffer({.type = GpuBufferType::Vertex, .size = bufferSize}, {});
+        _constantBuffer = _device.createBuffer({.type = GpuBufferType::Constant, .size = sizeof(float) * 16}, {});
         _pipelineState = _device.createPipelineState(desc);
 
         ImGuiContext* const oldContext = ImGui::GetCurrentContext();
@@ -163,8 +163,11 @@ namespace up::d3d11 {
         texDesc.width = fontWidth;
         texDesc.height = fontHeight;
 
-        auto font =
-            _device.createTexture2D(texDesc, span{pixels, static_cast<uint32>(fontWidth * fontHeight * 4)}.as_bytes());
+        GpuDataDesc texData;
+        texData.pitch = fontWidth * 4;
+        texData.data = span{pixels, static_cast<uint32>(fontHeight * texData.pitch)}.as_bytes();
+
+        auto font = _device.createTexture2D(texDesc, texData);
         _srv = _device.createShaderResourceView(font.get());
 
         _sampler = _device.createSampler();

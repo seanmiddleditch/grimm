@@ -121,11 +121,14 @@ auto up::AssetLoader::_makeCasPath(uint64 contentHash) const -> string {
     return path::join(_casPath, casFilePath);
 }
 
-void up::AssetLoader::onAssetReleased(Asset* asset) {
-    for (auto it = begin(_assets); it != end(_assets); ++it) {
-        if (*it == asset) {
-            _assets.erase(it);
-            return;
+void up::AssetLoader::collectDoomedAssets() {
+    auto it = begin(_assets);
+    while (it != end(_assets)) {
+        if ((*it)->isDoomed()) {
+            delete *it;
+            it = _assets.erase(it);
+            continue;
         }
+        ++it;
     }
 }

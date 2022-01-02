@@ -35,7 +35,7 @@ void up::Renderer::beginFrame() {
     constexpr double nanoToSeconds = 1.0 / 1000000000.0;
 
     if (_frameDataBuffer == nullptr) {
-        _frameDataBuffer = _device->createBuffer(GpuBufferType::Constant, sizeof(FrameData));
+        _frameDataBuffer = _device->createBuffer({.type = GpuBufferType::Constant, .size = sizeof(FrameData)}, {});
     }
 
     uint64 nowNanoseconds = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -64,91 +64,6 @@ auto up::Renderer::createCommandList() const noexcept -> rc<GpuCommandList> {
     commandList->bindConstantBuffer(0, _frameDataBuffer.get(), GpuShaderStage::All);
 
     return commandList;
-}
-
-namespace up {
-    namespace {
-        class MeshAssetLoaderBackend : public AssetLoaderBackend {
-        public:
-            zstring_view typeName() const noexcept override { return Mesh::assetTypeName; }
-            rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
-                vector<byte> contents;
-                if (auto rs = readBinary(ctx.stream, contents); rs != IOResult::Success) {
-                    return nullptr;
-                }
-                ctx.stream.close();
-
-                return Mesh::createFromBuffer(ctx.key, contents);
-            }
-        };
-
-        class MaterialAssetLoaderBackend : public AssetLoaderBackend {
-        public:
-            zstring_view typeName() const noexcept override { return Material::assetTypeName; }
-            rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
-                vector<byte> contents;
-                if (auto rs = readBinary(ctx.stream, contents); rs != IOResult::Success) {
-                    return nullptr;
-                }
-                ctx.stream.close();
-
-                return Material::createFromBuffer(ctx.key, contents, ctx.loader);
-            }
-        };
-
-        class ShaderAssetLoaderBackend : public AssetLoaderBackend {
-        public:
-            zstring_view typeName() const noexcept override { return Shader::assetTypeName; }
-            rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
-                vector<byte> contents;
-                if (auto rs = readBinary(ctx.stream, contents); rs != IOResult::Success) {
-                    return nullptr;
-                }
-                ctx.stream.close();
-
-                return up::new_shared<Shader>(ctx.key, std::move(contents));
-            }
-        };
-
-        class TextureAssetLoaderBackend : public AssetLoaderBackend {
-        public:
-            TextureAssetLoaderBackend(Renderer& renderer) : _renderer(renderer) { }
-
-            zstring_view typeName() const noexcept override { return Texture::assetTypeName; }
-            rc<Asset> loadFromStream(AssetLoadContext const& ctx) override {
-                auto img = loadImage(ctx.stream);
-                ctx.stream.close();
-                if (img.data().empty()) {
-                    return nullptr;
-                }
-
-                GpuTextureDesc desc = {};
-                desc.type = GpuTextureType::Texture2D;
-                desc.format = GpuFormat::R8G8B8A8UnsignedNormalized;
-                desc.width = img.header().width;
-                desc.height = img.header().height;
-
-                auto tex = _renderer.device().createTexture2D(desc, img.data());
-                if (tex == nullptr) {
-                    return nullptr;
-                }
-
-                return new_shared<Texture>(ctx.key, std::move(img), std::move(tex));
-            }
-
-        private:
-            Renderer& _renderer;
-        };
-    } // namespace
-} // namespace up
-
-void up::Renderer::registerAssetBackends(AssetLoader& assetLoader) {
-    UP_ASSERT(_device != nullptr);
-    assetLoader.registerBackend(new_box<MeshAssetLoaderBackend>());
-    assetLoader.registerBackend(new_box<MaterialAssetLoaderBackend>());
-    assetLoader.registerBackend(new_box<ShaderAssetLoaderBackend>());
-    assetLoader.registerBackend(new_box<TextureAssetLoaderBackend>(*this));
-    _device->registerAssetBackends(assetLoader);
 }
 
 void up::Renderer::renderDebugDraw(GpuCommandList& commandList) {

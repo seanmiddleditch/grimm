@@ -14,7 +14,6 @@ add_library(potato::librender ALIAS potato_librender)
 
 target_sources(potato_librender PRIVATE
     "source/debug_draw.cpp"
-    "source/image.cpp"
     "source/material.cpp"
     "source/mesh.cpp"
     "source/renderer.cpp"
@@ -22,7 +21,7 @@ target_sources(potato_librender PRIVATE
     "source/texture.cpp"
     "source/context.cpp"
     "include/potato/render/gpu_resource.h"
-)
+ "source/shader.cpp")
 
 up_set_common_properties(potato_librender)
 up_copy_library_import(assimp potato_librender)

@@ -20,7 +20,6 @@ namespace up {
     class Material;
     class AssetLoader;
     struct SceneComponent;
-    class Scene;
 
     enum class SceneEntityId : uint64 { None = 0 };
 

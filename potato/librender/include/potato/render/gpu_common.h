@@ -13,6 +13,8 @@ namespace up {
         R32G32B32Float,
         R32G32Float,
         R8G8B8A8UnsignedNormalized,
+        R8G8UnsignedNormalized,
+        R8UnsignedNormalized,
         D32Float
     };
 
@@ -71,10 +73,20 @@ namespace up {
         int index;
     };
 
+    struct GpuBufferDesc {
+        GpuBufferType type = GpuBufferType::Constant;
+        uint32 size = 0;
+    };
+
     struct GpuTextureDesc {
         GpuFormat format = GpuFormat::Unknown;
         GpuTextureType type = GpuTextureType::DepthStencil;
         uint32 width = 0, height = 0;
+    };
+
+    struct GpuDataDesc {
+        span<byte const> data;
+        int pitch = 1;
     };
 
     struct GpuPipelineStateDesc {

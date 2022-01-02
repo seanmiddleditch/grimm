@@ -30,7 +30,6 @@ namespace up {
     class GpuDevice;
     class GpuSwapChain;
     class GpuTexture;
-    class Scene;
     class Camera;
     class CameraController;
     class Project;

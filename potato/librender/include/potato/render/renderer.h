@@ -32,10 +32,6 @@ namespace up {
         float frameTimestep() const noexcept { return static_cast<float>(_frameTimestep); }
 
         UP_RENDER_API rc<GpuCommandList> createCommandList() const noexcept;
-        UP_RENDER_API void registerAssetBackends(AssetLoader& assetLoader);
-
-        UP_RENDER_API void beginImguiFrame();
-        UP_RENDER_API void renderImgui(GpuCommandList& commandList);
 
         UP_RENDER_API void renderDebugDraw(GpuCommandList& commandList);
 

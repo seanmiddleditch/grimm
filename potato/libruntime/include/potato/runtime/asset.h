@@ -15,7 +15,6 @@ namespace up {
     enum class AssetId : uint64 { Invalid };
 
     class Asset;
-    class AssetTracker;
     template <typename AssetT>
     class AssetHandle;
 
@@ -37,27 +36,26 @@ namespace up {
     class Asset : public shared<Asset> {
     public:
         explicit Asset(AssetKey key) noexcept : _key(std::move(key)) { }
-        inline virtual ~Asset();
 
         virtual zstring_view assetType() const noexcept = 0;
         AssetKey const& assetKey() const noexcept { return _key; }
         AssetId assetId() const noexcept { return _key.makeAssetId(); }
 
-    private:
-        AssetKey _key{};
-        AssetTracker* _tracker = nullptr;
+        void addRef() const noexcept { ++_refs; }
+        void removeRef() const noexcept { UP_ASSERT(--_refs >= 0); }
 
-        friend class AssetTracker;
-    };
+        // Note: this might return true for an asset that's about to be un-doomed;
+        // only rely on this when the asset database is locked
+        bool isDoomed() const noexcept { return _refs == 0; }
 
-    class AssetTracker {
     protected:
-        ~AssetTracker() = default;
+        virtual ~Asset() = default;
 
     private:
-        friend class Asset;
+        mutable std::atomic<int> _refs = 1;
+        AssetKey _key{};
 
-        virtual void onAssetReleased(Asset* asset) = 0;
+        friend class AssetLoader;
     };
 
     template <typename DerivedT>
@@ -117,12 +115,6 @@ namespace up {
         AssetT* asset() const noexcept { return static_cast<AssetT*>(UntypedAssetHandle::asset()); }
         AssetT* release() noexcept { return static_cast<AssetT*>(UntypedAssetHandle::release()); }
     };
-
-    Asset::~Asset() {
-        if (_tracker != nullptr) {
-            _tracker->onAssetReleased(this);
-        }
-    }
 
     template <typename AssetT>
     AssetHandle<AssetT> UntypedAssetHandle::cast() const& noexcept {
