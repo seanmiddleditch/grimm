@@ -18,7 +18,6 @@ namespace up {
 
         virtual void present() = 0;
         virtual void resizeBuffers(int width, int height) = 0;
-        virtual rc<GpuResource> getBuffer(int index) = 0;
-        virtual int getCurrentBufferIndex() = 0;
+        virtual rc<GpuResource> getBuffer() = 0;
     };
 } // namespace up

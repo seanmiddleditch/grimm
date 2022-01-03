@@ -558,17 +558,10 @@ void up::shell::ShellApp::_processEvents() {
 void up::shell::ShellApp::_render() {
     ZoneScopedN("Shell Render");
 
-    GpuViewportDesc viewport;
-    int width = 0;
-    int height = 0;
-    SDL_GetWindowSize(_window.get(), &width, &height);
-    viewport.width = static_cast<float>(width);
-    viewport.height = static_cast<float>(height);
-
     _renderer->beginFrame();
     auto ctx = _renderer->context();
 
-    ctx.bindBackBuffer(_swapChain->getBuffer(0));
+    ctx.bindBackBuffer(_swapChain->getBuffer());
     ctx.applyCameraScreen();
     _imguiBackend.render(*_device, ctx.commandList());
     ctx.finish();

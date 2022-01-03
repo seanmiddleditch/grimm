@@ -5,36 +5,17 @@
 #include "concepts.h"
 #include "traits.h"
 
-namespace up::flags_ops {
-    template <enumeration E, typename U = std::underlying_type_t<E>>
-    constexpr E operator|(E lhs, E rhs) noexcept {
-        return static_cast<E>(static_cast<U>(lhs) | static_cast<U>(rhs));
-    }
+namespace up::flag_enums { } // namespace up::flag_enums
 
-    template <enumeration E, typename U = std::underlying_type_t<E>>
-    constexpr E& operator|=(E& lhs, E rhs) noexcept {
-        return static_cast<E&>(static_cast<U&>(lhs) |= static_cast<U>(rhs));
-    }
-
-    template <enumeration E, typename U = std::underlying_type_t<E>>
-    constexpr E operator&(E lhs, E rhs) noexcept {
-        return static_cast<E>(static_cast<U>(lhs) & static_cast<U>(rhs));
-    }
-
-    template <enumeration E, typename U = std::underlying_type_t<E>>
-    constexpr E operator&=(E& lhs, E rhs) noexcept {
-        return static_cast<E&>(static_cast<U&>(lhs) &= static_cast<U>(rhs));
-    }
-
-    template <enumeration E, typename U = std::underlying_type_t<E>>
-    constexpr E operator~(E val) noexcept {
-        return static_cast<E>(~static_cast<U>(val));
-    }
-} // namespace up::flags_ops
-
-#define UP_DEFINE_FLAGS(name, underlying, ...) \
-    namespace ft_##name { \
-        using namespace ::up::flags_ops; \
-        enum class name : underlying { __VA_ARGS__ }; \
+#define UP_DEFINE_FLAGS(NAME, UNDERLYING, ...) \
+    namespace ft_##NAME { \
+        enum class NAME : UNDERLYING { __VA_ARGS__ }; \
+        constexpr NAME operator|(NAME lhs, NAME rhs) noexcept { \
+            return static_cast<NAME>(static_cast<UNDERLYING>(lhs) | static_cast<UNDERLYING>(rhs)); \
+        } \
+        constexpr NAME operator&(NAME lhs, NAME rhs) noexcept { \
+            return static_cast<NAME>(static_cast<UNDERLYING>(lhs) & static_cast<UNDERLYING>(rhs)); \
+        } \
+        constexpr NAME operator~(NAME val) noexcept { return static_cast<NAME>(~static_cast<UNDERLYING>(val)); } \
     } \
-    using ft_##name::name
+    using ft_##NAME::NAME

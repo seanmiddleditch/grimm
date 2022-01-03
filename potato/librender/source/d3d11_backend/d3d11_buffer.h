@@ -14,7 +14,6 @@ namespace up::d3d11 {
         ~BufferD3D11();
 
         GpuResourceType resourceType() const noexcept override { return GpuResourceType::Buffer; }
-        GpuTextureType textureType() const noexcept override { return GpuTextureType::Texture2D; }
         GpuBufferType bufferType() const noexcept override { return _type; }
         uint64 size() const noexcept override { return _size; }
         GpuFormat format() const noexcept override { return GpuFormat::Unknown; }

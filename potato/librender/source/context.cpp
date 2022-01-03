@@ -42,8 +42,8 @@ namespace up {
             auto const dimensions = _backBuffer->dimensions();
 
             GpuTextureDesc desc;
-            desc.type = GpuTextureType::DepthStencil;
             desc.format = GpuFormat::D32Float;
+            desc.bind = GpuBindFlags::DepthStencil;
             desc.width = static_cast<uint32>(dimensions.x);
             desc.height = static_cast<uint32>(dimensions.y);
 

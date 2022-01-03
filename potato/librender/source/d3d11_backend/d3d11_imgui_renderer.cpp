@@ -159,7 +159,7 @@ namespace up::d3d11 {
 
         GpuTextureDesc texDesc;
         texDesc.format = GpuFormat::R8G8B8A8UnsignedNormalized;
-        texDesc.type = GpuTextureType::Texture2D;
+        texDesc.bind = GpuBindFlags::ShaderResource;
         texDesc.width = fontWidth;
         texDesc.height = fontHeight;
 

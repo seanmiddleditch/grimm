@@ -154,17 +154,13 @@ namespace up::d3d11 {
 
             D3D11_SHADER_RESOURCE_VIEW_DESC desc = {};
             desc.Format = toNative(resource->format());
-            switch (resource->textureType()) {
-                case GpuTextureType::Texture2D:
-                    desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-                    desc.Texture2D.MipLevels = 1;
-                    desc.Texture2D.MostDetailedMip = 0;
-                    break;
-                case GpuTextureType::Texture3D:
-                case GpuTextureType::DepthStencil:
-                    UP_UNREACHABLE("unsupporte texture type");
-                default:
-                    UP_UNREACHABLE("missing");
+            if (d3dTexture->get()->QueryInterface(__uuidof(ID3D11Texture2D), nullptr)) {
+                desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+                desc.Texture2D.MipLevels = 1;
+                desc.Texture2D.MostDetailedMip = 0;
+            }
+            else {
+                UP_UNREACHABLE("unsupported texture type");
             }
 
             com_ptr<ID3D11ShaderResourceView> view;
@@ -244,16 +240,20 @@ namespace up::d3d11 {
         nativeDesc.MipLevels = 1;
         nativeDesc.ArraySize = 1;
         nativeDesc.CPUAccessFlags = 0;
-        if (desc.type == GpuTextureType::DepthStencil) {
-            nativeDesc.Usage = D3D11_USAGE_DEFAULT;
-            nativeDesc.BindFlags = D3D10_BIND_DEPTH_STENCIL;
-        }
-        else {
-            nativeDesc.Usage = D3D11_USAGE_DEFAULT;
-            nativeDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-        }
+        nativeDesc.Usage = D3D11_USAGE_DEFAULT;
+        nativeDesc.BindFlags = 0;
         nativeDesc.SampleDesc.Count = 1;
         nativeDesc.SampleDesc.Quality = 0;
+
+        if ((desc.bind & GpuBindFlags::ShaderResource) != GpuBindFlags{}) {
+            nativeDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+        }
+        if ((desc.bind & GpuBindFlags::RenderTarget) != GpuBindFlags{}) {
+            nativeDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+        }
+        if ((desc.bind & GpuBindFlags::DepthStencil) != GpuBindFlags{}) {
+            nativeDesc.BindFlags |= D3D10_BIND_DEPTH_STENCIL;
+        }
 
         com_ptr<ID3D11Texture2D> texture;
         HRESULT hr = ([&]() {

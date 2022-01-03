@@ -20,7 +20,6 @@ namespace up::d3d11 {
         GpuResourceType resourceType() const noexcept override { return GpuResourceType::Texture; }
         GpuBufferType bufferType() const noexcept override { return GpuBufferType::Constant; }
         size_t size() const noexcept override { return 0; }
-        GpuTextureType textureType() const noexcept override;
         GpuFormat format() const noexcept override;
         glm::ivec3 dimensions() const noexcept override;
 

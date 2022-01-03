@@ -154,7 +154,7 @@ void up::shell::GameEditor::_resize(GpuDevice& device, glm::ivec2 size) {
     using namespace up;
     GpuTextureDesc desc;
     desc.format = GpuFormat::R8G8B8A8UnsignedNormalized;
-    desc.type = GpuTextureType::Texture2D;
+    desc.bind = GpuBindFlags::RenderTarget | GpuBindFlags::ShaderResource;
     desc.width = size.x;
     desc.height = size.y;
     _buffer = device.createTexture2D(desc, {});

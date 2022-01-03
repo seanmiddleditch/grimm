@@ -56,8 +56,7 @@ namespace up::null {
     public:
         void present() override { }
         void resizeBuffers(int width, int height) override { }
-        rc<GpuResource> getBuffer(int index) override;
-        int getCurrentBufferIndex() override;
+        rc<GpuResource> getBuffer() override;
     };
 
     class PipelineStateNull final : public GpuPipelineState { };
@@ -97,7 +96,6 @@ namespace up::null {
         GpuResourceType resourceType() const noexcept override { return GpuResourceType::Buffer; }
         GpuBufferType bufferType() const noexcept override { return _type; }
         uint64 size() const noexcept override { return 0; }
-        GpuTextureType textureType() const noexcept override { return GpuTextureType::Texture2D; }
         GpuFormat format() const noexcept override { return GpuFormat::Unknown; }
         glm::ivec3 dimensions() const noexcept override { return {1, 1, 0}; }
 
@@ -110,7 +108,6 @@ namespace up::null {
         GpuResourceType resourceType() const noexcept override { return GpuResourceType::Texture; }
         GpuBufferType bufferType() const noexcept override { return GpuBufferType::Constant; }
         uint64 size() const noexcept override { return 0; }
-        GpuTextureType textureType() const noexcept override { return GpuTextureType::Texture2D; }
         GpuFormat format() const noexcept override { return GpuFormat::Unknown; }
         glm::ivec3 dimensions() const noexcept override { return {1, 1, 0}; }
     };
