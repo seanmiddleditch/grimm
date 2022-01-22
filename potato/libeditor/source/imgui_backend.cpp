@@ -130,8 +130,16 @@ bool up::ImguiBackend::handleEvent(SDL_Event const& ev) {
     return false;
 }
 
-void up::ImguiBackend::render(GpuDevice& device, GpuCommandList& commandList) {
-    device.renderImgui(*_context.get(), commandList);
+void up::ImguiBackend::render(GpuDevice& device, GpuSwapChain& swapChain) {
+    ImGui::Render();
+    device.renderImgui(*_context.get(), swapChain);
+
+    ImGui::SetCurrentContext(_context.get());
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+    }
 }
 
 char const* up::ImguiBackend::_getClipboardTextContents(void* self) {

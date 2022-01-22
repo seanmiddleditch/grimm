@@ -13,7 +13,7 @@
 
 namespace up {
     class GpuDevice;
-    class GpuCommandList;
+    class GpuSwapChain;
 } // namespace up
 
 struct ImDrawData;
@@ -37,7 +37,7 @@ namespace up {
         UP_EDITOR_API void beginFrame(GpuDevice& device);
         UP_EDITOR_API void endFrame();
 
-        UP_EDITOR_API void render(GpuDevice& device, GpuCommandList& commandList);
+        UP_EDITOR_API void render(GpuDevice& device, GpuSwapChain& swapChain);
 
         void setCaptureRelativeMouseMode(bool captured) noexcept { _captureRelativeMouseMode = captured; }
         auto isCaptureRelativeMouseMode() const noexcept -> bool { return _captureRelativeMouseMode; }

@@ -20,6 +20,8 @@ namespace up::d3d11 {
         GpuViewType type() const override { return _type; }
         com_ptr<ID3D11View> const& getView() const { return _view; }
 
+        void* getImguiTexture() const override;
+
     private:
         GpuViewType _type;
         com_ptr<ID3D11View> _view;

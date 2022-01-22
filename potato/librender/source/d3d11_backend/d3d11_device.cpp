@@ -4,7 +4,6 @@
 #include "d3d11_buffer.h"
 #include "d3d11_command_list.h"
 #include "d3d11_debug_draw_renderer.h"
-#include "d3d11_imgui_renderer.h"
 #include "d3d11_pipeline_state.h"
 #include "d3d11_platform.h"
 #include "d3d11_resource_view.h"
@@ -16,6 +15,7 @@
 #include "potato/runtime/com_ptr.h"
 #include "potato/spud/out_ptr.h"
 
+#include <backends/imgui_impl_dx11.h>
 #include <utility>
 
 namespace up::d3d11 {
@@ -36,6 +36,10 @@ namespace up::d3d11 {
     }
 
     DeviceD3D11::~DeviceD3D11() {
+        if (_imguiInitialized) {
+            ImGui_ImplDX11_Shutdown();
+        }
+
         _context.reset();
 
         com_ptr<ID3D11Debug> debug;
@@ -173,16 +177,29 @@ namespace up::d3d11 {
         }
     }
 
-    void DeviceD3D11::beginImguiFrame(ImGuiContext& context) {
-        if (_imguiBackend.empty()) {
-            _imguiBackend = new_box<ImguiRendererD3D11>(context, *this);
-        }
-        _imguiBackend->beginFrame();
+    void DeviceD3D11::initImgui(ImGuiContext& context) {
+        UP_GUARD_VOID(!_imguiInitialized);
+        _imguiInitialized = true;
+        ImGui::SetCurrentContext(&context);
+        ImGui_ImplDX11_Init(_device.get(), _context.get());
     }
 
-    void DeviceD3D11::renderImgui(ImGuiContext& context, GpuCommandList& commandList) {
-        UP_GUARD_VOID(_imguiBackend != nullptr);
-        _imguiBackend->render(commandList);
+    void DeviceD3D11::beginImguiFrame(ImGuiContext& context) {
+        UP_GUARD_VOID(_imguiInitialized);
+        ImGui::SetCurrentContext(&context);
+        ImGui_ImplDX11_NewFrame();
+    }
+
+    void DeviceD3D11::renderImgui(ImGuiContext& context, GpuSwapChain& swapChain) {
+        UP_GUARD_VOID(_imguiInitialized);
+
+        auto const& d3dSwapChain = static_cast<SwapChainD3D11&>(swapChain);
+
+        d3dSwapChain.bindToContext(_device.get(), _context.get());
+
+        ImGui::SetCurrentContext(&context);
+        ImDrawData& data = *ImGui::GetDrawData();
+        ImGui_ImplDX11_RenderDrawData(&data);
     }
 
     void DeviceD3D11::renderDebugDraw(GpuCommandList& commandList) {

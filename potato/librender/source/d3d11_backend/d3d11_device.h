@@ -10,7 +10,6 @@
 
 namespace up::d3d11 {
     class DebugDrawRendererD3D11;
-    class ImguiRendererD3D11;
 
     class DeviceD3D11 final : public GpuDevice {
     public:
@@ -39,8 +38,9 @@ namespace up::d3d11 {
         box<GpuResourceView> createDepthStencilView(GpuResource* depthStencilBuffer) override;
         box<GpuResourceView> createShaderResourceView(GpuResource* resource) override;
 
+        void initImgui(ImGuiContext& context) override;
         void beginImguiFrame(ImGuiContext& context) override;
-        void renderImgui(ImGuiContext& context, GpuCommandList& commandList) override;
+        void renderImgui(ImGuiContext& context, GpuSwapChain& swapChain) override;
         void renderDebugDraw(GpuCommandList& commandList) override;
 
     private:
@@ -49,6 +49,6 @@ namespace up::d3d11 {
         com_ptr<ID3D11Device> _device;
         com_ptr<ID3D11DeviceContext> _context;
         box<DebugDrawRendererD3D11> _debugDrawer;
-        box<ImguiRendererD3D11> _imguiBackend;
+        bool _imguiInitialized = false;
     };
 } // namespace up::d3d11

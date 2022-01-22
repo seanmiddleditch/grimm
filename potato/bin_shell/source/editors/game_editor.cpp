@@ -98,7 +98,7 @@ void up::shell::GameEditor::content() {
 
         auto const pos = ImGui::GetCursorScreenPos();
         if (_bufferView != nullptr) {
-            ImGui::Image(_bufferView.get(), contentSize);
+            ImGui::Image(_bufferView->getImguiTexture(), contentSize);
         }
         ImGui::SetCursorPos(pos);
         ImGui::InvisibleButton("GameContent", contentSize);

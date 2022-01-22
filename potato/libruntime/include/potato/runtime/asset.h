@@ -81,19 +81,19 @@ namespace up {
             UP_ASSERT(asset == nullptr || asset->assetKey() == _key);
         }
 
-        bool isSet() const noexcept { return _key.uuid.isValid(); }
-        bool ready() const noexcept { return _asset != nullptr; }
+        [[nodiscard]] bool isSet() const noexcept { return _key.uuid.isValid(); }
+        [[nodiscard]] bool ready() const noexcept { return _asset != nullptr; }
 
-        AssetKey const& assetKey() const noexcept { return _key; }
-        AssetId assetId() const noexcept { return _key.makeAssetId(); }
+        [[nodiscard]] AssetKey const& assetKey() const noexcept { return _key; }
+        [[nodiscard]] AssetId assetId() const noexcept { return _key.makeAssetId(); }
 
         template <typename AssetT>
-        AssetHandle<AssetT> cast() const& noexcept;
+        [[nodiscard]] AssetHandle<AssetT> cast() const& noexcept;
         template <typename AssetT>
-        AssetHandle<AssetT> cast() && noexcept;
+        [[nodiscard]] AssetHandle<AssetT> cast() && noexcept;
 
-        Asset* asset() const noexcept { return _asset.get(); }
-        Asset* release() noexcept { return _asset.release(); }
+        [[nodiscard]] Asset* asset() const noexcept { return _asset.get(); }
+        [[nodiscard]] Asset* release() noexcept { return _asset.release(); }
 
     private:
         AssetKey _key{};

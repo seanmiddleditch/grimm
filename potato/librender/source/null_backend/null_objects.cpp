@@ -44,9 +44,11 @@ namespace up::null {
 
     auto DeviceNull::createSampler(GpuSamplerDesc const& desc) -> rc<GpuSampler> { return new_shared<SamplerNull>(); }
 
+    void DeviceNull::initImgui(ImGuiContext&) { }
+
     void DeviceNull::beginImguiFrame(ImGuiContext&) { }
 
-    void DeviceNull::renderImgui(ImGuiContext&, GpuCommandList&) { }
+    void DeviceNull::renderImgui(ImGuiContext&, GpuSwapChain&) { }
 
     void DeviceNull::renderDebugDraw(GpuCommandList&) { }
 

@@ -23,6 +23,8 @@ namespace up::d3d11 {
         void resizeBuffers(int width, int height) override;
         rc<GpuResource> getBuffer() override;
 
+        void bindToContext(ID3D11Device* device, ID3D11DeviceContext* context) const;
+
     private:
         com_ptr<IDXGISwapChain1> _swapChain;
     };

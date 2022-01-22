@@ -14,5 +14,6 @@ namespace up {
         GpuResourceView& operator=(GpuResourceView&&) = delete;
 
         virtual GpuViewType type() const = 0;
+        virtual void* getImguiTexture() const = 0;
     };
 } // namespace up

@@ -35,8 +35,9 @@ namespace up::null {
         box<GpuResourceView> createDepthStencilView(GpuResource* depthStencilBuffer) override;
         box<GpuResourceView> createShaderResourceView(GpuResource* resource) override;
 
+        void initImgui(ImGuiContext& context) override;
         void beginImguiFrame(ImGuiContext& context) override;
-        void renderImgui(ImGuiContext& context, GpuCommandList& commandList) override;
+        void renderImgui(ImGuiContext& context, GpuSwapChain& swapChain) override;
         void renderDebugDraw(GpuCommandList& commandList) override;
 
         void execute(GpuCommandList* commands) override { }
@@ -47,6 +48,7 @@ namespace up::null {
         ResourceViewNull(GpuViewType type) : _type(type) { }
 
         GpuViewType type() const override { return _type; }
+        void* getImguiTexture() const override { return nullptr; }
 
     private:
         GpuViewType _type;

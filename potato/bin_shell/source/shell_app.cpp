@@ -248,6 +248,8 @@ int up::shell::ShellApp::initialize() {
 
     _renderer = new_box<Renderer>(_device);
 
+    _device->initImgui(*ImGui::GetCurrentContext());
+
 #if UP_PLATFORM_WINDOWS
     _swapChain = _device->createSwapChain(wmInfo.info.win.window);
 #endif
@@ -559,13 +561,7 @@ void up::shell::ShellApp::_render() {
     ZoneScopedN("Shell Render");
 
     _renderer->beginFrame();
-    auto ctx = _renderer->context();
-
-    ctx.bindBackBuffer(_swapChain->getBuffer());
-    ctx.applyCameraScreen();
-    _imguiBackend.render(*_device, ctx.commandList());
-    ctx.finish();
-
+    _imguiBackend.render(*_device, *_swapChain);
     _swapChain->present();
     FrameMark;
 }
