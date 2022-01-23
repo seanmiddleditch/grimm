@@ -61,7 +61,7 @@ namespace up::shell {
         box<Space> _previewScene;
         box<SceneDocument> _doc;
         box<GpuResourceView> _bufferView;
-        ArcBallCameraController _arcballCamera;
+        ArcBall _arcball;
         SelectionState _selection;
         PropertyGrid _propertyGrid;
         HandlePlayClicked _onPlayClicked;
