@@ -52,7 +52,7 @@ namespace up {
         virtual void initImgui(ImGuiContext& context, SDL_Window* window) = 0;
         virtual void beginImguiFrame() = 0;
         virtual void renderImgui(GpuSwapChain& swapChain) = 0;
-        virtual void handleImguiEvent(SDL_Event& event) = 0;
+        virtual bool handleImguiEvent(SDL_Event& event) = 0;
 
         virtual void renderDebugDraw(GpuCommandList& commandList) = 0;
     };

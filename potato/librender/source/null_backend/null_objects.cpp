@@ -50,7 +50,7 @@ namespace up::null {
 
     void DeviceNull::renderImgui(GpuSwapChain&) { }
 
-    void DeviceNull::handleImguiEvent(SDL_Event&) { }
+    bool DeviceNull::handleImguiEvent(SDL_Event&) { return false; }
 
     void DeviceNull::renderDebugDraw(GpuCommandList&) { }
 

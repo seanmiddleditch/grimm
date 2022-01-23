@@ -530,7 +530,7 @@ void up::shell::ShellApp::_processEvents() {
 
     SDL_Event ev;
     while (_running && SDL_PollEvent(&ev) > 0) {
-        _device->handleImguiEvent(ev);
+        bool const inputHandled = _device->handleImguiEvent(ev);
         switch (ev.type) {
             case SDL_QUIT:
                 quit();
@@ -551,9 +551,11 @@ void up::shell::ShellApp::_processEvents() {
                 }
                 break;
             case SDL_KEYDOWN:
-                if (!_hotKeys.evaluateKey(ev.key.keysym.sym, ev.key.keysym.mod, [this](auto id) {
+                if (!inputHandled) {
+                    (void)_hotKeys.evaluateKey(ev.key.keysym.sym, ev.key.keysym.mod, [this](auto id) {
                         return _actions.tryInvoke(id);
-                    })) { }
+                    });
+                }
                 break;
             case SDL_MOUSEBUTTONUP:
             case SDL_MOUSEMOTION:

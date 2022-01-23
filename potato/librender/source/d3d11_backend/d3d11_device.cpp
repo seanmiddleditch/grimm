@@ -216,7 +216,7 @@ namespace up::d3d11 {
         }
     }
 
-    void DeviceD3D11::handleImguiEvent(SDL_Event& ev) { ImGui_ImplSDL2_ProcessEvent(&ev); }
+    bool DeviceD3D11::handleImguiEvent(SDL_Event& ev) { return ImGui_ImplSDL2_ProcessEvent(&ev); }
 
     void DeviceD3D11::renderDebugDraw(GpuCommandList& commandList) {
         if (_debugDrawer.empty()) {
