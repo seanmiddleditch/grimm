@@ -1,5 +1,4 @@
 target_sources(potato_shell PRIVATE
-    "arcball.cpp"
     "edit_components.h"
     "edit_components.cpp"
     "editor.cpp"

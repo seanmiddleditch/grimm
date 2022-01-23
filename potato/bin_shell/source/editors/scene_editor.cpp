@@ -17,7 +17,6 @@
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/arcball.h"
 #include "potato/shell/editor.h"
 #include "potato/shell/scene_doc.h"
 #include "potato/shell/selection.h"
@@ -108,9 +107,9 @@ namespace up::shell {
         , _database(database)
         , _assetLoader(assetLoader) {
         UP_ASSERT(_onPlayClicked);
-        _arcballCamera.setTarget({0, 0, 0});
-        _arcballCamera.setBoom(40.f);
-        _arcballCamera.setYawPitch(0.f, -glm::quarter_pi<float>());
+        _arcball.target = {0, 0, 0};
+        _arcball.boomLength = 40.f;
+        _arcball.pitch = -glm::quarter_pi<float>();
     }
 
     auto SceneEditor::createFactory(
@@ -221,7 +220,7 @@ namespace up::shell {
                 motion.z = io.MouseWheel > 0.f ? 1.f : io.MouseWheel < 0 ? -1.f : 0.f;
             }
 
-            _arcballCamera.handleInput(movement, motion, io.DeltaTime);
+            _arcball.handleInput(movement, motion, io.DeltaTime);
         }
     }
 
@@ -243,7 +242,7 @@ namespace up::shell {
 
         if (auto* const cameraTrans = _previewScene->entities().getComponentSlow<TransformComponent>(_cameraId);
             cameraTrans != nullptr) {
-            _arcballCamera.applyTransform(*cameraTrans);
+            _arcball.applyToTransform(*cameraTrans);
         }
 
         if (_buffer != nullptr) {
