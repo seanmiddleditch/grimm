@@ -97,7 +97,8 @@ int up::shell::ShellApp::initialize() {
 
     ImGui::CreateContext();
     auto& io = ImGui::GetIO();
-    io.ConfigFlags = ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags =
+        ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_ViewportsEnable;
     io.ConfigInputTextCursorBlink = true;
 
     _appActions.addAction(
@@ -480,7 +481,7 @@ void up::shell::ShellApp::_processEvents() {
 
     auto& io = ImGui::GetIO();
 
-    //SDL_SetRelativeMouseMode(ImGui::IsCaptureRelativeMouseMode() ? SDL_TRUE : SDL_FALSE);
+    // SDL_SetRelativeMouseMode(ImGui::IsCaptureRelativeMouseMode() ? SDL_TRUE : SDL_FALSE);
     SDL_CaptureMouse(io.WantCaptureMouse ? SDL_TRUE : SDL_FALSE);
 
     auto const guiCursor = ImGui::GetMouseCursor();
@@ -550,8 +551,7 @@ void up::shell::ShellApp::_processEvents() {
             case SDL_KEYDOWN:
                 if (!_hotKeys.evaluateKey(ev.key.keysym.sym, ev.key.keysym.mod, [this](auto id) {
                         return _actions.tryInvoke(id);
-                    })) {
-                }
+                    })) { }
                 break;
             case SDL_MOUSEBUTTONUP:
             case SDL_MOUSEMOTION:
@@ -574,8 +574,6 @@ void up::shell::ShellApp::_render() {
 void up::shell::ShellApp::_displayUI() {
     ZoneScopedN("Shell UI");
 
-    auto& imguiIO = ImGui::GetIO();
-
     _displayMainMenu();
 
     ImVec2 menuSize;
@@ -583,8 +581,13 @@ void up::shell::ShellApp::_displayUI() {
         menuSize = ImGui::GetWindowSize();
         ImGui::EndMainMenuBar();
     }
+    
+    ImGuiViewport const* const viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
 
-    _displayDocuments({0, menuSize.y, imguiIO.DisplaySize.x, imguiIO.DisplaySize.y});
+    _displayDocuments();
 
     if (_aboutDialog) {
         ImGui::SetNextWindowSizeConstraints({400, 300}, {});
@@ -614,12 +617,10 @@ void up::shell::ShellApp::_displayMainMenu() {
     }
 }
 
-void up::shell::ShellApp::_displayDocuments(glm::vec4 rect) {
+void up::shell::ShellApp::_displayDocuments() {
     auto const windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration |
         ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoBringToFrontOnFocus;
 
-    ImGui::SetNextWindowPos({rect.x, rect.y});
-    ImGui::SetNextWindowSize({rect.z - rect.x, rect.w - rect.y});
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
     ImGui::Begin("MainWindow", nullptr, windowFlags);
     ImGui::PopStyleVar(1);

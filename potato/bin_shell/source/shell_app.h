@@ -62,7 +62,7 @@ namespace up::shell {
 
         void _displayUI();
         void _displayMainMenu();
-        void _displayDocuments(glm::vec4 rect);
+        void _displayDocuments();
 
         void _errorDialog(zstring_view message);
 
