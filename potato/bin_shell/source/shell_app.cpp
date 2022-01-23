@@ -579,18 +579,6 @@ void up::shell::ShellApp::_displayUI() {
     ZoneScopedN("Shell UI");
 
     _displayMainMenu();
-
-    ImVec2 menuSize;
-    if (ImGui::BeginMainMenuBar()) {
-        menuSize = ImGui::GetWindowSize();
-        ImGui::EndMainMenuBar();
-    }
-    
-    ImGuiViewport const* const viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID);
-
     _displayDocuments();
 
     if (_aboutDialog) {
@@ -625,6 +613,11 @@ void up::shell::ShellApp::_displayDocuments() {
     auto const windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration |
         ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoBringToFrontOnFocus;
 
+    ImGuiViewport const* const viewport = ImGui::GetMainViewport();
+
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
     ImGui::Begin("MainWindow", nullptr, windowFlags);
     ImGui::PopStyleVar(1);
