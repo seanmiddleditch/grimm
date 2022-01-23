@@ -457,7 +457,7 @@ void up::shell::AssetBrowser::_rebuild() {
     }
 
     for (ResourceManifest::Record const& record : manifest->records()) {
-        auto const lastSepIndex = record.filename.find_last_of("/"_sv);
+        auto const lastSepIndex = record.filename.find_last_of("\\/"_sv);
         auto const start = lastSepIndex != string::npos ? lastSepIndex + 1 : 0;
 
         if (record.logicalId != ResourceManifest::Id{}) {
