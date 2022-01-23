@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "potato/shell/arcball.h"
+#include "potato/game/arcball.h"
 
 #include <glm/common.hpp>
 #include <glm/geometric.hpp>

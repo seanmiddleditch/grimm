@@ -1,5 +1,4 @@
 target_sources(potato_shell PRIVATE
-    "arcball.h"
     "_export.h"
     "editor.h"
     "log_history.h"
