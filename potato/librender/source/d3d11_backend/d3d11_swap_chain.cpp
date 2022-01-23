@@ -41,7 +41,7 @@ namespace up::d3d11 {
         return new_shared<SwapChainD3D11>(std::move(swapChain));
     }
 
-    void SwapChainD3D11::present() { _swapChain->Present(0, DXGI_SWAP_EFFECT_FLIP_DISCARD); }
+    void SwapChainD3D11::present() { _swapChain->Present(1, DXGI_SWAP_EFFECT_FLIP_DISCARD); }
 
     void SwapChainD3D11::resizeBuffers(int width, int height) {
         _swapChain->ResizeBuffers(2, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING);
