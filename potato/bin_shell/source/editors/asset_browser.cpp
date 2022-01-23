@@ -230,21 +230,25 @@ void up::shell::AssetBrowser::_showBreadcrumb(int index) {
         ImGui::SameLine(0, 0);
     }
 
+    ImGui::BeginDisabled(index == _folderHistory[_folderHistoryIndex]);
     if (ImGui::Button(_entries[index].name.c_str())) {
         _openFolder(index);
     }
+    ImGui::EndDisabled();
+
     ImGui::SameLine();
 }
 
 void up::shell::AssetBrowser::_showBreadcrumbs() {
     ImGuiWindow* const window = ImGui::GetCurrentWindow();
     ImDrawList* const drawList = window->DrawList;
+    ImGuiStyle const& style = ImGui::GetStyle();
 
     drawList->AddRectFilled(
         window->DC.CursorPos,
         window->DC.CursorPos +
             ImVec2{
-                ImGui::GetContentRegionAvail().x,
+                ImGui::GetContentRegionAvail().x - style.FramePadding.x,
                 ImGui::GetTextLineHeightWithSpacing() + ImGui::GetItemSpacing().y * 3},
         ImGui::GetColorU32(ImGuiCol_Header),
         4.f);
@@ -253,28 +257,43 @@ void up::shell::AssetBrowser::_showBreadcrumbs() {
     ImGui::BeginGroup();
     ImGui::PushID("##breadcrumbs");
 
-    if (ImGui::IconButton("New Asset", ICON_FA_FILE)) {
-        _command = Command::ShowNewAssetDialog;
+    if (ImGui::BeginIconButtonDropdown("New", ICON_FA_PLUS)) {
+        if (ImGui::MenuItemEx("New Asset", ICON_FA_FILE)) {
+            _command = Command::ShowNewAssetDialog;
+        }
+        if (ImGui::MenuItemEx("New Folder", ICON_FA_FOLDER)) {
+            _command = Command::ShowNewFolderDialog;
+        }
+        ImGui::EndIconButtonDropdown();
     }
-    ImGui::SameLine();
-    if (ImGui::IconButton("New Folder", ICON_FA_FOLDER)) {
-        _command = Command::ShowNewFolderDialog;
-    }
-    ImGui::SameLine(0.f, 12.f);
 
-    if (ImGui::IconButton("##back", ICON_FA_BACKWARD)) {
-        if (_folderHistoryIndex > 0) {
-            _currentFolder = _folderHistory[--_folderHistoryIndex];
-            _selection.clear();
-        }
-    }
     ImGui::SameLine();
-    if (ImGui::IconButton("##forward", ICON_FA_FORWARD)) {
-        if (_folderHistoryIndex + 1 < _folderHistory.size()) {
-            _currentFolder = _folderHistory[++_folderHistoryIndex];
-            _selection.clear();
-        }
+
+    ImGui::BeginDisabled(_folderHistoryIndex == 0);
+    if (ImGui::IconButton("##back", ICON_FA_ARROW_LEFT)) {
+        _currentFolder = _folderHistory[--_folderHistoryIndex];
+        _selection.clear();
     }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine(0, 1.f);
+
+    ImGui::BeginDisabled(_folderHistory.size() < 2 || _folderHistoryIndex == _folderHistory.size() - 1);
+    if (ImGui::IconButton("##forward", ICON_FA_ARROW_RIGHT)) {
+        _currentFolder = _folderHistory[++_folderHistoryIndex];
+        _selection.clear();
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine(0, 1.f);
+
+    ImGui::BeginDisabled(_entries[_currentFolder].parentIndex == -1);
+    if (ImGui::IconButton("##parent", ICON_FA_ARROW_UP)) {
+        _openFolder(_entries[_currentFolder].parentIndex);
+        _selection.clear();
+    }
+    ImGui::EndDisabled();
+
     ImGui::SameLine();
 
     _showBreadcrumb(_currentFolder);
@@ -285,12 +304,11 @@ void up::shell::AssetBrowser::_showBreadcrumbs() {
 }
 
 void up::shell::AssetBrowser::_showTreeFolder(int index) {
-    int flags = 0;
+    int flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
 
     UP_GUARD_VOID(_entries[index].typeHash == folderTypeHash);
 
-    bool const hasChildren = _entries[index].firstChild != -1;
-    if (!hasChildren) {
+    if (_entries[index].childFolderCount == 0) {
         flags |= ImGuiTreeNodeFlags_Leaf;
     }
     if (index == _currentFolder) {
@@ -300,8 +318,11 @@ void up::shell::AssetBrowser::_showTreeFolder(int index) {
         flags |= ImGuiTreeNodeFlags_DefaultOpen;
     }
 
-    if (ImGui::TreeNodeEx(_entries[index].name.c_str(), flags)) {
-        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+    char label[512];
+    nanofmt::format_to(label, "{} {}", ICON_FA_FOLDER, _entries[index].name);
+
+    if (ImGui::TreeNodeEx(label, flags)) {
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
             _openFolder(index);
         }
 
@@ -457,7 +478,7 @@ void up::shell::AssetBrowser::_rebuild() {
     }
 
     for (ResourceManifest::Record const& record : manifest->records()) {
-        auto const lastSepIndex = record.filename.find_last_of("/"_sv);
+        auto const lastSepIndex = record.filename.find_last_of("\\/"_sv);
         auto const start = lastSepIndex != string::npos ? lastSepIndex + 1 : 0;
 
         if (record.logicalId != ResourceManifest::Id{}) {
@@ -495,6 +516,8 @@ void up::shell::AssetBrowser::_rebuild() {
                 }
             }
         }
+
+        ++_entries[folderIndex].childFileCount;
     }
 
     for (auto const& [index, entry] : enumerate(_entries)) {
@@ -509,7 +532,7 @@ int up::shell::AssetBrowser::_addFolder(string_view name, int parentIndex) {
     UP_ASSERT(parentIndex >= 0 && parentIndex < static_cast<int>(_entries.size()));
     UP_ASSERT(_entries[parentIndex].typeHash == folderTypeHash);
 
-    Entry const& parent = _entries[parentIndex];
+    Entry& parent = _entries[parentIndex];
 
     int childIndex = -1;
     if (parent.firstChild != -1 && _entries[parent.firstChild].typeHash == folderTypeHash) {
@@ -539,6 +562,8 @@ int up::shell::AssetBrowser::_addFolder(string_view name, int parentIndex) {
          .name = string{name},
          .typeHash = folderTypeHash,
          .parentIndex = parentIndex});
+
+    ++parent.childFolderCount;
 
     if (childIndex == -1) {
         _entries[newIndex].nextSibling = _entries[parentIndex].firstChild;

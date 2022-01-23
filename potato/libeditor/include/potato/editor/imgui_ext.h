@@ -16,6 +16,12 @@ namespace ImGui::inline Potato {
         char const* icon,
         ImVec2 size = {},
         ImGuiButtonFlags flags = ImGuiButtonFlags_None);
+    UP_EDITOR_API bool BeginIconButtonDropdown(
+        char const* label,
+        char const* icon,
+        ImVec2 size = {},
+        ImGuiButtonFlags flags = ImGuiButtonFlags_None);
+    UP_EDITOR_API void EndIconButtonDropdown();
 
     UP_EDITOR_API bool IsModifierDown(ImGuiKeyModFlags modifiers) noexcept;
 

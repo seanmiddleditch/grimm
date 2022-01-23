@@ -110,6 +110,18 @@ bool ImGui::Potato::IconButton(char const* label, char const* icon, ImVec2 size,
     return pressed;
 }
 
+bool ImGui::Potato::BeginIconButtonDropdown(char const* label, char const* icon, ImVec2 size, ImGuiButtonFlags flags) {
+    if (IconButton(label, icon, size, flags)) {
+        ImGui::OpenPopup(label);
+    }
+
+    return ImGui::BeginPopup(label);
+}
+
+void ImGui::Potato::EndIconButtonDropdown() {
+    ImGui::EndPopup();
+}
+
 bool ImGui::Potato::IsModifierDown(ImGuiKeyModFlags modifiers) noexcept {
     auto& io = ImGui::GetIO();
     return (io.KeyMods & modifiers) == modifiers;
@@ -157,8 +169,11 @@ ImVec2 ImGui::Potato::GetItemInnerSpacing() {
 }
 
 bool ImGui::Potato::BeginIconGrid(char const* label, float iconWidth) {
-    float const availWidth = ImGui::GetContentRegionAvailWidth();
-    int const columns = up::clamp(static_cast<int>(availWidth / iconWidth), 1, 64);
+    ImGuiStyle const& style = GetStyle();
+    float const availWidth =
+        up::max(ImGui::GetContentRegionAvailWidth() - style.WindowPadding.x - style.FramePadding.x * 2.f, 0.f);
+    float const paddedIconWidth = iconWidth + style.ColumnsMinSpacing;
+    int const columns = up::clamp(static_cast<int>(availWidth / paddedIconWidth), 1, 64);
 
     return ImGui::BeginTable(label, columns);
 }
