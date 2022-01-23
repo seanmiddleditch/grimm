@@ -60,6 +60,7 @@ void up::shell::GameEditor::content() {
 
     if (_isInputBound) {
         ImGui::SetActiveID(contentId, ctx->CurrentWindow);
+        // TODO: https://github.com/potatoengine/potato/issues/305
         SDL_SetRelativeMouseMode(SDL_TRUE);
 
         int mouseRelX = 0;
@@ -82,6 +83,7 @@ void up::shell::GameEditor::content() {
         });
     }
     else {
+        // TODO: https://github.com/potatoengine/potato/issues/305
         SDL_SetRelativeMouseMode(SDL_FALSE);
         if (ctx->ActiveId == contentId) {
             ImGui::ClearActiveID();

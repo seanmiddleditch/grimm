@@ -481,7 +481,9 @@ void up::shell::ShellApp::_processEvents() {
 
     auto& io = ImGui::GetIO();
 
+    // TODO: https://github.com/potatoengine/potato/issues/305
     // SDL_SetRelativeMouseMode(ImGui::IsCaptureRelativeMouseMode() ? SDL_TRUE : SDL_FALSE);
+
     SDL_CaptureMouse(io.WantCaptureMouse ? SDL_TRUE : SDL_FALSE);
 
     auto const guiCursor = ImGui::GetMouseCursor();
