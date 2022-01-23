@@ -7,10 +7,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <cmath>
 
-void up::ArcBall::handleInput(
-    glm::vec3 relativeMovement,
-    glm::vec3 relativeMotion,
-    float frameTime) noexcept {
+void up::ArcBall::handleInput(glm::vec3 relativeMovement, glm::vec3 relativeMotion, float frameTime) noexcept {
     float const moveSpeed = glm::sqrt(boomLength);
     glm::quat const rot = glm::quat({pitch, yaw, 0});
     glm::vec3 const up = glm::rotate(rot, glm::vec3{0, 1, 0});
