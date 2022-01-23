@@ -16,6 +16,7 @@
 #include "potato/spud/out_ptr.h"
 
 #include <backends/imgui_impl_dx11.h>
+#include <backends/imgui_impl_sdl.h>
 #include <utility>
 
 namespace up::d3d11 {
@@ -38,6 +39,7 @@ namespace up::d3d11 {
     DeviceD3D11::~DeviceD3D11() {
         if (_imguiInitialized) {
             ImGui_ImplDX11_Shutdown();
+            ImGui_ImplSDL2_Shutdown();
         }
 
         _context.reset();
@@ -177,30 +179,44 @@ namespace up::d3d11 {
         }
     }
 
-    void DeviceD3D11::initImgui(ImGuiContext& context) {
+    void DeviceD3D11::initImgui(ImGuiContext& context, SDL_Window* window) {
         UP_GUARD_VOID(!_imguiInitialized);
         _imguiInitialized = true;
+
         ImGui::SetCurrentContext(&context);
+
+        ImGui_ImplSDL2_InitForD3D(window);
         ImGui_ImplDX11_Init(_device.get(), _context.get());
     }
 
-    void DeviceD3D11::beginImguiFrame(ImGuiContext& context) {
+    void DeviceD3D11::beginImguiFrame() {
         UP_GUARD_VOID(_imguiInitialized);
-        ImGui::SetCurrentContext(&context);
+        ImGui_ImplSDL2_NewFrame();
         ImGui_ImplDX11_NewFrame();
+        ImGui::NewFrame();
     }
 
-    void DeviceD3D11::renderImgui(ImGuiContext& context, GpuSwapChain& swapChain) {
+    void DeviceD3D11::renderImgui(GpuSwapChain& swapChain) {
         UP_GUARD_VOID(_imguiInitialized);
 
         auto const& d3dSwapChain = static_cast<SwapChainD3D11&>(swapChain);
-
         d3dSwapChain.bindToContext(_device.get(), _context.get());
 
-        ImGui::SetCurrentContext(&context);
-        ImDrawData& data = *ImGui::GetDrawData();
-        ImGui_ImplDX11_RenderDrawData(&data);
+        ImGui::Render();
+
+        ImDrawData* const data = ImGui::GetDrawData();
+        if (data != nullptr) {
+            ImGui_ImplDX11_RenderDrawData(data);
+        }
+
+        auto& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
     }
+
+    void DeviceD3D11::handleImguiEvent(SDL_Event& ev) { ImGui_ImplSDL2_ProcessEvent(&ev); }
 
     void DeviceD3D11::renderDebugDraw(GpuCommandList& commandList) {
         if (_debugDrawer.empty()) {

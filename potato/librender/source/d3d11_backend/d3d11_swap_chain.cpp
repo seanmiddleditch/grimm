@@ -74,5 +74,8 @@ namespace up::d3d11 {
 
         ID3D11RenderTargetView* const rtv = view.get();
         context->OMSetRenderTargets(1, &rtv, nullptr);
+
+        FLOAT rgba[4] = {};
+        context->ClearRenderTargetView(view.get(), rgba);
     }
 } // namespace up::d3d11

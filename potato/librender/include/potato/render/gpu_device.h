@@ -8,7 +8,9 @@
 #include "potato/spud/int_types.h"
 #include "potato/spud/rc.h"
 
+struct SDL_Window;
 struct ImGuiContext;
+union SDL_Event;
 
 namespace up {
     class GpuCommandList;
@@ -47,9 +49,11 @@ namespace up {
         virtual box<GpuResourceView> createDepthStencilView(GpuResource* depthStencilBuffer) = 0;
         virtual box<GpuResourceView> createShaderResourceView(GpuResource* resource) = 0;
 
-        virtual void initImgui(ImGuiContext& context) = 0;
-        virtual void beginImguiFrame(ImGuiContext& context) = 0;
-        virtual void renderImgui(ImGuiContext& context, GpuSwapChain& swapChain) = 0;
+        virtual void initImgui(ImGuiContext& context, SDL_Window* window) = 0;
+        virtual void beginImguiFrame() = 0;
+        virtual void renderImgui(GpuSwapChain& swapChain) = 0;
+        virtual void handleImguiEvent(SDL_Event& event) = 0;
+
         virtual void renderDebugDraw(GpuCommandList& commandList) = 0;
     };
 } // namespace up

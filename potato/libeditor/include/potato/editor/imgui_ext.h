@@ -17,9 +17,6 @@ namespace ImGui::inline Potato {
         ImVec2 size = {},
         ImGuiButtonFlags flags = ImGuiButtonFlags_None);
 
-    UP_EDITOR_API void SetCaptureRelativeMouseMode(bool captured);
-    UP_EDITOR_API auto IsCaptureRelativeMouseMode() -> bool;
-
     UP_EDITOR_API bool IsModifierDown(ImGuiKeyModFlags modifiers) noexcept;
 
     UP_EDITOR_API bool InputVec3(
@@ -45,4 +42,6 @@ namespace ImGui::inline Potato {
         float width = 96.f,
         float rounding = 8.f);
     UP_EDITOR_API void EndIconGrid();
+
+    UP_EDITOR_API void ApplyStyle();
 } // namespace ImGui::inline Potato

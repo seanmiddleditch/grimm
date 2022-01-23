@@ -50,6 +50,7 @@ target_link_libraries(potato_librender
         stb
         imgui
         SDL2
+        imgui_backend_sdl
 )
 
 add_subdirectory("source/null_backend")

@@ -38,9 +38,11 @@ namespace up::d3d11 {
         box<GpuResourceView> createDepthStencilView(GpuResource* depthStencilBuffer) override;
         box<GpuResourceView> createShaderResourceView(GpuResource* resource) override;
 
-        void initImgui(ImGuiContext& context) override;
-        void beginImguiFrame(ImGuiContext& context) override;
-        void renderImgui(ImGuiContext& context, GpuSwapChain& swapChain) override;
+        void initImgui(ImGuiContext& context, SDL_Window* window) override;
+        void beginImguiFrame() override;
+        void renderImgui(GpuSwapChain& swapChain) override;
+        void handleImguiEvent(SDL_Event& event) override;
+
         void renderDebugDraw(GpuCommandList& commandList) override;
 
     private:

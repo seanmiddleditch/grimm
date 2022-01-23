@@ -10,8 +10,8 @@
 
 #include "potato/audio/sound_resource.h"
 #include "potato/editor/desktop.h"
-#include "potato/editor/imgui_backend.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/editor/imgui_fonts.h"
 #include "potato/editor/project.h"
 #include "potato/game/space.h"
 #include "potato/render/context.h"
@@ -94,6 +94,11 @@ int up::shell::ShellApp::initialize() {
     if (loadShellSettings(_shellSettingsPath, settings)) {
         _logger.info("Loaded user settings: ", _shellSettingsPath);
     }
+
+    ImGui::CreateContext();
+    auto& io = ImGui::GetIO();
+    io.ConfigFlags = ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigInputTextCursorBlink = true;
 
     _appActions.addAction(
         {.name = "potato.quit",
@@ -248,7 +253,9 @@ int up::shell::ShellApp::initialize() {
 
     _renderer = new_box<Renderer>(_device);
 
-    _device->initImgui(*ImGui::GetCurrentContext());
+    ImGui::Potato::LoadFonts();
+    _device->initImgui(*ImGui::GetCurrentContext(), _window.get());
+    ImGui::Potato::ApplyStyle();
 
 #if UP_PLATFORM_WINDOWS
     _swapChain = _device->createSwapChain(wmInfo.info.win.window);
@@ -413,11 +420,11 @@ void up::shell::ShellApp::run() {
         imguiIO.DisplaySize.x = static_cast<float>(width);
         imguiIO.DisplaySize.y = static_cast<float>(height);
 
-        _imguiBackend.beginFrame(*_device);
+        _device->beginImguiFrame();
 
         _displayUI();
 
-        _imguiBackend.endFrame();
+        ImGui::EndFrame();
 
         _render();
 
@@ -473,8 +480,8 @@ void up::shell::ShellApp::_processEvents() {
 
     auto& io = ImGui::GetIO();
 
-    SDL_SetRelativeMouseMode(ImGui::IsCaptureRelativeMouseMode() ? SDL_TRUE : SDL_FALSE);
-    SDL_CaptureMouse(io.WantCaptureMouse || ImGui::IsCaptureRelativeMouseMode() ? SDL_TRUE : SDL_FALSE);
+    //SDL_SetRelativeMouseMode(ImGui::IsCaptureRelativeMouseMode() ? SDL_TRUE : SDL_FALSE);
+    SDL_CaptureMouse(io.WantCaptureMouse ? SDL_TRUE : SDL_FALSE);
 
     auto const guiCursor = ImGui::GetMouseCursor();
     if (guiCursor != _lastCursor) {
@@ -520,6 +527,7 @@ void up::shell::ShellApp::_processEvents() {
 
     SDL_Event ev;
     while (_running && SDL_PollEvent(&ev) > 0) {
+        _device->handleImguiEvent(ev);
         switch (ev.type) {
             case SDL_QUIT:
                 quit();
@@ -538,20 +546,17 @@ void up::shell::ShellApp::_processEvents() {
                     case SDL_WINDOWEVENT_EXPOSED:
                         break;
                 }
-                _imguiBackend.handleEvent(ev);
                 break;
             case SDL_KEYDOWN:
                 if (!_hotKeys.evaluateKey(ev.key.keysym.sym, ev.key.keysym.mod, [this](auto id) {
                         return _actions.tryInvoke(id);
                     })) {
-                    _imguiBackend.handleEvent(ev);
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
             case SDL_MOUSEMOTION:
             case SDL_MOUSEWHEEL:
             default:
-                _imguiBackend.handleEvent(ev);
                 break;
         }
     }
@@ -561,7 +566,7 @@ void up::shell::ShellApp::_render() {
     ZoneScopedN("Shell Render");
 
     _renderer->beginFrame();
-    _imguiBackend.render(*_device, *_swapChain);
+    _device->renderImgui(*_swapChain);
     _swapChain->present();
     FrameMark;
 }

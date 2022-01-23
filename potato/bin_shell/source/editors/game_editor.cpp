@@ -60,7 +60,7 @@ void up::shell::GameEditor::content() {
 
     if (_isInputBound) {
         ImGui::SetActiveID(contentId, ctx->CurrentWindow);
-        ImGui::SetCaptureRelativeMouseMode(true);
+        SDL_SetRelativeMouseMode(SDL_TRUE);
 
         int mouseRelX = 0;
         int mouseRelY = 0;
@@ -82,6 +82,7 @@ void up::shell::GameEditor::content() {
         });
     }
     else {
+        SDL_SetRelativeMouseMode(SDL_FALSE);
         if (ctx->ActiveId == contentId) {
             ImGui::ClearActiveID();
         }

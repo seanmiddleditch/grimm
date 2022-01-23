@@ -16,16 +16,20 @@ target_compile_definitions(imgui PUBLIC
 )
 target_link_libraries(imgui PUBLIC potato::libruntime)
 
-add_library(imgui_backend_d3d11 STATIC EXCLUDE_FROM_ALL)
-target_sources(imgui_backend_d3d11 PRIVATE
+add_library(imgui_backend_d3d11 INTERFACE EXCLUDE_FROM_ALL)
+target_sources(imgui_backend_d3d11 INTERFACE
     "${imgui_SOURCE_DIR}/backends/imgui_impl_dx11.cpp"
     "${imgui_SOURCE_DIR}/backends/imgui_impl_dx11.h"
 )
-target_include_directories(imgui_backend_d3d11 PRIVATE "${imgui_SOURCE_DIR}")
 
-add_library(imgui_backend_d3d12 STATIC EXCLUDE_FROM_ALL)
-target_sources(imgui_backend_d3d12 PRIVATE
+add_library(imgui_backend_d3d12 INTERFACE EXCLUDE_FROM_ALL)
+target_sources(imgui_backend_d3d12 INTERFACE
     "${imgui_SOURCE_DIR}/backends/imgui_impl_dx12.cpp"
     "${imgui_SOURCE_DIR}/backends/imgui_impl_dx12.h"
 )
-target_include_directories(imgui_backend_d3d12 PUBLIC "${imgui_SOURCE_DIR}")
+
+add_library(imgui_backend_sdl INTERFACE EXCLUDE_FROM_ALL)
+target_sources(imgui_backend_sdl INTERFACE
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.h"
+)
