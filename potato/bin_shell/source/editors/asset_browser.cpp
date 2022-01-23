@@ -230,9 +230,12 @@ void up::shell::AssetBrowser::_showBreadcrumb(int index) {
         ImGui::SameLine(0, 0);
     }
 
+    ImGui::BeginDisabled(index == _folderHistory[_folderHistoryIndex]);
     if (ImGui::Button(_entries[index].name.c_str())) {
         _openFolder(index);
     }
+    ImGui::EndDisabled();
+
     ImGui::SameLine();
 }
 
@@ -254,28 +257,43 @@ void up::shell::AssetBrowser::_showBreadcrumbs() {
     ImGui::BeginGroup();
     ImGui::PushID("##breadcrumbs");
 
-    if (ImGui::IconButton("New Asset", ICON_FA_FILE)) {
-        _command = Command::ShowNewAssetDialog;
+    if (ImGui::BeginIconButtonDropdown("New", ICON_FA_PLUS)) {
+        if (ImGui::MenuItemEx("New Asset", ICON_FA_FILE)) {
+            _command = Command::ShowNewAssetDialog;
+        }
+        if (ImGui::MenuItemEx("New Folder", ICON_FA_FOLDER)) {
+            _command = Command::ShowNewFolderDialog;
+        }
+        ImGui::EndIconButtonDropdown();
     }
-    ImGui::SameLine();
-    if (ImGui::IconButton("New Folder", ICON_FA_FOLDER)) {
-        _command = Command::ShowNewFolderDialog;
-    }
-    ImGui::SameLine(0.f, 12.f);
 
-    if (ImGui::IconButton("##back", ICON_FA_BACKWARD)) {
-        if (_folderHistoryIndex > 0) {
-            _currentFolder = _folderHistory[--_folderHistoryIndex];
-            _selection.clear();
-        }
-    }
     ImGui::SameLine();
-    if (ImGui::IconButton("##forward", ICON_FA_FORWARD)) {
-        if (_folderHistoryIndex + 1 < _folderHistory.size()) {
-            _currentFolder = _folderHistory[++_folderHistoryIndex];
-            _selection.clear();
-        }
+
+    ImGui::BeginDisabled(_folderHistoryIndex == 0);
+    if (ImGui::IconButton("##back", ICON_FA_ARROW_LEFT)) {
+        _currentFolder = _folderHistory[--_folderHistoryIndex];
+        _selection.clear();
     }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine(0, 1.f);
+
+    ImGui::BeginDisabled(_folderHistory.size() < 2 || _folderHistoryIndex == _folderHistory.size() - 1);
+    if (ImGui::IconButton("##forward", ICON_FA_ARROW_RIGHT)) {
+        _currentFolder = _folderHistory[++_folderHistoryIndex];
+        _selection.clear();
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine(0, 1.f);
+
+    ImGui::BeginDisabled(_entries[_currentFolder].parentIndex == -1);
+    if (ImGui::IconButton("##parent", ICON_FA_ARROW_UP)) {
+        _openFolder(_entries[_currentFolder].parentIndex);
+        _selection.clear();
+    }
+    ImGui::EndDisabled();
+
     ImGui::SameLine();
 
     _showBreadcrumb(_currentFolder);
@@ -545,7 +563,6 @@ int up::shell::AssetBrowser::_addFolder(string_view name, int parentIndex) {
          .typeHash = folderTypeHash,
          .parentIndex = parentIndex});
 
-    
     ++parent.childFolderCount;
 
     if (childIndex == -1) {
