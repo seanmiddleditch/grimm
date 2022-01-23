@@ -157,8 +157,10 @@ ImVec2 ImGui::Potato::GetItemInnerSpacing() {
 }
 
 bool ImGui::Potato::BeginIconGrid(char const* label, float iconWidth) {
-    float const availWidth = ImGui::GetContentRegionAvailWidth();
-    int const columns = up::clamp(static_cast<int>(availWidth / iconWidth), 1, 64);
+    ImGuiStyle const& style = GetStyle();
+    float const availWidth = std::max(ImGui::GetContentRegionAvailWidth() - style.WindowPadding.x - style.FramePadding.x * 2.f, 0.f);
+    float const paddedIconWidth = iconWidth + style.ColumnsMinSpacing;
+    int const columns = up::clamp(static_cast<int>(availWidth / paddedIconWidth), 1, 64);
 
     return ImGui::BeginTable(label, columns);
 }

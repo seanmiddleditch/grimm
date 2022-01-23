@@ -239,12 +239,13 @@ void up::shell::AssetBrowser::_showBreadcrumb(int index) {
 void up::shell::AssetBrowser::_showBreadcrumbs() {
     ImGuiWindow* const window = ImGui::GetCurrentWindow();
     ImDrawList* const drawList = window->DrawList;
+    ImGuiStyle const& style = ImGui::GetStyle();
 
     drawList->AddRectFilled(
         window->DC.CursorPos,
         window->DC.CursorPos +
             ImVec2{
-                ImGui::GetContentRegionAvail().x,
+                ImGui::GetContentRegionAvail().x - style.FramePadding.x,
                 ImGui::GetTextLineHeightWithSpacing() + ImGui::GetItemSpacing().y * 3},
         ImGui::GetColorU32(ImGuiCol_Header),
         4.f);
