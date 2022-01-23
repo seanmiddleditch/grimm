@@ -14,6 +14,10 @@ void ImGui::Potato::PushFont(UpFont font) {
     auto const index = up::to_underlying(font);
     UP_GUARD_VOID(index < io.Fonts->Fonts.Size);
 
+    // TODO: https://github.com/potatoengine/potato/issues/306
+    // This is fragile as it assumes that fonts are loaded
+    // in exactly the expected order and that the order
+    // directly matches the indices in the font list.
     ImFont** const fonts = io.Fonts->Fonts.Data;
     ImGui::PushFont(fonts[index]);
 }
