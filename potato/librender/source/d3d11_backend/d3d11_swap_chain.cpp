@@ -69,7 +69,7 @@ namespace up::d3d11 {
         desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
         com_ptr<ID3D11RenderTargetView> view;
-        HRESULT hr = device->CreateRenderTargetView(buffer.get(), &desc, out_ptr(view));
+        [[maybe_unused]] HRESULT hr = device->CreateRenderTargetView(buffer.get(), &desc, out_ptr(view));
         UP_GUARD_VOID(SUCCEEDED(hr));
 
         ID3D11RenderTargetView* const rtv = view.get();
