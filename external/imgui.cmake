@@ -15,3 +15,21 @@ target_compile_definitions(imgui PUBLIC
     IMGUI_DEFINE_MATH_OPERATORS=1
 )
 target_link_libraries(imgui PUBLIC potato::libruntime)
+
+add_library(imgui_backend_d3d11 INTERFACE EXCLUDE_FROM_ALL)
+target_sources(imgui_backend_d3d11 INTERFACE
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_dx11.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_dx11.h"
+)
+
+add_library(imgui_backend_d3d12 INTERFACE EXCLUDE_FROM_ALL)
+target_sources(imgui_backend_d3d12 INTERFACE
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_dx12.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_dx12.h"
+)
+
+add_library(imgui_backend_sdl INTERFACE EXCLUDE_FROM_ALL)
+target_sources(imgui_backend_sdl INTERFACE
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.h"
+)

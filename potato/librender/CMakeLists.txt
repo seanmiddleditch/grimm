@@ -50,6 +50,7 @@ target_link_libraries(potato_librender
         stb
         imgui
         SDL2
+        imgui_backend_sdl
 )
 
 add_subdirectory("source/null_backend")
@@ -73,7 +74,7 @@ if(UP_BUILD_D3D11)
             "data/shaders/imgui.hlsl"
     )
 
-    target_link_libraries(potato_librender PRIVATE ${D3D11_PATH} ${DXGI_PATH})
+    target_link_libraries(potato_librender PRIVATE ${D3D11_PATH} ${DXGI_PATH} imgui_backend_d3d11)
     target_sources(potato_librender PRIVATE ${UP_GPU_D3D11_SOURCES})
     target_compile_definitions(potato_librender PUBLIC UP_GPU_ENABLE_D3D11=1 UP_GPU_ENABLE_D3D=1)
     set_target_properties(potato_librender PROPERTIES UP_GPU_ENABLE_D3D11 ON)
@@ -98,7 +99,7 @@ if(UP_BUILD_D3D12)
             "data/shaders/imgui.hlsl"
     )
 
-    target_link_libraries(potato_librender PRIVATE ${D3D12_PATH} ${DXGI_PATH} dx12memalloc)
+    target_link_libraries(potato_librender PRIVATE ${D3D12_PATH} ${DXGI_PATH} dx12memalloc imgui_backend_d3d12)
     target_sources(potato_librender PRIVATE ${UP_GPU_D3D12_SOURCES})
     target_compile_definitions(potato_librender PUBLIC UP_GPU_ENABLE_D3D12=1 UP_GPU_ENABLE_D3D=1)
     set_target_properties(potato_librender PROPERTIES UP_GPU_ENABLE_D3D12 ON)

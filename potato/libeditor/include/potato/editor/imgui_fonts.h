@@ -8,4 +8,6 @@ namespace ImGui::inline Potato {
     enum class UpFont { Default, Roboto_16 = Default, FontAwesome_72, Count_ };
 
     UP_EDITOR_API void PushFont(UpFont font);
+
+    UP_EDITOR_API void LoadFonts();
 } // namespace ImGui::inline Potato

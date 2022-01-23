@@ -6,7 +6,6 @@
 #include "potato/audio/audio_engine.h"
 #include "potato/editor/asset_edit_service.h"
 #include "potato/editor/hotkeys.h"
-#include "potato/editor/imgui_backend.h"
 #include "potato/recon/recon_client.h"
 #include "potato/shell/log_history.h"
 #include "potato/shell/scene_doc.h"
@@ -63,7 +62,7 @@ namespace up::shell {
 
         void _displayUI();
         void _displayMainMenu();
-        void _displayDocuments(glm::vec4 rect);
+        void _displayDocuments();
 
         void _errorDialog(zstring_view message);
 
@@ -104,7 +103,6 @@ namespace up::shell {
         EditorGroup _editors;
         vector<box<EditorFactory>> _editorFactories;
         int _lastCursor = -1;
-        ImguiBackend _imguiBackend;
         Logger _logger;
         float _lastFrameTime = 0.f;
         std::chrono::nanoseconds _lastFrameDuration = {};

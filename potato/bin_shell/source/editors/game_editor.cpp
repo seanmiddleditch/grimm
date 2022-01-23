@@ -60,7 +60,8 @@ void up::shell::GameEditor::content() {
 
     if (_isInputBound) {
         ImGui::SetActiveID(contentId, ctx->CurrentWindow);
-        ImGui::SetCaptureRelativeMouseMode(true);
+        // TODO: https://github.com/potatoengine/potato/issues/305
+        SDL_SetRelativeMouseMode(SDL_TRUE);
 
         int mouseRelX = 0;
         int mouseRelY = 0;
@@ -82,6 +83,8 @@ void up::shell::GameEditor::content() {
         });
     }
     else {
+        // TODO: https://github.com/potatoengine/potato/issues/305
+        SDL_SetRelativeMouseMode(SDL_FALSE);
         if (ctx->ActiveId == contentId) {
             ImGui::ClearActiveID();
         }
@@ -98,7 +101,7 @@ void up::shell::GameEditor::content() {
 
         auto const pos = ImGui::GetCursorScreenPos();
         if (_bufferView != nullptr) {
-            ImGui::Image(_bufferView.get(), contentSize);
+            ImGui::Image(_bufferView->getImguiTexture(), contentSize);
         }
         ImGui::SetCursorPos(pos);
         ImGui::InvisibleButton("GameContent", contentSize);

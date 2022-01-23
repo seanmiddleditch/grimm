@@ -181,7 +181,7 @@ namespace up::shell {
 
             auto const pos = ImGui::GetCursorScreenPos();
             if (_bufferView != nullptr) {
-                ImGui::Image(_bufferView.get(), contentSize);
+                ImGui::Image(_bufferView->getImguiTexture(), contentSize);
             }
 
             ImRect area{pos, pos + contentSize};
