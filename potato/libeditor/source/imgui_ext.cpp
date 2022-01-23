@@ -70,7 +70,7 @@ bool ImGui::Potato::IconButton(char const* label, char const* icon, ImVec2 size,
     ImVec2 buttonSize = CalcItemSize(
         size,
         labelSize.x + iconWidth + style.FramePadding.x * 2.0f + (hasLabel ? style.ItemInnerSpacing.x : 0.f),
-        std::max(labelSize.y, iconSize.y) + style.FramePadding.y * 2.0f);
+        up::max(labelSize.y, iconSize.y) + style.FramePadding.y * 2.0f);
 
     ImRect const bb(pos, pos + buttonSize);
     ItemSize(buttonSize, style.FramePadding.y);
