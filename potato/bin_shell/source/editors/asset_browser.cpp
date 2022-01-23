@@ -285,12 +285,11 @@ void up::shell::AssetBrowser::_showBreadcrumbs() {
 }
 
 void up::shell::AssetBrowser::_showTreeFolder(int index) {
-    int flags = 0;
+    int flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
 
     UP_GUARD_VOID(_entries[index].typeHash == folderTypeHash);
 
-    bool const hasChildren = _entries[index].firstChild != -1;
-    if (!hasChildren) {
+    if (_entries[index].childFolderCount == 0) {
         flags |= ImGuiTreeNodeFlags_Leaf;
     }
     if (index == _currentFolder) {
@@ -300,8 +299,11 @@ void up::shell::AssetBrowser::_showTreeFolder(int index) {
         flags |= ImGuiTreeNodeFlags_DefaultOpen;
     }
 
-    if (ImGui::TreeNodeEx(_entries[index].name.c_str(), flags)) {
-        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+    char label[512];
+    nanofmt::format_to(label, "{} {}", ICON_FA_FOLDER, _entries[index].name);
+
+    if (ImGui::TreeNodeEx(label, flags)) {
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
             _openFolder(index);
         }
 
@@ -495,6 +497,8 @@ void up::shell::AssetBrowser::_rebuild() {
                 }
             }
         }
+
+        ++_entries[folderIndex].childFileCount;
     }
 
     for (auto const& [index, entry] : enumerate(_entries)) {
@@ -509,7 +513,7 @@ int up::shell::AssetBrowser::_addFolder(string_view name, int parentIndex) {
     UP_ASSERT(parentIndex >= 0 && parentIndex < static_cast<int>(_entries.size()));
     UP_ASSERT(_entries[parentIndex].typeHash == folderTypeHash);
 
-    Entry const& parent = _entries[parentIndex];
+    Entry& parent = _entries[parentIndex];
 
     int childIndex = -1;
     if (parent.firstChild != -1 && _entries[parent.firstChild].typeHash == folderTypeHash) {
@@ -539,6 +543,9 @@ int up::shell::AssetBrowser::_addFolder(string_view name, int parentIndex) {
          .name = string{name},
          .typeHash = folderTypeHash,
          .parentIndex = parentIndex});
+
+    
+    ++parent.childFolderCount;
 
     if (childIndex == -1) {
         _entries[newIndex].nextSibling = _entries[parentIndex].firstChild;

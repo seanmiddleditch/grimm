@@ -60,6 +60,8 @@ namespace up::shell {
             string name;
             uint64 typeHash = 0;
             size_t size = 0;
+            uint32 childFileCount = 0;
+            uint32 childFolderCount = 0;
             int firstChild = -1;
             int nextSibling = -1;
             int parentIndex = -1;
