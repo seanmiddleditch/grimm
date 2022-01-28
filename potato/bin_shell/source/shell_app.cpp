@@ -95,11 +95,17 @@ int up::shell::ShellApp::initialize() {
         _logger.info("Loaded user settings: ", _shellSettingsPath);
     }
 
-    ImGui::CreateContext();
-    auto& io = ImGui::GetIO();
-    io.ConfigFlags =
-        ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_ViewportsEnable;
-    io.ConfigInputTextCursorBlink = true;
+    {
+        ImGui::CreateContext();
+        auto& io = ImGui::GetIO();
+        io.ConfigFlags =
+            ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_ViewportsEnable;
+        io.ConfigInputTextCursorBlink = true;
+        io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+        auto& style = ImGui::GetStyle();
+        style.WindowMenuButtonPosition = ImGuiDir_None;
+    }
 
     _appActions.addAction(
         {.name = "potato.quit",
