@@ -11,12 +11,14 @@
 
 up::shell::Editor::Editor(zstring_view className) {
     _panelClass.ClassId = narrow_cast<ImU32>(reinterpret_cast<uintptr_t>(this));
+    _panelClass.TabItemFlagsOverrideSet = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
     _panelClass.DockingAllowUnclassed = false;
-    _panelClass.DockingAlwaysTabBar = true;
+    _panelClass.DockingAlwaysTabBar = false;
 
     _contentClass.ClassId = narrow_cast<ImU32>(reinterpret_cast<uintptr_t>(this));
     _contentClass.DockNodeFlagsOverrideSet =
         ImGuiDockNodeFlags_NoCloseButton | ImGuiDockNodeFlags_NoDockingOverMe | ImGuiDockNodeFlags_NoTabBar;
+    _contentClass.TabItemFlagsOverrideSet = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
     _contentClass.DockingAllowUnclassed = false;
     _contentClass.DockingAlwaysTabBar = false;
 }
@@ -28,14 +30,16 @@ bool up::shell::Editor::updateUi() {
     nanofmt::format_to(editorTitle, "{}##{}", displayName(), this);
     nanofmt::format_to(contentTitle, "Document##{}", this);
 
+    ImGuiWindowFlags const windowFlags = ImGuiWindowFlags_NoCollapse;
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
     if (isClosable()) {
         bool wantOpen = true;
-        ImGui::Begin(editorTitle, &wantOpen, ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin(editorTitle, &wantOpen, windowFlags);
         _wantClose = _wantClose || !wantOpen;
     }
     else {
-        ImGui::Begin(editorTitle, nullptr, ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin(editorTitle, nullptr, windowFlags);
     }
     ImGui::PopStyleVar(1);
 
@@ -43,7 +47,7 @@ bool up::shell::Editor::updateUi() {
     if (ImGui::DockBuilderGetNode(dockSpaceId) == nullptr) {
         _dockId = ImGui::DockBuilderAddNode(
             dockSpaceId,
-            ImGuiDockNodeFlags_DockSpace | ImGuiDockNodeFlags_NoWindowMenuButton);
+            ImGuiDockNodeFlags_CentralNode | ImGuiDockNodeFlags_NoWindowMenuButton);
 
         configure();
 
