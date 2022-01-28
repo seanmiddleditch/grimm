@@ -149,7 +149,8 @@ bool up::shell::Editor::updateUi() {
         _closed = handleClose();
     }
 
-    auto const active = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+    auto const active =
+        isEditorOpen && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows | ImGuiFocusedFlags_DockHierarchy);
 
     ImGui::End();
 
