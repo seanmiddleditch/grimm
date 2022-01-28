@@ -485,54 +485,8 @@ void up::shell::ShellApp::_updateTitle() {
 void up::shell::ShellApp::_processEvents() {
     ZoneScopedN("Shell Events");
 
-    auto& io = ImGui::GetIO();
-
     // TODO: https://github.com/potatoengine/potato/issues/305
     // SDL_SetRelativeMouseMode(ImGui::IsCaptureRelativeMouseMode() ? SDL_TRUE : SDL_FALSE);
-
-    SDL_CaptureMouse(io.WantCaptureMouse ? SDL_TRUE : SDL_FALSE);
-
-    auto const guiCursor = ImGui::GetMouseCursor();
-    if (guiCursor != _lastCursor) {
-        _lastCursor = guiCursor;
-        SDL_ShowCursor(guiCursor != ImGuiMouseCursor_None ? SDL_TRUE : SDL_FALSE);
-        if (guiCursor == ImGuiMouseCursor_Arrow) {
-            SDL_SetCursor(SDL_GetDefaultCursor());
-            _cursor.reset();
-        }
-        else {
-            switch (guiCursor) {
-                case ImGuiMouseCursor_TextInput:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM));
-                    break;
-                case ImGuiMouseCursor_ResizeAll:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL));
-                    break;
-                case ImGuiMouseCursor_ResizeNS:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS));
-                    break;
-                case ImGuiMouseCursor_ResizeEW:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE));
-                    break;
-                case ImGuiMouseCursor_ResizeNESW:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENESW));
-                    break;
-                case ImGuiMouseCursor_ResizeNWSE:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENWSE));
-                    break;
-                case ImGuiMouseCursor_Hand:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
-                    break;
-                case ImGuiMouseCursor_NotAllowed:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_NO));
-                    break;
-                default:
-                    _cursor.reset(SDL_GetDefaultCursor());
-                    break;
-            }
-            SDL_SetCursor(_cursor.get());
-        }
-    }
 
     SDL_Event ev;
     while (_running && SDL_PollEvent(&ev) > 0) {
