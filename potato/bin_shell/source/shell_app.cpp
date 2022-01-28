@@ -570,21 +570,7 @@ void up::shell::ShellApp::_displayMainMenu() {
 }
 
 void up::shell::ShellApp::_displayDocuments() {
-    auto const windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration |
-        ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-    ImGuiViewport const* const viewport = ImGui::GetMainViewport();
-
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
-    ImGui::Begin("MainWindow", nullptr, windowFlags);
-    ImGui::PopStyleVar(1);
-
     _editors.update(*_renderer, _lastFrameTime);
-
-    ImGui::End();
 }
 
 void up::shell::ShellApp::_errorDialog(zstring_view message) {

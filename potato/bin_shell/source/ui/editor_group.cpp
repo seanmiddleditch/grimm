@@ -34,8 +34,7 @@ void up::shell::EditorGroup::update(Renderer& renderer, float deltaTime) {
         _editors[index]->tick(deltaTime);
     }
 
-    auto const dockspaceId = ImGui::GetID("EditorDockspace");
-    ImGui::DockSpace(dockspaceId, {}, ImGuiDockNodeFlags_NoWindowMenuButton, &_documentWindowClass);
+    auto const dockspaceId = ImGui::DockSpaceOverViewport(nullptr, 0, &_documentWindowClass);
 
     for (auto index : sequence(_editors.size())) {
         Editor* editor = _editors[index].get();
