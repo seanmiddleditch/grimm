@@ -38,13 +38,14 @@ bool up::shell::Editor::updateUi() {
     ImGuiWindowFlags const windowFlags = ImGuiWindowFlags_NoCollapse;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
+    bool isEditorOpen = false;
     if (isClosable()) {
         bool wantOpen = true;
-        ImGui::Begin(editorTitle, &wantOpen, windowFlags);
+        isEditorOpen = ImGui::Begin(editorTitle, &wantOpen, windowFlags);
         _wantClose = _wantClose || !wantOpen;
     }
     else {
-        ImGui::Begin(editorTitle, nullptr, windowFlags);
+        isEditorOpen = ImGui::Begin(editorTitle, nullptr, windowFlags);
     }
     ImGui::PopStyleVar(1);
 
@@ -115,26 +116,32 @@ bool up::shell::Editor::updateUi() {
         ImGui::DockBuilderFinish(dockSpaceId);
     }
 
-    ImGui::DockSpace(dockSpaceId, {}, ImGuiDockNodeFlags_None, &_panelClass);
+    ImGui::DockSpace(
+        dockSpaceId,
+        {},
+        isEditorOpen ? ImGuiDockNodeFlags_None : ImGuiDockNodeFlags_KeepAliveOnly,
+        &_panelClass);
 
-    ImGui::SetNextWindowClass(&_contentClass);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
-    auto const contentOpen = ImGui::Begin(contentTitle, nullptr, ImGuiWindowFlags_NoCollapse);
-    ImGui::PopStyleVar(1);
+    if (isEditorOpen) {
+        ImGui::SetNextWindowClass(&_contentClass);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
+        auto const contentOpen = ImGui::Begin(contentTitle, nullptr, ImGuiWindowFlags_NoCollapse);
+        ImGui::PopStyleVar(1);
 
-    if (contentOpen) {
-        content();
-    }
+        if (contentOpen) {
+            content();
+        }
 
-    ImGui::End();
+        ImGui::End();
 
-    for (auto const& panel : _panels) {
-        if (panel->open) {
-            ImGui::SetNextWindowClass(&_panelClass);
-            if (ImGui::Begin(panel->imguiLabel.c_str(), &panel->open, ImGuiWindowFlags_NoCollapse)) {
-                panel->update();
+        for (auto const& panel : _panels) {
+            if (panel->open) {
+                ImGui::SetNextWindowClass(&_panelClass);
+                if (ImGui::Begin(panel->imguiLabel.c_str(), &panel->open, ImGuiWindowFlags_NoCollapse)) {
+                    panel->update();
+                }
+                ImGui::End();
             }
-            ImGui::End();
         }
     }
 
