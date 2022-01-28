@@ -126,11 +126,8 @@ namespace up::shell {
     }
 
     void SceneEditor::configure() {
-        auto const inspectorId = addPanel("Inspector", [this] { _inspector(); });
-        auto const hierarchyId = addPanel("Hierarchy", [this] { _hierarchy(); });
-
-        dockPanel(inspectorId, ImGuiDir_Right, contentId(), 0.25f);
-        dockPanel(hierarchyId, ImGuiDir_Down, inspectorId, 0.65f);
+        addPanel("Inspector", PanelDir::Right, [this] { _inspector(); });
+        addPanel("Hierarchy", PanelDir::Left, [this] { _hierarchy(); });
 
         addAction(
             {.name = "potato.editors.scene.actions.play",
@@ -156,12 +153,6 @@ namespace up::shell {
     void SceneEditor::content() {
         auto& io = ImGui::GetIO();
 
-        auto const contentSize = ImGui::GetContentRegionAvail();
-
-        if (contentSize.x <= 0 || contentSize.y <= 0) {
-            return;
-        }
-
         ImGui::BeginGroup();
         if (ImGui::IconButton("Play", ICON_FA_PLAY)) {
             _onPlayClicked(*_doc);
@@ -171,6 +162,11 @@ namespace up::shell {
             _save();
         }
         ImGui::EndGroup();
+
+        auto const contentSize = ImGui::GetContentRegionAvail();
+        if (contentSize.x <= 0 || contentSize.y <= 0) {
+            return;
+        }
 
         {
             _sceneDimensions = {contentSize.x, contentSize.y};

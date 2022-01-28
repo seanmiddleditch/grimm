@@ -48,8 +48,61 @@ bool up::shell::Editor::updateUi() {
         _dockId = ImGui::DockBuilderAddNode(
             dockSpaceId,
             ImGuiDockNodeFlags_CentralNode | ImGuiDockNodeFlags_NoWindowMenuButton);
+        ImGui::DockBuilderSetNodeSize(_dockId, ImGui::GetWindowSize());
 
         configure();
+
+        bool hasRight = false;
+        bool hasRightLower = false;
+        bool hasLeft = false;
+        bool hasLeftLower = false;
+
+        for (auto const& panel : _panels) {
+            hasRight |= panel->initialDir == PanelDir::Right;
+            hasRightLower |= panel->initialDir == PanelDir::RightLower;
+            hasLeft |= panel->initialDir == PanelDir::Left;
+            hasLeftLower |= panel->initialDir == PanelDir::LeftLower;
+        }
+
+        ImGuiID right = 0;
+        ImGuiID rightLower = 0;
+        ImGuiID left = 0;
+        ImGuiID leftLower = 0;
+
+        if (hasRight) {
+            right = ImGui::DockBuilderSplitNode(_dockId, ImGuiDir_Right, 0.25f, nullptr, &_dockId);
+            if (hasRightLower) {
+                rightLower = ImGui::DockBuilderSplitNode(right, ImGuiDir_Down, 0.5f, nullptr, &right);
+            }
+        }
+        else if (hasRightLower) {
+            right = rightLower = ImGui::DockBuilderSplitNode(_dockId, ImGuiDir_Right, 0.25f, nullptr, &_dockId);
+        }
+
+        if (hasLeft) {
+            left = ImGui::DockBuilderSplitNode(_dockId, ImGuiDir_Left, 0.25f, nullptr, &_dockId);
+            if (hasLeftLower) {
+                leftLower = ImGui::DockBuilderSplitNode(right, ImGuiDir_Down, 0.6f, nullptr, &left);
+            }
+        }
+        else if (hasLeftLower) {
+            left = leftLower = ImGui::DockBuilderSplitNode(_dockId, ImGuiDir_Left, 0.25f, nullptr, &_dockId);
+        }
+
+        for (auto const& panel : _panels) {
+            if (panel->initialDir == PanelDir::Right) {
+                ImGui::DockBuilderDockWindow(panel->imguiLabel.c_str(), right);
+            }
+            else if (panel->initialDir == PanelDir::RightLower) {
+                ImGui::DockBuilderDockWindow(panel->imguiLabel.c_str(), rightLower);
+            }
+            else if (panel->initialDir == PanelDir::Left) {
+                ImGui::DockBuilderDockWindow(panel->imguiLabel.c_str(), left);
+            }
+            else if (panel->initialDir == PanelDir::LeftLower) {
+                ImGui::DockBuilderDockWindow(panel->imguiLabel.c_str(), leftLower);
+            }
+        }
 
         ImGui::DockBuilderFinish(dockSpaceId);
     }
@@ -71,7 +124,6 @@ bool up::shell::Editor::updateUi() {
     for (auto const& panel : _panels) {
         if (panel->open) {
             ImGui::SetNextWindowClass(&_panelClass);
-            ImGui::SetNextWindowDockID(panel->dockId, ImGuiCond_FirstUseEver);
             if (ImGui::Begin(panel->imguiLabel.c_str(), &panel->open, ImGuiWindowFlags_NoCollapse)) {
                 panel->update();
             }
@@ -90,21 +142,20 @@ bool up::shell::Editor::updateUi() {
     return active;
 }
 
-auto up::shell::Editor::addPanel(string title, PanelUpdate update) -> PanelId {
-    UP_GUARD(!title.empty(), 0);
-    UP_GUARD(update != nullptr, 0);
+void up::shell::Editor::addPanel(string title, PanelDir dir, PanelUpdate update) {
+    UP_GUARD_VOID(!title.empty());
+    UP_GUARD_VOID(update != nullptr);
 
     auto panel = new_box<Panel>();
     panel->title = std::move(title);
     panel->update = std::move(update);
+    panel->initialDir = dir;
 
     char tmp[128] = {};
     nanofmt::format_to(tmp, "{}##{}", panel->title, panel.get());
     panel->imguiLabel = tmp;
 
-    auto const id = panel->id = ImGui::GetID(panel.get());
-
-    panel->dockId = _dockId;
+    panel->id = ImGui::GetID(panel.get());
 
     nanofmt::format_to(tmp, "View\\Panels\\{}", panel->title);
 
@@ -118,29 +169,6 @@ auto up::shell::Editor::addPanel(string title, PanelUpdate update) -> PanelId {
              }});
 
     _panels.push_back(std::move(panel));
-
-    return id;
-}
-
-void up::shell::Editor::dockPanel(PanelId panelId, ImGuiDir dir, PanelId otherId, float size) {
-    bool const isOtherContent = otherId == _dockId;
-
-    for (auto const& panel : _panels) {
-        if (panel->id == panelId) {
-            if (isOtherContent) {
-                ImGui::DockBuilderSplitNode(_dockId, dir, size, &panel->dockId, &_dockId);
-            }
-            else {
-                for (auto const& other : _panels) {
-                    if (other->id == otherId) {
-                        ImGui::DockBuilderSplitNode(other->dockId, dir, size, &panel->dockId, &other->dockId);
-                        break;
-                    }
-                }
-            }
-            break;
-        }
-    }
 }
 
 void up::shell::Editor::activate(bool active, Actions& actions) {

@@ -38,13 +38,21 @@ namespace up::shell {
         using PanelId = ImGuiID;
         using EditorId = uint64;
 
+        enum class PanelDir {
+            Right,
+            RightLower,
+            Left,
+            LeftLower,
+            Bottom
+        };
+
         struct Panel {
             string title;
             string imguiLabel;
             bool open = true;
             PanelUpdate update;
             ImGuiID id = 0;
-            ImGuiID dockId = 0;
+            PanelDir initialDir = PanelDir::Right;
         };
 
         virtual ~Editor() = default;
@@ -85,8 +93,8 @@ namespace up::shell {
         ImGuiWindowClass const& panelWindowClass() const noexcept { return _panelClass; }
         ImGuiWindowClass const& contentWindowClass() const noexcept { return _contentClass; }
 
-        auto addPanel(string title, PanelUpdate update) -> PanelId;
-        void dockPanel(PanelId panelId, ImGuiDir dir, PanelId otherId, float size);
+        void addPanel(string title, PanelDir dir, PanelUpdate update);
+
         auto contentId() const noexcept { return _dockId; }
         void addAction(ActionDesc action) { _actions.addAction(std::move(action)); }
 
@@ -97,7 +105,6 @@ namespace up::shell {
         virtual bool handleClose() { return true; }
 
     private:
-        void _content();
 
         ImGuiWindowClass _panelClass;
         ImGuiWindowClass _contentClass;
