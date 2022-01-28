@@ -41,14 +41,12 @@ up::shell::MaterialEditor::MaterialEditor(AssetLoader& assetLoader, box<schema::
     : Editor(editorName)
     , _assetLoader(assetLoader)
     , _material(std::move(material))
-    , _filename(std::move(filename)) { }
+    , _filename(std::move(filename)) {
+    _propertyGrid.bindResourceLoader(&_assetLoader);
+}
 
 auto up::shell::MaterialEditor::createFactory(AssetLoader& assetLoader) -> box<EditorFactory> {
     return new_box<MaterialEditorFactory>(assetLoader);
-}
-
-void up::shell::MaterialEditor::configure() {
-    _propertyGrid.bindResourceLoader(&_assetLoader);
 }
 
 void up::shell::MaterialEditor::content() {

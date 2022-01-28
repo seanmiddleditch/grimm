@@ -58,16 +58,25 @@ namespace up::shell {
     } // namespace
 } // namespace up::shell
 
+up::shell::AssetBrowser::AssetBrowser(
+    AssetLoader& assetLoader,
+    ReconClient& reconClient,
+    AssetEditService& assetEditService,
+    OnFileSelected& onFileSelected)
+    : Editor("AssetBrowser"_zsv)
+    , _assetLoader(assetLoader)
+    , _assetEditService(assetEditService)
+    , _reconClient(reconClient)
+    , _onFileSelected(onFileSelected) {
+    _rebuild();
+}
+
 auto up::shell::AssetBrowser::createFactory(
     AssetLoader& assetLoader,
     ReconClient& reconClient,
     AssetEditService& assetEditService,
     AssetBrowser::OnFileSelected onFileSelected) -> box<EditorFactory> {
     return new_box<AssetBrowserFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
-}
-
-void up::shell::AssetBrowser::configure() {
-    _rebuild();
 }
 
 void up::shell::AssetBrowser::content() {

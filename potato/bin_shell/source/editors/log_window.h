@@ -25,7 +25,6 @@ namespace up::shell {
 
         static box<EditorFactory> createFactory(LogHistory& history);
 
-        void configure() override { }
         void content() override;
 
     private:

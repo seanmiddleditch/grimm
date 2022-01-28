@@ -110,22 +110,7 @@ namespace up::shell {
         _arcball.target = {0, 0, 0};
         _arcball.boomLength = 40.f;
         _arcball.pitch = -glm::quarter_pi<float>();
-    }
 
-    auto SceneEditor::createFactory(
-        SceneDatabase& database,
-        AssetLoader& assetLoader,
-        SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
-        return new_box<SceneEditorFactory>(database, assetLoader, std::move(onPlayClicked));
-    }
-
-    void SceneEditor::tick(float deltaTime) {
-        _doc->syncPreview(*_previewScene);
-
-        _previewScene->update(deltaTime);
-    }
-
-    void SceneEditor::configure() {
         addPanel("Inspector", PanelDir::Right, [this] { _inspector(); });
         addPanel("Hierarchy", PanelDir::Left, [this] { _hierarchy(); });
 
@@ -148,6 +133,19 @@ namespace up::shell {
                  [this]() {
                      _enableGrid = !_enableGrid;
                  }});
+    }
+
+    auto SceneEditor::createFactory(
+        SceneDatabase& database,
+        AssetLoader& assetLoader,
+        SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
+        return new_box<SceneEditorFactory>(database, assetLoader, std::move(onPlayClicked));
+    }
+
+    void SceneEditor::tick(float deltaTime) {
+        _doc->syncPreview(*_previewScene);
+
+        _previewScene->update(deltaTime);
     }
 
     void SceneEditor::content() {

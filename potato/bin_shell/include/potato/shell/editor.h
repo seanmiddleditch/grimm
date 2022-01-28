@@ -87,6 +87,8 @@ namespace up::shell {
         bool isActive() const noexcept { return _active; }
         void activate(bool active, Actions& actions);
 
+        void resetLayout() noexcept { _wantReset = true; }
+
     protected:
         explicit Editor(zstring_view className);
 
@@ -95,11 +97,9 @@ namespace up::shell {
 
         void addPanel(string title, PanelDir dir, PanelUpdate update);
 
-        auto contentId() const noexcept { return _dockId; }
         void addAction(ActionDesc action) { _actions.addAction(std::move(action)); }
 
         /// @brief Renders the ui for the Document.
-        virtual void configure() = 0;
         virtual void content() = 0;
         virtual bool hasMenu() { return false; }
         virtual bool handleClose() { return true; }
@@ -108,10 +108,10 @@ namespace up::shell {
 
         ImGuiWindowClass _panelClass;
         ImGuiWindowClass _contentClass;
-        ImGuiID _dockId = 0;
 
         vector<box<Panel>> _panels;
         ActionGroup _actions;
+        bool _wantReset = false;
         bool _wantClose = false;
         bool _closed = false;
         bool _active = false;

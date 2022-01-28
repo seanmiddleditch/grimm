@@ -11,16 +11,21 @@
 
 up::shell::Editor::Editor(zstring_view className) {
     _panelClass.ClassId = narrow_cast<ImU32>(reinterpret_cast<uintptr_t>(this));
+    _panelClass.ViewportFlagsOverrideSet = ImGuiViewportFlags_NoTaskBarIcon;
     _panelClass.TabItemFlagsOverrideSet = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
     _panelClass.DockingAllowUnclassed = false;
     _panelClass.DockingAlwaysTabBar = false;
 
     _contentClass.ClassId = narrow_cast<ImU32>(reinterpret_cast<uintptr_t>(this));
-    _contentClass.DockNodeFlagsOverrideSet =
-        ImGuiDockNodeFlags_NoCloseButton | ImGuiDockNodeFlags_NoDockingOverMe | ImGuiDockNodeFlags_NoTabBar;
+    _contentClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoCloseButton | ImGuiDockNodeFlags_NoDockingOverMe |
+        ImGuiDockNodeFlags_NoDockingSplitMe | ImGuiDockNodeFlags_NoTabBar;
     _contentClass.TabItemFlagsOverrideSet = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
     _contentClass.DockingAllowUnclassed = false;
     _contentClass.DockingAlwaysTabBar = false;
+
+    _actions.addAction({.menu = "View\\Reset Layout", .group = "3_panels"_s, .action = [this] {
+                            this->resetLayout();
+                        }});
 }
 
 bool up::shell::Editor::updateUi() {
@@ -44,13 +49,14 @@ bool up::shell::Editor::updateUi() {
     ImGui::PopStyleVar(1);
 
     auto const dockSpaceId = ImGui::GetID("DockSpace");
-    if (ImGui::DockBuilderGetNode(dockSpaceId) == nullptr) {
-        _dockId = ImGui::DockBuilderAddNode(
-            dockSpaceId,
-            ImGuiDockNodeFlags_CentralNode | ImGuiDockNodeFlags_NoWindowMenuButton);
-        ImGui::DockBuilderSetNodeSize(_dockId, ImGui::GetWindowSize());
+    if (ImGui::DockBuilderGetNode(dockSpaceId) == nullptr || _wantReset) {
+        _wantReset = false;
 
-        configure();
+        ImGui::DockBuilderRemoveNode(dockSpaceId);
+        auto mainId = ImGui::DockBuilderAddNode(
+            dockSpaceId,
+            ImGuiDockNodeFlags_DockSpace | ImGuiDockNodeFlags_NoWindowMenuButton);
+        ImGui::DockBuilderSetNodeSize(mainId, ImGui::GetWindowSize());
 
         bool hasRight = false;
         bool hasRightLower = false;
@@ -70,23 +76,23 @@ bool up::shell::Editor::updateUi() {
         ImGuiID leftLower = 0;
 
         if (hasRight) {
-            right = ImGui::DockBuilderSplitNode(_dockId, ImGuiDir_Right, 0.25f, nullptr, &_dockId);
+            right = ImGui::DockBuilderSplitNode(mainId, ImGuiDir_Right, 0.25f, nullptr, &mainId);
             if (hasRightLower) {
                 rightLower = ImGui::DockBuilderSplitNode(right, ImGuiDir_Down, 0.5f, nullptr, &right);
             }
         }
         else if (hasRightLower) {
-            right = rightLower = ImGui::DockBuilderSplitNode(_dockId, ImGuiDir_Right, 0.25f, nullptr, &_dockId);
+            right = rightLower = ImGui::DockBuilderSplitNode(mainId, ImGuiDir_Right, 0.25f, nullptr, &mainId);
         }
 
         if (hasLeft) {
-            left = ImGui::DockBuilderSplitNode(_dockId, ImGuiDir_Left, 0.25f, nullptr, &_dockId);
+            left = ImGui::DockBuilderSplitNode(mainId, ImGuiDir_Left, 0.25f, nullptr, &mainId);
             if (hasLeftLower) {
                 leftLower = ImGui::DockBuilderSplitNode(right, ImGuiDir_Down, 0.6f, nullptr, &left);
             }
         }
         else if (hasLeftLower) {
-            left = leftLower = ImGui::DockBuilderSplitNode(_dockId, ImGuiDir_Left, 0.25f, nullptr, &_dockId);
+            left = leftLower = ImGui::DockBuilderSplitNode(mainId, ImGuiDir_Left, 0.25f, nullptr, &mainId);
         }
 
         for (auto const& panel : _panels) {
@@ -104,13 +110,14 @@ bool up::shell::Editor::updateUi() {
             }
         }
 
+        ImGui::DockBuilderDockWindow(contentTitle, mainId);
+
         ImGui::DockBuilderFinish(dockSpaceId);
     }
 
     ImGui::DockSpace(dockSpaceId, {}, ImGuiDockNodeFlags_None, &_panelClass);
 
     ImGui::SetNextWindowClass(&_contentClass);
-    ImGui::SetNextWindowDockID(_dockId, ImGuiCond_Always);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
     auto const contentOpen = ImGui::Begin(contentTitle, nullptr, ImGuiWindowFlags_NoCollapse);
     ImGui::PopStyleVar(1);
@@ -161,7 +168,7 @@ void up::shell::Editor::addPanel(string title, PanelDir dir, PanelUpdate update)
 
     _actions.addAction(
         {.menu = tmp,
-         .group = "5_panels"_s,
+         .group = "3_panels"_s,
          .checked = [ptr = panel.get()] { return ptr->open; },
          .action =
              [ptr = panel.get()] {

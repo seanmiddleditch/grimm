@@ -18,14 +18,13 @@ namespace up {
 namespace up::shell {
     class GameEditor : public Editor {
     public:
-        explicit GameEditor(box<Space> space) : Editor("GameEditor"_zsv), _space(std::move(space)) { }
+        explicit GameEditor(box<Space> space);
 
         zstring_view displayName() const override { return "Game"_zsv; }
         zstring_view editorClass() const override { return "potato.editor.game"_zsv; }
         EditorId uniqueId() const override { return hash_value(this); }
 
     protected:
-        void configure() override;
         void content() override;
         void tick(float deltaTime) override;
         void render(Renderer& renderer, float deltaTime) override;
