@@ -30,12 +30,7 @@ namespace up::shell {
             AssetLoader& assetLoader,
             ReconClient& reconClient,
             AssetEditService& assetEditService,
-            OnFileSelected& onFileSelected)
-            : Editor("AssetBrowser"_zsv)
-            , _assetLoader(assetLoader)
-            , _assetEditService(assetEditService)
-            , _reconClient(reconClient)
-            , _onFileSelected(onFileSelected) { }
+            OnFileSelected& onFileSelected);
 
         zstring_view displayName() const override { return "Assets"; }
         zstring_view editorClass() const override { return editorName; }
@@ -48,7 +43,6 @@ namespace up::shell {
             AssetBrowser::OnFileSelected onFileSelected);
 
     protected:
-        void configure() override;
         void content() override;
         bool isClosable() override { return false; }
 

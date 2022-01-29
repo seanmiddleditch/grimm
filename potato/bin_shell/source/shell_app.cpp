@@ -95,11 +95,17 @@ int up::shell::ShellApp::initialize() {
         _logger.info("Loaded user settings: ", _shellSettingsPath);
     }
 
-    ImGui::CreateContext();
-    auto& io = ImGui::GetIO();
-    io.ConfigFlags =
-        ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_ViewportsEnable;
-    io.ConfigInputTextCursorBlink = true;
+    {
+        ImGui::CreateContext();
+        auto& io = ImGui::GetIO();
+        io.ConfigFlags =
+            ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_ViewportsEnable;
+        io.ConfigInputTextCursorBlink = true;
+        io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+        auto& style = ImGui::GetStyle();
+        style.WindowMenuButtonPosition = ImGuiDir_None;
+    }
 
     _appActions.addAction(
         {.name = "potato.quit",
@@ -479,54 +485,8 @@ void up::shell::ShellApp::_updateTitle() {
 void up::shell::ShellApp::_processEvents() {
     ZoneScopedN("Shell Events");
 
-    auto& io = ImGui::GetIO();
-
     // TODO: https://github.com/potatoengine/potato/issues/305
     // SDL_SetRelativeMouseMode(ImGui::IsCaptureRelativeMouseMode() ? SDL_TRUE : SDL_FALSE);
-
-    SDL_CaptureMouse(io.WantCaptureMouse ? SDL_TRUE : SDL_FALSE);
-
-    auto const guiCursor = ImGui::GetMouseCursor();
-    if (guiCursor != _lastCursor) {
-        _lastCursor = guiCursor;
-        SDL_ShowCursor(guiCursor != ImGuiMouseCursor_None ? SDL_TRUE : SDL_FALSE);
-        if (guiCursor == ImGuiMouseCursor_Arrow) {
-            SDL_SetCursor(SDL_GetDefaultCursor());
-            _cursor.reset();
-        }
-        else {
-            switch (guiCursor) {
-                case ImGuiMouseCursor_TextInput:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM));
-                    break;
-                case ImGuiMouseCursor_ResizeAll:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL));
-                    break;
-                case ImGuiMouseCursor_ResizeNS:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS));
-                    break;
-                case ImGuiMouseCursor_ResizeEW:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE));
-                    break;
-                case ImGuiMouseCursor_ResizeNESW:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENESW));
-                    break;
-                case ImGuiMouseCursor_ResizeNWSE:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENWSE));
-                    break;
-                case ImGuiMouseCursor_Hand:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
-                    break;
-                case ImGuiMouseCursor_NotAllowed:
-                    _cursor.reset(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_NO));
-                    break;
-                default:
-                    _cursor.reset(SDL_GetDefaultCursor());
-                    break;
-            }
-            SDL_SetCursor(_cursor.get());
-        }
-    }
 
     SDL_Event ev;
     while (_running && SDL_PollEvent(&ev) > 0) {
@@ -610,21 +570,7 @@ void up::shell::ShellApp::_displayMainMenu() {
 }
 
 void up::shell::ShellApp::_displayDocuments() {
-    auto const windowFlags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration |
-        ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-    ImGuiViewport const* const viewport = ImGui::GetMainViewport();
-
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
-    ImGui::Begin("MainWindow", nullptr, windowFlags);
-    ImGui::PopStyleVar(1);
-
     _editors.update(*_renderer, _lastFrameTime);
-
-    ImGui::End();
 }
 
 void up::shell::ShellApp::_errorDialog(zstring_view message) {

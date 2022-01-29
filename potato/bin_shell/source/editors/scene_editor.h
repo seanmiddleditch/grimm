@@ -44,7 +44,6 @@ namespace up::shell {
         void tick(float deltaTime) override;
 
     protected:
-        void configure() override;
         void content() override;
         void render(Renderer& renderer, float deltaTime) override;
 

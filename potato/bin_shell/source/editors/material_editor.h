@@ -24,7 +24,6 @@ namespace up::shell {
         EditorId uniqueId() const override { return hash_value(this); }
 
     private:
-        void configure() override;
         void content() override;
 
         void _save();

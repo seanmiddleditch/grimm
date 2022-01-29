@@ -110,27 +110,9 @@ namespace up::shell {
         _arcball.target = {0, 0, 0};
         _arcball.boomLength = 40.f;
         _arcball.pitch = -glm::quarter_pi<float>();
-    }
 
-    auto SceneEditor::createFactory(
-        SceneDatabase& database,
-        AssetLoader& assetLoader,
-        SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
-        return new_box<SceneEditorFactory>(database, assetLoader, std::move(onPlayClicked));
-    }
-
-    void SceneEditor::tick(float deltaTime) {
-        _doc->syncPreview(*_previewScene);
-
-        _previewScene->update(deltaTime);
-    }
-
-    void SceneEditor::configure() {
-        auto const inspectorId = addPanel("Inspector", [this] { _inspector(); });
-        auto const hierarchyId = addPanel("Hierarchy", [this] { _hierarchy(); });
-
-        dockPanel(inspectorId, ImGuiDir_Right, contentId(), 0.25f);
-        dockPanel(hierarchyId, ImGuiDir_Down, inspectorId, 0.65f);
+        addPanel("Inspector", PanelDir::Right, [this] { _inspector(); });
+        addPanel("Hierarchy", PanelDir::Left, [this] { _hierarchy(); });
 
         addAction(
             {.name = "potato.editors.scene.actions.play",
@@ -153,14 +135,21 @@ namespace up::shell {
                  }});
     }
 
+    auto SceneEditor::createFactory(
+        SceneDatabase& database,
+        AssetLoader& assetLoader,
+        SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
+        return new_box<SceneEditorFactory>(database, assetLoader, std::move(onPlayClicked));
+    }
+
+    void SceneEditor::tick(float deltaTime) {
+        _doc->syncPreview(*_previewScene);
+
+        _previewScene->update(deltaTime);
+    }
+
     void SceneEditor::content() {
         auto& io = ImGui::GetIO();
-
-        auto const contentSize = ImGui::GetContentRegionAvail();
-
-        if (contentSize.x <= 0 || contentSize.y <= 0) {
-            return;
-        }
 
         ImGui::BeginGroup();
         if (ImGui::IconButton("Play", ICON_FA_PLAY)) {
@@ -171,6 +160,11 @@ namespace up::shell {
             _save();
         }
         ImGui::EndGroup();
+
+        auto const contentSize = ImGui::GetContentRegionAvail();
+        if (contentSize.x <= 0 || contentSize.y <= 0) {
+            return;
+        }
 
         {
             _sceneDimensions = {contentSize.x, contentSize.y};

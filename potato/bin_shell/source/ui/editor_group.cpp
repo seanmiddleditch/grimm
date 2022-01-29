@@ -11,8 +11,10 @@
 
 up::shell::EditorGroup::EditorGroup(Actions& actions) : _actions(actions) {
     _documentWindowClass.ClassId = narrow_cast<ImU32>(reinterpret_cast<uintptr_t>(this));
+    _documentWindowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_NoSplit;
+    _documentWindowClass.TabItemFlagsOverrideSet = ImGuiTabItemFlags_NoCloseWithMiddleMouseButton;
     _documentWindowClass.DockingAllowUnclassed = false;
-    _documentWindowClass.DockingAlwaysTabBar = true;
+    _documentWindowClass.DockingAlwaysTabBar = false;
 }
 
 up::shell::EditorGroup::~EditorGroup() = default;
@@ -34,8 +36,7 @@ void up::shell::EditorGroup::update(Renderer& renderer, float deltaTime) {
         _editors[index]->tick(deltaTime);
     }
 
-    auto const dockspaceId = ImGui::GetID("EditorDockspace");
-    ImGui::DockSpace(dockspaceId, {}, ImGuiDockNodeFlags_NoWindowMenuButton, &_documentWindowClass);
+    auto const dockspaceId = ImGui::DockSpaceOverViewport(nullptr, 0, &_documentWindowClass);
 
     for (auto index : sequence(_editors.size())) {
         Editor* editor = _editors[index].get();

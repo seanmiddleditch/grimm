@@ -38,13 +38,15 @@ namespace up::shell {
         using PanelId = ImGuiID;
         using EditorId = uint64;
 
+        enum class PanelDir { Right, RightLower, Left, LeftLower, Bottom };
+
         struct Panel {
             string title;
             string imguiLabel;
             bool open = true;
             PanelUpdate update;
             ImGuiID id = 0;
-            ImGuiID dockId = 0;
+            PanelDir initialDir = PanelDir::Right;
         };
 
         virtual ~Editor() = default;
@@ -79,32 +81,30 @@ namespace up::shell {
         bool isActive() const noexcept { return _active; }
         void activate(bool active, Actions& actions);
 
+        void resetLayout() noexcept { _wantReset = true; }
+
     protected:
         explicit Editor(zstring_view className);
 
         ImGuiWindowClass const& panelWindowClass() const noexcept { return _panelClass; }
         ImGuiWindowClass const& contentWindowClass() const noexcept { return _contentClass; }
 
-        auto addPanel(string title, PanelUpdate update) -> PanelId;
-        void dockPanel(PanelId panelId, ImGuiDir dir, PanelId otherId, float size);
-        auto contentId() const noexcept { return _dockId; }
+        void addPanel(string title, PanelDir dir, PanelUpdate update);
+
         void addAction(ActionDesc action) { _actions.addAction(std::move(action)); }
 
         /// @brief Renders the ui for the Document.
-        virtual void configure() = 0;
         virtual void content() = 0;
         virtual bool hasMenu() { return false; }
         virtual bool handleClose() { return true; }
 
     private:
-        void _content();
-
         ImGuiWindowClass _panelClass;
         ImGuiWindowClass _contentClass;
-        ImGuiID _dockId = 0;
 
         vector<box<Panel>> _panels;
         ActionGroup _actions;
+        bool _wantReset = false;
         bool _wantClose = false;
         bool _closed = false;
         bool _active = false;

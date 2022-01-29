@@ -20,14 +20,14 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-auto up::shell::createGameEditor(box<Space> space) -> box<Editor> {
-    return new_box<GameEditor>(std::move(space));
-}
-
-void up::shell::GameEditor::configure() {
+up::shell::GameEditor::GameEditor(box<Space> space) : Editor("GameEditor"_zsv), _space(std::move(space)) {
     addAction({.command = "Play / Pause", .menu = "Actions\\Play/Pause", .hotKey = "F5", .action = [this] {
                    _paused = !_paused;
                }});
+}
+
+auto up::shell::createGameEditor(box<Space> space) -> box<Editor> {
+    return new_box<GameEditor>(std::move(space));
 }
 
 void up::shell::GameEditor::content() {
