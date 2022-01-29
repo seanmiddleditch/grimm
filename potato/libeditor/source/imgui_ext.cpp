@@ -127,6 +127,8 @@ bool ImGui::Potato::IsModifierDown(ImGuiKeyModFlags modifiers) noexcept {
     return (io.KeyMods & modifiers) == modifiers;
 }
 
+ImGuiViewport* ImGui::Potato::FindViewport(ImGuiID viewportId) noexcept;
+
 bool ImGui::Potato::InputVec3(char const* label, glm::vec3& value, char const* format, ImGuiInputTextFlags flags) {
     return ImGui::InputFloat3(label, &value.x, format, flags);
 }

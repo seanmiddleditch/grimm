@@ -97,15 +97,20 @@ namespace up {
             return npos;
         }
 
+        constexpr friend std::strong_ordering operator<=>(zstring_view lhs, zstring_view rhs) noexcept {
+            auto rs = zstringCompare(lhs._str, rhs._str);
+            return rs <=> 0;
+        }
+
         friend constexpr bool operator==(zstring_view lhs, zstring_view rhs) noexcept {
-            size_type lhsSize = lhs.size();
-            size_type rhsSize = rhs.size();
+            auto const lhsSize = lhs.size();
+            auto const rhsSize = rhs.size();
             return lhsSize == rhsSize && stringCompare(lhs._str, rhs._str, lhsSize) == 0;
         }
 
         friend constexpr bool operator==(zstring_view lhs, pointer rhs) noexcept {
-            size_type lhsSize = lhs.size();
-            size_type rhsSize = rhs != nullptr ? stringLength(rhs) : 0;
+            auto const lhsSize = lhs.size();
+            auto const rhsSize = rhs != nullptr ? stringLength(rhs) : 0;
             return lhsSize == rhsSize && stringCompare(lhs._str, rhs, lhsSize) == 0;
         }
 

@@ -7,8 +7,6 @@
 #include "potato/spud/find.h"
 #include "potato/spud/sequence.h"
 
-#include <algorithm>
-
 namespace up {
     EntityManager::EntityManager() = default;
     EntityManager::~EntityManager() = default;

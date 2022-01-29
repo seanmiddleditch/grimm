@@ -2,6 +2,7 @@
 
 #include "material_editor.h"
 
+#include "potato/editor/editor_manager.h"
 #include "potato/editor/icons.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/reflex/serialize.h"
@@ -12,24 +13,24 @@
 
 namespace up::shell {
     namespace {
-        class MaterialEditorFactory : public EditorFactory {
+        class MaterialEditorFactory : public EditorFactory<MaterialEditor> {
         public:
             MaterialEditorFactory(AssetLoader& assetLoader) : _assetLoader(assetLoader) { }
 
-            zstring_view editorName() const noexcept override { return MaterialEditor::editorName; }
-
-            box<Editor> createEditorForDocument(zstring_view filename) override {
-                if (auto [rs, text] = fs::readText(filename); rs == IOResult::Success) {
+            box<EditorBase> createEditor(EditorParams const& params) override {
+                if (auto [rs, text] = fs::readText(params.documentPath); rs == IOResult::Success) {
                     nlohmann::json jsonDoc = nlohmann::json::parse(text);
                     auto material = new_box<schema::Material>();
                     if (reflex::decodeFromJson(jsonDoc, *material)) {
-                        return new_box<MaterialEditor>(_assetLoader, std::move(material), string(filename));
+                        return new_box<MaterialEditor>(
+                            params,
+                            _assetLoader,
+                            std::move(material),
+                            string(params.documentPath));
                     }
                 }
                 return nullptr;
             }
-
-            box<Editor> createEditor() override { return nullptr; }
 
         private:
             AssetLoader& _assetLoader;
@@ -37,19 +38,23 @@ namespace up::shell {
     } // namespace
 } // namespace up::shell
 
-up::shell::MaterialEditor::MaterialEditor(AssetLoader& assetLoader, box<schema::Material> material, string filename)
-    : Editor(editorName)
+up::shell::MaterialEditor::MaterialEditor(
+    EditorParams const& params,
+    AssetLoader& assetLoader,
+    box<schema::Material> material,
+    string filename)
+    : Editor(params)
     , _assetLoader(assetLoader)
     , _material(std::move(material))
     , _filename(std::move(filename)) {
     _propertyGrid.bindResourceLoader(&_assetLoader);
 }
 
-auto up::shell::MaterialEditor::createFactory(AssetLoader& assetLoader) -> box<EditorFactory> {
-    return new_box<MaterialEditorFactory>(assetLoader);
+void up::shell::MaterialEditor::addFactory(EditorManager& editors, AssetLoader& assetLoader) {
+    editors.addFactory<MaterialEditorFactory>(assetLoader);
 }
 
-void up::shell::MaterialEditor::content() {
+void up::shell::MaterialEditor::content(CommandManager&) {
     ImGui::BeginGroup();
     if (ImGui::IconButton("Save", ICON_FA_SAVE)) {
         _save();

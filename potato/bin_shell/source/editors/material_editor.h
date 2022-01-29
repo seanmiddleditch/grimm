@@ -2,29 +2,31 @@
 
 #pragma once
 
+#include "potato/editor/editor.h"
 #include "potato/editor/property_grid.h"
 #include "potato/schema/material_schema.h"
-#include "potato/shell/editor.h"
 
 namespace up {
     class AssetLoader;
 } // namespace up
 
 namespace up::shell {
-    class MaterialEditor final : public Editor {
+    class MaterialEditor final : public Editor<MaterialEditor> {
     public:
-        static constexpr zstring_view editorName = "potato.editor.material"_zsv;
+        static constexpr EditorTypeId editorTypeId{"potato.editor.material"};
 
-        MaterialEditor(AssetLoader& assetLoader, box<schema::Material> material, string filename);
+        MaterialEditor(
+            EditorParams const& params,
+            AssetLoader& assetLoader,
+            box<schema::Material> material,
+            string filename);
 
-        static auto createFactory(AssetLoader& assetLoader) -> box<EditorFactory>;
+        static void addFactory(EditorManager& editors, AssetLoader& assetLoader);
 
         zstring_view displayName() const override { return "Material"_zsv; }
-        zstring_view editorClass() const override { return editorName; }
-        EditorId uniqueId() const override { return hash_value(this); }
 
     private:
-        void content() override;
+        void content(CommandManager&) override;
 
         void _save();
 

@@ -45,7 +45,7 @@ target_sources(potato_spud_test PRIVATE
     "tests/test_string_writer.cpp"
     "tests/test_vector.cpp"
     "tests/test_zstring_view.cpp"
-)
+ "include/potato/spud/key.h" "include/potato/spud/static_id.h")
 
 target_link_libraries(potato_spud INTERFACE
     nanofmt::nanofmt

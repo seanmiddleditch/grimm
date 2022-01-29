@@ -3,10 +3,11 @@
 #include "asset_browser.h"
 
 #include "potato/editor/desktop.h"
+#include "potato/editor/editor.h"
+#include "potato/editor/editor_manager.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/editor/imgui_fonts.h"
 #include "potato/recon/recon_client.h"
-#include "potato/shell/editor.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/path.h"
 #include "potato/runtime/resource_manifest.h"
@@ -29,7 +30,7 @@ namespace up {
 
 namespace up::shell {
     namespace {
-        class AssetBrowserFactory : public EditorFactory {
+        class AssetBrowserFactory : public EditorFactory<AssetBrowser> {
         public:
             AssetBrowserFactory(
                 AssetLoader& assetLoader,
@@ -41,13 +42,9 @@ namespace up::shell {
                 , _assetEditService(assetEditService)
                 , _onFileSelected(std::move(onFileSelected)) { }
 
-            zstring_view editorName() const noexcept override { return AssetBrowser::editorName; }
-
-            box<Editor> createEditor() override {
-                return new_box<AssetBrowser>(_assetLoader, _reconClient, _assetEditService, _onFileSelected);
+            box<EditorBase> createEditor(EditorParams const& params) override {
+                return new_box<AssetBrowser>(params, _assetLoader, _reconClient, _assetEditService, _onFileSelected);
             }
-
-            box<Editor> createEditorForDocument(zstring_view) override { return nullptr; }
 
         private:
             AssetLoader& _assetLoader;
@@ -59,11 +56,12 @@ namespace up::shell {
 } // namespace up::shell
 
 up::shell::AssetBrowser::AssetBrowser(
+    EditorParams const& params,
     AssetLoader& assetLoader,
     ReconClient& reconClient,
     AssetEditService& assetEditService,
     OnFileSelected& onFileSelected)
-    : Editor("AssetBrowser"_zsv)
+    : Editor(params)
     , _assetLoader(assetLoader)
     , _assetEditService(assetEditService)
     , _reconClient(reconClient)
@@ -71,15 +69,16 @@ up::shell::AssetBrowser::AssetBrowser(
     _rebuild();
 }
 
-auto up::shell::AssetBrowser::createFactory(
+void up::shell::AssetBrowser::addFactory(
+    EditorManager& editors,
     AssetLoader& assetLoader,
     ReconClient& reconClient,
     AssetEditService& assetEditService,
-    AssetBrowser::OnFileSelected onFileSelected) -> box<EditorFactory> {
-    return new_box<AssetBrowserFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
+    AssetBrowser::OnFileSelected onFileSelected) {
+    editors.addFactory<AssetBrowserFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
 }
 
-void up::shell::AssetBrowser::content() {
+void up::shell::AssetBrowser::content(CommandManager&) {
     if (_manifestRevision != _assetLoader.manifestRevision()) {
         _rebuild();
     }

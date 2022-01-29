@@ -3,7 +3,7 @@
 #pragma once
 
 #include "potato/editor/asset_edit_service.h"
-#include "potato/shell/editor.h"
+#include "potato/editor/editor.h"
 #include "potato/shell/selection.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/uuid.h"
@@ -20,31 +20,31 @@ namespace up {
 }
 
 namespace up::shell {
-    class AssetBrowser : public Editor {
+    class AssetBrowser final : public Editor<AssetBrowser> {
     public:
-        static constexpr zstring_view editorName = "potato.editor.asset_browser"_zsv;
+        static constexpr EditorTypeId editorTypeId{"potato.editor.asset_browser"};
 
         using OnFileSelected = delegate<void(UUID const& uuid)>;
 
         AssetBrowser(
+            EditorParams const& params,
             AssetLoader& assetLoader,
             ReconClient& reconClient,
             AssetEditService& assetEditService,
             OnFileSelected& onFileSelected);
 
         zstring_view displayName() const override { return "Assets"; }
-        zstring_view editorClass() const override { return editorName; }
-        EditorId uniqueId() const override { return hash_value("/"); }
 
-        static box<EditorFactory> createFactory(
+        static void addFactory(
+            EditorManager& editors,
             AssetLoader& assetLoader,
             ReconClient& reconClient,
             AssetEditService& assetEditService,
             AssetBrowser::OnFileSelected onFileSelected);
 
     protected:
-        void content() override;
-        bool isClosable() override { return false; }
+        void content(CommandManager&) override;
+        bool isCloseable() override { return false; }
 
     private:
         struct Entry {

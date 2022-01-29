@@ -6,6 +6,8 @@
 #include "int_types.h"
 #include "platform.h"
 
+#include <cstring>
+
 namespace up {
     constexpr size_t stringLength(char const* str) noexcept { return __builtin_strlen(str); }
 
@@ -21,6 +23,31 @@ namespace up {
 
     constexpr int stringCompare(char const* left, char const* right, size_t length) noexcept {
         return __builtin_memcmp(left, right, length);
+    }
+
+    constexpr int zstringCompare(char const* left, char const* right) noexcept {
+        if (std::is_constant_evaluated()) {
+            for (;;) {
+                char const l = *left;
+                char const r = *right;
+
+                if (l < r) { // also if l is 0 before r
+                    return -1;
+                }
+                else if (r < l) { // also if r is 0 before l
+                    return 1;
+                }
+                else if (l == '\0') { // r must also be 0 in this case
+                    return 0;
+                }
+
+                ++left;
+                ++right;
+            }
+        }
+        else {
+            return std::strcmp(left, right);
+        }
     }
 
     constexpr char const* stringFindChar(char const* str, size_t length, char ch) noexcept {

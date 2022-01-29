@@ -517,7 +517,7 @@ namespace up {
     //       likewise, ["a", "bc"] will hash the same as ["ab", "c"]
 
     template <typename HashAlgorithm, typename ValueT>
-    inline auto& hash_append(HashAlgorithm& hasher, vector<ValueT> const& container) {
+    constexpr auto& hash_append(HashAlgorithm& hasher, vector<ValueT> const& container) {
         if constexpr (is_contiguous_v<ValueT>) {
             hasher.append_bytes({container.data(), container.size() * sizeof(ValueT)});
         }

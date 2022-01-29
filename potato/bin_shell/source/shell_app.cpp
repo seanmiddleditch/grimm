@@ -27,6 +27,7 @@
 #include "potato/render/shader.h"
 #include "potato/schema/recon_messages_schema.h"
 #include "potato/schema/scene_schema.h"
+#include "potato/shell/commands.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"
 #include "potato/runtime/path.h"
@@ -58,7 +59,147 @@
 #    undef Success
 #endif
 
-up::shell::ShellApp::ShellApp() : _editors(_actions), _logger("shell") { }
+namespace up {
+    namespace {
+        struct QuitCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.quit"},
+                .displayName = "Quit",
+                .icon = ICON_FA_DOOR_OPEN,
+                .hotkey = "Alt+F4",
+                .menu = "File\\Quit::z_quit"};
+        };
+
+        struct OpenProjectCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.project.open"},
+                .displayName = "Open Project",
+                .icon = ICON_FA_FOLDER_OPEN,
+                .hotkey = "Alt+Shift+O",
+                .menu = "File\\Open Project::3_project::100"};
+        };
+
+        struct CloseProjectCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.project.close"},
+                .displayName = "Close Project",
+                .menu = "File\\Close Project::3_project::1100"};
+        };
+
+        struct ShowLogsCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.editor.logs"},
+                .displayName = "Show Logs",
+                .icon = ICON_FA_FOLDER_OPEN,
+                .hotkey = "Alt+Shift+L",
+                .menu = "View\\Logs::3_project::100"};
+        };
+
+        struct ImportResourcesCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.project.import"},
+                .displayName = "Import Resources",
+                .icon = ICON_FA_FILE_IMPORT,
+                .menu = "File\\Import Resources::3_project::120"};
+        };
+
+        struct ShowAboutCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.editor.about"},
+                .displayName = "Show About",
+                .icon = ICON_FA_QUESTION_CIRCLE,
+                .menu = "Help\\About"};
+        };
+
+        struct CommandPaletteCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.editor.command-palette.open"},
+                .displayName = "Commands",
+                .icon = ICON_FA_TERMINAL,
+                .hotkey = "Ctrl+Shift+P",
+                .menu = "Edit\\Commands"};
+        };
+
+        struct QuitHandler final : CommandHandler<QuitCommand> {
+            QuitHandler(shell::ShellApp& app) : _app(app) { }
+
+            void invoke(QuitCommand const& cmd) override { _app.quit(); }
+
+        private:
+            shell::ShellApp& _app;
+        };
+
+        struct OpenProjectHandler final : CommandHandler<OpenProjectCommand> {
+            OpenProjectHandler(shell::ShellApp& app) : _app(app) { }
+
+            void invoke(OpenProjectCommand const& cmd) override { _app.openProject(); }
+
+        private:
+            shell::ShellApp& _app;
+        };
+
+        struct CloseProjectHandler final : CommandHandler<CloseProjectCommand> {
+            CloseProjectHandler(shell::ShellApp& app) : _app(app) { }
+
+            void invoke(CloseProjectCommand const& cmd) override { _app.closeProject(); }
+
+        private:
+            shell::ShellApp& _app;
+        };
+
+        struct ShowLogsHandler final : CommandHandler<ShowLogsCommand> {
+            ShowLogsHandler(EditorManager& editors) : _editors(editors) { }
+
+            void invoke(ShowLogsCommand const&) override { _editors.openEditor(shell::LogWindow::editorTypeId); }
+
+        private:
+            EditorManager& _editors;
+        };
+
+        struct ImportResourcesHandler final : CommandHandler<ImportResourcesCommand> {
+            ImportResourcesHandler(shell::ShellApp& app) : _app(app) { }
+
+            void invoke(ImportResourcesCommand const& cmd) override { _app.importResources(); }
+
+        private:
+            shell::ShellApp& _app;
+        };
+
+        struct ShowAboutHandler final : CommandHandler<ShowAboutCommand> {
+            ShowAboutHandler(shell::ShellApp& app) : _app(app) { }
+
+            void invoke(ShowAboutCommand const& cmd) override { _app.showAboutDialog(); }
+
+        private:
+            shell::ShellApp& _app;
+        };
+
+        struct CommandPaletteHandler final : CommandHandler<CommandPaletteCommand> {
+            CommandPaletteHandler(EditorManager& editors) : _editors(editors) { }
+
+            void invoke(CommandPaletteCommand const&) override { _editors.showPalette(); }
+
+        private:
+            EditorManager& _editors;
+        };
+
+        struct PlaySceneHandler final : CommandHandler<shell::PlaySceneCommand> {
+            PlaySceneHandler(AudioEngine& audio, EditorManager& editors) : _audio(audio), _editors(editors) { }
+
+            void invoke(shell::PlaySceneCommand const& cmd) override {
+                _editors.createEditor<shell::GameEditor>(
+                    _audio,
+                    std::move(const_cast<shell::PlaySceneCommand&>(cmd).space));
+            }
+
+        private:
+            AudioEngine& _audio;
+            EditorManager& _editors;
+        };
+    } // namespace
+} // namespace up
+
+up::shell::ShellApp::ShellApp() : _logger("shell") { }
 
 up::shell::ShellApp::~ShellApp() {
     _renderer.reset();
@@ -106,98 +247,6 @@ int up::shell::ShellApp::initialize() {
         auto& style = ImGui::GetStyle();
         style.WindowMenuButtonPosition = ImGuiDir_None;
     }
-
-    _appActions.addAction(
-        {.name = "potato.quit",
-         .command = "Quit",
-         .menu = "File\\Quit",
-         .icon = ICON_FA_DOOR_OPEN,
-         .group = "z_quit",
-         .hotKey = "Alt+F4",
-         .action = [this] {
-             _running = false;
-         }});
-    _appActions.addAction(
-        {.name = "potato.project.open",
-         .command = "Open Project",
-         .menu = "File\\Open Project",
-         .icon = ICON_FA_FOLDER_OPEN,
-         .group = "3_project",
-         .priority = 100,
-         .hotKey = "Alt+Shift+O",
-         .action = [this] {
-             _openProject = true;
-             _closeProject = true;
-         }});
-    _appActions.addAction(
-        {.name = "potato.project.import",
-         .command = "Import Resources",
-         .menu = "File\\Import Resources",
-         .icon = ICON_FA_FILE_IMPORT,
-         .group = "3_project",
-         .priority = 120,
-         .action = [this] {
-             _executeRecon();
-         }});
-    _appActions.addAction(
-        {.name = "potato.project.close",
-         .command = "Close Project",
-         .menu = "File\\Close Project",
-         .group = "3_project",
-         .priority = 1100,
-         .enabled = [this] { return _project != nullptr; },
-         .action =
-             [this] {
-                 _closeProject = true;
-             }});
-    _appActions.addAction(
-        {.name = "potato.assets.newScene",
-         .command = "New Scene",
-         .menu = "File\\New\\Scene",
-         .icon = ICON_FA_IMAGE,
-         .group = "1_new",
-         .enabled = [this]() { return _project != nullptr; },
-         .action =
-             [this] {
-                 _createScene();
-             }});
-    _appActions.addAction(
-        {.name = "potato.editor.about", .menu = "Help\\About", .icon = ICON_FA_QUESTION_CIRCLE, .action = [this] {
-             _aboutDialog = true;
-         }});
-    _appActions.addAction(
-        {.name = "potato.editor.logs",
-         .menu = "View\\Logs",
-         .icon = ICON_FA_INFO,
-         .hotKey = "Alt+Shift+L",
-         .action = [this] {
-             _openEditor(LogWindow::editorName);
-         }});
-    _appActions.addAction(
-        {.name = "potato.editor.closeActive"_s,
-         .menu = "File\\Close Document"_s,
-         .group = "7_document"_s,
-         .hotKey = "Ctrl+W"_s,
-         .enabled = [this]() { return _editors.canCloseActive(); },
-         .action =
-             [this] {
-                 _editors.closeActive();
-             }});
-
-    _actions.addGroup(&_appActions);
-
-    _menu.addMenu({.menu = "File"_sv, .group = "1_file"_sv});
-    _menu.addMenu({.menu = "File\\New"_sv, .group = "2_new"_sv});
-    _menu.addMenu({.menu = "File\\Settings"_sv, .group = "9_settings"_sv});
-    _menu.addMenu({.menu = "Edit"_sv, .group = "3_edit"_sv});
-    _menu.addMenu({.menu = "View"_sv, .group = "5_view"_sv});
-    _menu.addMenu({.menu = "View\\Options"_sv, .group = "5_options"_sv});
-    _menu.addMenu({.menu = "View\\Panels"_sv, .group = "3_panels"_sv});
-    _menu.addMenu({.menu = "Actions"_sv, .group = "7_actions"_sv});
-    _menu.addMenu({.menu = "Help"_sv, .group = "9_help"_sv});
-
-    _menu.bindActions(_actions);
-    _palette.bindActions(_actions);
 
     _window = SDL_CreateWindow(
         "loading",
@@ -284,20 +333,34 @@ int up::shell::ShellApp::initialize() {
     _sceneDatabase.registerComponent<DingEditComponent>();
     _sceneDatabase.registerComponent<BodyEditComponent>();
 
-    _editorFactories.push_back(
-        AssetBrowser::createFactory(_assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
-            _openAssetEditor(uuid);
-        }));
-    _editorFactories.push_back(
-        SceneEditor::createFactory(_sceneDatabase, _assetLoader, [this](SceneDocument const& doc) {
-            auto space = new_box<Space>();
-            Space::addDemoSystem(*space, *_audio);
-            doc.syncGame(*space);
-            space->start();
-            _createGame(std::move(space));
-        }));
-    _editorFactories.push_back(MaterialEditor::createFactory(_assetLoader));
-    _editorFactories.push_back(LogWindow::createFactory(_logHistory));
+    AssetBrowser::addFactory(_editors, _assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
+        _openAssetEditor(uuid);
+    });
+    SceneEditor::addFactory(_editors, _sceneDatabase, _assetLoader);
+    MaterialEditor::addFactory(_editors, _assetLoader);
+    LogWindow::addFactory(_editors, _logHistory);
+    GameEditor::addFactory(_editors, *_audio);
+
+    _commands.addCommand<QuitCommand>();
+    _commands.addCommand<OpenProjectCommand>();
+    _commands.addCommand<CloseProjectCommand>();
+    _commands.addCommand<ShowLogsCommand>();
+    _commands.addCommand<ImportResourcesCommand>();
+    _commands.addCommand<ShowAboutCommand>();
+    _commands.addCommand<CommandPaletteCommand>();
+
+    _commandScope.addHandler<QuitHandler>(*this);
+    _commandScope.addHandler<OpenProjectHandler>(*this);
+    _commandScope.addHandler<CloseProjectHandler>(*this);
+    _commandScope.addHandler<ShowLogsHandler>(_editors);
+    _commandScope.addHandler<ImportResourcesHandler>(*this);
+    _commandScope.addHandler<ShowAboutHandler>(*this);
+    _commandScope.addHandler<CommandPaletteHandler>(_editors);
+    _commandScope.addHandler<PlaySceneHandler>(*_audio, _editors);
+
+    EditorManager::addCommands(_commands);
+    GameEditor::addCommands(_commands);
+    SceneEditor::addCommands(_commands);
 
     if (!settings.project.empty()) {
         _loadProject(settings.project);
@@ -314,6 +377,9 @@ bool up::shell::ShellApp::_selectAndLoadProject(zstring_view folder) {
     }
     if (result == NFD_ERROR) {
         _logger.error("NDF_OpenDialog error: {}", NFD_GetError());
+        return false;
+    }
+    if (result == NFD_CANCEL || selectedPath == nullptr) {
         return false;
     }
     bool success = _loadProject(selectedPath);
@@ -344,7 +410,7 @@ bool up::shell::ShellApp::_loadProject(zstring_view path) {
     _loadManifest();
 
     _editors.closeAll();
-    _openEditor(AssetBrowser::editorName);
+    _editors.openEditor(AssetBrowser::editorTypeId);
     _updateTitle();
 
     if (!_reconClient.start(_ioLoop, _project->resourceRootPath())) {
@@ -353,30 +419,6 @@ bool up::shell::ShellApp::_loadProject(zstring_view path) {
     _reconClient.on<ReconManifestMessage>([this](auto const&) { _loadManifest(); });
 
     return true;
-}
-
-void up::shell::ShellApp::_openEditor(zstring_view editorName) {
-    for (auto const& factory : _editorFactories) {
-        if (factory->editorName() == editorName) {
-            auto editor = factory->createEditor();
-            if (editor != nullptr) {
-                _editors.open(std::move(editor));
-            }
-            return;
-        }
-    }
-}
-
-void up::shell::ShellApp::_openEditorForDocument(zstring_view editorName, zstring_view filename) {
-    for (auto const& factory : _editorFactories) {
-        if (factory->editorName() == editorName) {
-            auto editor = factory->createEditorForDocument(filename);
-            if (editor != nullptr) {
-                _editors.open(std::move(editor));
-            }
-            return;
-        }
-    }
 }
 
 void up::shell::ShellApp::run() {
@@ -390,8 +432,6 @@ void up::shell::ShellApp::run() {
 
     constexpr double nano_to_seconds = 1.0 / 1000000000.0;
 
-    uint64 hotKeyRevision = 0;
-
     while (isRunning()) {
         ZoneScopedN("Main Loop");
 
@@ -400,16 +440,6 @@ void up::shell::ShellApp::run() {
         {
             ZoneScopedN("I/O");
             _ioLoop.run(IORun::Poll);
-        }
-
-        if (!_actions.refresh(hotKeyRevision)) {
-            ZoneScopedN("Rebuild Actions");
-            _hotKeys.clear();
-            _actions.build([this](ActionId id, ActionDesc const& action) {
-                if (!action.hotKey.empty()) {
-                    _hotKeys.addHotKey(action.hotKey, id);
-                }
-            });
         }
 
         _processEvents();
@@ -456,6 +486,23 @@ void up::shell::ShellApp::quit() {
     _running = false;
 }
 
+void up::shell::ShellApp::openProject() {
+    _openProject = true;
+    _closeProject = true;
+}
+
+void up::shell::ShellApp::closeProject() {
+    _closeProject = true;
+}
+
+void up::shell::ShellApp::importResources() {
+    _executeRecon();
+}
+
+void up::shell::ShellApp::showAboutDialog() {
+    _aboutDialog = true;
+}
+
 void up::shell::ShellApp::_onWindowClosed() {
     quit();
 }
@@ -490,7 +537,6 @@ void up::shell::ShellApp::_processEvents() {
 
     SDL_Event ev;
     while (_running && SDL_PollEvent(&ev) > 0) {
-        bool const inputHandled = _device->handleImguiEvent(ev);
         switch (ev.type) {
             case SDL_QUIT:
                 quit();
@@ -509,18 +555,20 @@ void up::shell::ShellApp::_processEvents() {
                     case SDL_WINDOWEVENT_EXPOSED:
                         break;
                 }
+                _device->handleImguiEvent(ev);
                 break;
             case SDL_KEYDOWN:
-                if (!inputHandled) {
-                    (void)_hotKeys.evaluateKey(ev.key.keysym.sym, ev.key.keysym.mod, [this](auto id) {
-                        return _actions.tryInvoke(id);
-                    });
+                _commands.pushScope(_commandScope);
+                if (!_editors.evaluateHotkey(_commands, ev.key.keysym.sym, ev.key.keysym.mod)) {
+                    _device->handleImguiEvent(ev);
                 }
+                _commands.popScope(_commandScope);
                 break;
             case SDL_MOUSEBUTTONUP:
             case SDL_MOUSEMOTION:
             case SDL_MOUSEWHEEL:
             default:
+                _device->handleImguiEvent(ev);
                 break;
         }
     }
@@ -538,8 +586,9 @@ void up::shell::ShellApp::_render() {
 void up::shell::ShellApp::_displayUI() {
     ZoneScopedN("Shell UI");
 
-    _displayMainMenu();
-    _displayDocuments();
+    _commands.pushScope(_commandScope);
+
+    _editors.update(*_renderer, _commands, _lastFrameTime);
 
     if (_aboutDialog) {
         ImGui::SetNextWindowSizeConstraints({400, 300}, {});
@@ -548,29 +597,7 @@ void up::shell::ShellApp::_displayUI() {
         ImGui::End();
     }
 
-    _palette.drawPalette();
-}
-
-void up::shell::ShellApp::_displayMainMenu() {
-    _menu.drawMenu();
-
-    if (ImGui::BeginMainMenuBar()) {
-        {
-            auto micro = std::chrono::duration_cast<std::chrono::microseconds>(_lastFrameDuration).count();
-
-            char buffer[128] = {};
-            nanofmt::format_to(buffer, "{}us | FPS {}", micro, static_cast<int>(1.f / _lastFrameTime));
-            auto const textWidth = ImGui::CalcTextSize(buffer).x;
-            ImGui::SameLine(ImGui::GetWindowSize().x - textWidth - 2 * ImGui::GetStyle().FramePadding.x);
-            ImGui::Text("%s", buffer);
-        }
-
-        ImGui::EndMainMenuBar();
-    }
-}
-
-void up::shell::ShellApp::_displayDocuments() {
-    _editors.update(*_renderer, _lastFrameTime);
+    _commands.popScope(_commandScope);
 }
 
 void up::shell::ShellApp::_errorDialog(zstring_view message) {
@@ -602,23 +629,15 @@ void up::shell::ShellApp::_openAssetEditor(UUID const& uuid) {
         return;
     }
 
-    zstring_view const editor = _assetEditService.findInfoForAssetTypeHash(assetTypeHash).editor;
-    if (!editor.empty()) {
-        _openEditorForDocument(editor, assetPath);
+    EditorTypeId const editor = _assetEditService.findInfoForAssetTypeHash(assetTypeHash).editor;
+    if (editor.valid()) {
+        _editors.openEditorForDocument(editor, assetPath);
     }
     else {
         if (!desktop::openInExternalEditor(assetPath)) {
             _logger.error("Failed to open application for asset: {}", assetPath);
         }
     }
-}
-
-void up::shell::ShellApp::_createScene() {
-    _openEditor(SceneEditor::editorName);
-}
-
-void up::shell::ShellApp::_createGame(box<Space> space) {
-    _editors.open(createGameEditor(std::move(space)));
 }
 
 void up::shell::ShellApp::_executeRecon() {
