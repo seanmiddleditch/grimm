@@ -102,7 +102,6 @@ namespace up::shell {
         HotKeys _hotKeys;
         EditorGroup _editors;
         vector<box<EditorFactory>> _editorFactories;
-        int _lastCursor = -1;
         Logger _logger;
         float _lastFrameTime = 0.f;
         std::chrono::nanoseconds _lastFrameDuration = {};
