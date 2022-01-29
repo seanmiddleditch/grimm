@@ -38,13 +38,7 @@ namespace up::shell {
         using PanelId = ImGuiID;
         using EditorId = uint64;
 
-        enum class PanelDir {
-            Right,
-            RightLower,
-            Left,
-            LeftLower,
-            Bottom
-        };
+        enum class PanelDir { Right, RightLower, Left, LeftLower, Bottom };
 
         struct Panel {
             string title;
@@ -105,7 +99,6 @@ namespace up::shell {
         virtual bool handleClose() { return true; }
 
     private:
-
         ImGuiWindowClass _panelClass;
         ImGuiWindowClass _contentClass;
 
