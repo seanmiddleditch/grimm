@@ -241,6 +241,8 @@ int up::shell::ShellApp::initialize() {
             ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_ViewportsEnable;
         io.ConfigInputTextCursorBlink = true;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
+        io.ConfigViewportsNoAutoMerge = true;
+        io.ConfigDockingTransparentPayload = true;
 
         auto& style = ImGui::GetStyle();
         style.WindowMenuButtonPosition = ImGuiDir_None;
