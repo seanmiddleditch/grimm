@@ -2,8 +2,10 @@
 
 #include "log_window.h"
 
+#include "potato/editor/editor_manager.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/shell/log_history.h"
+#include "potato/spud/nameof.h"
 #include "potato/spud/utility.h"
 
 #include <imgui.h>
@@ -11,15 +13,13 @@
 
 namespace up::shell {
     namespace {
-        class LogWindowFactory : public EditorFactory {
+        class LogWindowFactory : public EditorFactory<LogWindow> {
         public:
             explicit LogWindowFactory(LogHistory& history) : _history(history) { }
 
-            zstring_view editorName() const noexcept override { return LogWindow::editorName; }
-
-            box<Editor> createEditorForDocument(zstring_view filename) override { return nullptr; }
-
-            box<Editor> createEditor() override { return new_box<LogWindow>(_history); }
+            box<EditorBase> createEditor(EditorParams const& params) override {
+                return new_box<LogWindow>(params, _history);
+            }
 
         private:
             LogHistory& _history;
@@ -27,11 +27,11 @@ namespace up::shell {
     } // namespace
 } // namespace up::shell
 
-auto up::shell::LogWindow::createFactory(LogHistory& history) -> box<EditorFactory> {
-    return new_box<LogWindowFactory>(history);
+void up::shell::LogWindow::addFactory(EditorManager& editors, LogHistory& history) {
+    editors.addFactory<LogWindowFactory>(history);
 }
 
-void up::shell::LogWindow::content() {
+void up::shell::LogWindow::content(CommandManager&) {
     auto severityCombo = [this](LogSeverityMask mask, zstring_view label) {
         bool selected = (mask & _mask) == mask;
         if (ImGui::Selectable(label.c_str(), &selected)) {

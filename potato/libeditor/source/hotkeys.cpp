@@ -67,120 +67,93 @@ static constexpr KeyMapNames keyMap[] = {
 };
 static constexpr size_t keyMapSize = sizeof(keyMap) / sizeof(keyMap[0]);
 
-bool up::editor::HotKeys::evaluateKey(int keysym, unsigned mods, delegate_ref<bool(ActionId)> callback) {
-    if (keysym == 0) {
-        return false;
-    }
-
-    // Normalized mods so left-v-right is erased
-    //
-    mods &= KMOD_SHIFT | KMOD_CTRL | KMOD_ALT | KMOD_GUI;
-
-    if (0 != (mods & KMOD_SHIFT)) {
-        mods |= KMOD_SHIFT;
-    }
-    if (0 != (mods & KMOD_CTRL)) {
-        mods |= KMOD_CTRL;
-    }
-    if (0 != (mods & KMOD_ALT)) {
-        mods |= KMOD_ALT;
-    }
-    if (0 != (mods & KMOD_GUI)) {
-        mods |= KMOD_GUI;
-    }
-
-    // Attempt to match the input with registered hot keys
-    //
-    for (auto& key : _hotKeys) {
-        if (key.keycode == keysym && key.mods == mods) {
-            if (callback(key.id)) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-void up::editor::HotKeys::clear() {
-    _hotKeys.clear();
-}
-
-bool up::editor::HotKeys::addHotKey(string_view hotKey, ActionId id) {
-    if (hotKey.empty()) {
-        return false;
-    }
-
-    int keycode = 0;
-    unsigned mods = 0;
-    if (!_compile(hotKey, keycode, mods)) {
-        return false;
-    }
-
-    _hotKeys.push_back(HotKey{.id = id, .keycode = keycode, .mods = mods});
-    return true;
-}
-
-bool up::editor::HotKeys::_compile(string_view input, int& out_key, unsigned& out_mods) const noexcept {
-    out_key = 0;
-    out_mods = 0;
-
-    while (!input.empty()) {
-        if (input.starts_with("Alt+")) {
-            out_mods |= KMOD_ALT;
-            input = input.substr(4);
-            continue;
+namespace up {
+    bool HotKeys::evaluateKey(CommandManager& commands, int keysym, unsigned mods) {
+        if (keysym == 0) {
+            return false;
         }
 
-        if (input.starts_with("Ctrl+")) {
-            out_mods |= KMOD_CTRL;
-            input = input.substr(5);
-            continue;
+        _update(commands);
+
+        // Normalized mods so KMOD_Lblah vs KMOD_Rblah is unimportant;
+        // if either is set, set both
+        //
+        mods &= KMOD_SHIFT | KMOD_CTRL | KMOD_ALT | KMOD_GUI;
+        if (0 != (mods & KMOD_SHIFT)) {
+            mods |= KMOD_SHIFT;
+        }
+        if (0 != (mods & KMOD_CTRL)) {
+            mods |= KMOD_CTRL;
+        }
+        if (0 != (mods & KMOD_ALT)) {
+            mods |= KMOD_ALT;
+        }
+        if (0 != (mods & KMOD_GUI)) {
+            mods |= KMOD_GUI;
         }
 
-        if (input.starts_with("Shift+")) {
-            out_mods |= KMOD_SHIFT;
-            input = input.substr(6);
-            continue;
-        }
-
-        for (size_t index = 0; index != keyMapSize; ++index) {
-            if (keyMap[index].name == input) {
-                out_key = keyMap[index].keycode;
-                return true;
+        // Attempt to match the input with registered hot keys
+        //
+        for (auto& binding : _bindings) {
+            if (binding.keycode == keysym && binding.mods == mods) {
+                if (commands.invoke(binding.id)) {
+                    return true;
+                }
             }
         }
 
         return false;
     }
 
-    return false;
-}
-
-auto up::editor::HotKeys::_stringify(int keycode, unsigned mods) const -> string {
-    string_writer output;
-
-    if (0 != (mods & KMOD_GUI)) {
-        output.append("Gui+");
-    }
-    if (0 != (mods & KMOD_CTRL)) {
-        output.append("Ctrl+");
-    }
-    if (0 != (mods & KMOD_ALT)) {
-        output.append("Alt+");
-    }
-    if (0 != (mods & KMOD_SHIFT)) {
-        output.append("Shift+");
-    }
-
-    for (size_t index = 0; index != keyMapSize; ++index) {
-        if (keyMap[index].keycode == keycode) {
-            output.append(keyMap[index].name);
-            return std::move(output).to_string();
+    void HotKeys::_update(CommandManager& commands) {
+        if (commands.refresh(_version)) {
+            _bindings.clear();
+            commands.each([this](CommandId id, CommandMeta const& meta) {
+                if (!meta.hotkey.empty()) {
+                    int keycode = 0;
+                    unsigned mods = 0;
+                    if (!_compile(meta.hotkey, keycode, mods)) {
+                        return;
+                    }
+                    _bindings.push_back({.id = id, .keycode = keycode, .mods = mods});
+                }
+            });
         }
     }
 
-    output.append("???");
+    bool HotKeys::_compile(string_view input, int& out_key, unsigned& out_mods) const noexcept {
+        out_key = 0;
+        out_mods = 0;
 
-    return std::move(output).to_string();
-}
+        while (!input.empty()) {
+            if (input.starts_with("Alt+")) {
+                out_mods |= KMOD_ALT;
+                input = input.substr(4);
+                continue;
+            }
+
+            if (input.starts_with("Ctrl+")) {
+                out_mods |= KMOD_CTRL;
+                input = input.substr(5);
+                continue;
+            }
+
+            if (input.starts_with("Shift+")) {
+                out_mods |= KMOD_SHIFT;
+                input = input.substr(6);
+                continue;
+            }
+
+            for (size_t index = 0; index != keyMapSize; ++index) {
+                if (keyMap[index].name == input) {
+                    out_key = keyMap[index].keycode;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+} // namespace up

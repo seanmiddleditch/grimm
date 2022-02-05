@@ -4,6 +4,7 @@
 
 #include "_export.h"
 
+#include "potato/editor/editor.h"
 #include "potato/spud/string.h"
 #include "potato/spud/zstring_view.h"
 
@@ -13,7 +14,7 @@ namespace up {
         struct AssetTypeInfo {
             zstring_view name;
             zstring_view extension;
-            zstring_view editor;
+            EditorTypeId editor;
             char const* icon = nullptr;
             uint64 typeHash = 0;
         };

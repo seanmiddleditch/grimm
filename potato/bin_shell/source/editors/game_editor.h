@@ -2,35 +2,43 @@
 
 #pragma once
 
+#include "potato/editor/editor.h"
 #include "potato/game/space.h"
 #include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_resource_view.h"
-#include "potato/shell/editor.h"
 #include "potato/spud/hash.h"
 
 #include <glm/vec2.hpp>
 
 namespace up {
+    class AudioEngine;
     class Space;
     class GpuDevice;
 } // namespace up
 
 namespace up::shell {
-    class GameEditor : public Editor {
+    class GameEditor : public Editor<GameEditor> {
     public:
-        explicit GameEditor(box<Space> space);
+        static constexpr EditorTypeId editorTypeId{"potato.editor.game"};
+
+        explicit GameEditor(EditorParams const& params, AudioEngine& audio, box<Space> space);
+
+        static void addFactory(EditorManager& editors, AudioEngine& audio);
+        static void addCommands(CommandManager& commands);
 
         zstring_view displayName() const override { return "Game"_zsv; }
-        zstring_view editorClass() const override { return "potato.editor.game"_zsv; }
-        EditorId uniqueId() const override { return hash_value(this); }
+
+        void togglePause() noexcept { _paused = !_paused; }
 
     protected:
-        void content() override;
+        void content(CommandManager&) override;
         void tick(float deltaTime) override;
         void render(Renderer& renderer, float deltaTime) override;
         bool hasMenu() override { return true; }
 
     private:
+        struct PlayPauseHandler;
+
         void _resize(GpuDevice& device, glm::ivec2 size);
 
         box<Space> _space;
@@ -41,6 +49,4 @@ namespace up::shell {
         bool _isInputBound = false;
         bool _paused = false;
     };
-
-    auto createGameEditor(box<Space> space) -> box<Editor>;
 } // namespace up::shell

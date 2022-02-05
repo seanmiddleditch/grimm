@@ -1,9 +1,13 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "scene_editor.h"
+#include "game_editor.h"
 
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
+#include "potato/editor/editor.h"
+#include "potato/editor/editor_manager.h"
+#include "potato/editor/imgui_command.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/game/components/camera_component.h"
 #include "potato/game/components/transform_component.h"
@@ -17,7 +21,7 @@
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/editor.h"
+#include "potato/shell/commands.h"
 #include "potato/shell/scene_doc.h"
 #include "potato/shell/selection.h"
 #include "potato/runtime/asset_loader.h"
@@ -33,80 +37,85 @@
 
 namespace up::shell {
     namespace {
-        class SceneEditorFactory : public EditorFactory {
+        class SceneEditorFactory : public EditorFactory<SceneEditor> {
         public:
-            SceneEditorFactory(
-                SceneDatabase& database,
-                AssetLoader& assetLoader,
-                SceneEditor::HandlePlayClicked onPlayClicked)
+            SceneEditorFactory(SceneDatabase& database, AssetLoader& assetLoader)
                 : _database(database)
-                , _assetLoader(assetLoader)
-                , _onPlayClicked(std::move(onPlayClicked)) { }
+                , _assetLoader(assetLoader) { }
 
-            zstring_view editorName() const noexcept override { return SceneEditor::editorName; }
-
-            box<Editor> createEditor() override { return nullptr; }
-
-            box<Editor> createEditorForDocument(zstring_view filename) override {
+            box<EditorBase> createEditor(EditorParams const& params) override {
                 auto space = new_box<Space>();
                 space->start();
-                auto doc = new_box<SceneDocument>(string(filename), _database);
+                auto doc = new_box<SceneDocument>(string(params.documentPath), _database);
 
-#if 0
-                auto material = _assetLoader.loadAssetSync<Material>(
-                    _assetLoader.translate(UUID::fromString("1fe16c8f-6225-f246-9df4-824e34a28913")));
-                if (!material.isSet()) {
-                    return nullptr;
-                }
-
-                auto mesh = _assetLoader.loadAssetSync<Mesh>(
-                    _assetLoader.translate(UUID::fromString("8b589d73-8596-6a45-962b-4816b33d9ca3")));
-                if (!mesh.isSet()) {
-                    return nullptr;
-                }
-
-                auto ding = _assetLoader.loadAssetSync<SoundResource>(
-                    _assetLoader.translate(UUID::fromString("df3a7c47-d06a-cc44-abc4-e928aa4ab035")));
-                if (!ding.isSet()) {
-                    return nullptr;
-                }
-
-                doc->createTestObjects(mesh, material, ding);
-#else
-                if (auto [rs, text] = fs::readText(filename); rs == IOResult::Success) {
+                if (auto [rs, text] = fs::readText(params.documentPath); rs == IOResult::Success) {
                     nlohmann::json jsonDoc = nlohmann::json::parse(text);
                     doc->fromJson(jsonDoc, _assetLoader);
                 }
-#endif
 
-                return new_box<SceneEditor>(
-                    std::move(doc),
-                    std::move(space),
-                    _database,
-                    _assetLoader,
-                    [this](SceneDocument const& doc) { _onPlayClicked(doc); });
+                return new_box<SceneEditor>(params, std::move(doc), std::move(space), _database, _assetLoader);
             }
 
         private:
             SceneDatabase& _database;
             AssetLoader& _assetLoader;
-            SceneEditor::HandlePlayClicked _onPlayClicked;
+        };
+
+        struct PlayCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.editors.scene.commands.play"},
+                .displayName = "Play Scene",
+                .icon = ICON_FA_PLAY,
+                .hotkey = "F5",
+                .menu = "Actions\\Play"};
+        };
+
+        struct ToggleGridCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.editors.scene.commands.toggle_grid"},
+                .displayName = "Toggle Grid",
+                .menu = "View\\Options\\Grid"};
         };
     } // namespace
 
+    struct SceneEditor::PlayCommandHandler final : CommandHandler<PlayCommand> {
+        PlayCommandHandler(SceneEditor& editor) : _editor(editor) { }
+
+        void invoke(CommandManager& commands, PlayCommand&) override {
+            SceneDocument& doc = _editor.document();
+            auto space = new_box<Space>();
+            doc.syncGame(*space);
+            commands.invoke<PlaySceneCommand>(std::move(space));
+        }
+
+    private:
+        SceneEditor& _editor;
+    };
+
+    struct SceneEditor::ToggleGridHandler final : CommandHandler<ToggleGridCommand> {
+        ToggleGridHandler(SceneEditor& editor) : _editor(editor) { }
+
+        CommandStatus status(ToggleGridCommand const&) override {
+            return _editor.hasGrid() ? CommandStatus::Checked : CommandStatus::Default;
+        }
+
+        void invoke(ToggleGridCommand&) override { _editor.toggleGrid(); }
+
+    private:
+        SceneEditor& _editor;
+    };
+
     SceneEditor::SceneEditor(
+        EditorParams const& params,
         box<SceneDocument> sceneDoc,
         box<Space> previewScene,
         SceneDatabase& database,
-        AssetLoader& assetLoader,
-        HandlePlayClicked onPlayClicked)
-        : Editor("SceneEditor"_zsv)
+        AssetLoader& assetLoader)
+        : Editor(params)
         , _previewScene(std::move(previewScene))
         , _doc(std::move(sceneDoc))
-        , _onPlayClicked(std::move(onPlayClicked))
         , _database(database)
         , _assetLoader(assetLoader) {
-        UP_ASSERT(_onPlayClicked);
         _arcball.target = {0, 0, 0};
         _arcball.boomLength = 40.f;
         _arcball.pitch = -glm::quarter_pi<float>();
@@ -114,32 +123,17 @@ namespace up::shell {
         addPanel("Inspector", PanelDir::Right, [this] { _inspector(); });
         addPanel("Hierarchy", PanelDir::Left, [this] { _hierarchy(); });
 
-        addAction(
-            {.name = "potato.editors.scene.actions.play",
-             .command = "Play Scene",
-             .menu = "Actions\\Play",
-             .enabled = [this] { return isActive(); },
-             .action =
-                 [this]() {
-                     _onPlayClicked(*_doc);
-                 }});
-        addAction(
-            {.name = "potato.editors.scene.options.grid.toggle",
-             .command = "Toggle Grid",
-             .menu = "View\\Options\\Grid",
-             .enabled = [this] { return isActive(); },
-             .checked = [this] { return _enableGrid; },
-             .action =
-                 [this]() {
-                     _enableGrid = !_enableGrid;
-                 }});
+        commandScope().addHandler<PlayCommandHandler>(*this);
+        commandScope().addHandler<ToggleGridHandler>(*this);
     }
 
-    auto SceneEditor::createFactory(
-        SceneDatabase& database,
-        AssetLoader& assetLoader,
-        SceneEditor::HandlePlayClicked onPlayClicked) -> box<EditorFactory> {
-        return new_box<SceneEditorFactory>(database, assetLoader, std::move(onPlayClicked));
+    void SceneEditor::addFactory(EditorManager& editors, SceneDatabase& database, AssetLoader& assetLoader) {
+        editors.addFactory<SceneEditorFactory>(database, assetLoader);
+    }
+
+    void SceneEditor::addCommands(CommandManager& commands) {
+        commands.addCommand<PlayCommand>();
+        commands.addCommand<ToggleGridCommand>();
     }
 
     void SceneEditor::tick(float deltaTime) {
@@ -148,12 +142,12 @@ namespace up::shell {
         _previewScene->update(deltaTime);
     }
 
-    void SceneEditor::content() {
+    void SceneEditor::content(CommandManager& commands) {
         auto& io = ImGui::GetIO();
 
         ImGui::BeginGroup();
-        if (ImGui::IconButton("Play", ICON_FA_PLAY)) {
-            _onPlayClicked(*_doc);
+        if (ImGui::CommandButton(commands, PlayCommand::meta.id)) {
+            commands.invoke<PlayCommand>();
         }
         ImGui::SameLine();
         if (ImGui::IconButton("Save", ICON_FA_SAVE)) {

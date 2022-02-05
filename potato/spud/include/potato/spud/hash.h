@@ -15,10 +15,10 @@ namespace up {
     struct uhash;
 
     template <typename HashAlgorithm = default_hash, typename T>
-    constexpr auto hash_value(T const& value) -> typename HashAlgorithm::result_type;
+    constexpr auto hash_value(T const& value);
 
-    template <typename HashAlgorithm = default_hash, size_t N>
-    constexpr auto hash_value(char const (&value)[N]) -> typename HashAlgorithm::result_type;
+    template <typename HashAlgorithm = default_hash>
+    constexpr auto hash_value(char const* value);
 
     template <typename Hash>
     constexpr auto hash_combine(Hash left, Hash right) noexcept -> Hash;
@@ -27,14 +27,11 @@ namespace up {
     struct hash_result;
     template <typename HashAlgorithm, typename Value>
     using hash_result_t = typename hash_result<HashAlgorithm, Value>::type;
-
-    template <typename>
-    class vector;
 } // namespace up
 
 namespace up {
     template <typename HashAlgorithm, typename T>
-    HashAlgorithm& hash_append(HashAlgorithm& hasher, T const& value) noexcept requires is_contiguous_v<T> {
+    constexpr HashAlgorithm& hash_append(HashAlgorithm& hasher, T const& value) noexcept requires is_contiguous_v<T> {
         // NOLINTNEXTLINE(bugprone-sizeof-expression)
         hasher.append_bytes(reinterpret_cast<char const*>(&value), sizeof(value));
         return hasher;
@@ -72,17 +69,17 @@ struct up::uhash {
 };
 
 template <typename HashAlgorithm, typename T>
-constexpr auto up::hash_value(T const& value) -> typename HashAlgorithm::result_type {
+constexpr auto up::hash_value(T const& value) {
     HashAlgorithm hasher{};
     using up::hash_append;
     hash_append(hasher, value);
     return hasher.finalize();
 }
 
-template <typename HashAlgorithm, size_t N>
-constexpr auto up::hash_value(char const (&value)[N]) -> typename HashAlgorithm::result_type {
+template <typename HashAlgorithm>
+constexpr auto up::hash_value(char const* value) {
     HashAlgorithm hasher{};
-    hasher.append_bytes(value, N - 1 /*NUL byte typically present in character literals*/);
+    hasher.append_bytes(value, __builtin_strlen(value));
     return hasher.finalize();
 }
 

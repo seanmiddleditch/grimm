@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "potato/shell/editor.h"
+#include "potato/editor/editor.h"
 #include "potato/runtime/logger.h"
 #include "potato/spud/hash.h"
 #include "potato/spud/rc.h"
@@ -10,22 +10,20 @@
 namespace up::shell {
     class LogHistory;
 
-    class LogWindow : public Editor {
+    class LogWindow : public Editor<LogWindow> {
     public:
-        static constexpr zstring_view editorName = "potato.editor.logs"_zsv;
+        static constexpr EditorTypeId editorTypeId{"potato.editor.logs"};
 
-        explicit LogWindow(LogHistory& history) : Editor("LogWindow"_zsv), _history(history) { }
+        explicit LogWindow(EditorParams const& params, LogHistory& history) : Editor(params), _history(history) { }
 
         LogWindow(LogWindow const&) = delete;
         LogWindow& operator=(LogWindow const&) = delete;
 
-        zstring_view displayName() const override { return "Logs"; }
-        zstring_view editorClass() const override { return editorName; }
-        EditorId uniqueId() const override { return hash_value(this); }
+        zstring_view displayName() const override { return "Logs"_zsv; }
 
-        static box<EditorFactory> createFactory(LogHistory& history);
+        static void addFactory(EditorManager& editors, LogHistory& history);
 
-        void content() override;
+        void content(CommandManager&) override;
 
     private:
         LogHistory& _history;
