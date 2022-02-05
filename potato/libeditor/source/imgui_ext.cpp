@@ -166,7 +166,7 @@ namespace ImGui::inline Potato {
     bool BeginIconGrid(char const* label, float iconWidth) {
         ImGuiStyle const& style = GetStyle();
         float const availWidth =
-            up::max(ImGui::GetContentRegionAvailWidth() - style.WindowPadding.x - style.FramePadding.x * 2.f, 0.f);
+            up::max(ImGui::GetContentRegionAvail().x - style.WindowPadding.x - style.FramePadding.x * 2.f, 0.f);
         float const paddedIconWidth = iconWidth + style.ColumnsMinSpacing;
         int const columns = up::clamp(static_cast<int>(availWidth / paddedIconWidth), 1, 64);
 
