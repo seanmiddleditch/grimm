@@ -100,7 +100,7 @@ namespace up {
 
             _currentEditorId = editor->uniqueId();
 
-            ImGui::SetNextWindowDockID(dockspaceId, ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowDockID(dockspaceId, editor->isCloseable() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
             ImGui::SetNextWindowClass(&_documentWindowClass);
             if (!_focusedEditorId) {
                 ImGui::SetNextWindowFocus();
