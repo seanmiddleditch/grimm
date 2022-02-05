@@ -284,7 +284,7 @@ namespace ImGui::inline Potato {
         style.WindowPadding = ImVec2(4.0f, 4.0f);
         style.FramePadding = ImVec2(4.0f, 4.0f);
 
-        style.WindowBorderSize = 1.0f;
+        style.WindowBorderSize = 2.0f;
         style.ChildBorderSize = 1.0f;
         style.PopupBorderSize = 1.0f;
         style.FrameBorderSize = 1.0f;
