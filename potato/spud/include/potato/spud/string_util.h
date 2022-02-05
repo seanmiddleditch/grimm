@@ -7,6 +7,7 @@
 #include "platform.h"
 
 #include <cstring>
+#include <type_traits>
 
 namespace up {
     constexpr size_t stringLength(char const* str) noexcept { return __builtin_strlen(str); }
@@ -34,10 +35,10 @@ namespace up {
                 if (l < r) { // also if l is 0 before r
                     return -1;
                 }
-                else if (r < l) { // also if r is 0 before l
+                if (r < l) { // also if r is 0 before l
                     return 1;
                 }
-                else if (l == '\0') { // r must also be 0 in this case
+                if (l == '\0') { // r must also be 0 in this case
                     return 0;
                 }
 

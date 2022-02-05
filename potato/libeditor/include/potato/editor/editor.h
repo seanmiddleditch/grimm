@@ -93,7 +93,7 @@ namespace up {
         virtual bool isCloseable() { return true; }
         void close() noexcept { _wantClose = true; }
 
-        bool focus() noexcept { _wantFocus = true; }
+        void focus() noexcept { _wantFocus = true; }
 
         void resetLayout() noexcept { _wantReset = true; }
 
