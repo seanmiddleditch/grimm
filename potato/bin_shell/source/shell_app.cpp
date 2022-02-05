@@ -123,7 +123,7 @@ namespace up {
         struct QuitHandler final : CommandHandler<QuitCommand> {
             QuitHandler(shell::ShellApp& app) : _app(app) { }
 
-            void invoke(QuitCommand const& cmd) override { _app.quit(); }
+            void invoke(QuitCommand&) override { _app.quit(); }
 
         private:
             shell::ShellApp& _app;
@@ -132,7 +132,7 @@ namespace up {
         struct OpenProjectHandler final : CommandHandler<OpenProjectCommand> {
             OpenProjectHandler(shell::ShellApp& app) : _app(app) { }
 
-            void invoke(OpenProjectCommand const& cmd) override { _app.openProject(); }
+            void invoke(OpenProjectCommand&) override { _app.openProject(); }
 
         private:
             shell::ShellApp& _app;
@@ -141,7 +141,7 @@ namespace up {
         struct CloseProjectHandler final : CommandHandler<CloseProjectCommand> {
             CloseProjectHandler(shell::ShellApp& app) : _app(app) { }
 
-            void invoke(CloseProjectCommand const& cmd) override { _app.closeProject(); }
+            void invoke(CloseProjectCommand&) override { _app.closeProject(); }
 
         private:
             shell::ShellApp& _app;
@@ -150,7 +150,7 @@ namespace up {
         struct ShowLogsHandler final : CommandHandler<ShowLogsCommand> {
             ShowLogsHandler(EditorManager& editors) : _editors(editors) { }
 
-            void invoke(ShowLogsCommand const&) override { _editors.openEditor(shell::LogWindow::editorTypeId); }
+            void invoke(ShowLogsCommand&) override { _editors.openEditor(shell::LogWindow::editorTypeId); }
 
         private:
             EditorManager& _editors;
@@ -159,7 +159,7 @@ namespace up {
         struct ImportResourcesHandler final : CommandHandler<ImportResourcesCommand> {
             ImportResourcesHandler(shell::ShellApp& app) : _app(app) { }
 
-            void invoke(ImportResourcesCommand const& cmd) override { _app.importResources(); }
+            void invoke(ImportResourcesCommand&) override { _app.importResources(); }
 
         private:
             shell::ShellApp& _app;
@@ -168,7 +168,7 @@ namespace up {
         struct ShowAboutHandler final : CommandHandler<ShowAboutCommand> {
             ShowAboutHandler(shell::ShellApp& app) : _app(app) { }
 
-            void invoke(ShowAboutCommand const& cmd) override { _app.showAboutDialog(); }
+            void invoke(ShowAboutCommand&) override { _app.showAboutDialog(); }
 
         private:
             shell::ShellApp& _app;
@@ -177,7 +177,7 @@ namespace up {
         struct CommandPaletteHandler final : CommandHandler<CommandPaletteCommand> {
             CommandPaletteHandler(EditorManager& editors) : _editors(editors) { }
 
-            void invoke(CommandPaletteCommand const&) override { _editors.showPalette(); }
+            void invoke(CommandPaletteCommand&) override { _editors.showPalette(); }
 
         private:
             EditorManager& _editors;
@@ -186,10 +186,8 @@ namespace up {
         struct PlaySceneHandler final : CommandHandler<shell::PlaySceneCommand> {
             PlaySceneHandler(AudioEngine& audio, EditorManager& editors) : _audio(audio), _editors(editors) { }
 
-            void invoke(shell::PlaySceneCommand const& cmd) override {
-                _editors.createEditor<shell::GameEditor>(
-                    _audio,
-                    std::move(const_cast<shell::PlaySceneCommand&>(cmd).space));
+            void invoke(shell::PlaySceneCommand& cmd) override {
+                _editors.createEditor<shell::GameEditor>(_audio, std::move(cmd.space));
             }
 
         private:

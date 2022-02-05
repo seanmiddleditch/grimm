@@ -10,6 +10,6 @@ namespace up {
 
     struct EditorTypeId : StaticId<EditorTypeId, uint64> { };
     struct EditorId : Key<EditorId> {
-        using Key::Key;
+        using Key<EditorId>::Key;
     };
 } // namespace up

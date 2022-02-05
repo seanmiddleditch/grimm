@@ -120,10 +120,7 @@ namespace up {
         // Execute input if the input was activated (Enter pressed)
         //
         if (doExecute) {
-            if (state.input[0] == '\0') {
-                ImGui::CloseCurrentPopup();
-            }
-            else if (state.activeId && commands.invoke(state.activeId)) {
+            if (state.activeId && commands.invoke(state.activeId)) {
                 ImGui::CloseCurrentPopup();
             }
             else {

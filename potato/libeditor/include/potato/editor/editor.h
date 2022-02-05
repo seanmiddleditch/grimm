@@ -41,8 +41,6 @@ namespace up {
         using EditorType = EditorT;
 
         EditorTypeId editorType() const noexcept final { return EditorT::editorTypeId; };
-
-        box<EditorBase> createEditor(EditorParams const& params) = 0;
     };
 
     class EditorBase {
@@ -120,7 +118,7 @@ namespace up {
         Menu _menu;
         vector<box<Panel>> _panels;
         CommandScope _commands;
-        ImGuiID _windowId;
+        ImGuiID _windowId = 0;
         bool _wantReset = false;
         bool _wantClose = false;
         bool _wantFocus = false;

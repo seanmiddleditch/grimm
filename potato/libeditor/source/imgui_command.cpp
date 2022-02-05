@@ -7,7 +7,7 @@
 
 #include <imgui_internal.h>
 
-namespace ImGui::Potato {
+namespace ImGui::inline Potato {
     bool CommandButton(
         up::CommandManager& commands,
         up::CommandId command,
@@ -69,8 +69,6 @@ namespace ImGui::Potato {
         if (icon != nullptr) {
             return ImGui::MenuItemEx(label, icon, hotkey, checked, !disabled);
         }
-        else {
-            return ImGui::MenuItem(label, hotkey, &checked, !disabled);
-        }
+        return ImGui::MenuItem(label, hotkey, &checked, !disabled);
     }
-} // namespace ImGui::Potato
+} // namespace ImGui::inline Potato

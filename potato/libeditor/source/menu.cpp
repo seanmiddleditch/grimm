@@ -68,7 +68,7 @@ namespace up {
         _items.push_back({}); // empty root
 
         commands.each([this](auto const id, auto const& command) {
-            if (command.menu == nullptr) {
+            if (command.menu.empty()) {
                 return;
             }
 

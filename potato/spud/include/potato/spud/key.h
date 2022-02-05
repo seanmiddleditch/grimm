@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "potato/spud/int_types.h"
+
 #include <compare>
 
 namespace up {
@@ -10,7 +12,7 @@ namespace up {
     public:
         using underlying_type = Underlying;
 
-        constexpr Key() noexcept { }
+        constexpr Key() noexcept = default;
         constexpr explicit Key(underlying_type value) noexcept : _value(value) { }
 
         constexpr static underlying_type invalid = Invalid;

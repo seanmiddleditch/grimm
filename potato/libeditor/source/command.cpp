@@ -12,30 +12,30 @@
 #include "potato/spud/utility.h"
 
 namespace up {
-    CommandResponse CommandScope::condition(CommandId command, Command const* data) {
-        auto const item = _idMap.find(command);
+    CommandResponse CommandScope::condition(CommandId id, Command const* data) {
+        auto const item = _idMap.find(id);
         if (item) {
             return _handlers[item->value]->condition(data) ? CommandResponse::Success : CommandResponse::Disabled;
         }
         return CommandResponse::Ignored;
     }
 
-    auto CommandScope::status(CommandId command, Command const* data) -> CommandStatus {
-        auto const item = _idMap.find(command);
+    auto CommandScope::status(CommandId id, Command const* data) -> CommandStatus {
+        auto const item = _idMap.find(id);
         if (item && _handlers[item->value]->condition(data)) {
             return _handlers[item->value]->status(data);
         }
         return CommandStatus::Disabled;
     }
 
-    void CommandScope::invoke(CommandManager& commands, CommandId command, Command const* data) {
-        auto const item = _idMap.find(command);
+    void CommandScope::invoke(CommandManager& commands, CommandId id, Command* data) {
+        auto const item = _idMap.find(id);
         if (item && _handlers[item->value]->condition(data)) {
             _handlers[item->value]->invoke(commands, data);
         }
     }
 
-    bool CommandManager::refresh(uint64& lastVersion) noexcept {
+    bool CommandManager::refresh(uint64& lastVersion) const noexcept {
         auto const changed = lastVersion != _version;
         lastVersion = _version;
         return changed;
@@ -68,7 +68,7 @@ namespace up {
             if (rs == CommandResponse::Success) {
                 return true;
             }
-            else if (rs == CommandResponse::Disabled) {
+            if (rs == CommandResponse::Disabled) {
                 return false;
             }
         }
@@ -87,7 +87,7 @@ namespace up {
             if (rs == CommandResponse::Success) {
                 return _scopeStack[index - 1]->status(id, command);
             }
-            else if (rs == CommandResponse::Disabled) {
+            if (rs == CommandResponse::Disabled) {
                 return CommandStatus::Disabled;
             }
         }
@@ -95,21 +95,21 @@ namespace up {
         return CommandStatus::Disabled;
     }
 
-    bool CommandManager::invoke(CommandId id, Command const* command) {
-        if (command == nullptr) {
-            command = _lookup(id);
-            if (command == nullptr) {
+    bool CommandManager::invoke(CommandId id, Command* data) {
+        if (data == nullptr) {
+            data = _lookup(id);
+            if (data == nullptr) {
                 return false;
             }
         }
 
         for (size_t index = _scopeStack.size(); index != 0; --index) {
-            CommandResponse const rs = _scopeStack[index - 1]->condition(id, command);
+            CommandResponse const rs = _scopeStack[index - 1]->condition(id, data);
             if (rs == CommandResponse::Success) {
-                _scopeStack[index - 1]->invoke(*this, id, command);
+                _scopeStack[index - 1]->invoke(*this, id, data);
                 return true;
             }
-            else if (rs == CommandResponse::Disabled) {
+            if (rs == CommandResponse::Disabled) {
                 return false;
             }
         }

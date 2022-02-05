@@ -48,7 +48,7 @@ namespace up::shell {
     struct GameEditor::PlayPauseHandler : CommandHandler<PlayPauseCommand> {
         PlayPauseHandler(GameEditor& editor) : _editor(editor) { }
 
-        void invoke(PlayPauseCommand const&) override { _editor.togglePause(); }
+        void invoke(PlayPauseCommand&) override { _editor.togglePause(); }
 
     private:
         GameEditor& _editor;

@@ -81,7 +81,7 @@ namespace up::shell {
     struct SceneEditor::PlayCommandHandler final : CommandHandler<PlayCommand> {
         PlayCommandHandler(SceneEditor& editor) : _editor(editor) { }
 
-        void invoke(CommandManager& commands, PlayCommand const&) override {
+        void invoke(CommandManager& commands, PlayCommand&) override {
             SceneDocument& doc = _editor.document();
             auto space = new_box<Space>();
             doc.syncGame(*space);
@@ -99,7 +99,7 @@ namespace up::shell {
             return _editor.hasGrid() ? CommandStatus::Checked : CommandStatus::Default;
         }
 
-        void invoke(ToggleGridCommand const&) override { _editor.toggleGrid(); }
+        void invoke(ToggleGridCommand&) override { _editor.toggleGrid(); }
 
     private:
         SceneEditor& _editor;

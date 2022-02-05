@@ -31,7 +31,7 @@ namespace up {
     struct EditorManager::ResetLayoutHandler final : CommandHandler<ResetLayoutCommand> {
         ResetLayoutHandler(EditorManager& editors) : _editors(editors) { }
 
-        void invoke(ResetLayoutCommand const&) override { _editors.resetLayout(_editors.focused()); }
+        void invoke(ResetLayoutCommand&) override { _editors.resetLayout(_editors.focused()); }
 
     private:
         EditorManager& _editors;
@@ -44,7 +44,7 @@ namespace up {
             return _editors.isCloseable(_editors.focused()) ? CommandStatus::Default : CommandStatus::Disabled;
         }
 
-        void invoke(CloseEditorCommand const&) override { _editors.close(_editors.focused()); }
+        void invoke(CloseEditorCommand&) override { _editors.close(_editors.focused()); }
 
     private:
         EditorManager& _editors;
@@ -154,11 +154,11 @@ namespace up {
 
     bool EditorManager::evaluateHotkey(CommandManager& commands, int keysym, unsigned mods) {
         EditorBase* const editor = _getEditor(focused());
-        if (editor) {
+        if (editor != nullptr) {
             commands.pushScope(editor->commandScope());
         }
         bool const handled = _hotkeys.evaluateKey(commands, keysym, mods);
-        if (editor) {
+        if (editor != nullptr) {
             commands.popScope(editor->commandScope());
         }
         return handled;

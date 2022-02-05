@@ -24,7 +24,6 @@ namespace ImGui::inline Potato {
     UP_EDITOR_API void EndIconButtonDropdown();
 
     UP_EDITOR_API bool IsModifierDown(ImGuiKeyModFlags modifiers) noexcept;
-    UP_EDITOR_API ImGuiViewport* FindViewport(ImGuiID viewportId) noexcept;
 
     UP_EDITOR_API bool InputVec3(
         char const* label,
