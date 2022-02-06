@@ -39,8 +39,12 @@ namespace up::shell {
     namespace {
         class SceneEditorFactory : public EditorFactory<SceneEditor> {
         public:
-            SceneEditorFactory(SceneDatabase& database, AssetLoader& assetLoader)
+            SceneEditorFactory(
+                SceneDatabase& database,
+                PropertyGrid& propertyGrid,
+                AssetLoader& assetLoader)
                 : _database(database)
+                , _propertyGrid(propertyGrid)
                 , _assetLoader(assetLoader) { }
 
             box<EditorBase> createEditor(EditorParams const& params) override {
@@ -53,11 +57,18 @@ namespace up::shell {
                     doc->fromJson(jsonDoc, _assetLoader);
                 }
 
-                return new_box<SceneEditor>(params, std::move(doc), std::move(space), _database, _assetLoader);
+                return new_box<SceneEditor>(
+                    params,
+                    std::move(doc),
+                    std::move(space),
+                    _database,
+                    _propertyGrid,
+                    _assetLoader);
             }
 
         private:
             SceneDatabase& _database;
+            PropertyGrid& _propertyGrid;
             AssetLoader& _assetLoader;
         };
 
@@ -110,10 +121,12 @@ namespace up::shell {
         box<SceneDocument> sceneDoc,
         box<Space> previewScene,
         SceneDatabase& database,
+        PropertyGrid& propertyGrid,
         AssetLoader& assetLoader)
         : Editor(params)
         , _previewScene(std::move(previewScene))
         , _doc(std::move(sceneDoc))
+        , _propertyGrid(propertyGrid)
         , _database(database)
         , _assetLoader(assetLoader) {
         _arcball.target = {0, 0, 0};
@@ -131,8 +144,12 @@ namespace up::shell {
         }
     }
 
-    void SceneEditor::addFactory(EditorManager& editors, SceneDatabase& database, AssetLoader& assetLoader) {
-        editors.addFactory<SceneEditorFactory>(database, assetLoader);
+    void SceneEditor::addFactory(
+        EditorManager& editors,
+        SceneDatabase& database,
+        PropertyGrid& propertyGrid,
+        AssetLoader& assetLoader) {
+        editors.addFactory<SceneEditorFactory>(database, propertyGrid, assetLoader);
     }
 
     void SceneEditor::addCommands(CommandManager& commands) {
@@ -323,8 +340,6 @@ namespace up::shell {
         }
 
         ImGuiID const addComponentId = ImGui::GetID("##add_component_list");
-
-        _propertyGrid.bindResourceLoader(&_assetLoader);
 
         SceneEntity& entity = _doc->entityAt(index);
         for (auto& component : entity.components) {

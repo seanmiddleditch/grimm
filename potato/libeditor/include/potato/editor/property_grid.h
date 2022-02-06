@@ -10,10 +10,9 @@
 
 namespace up {
     class AssetLoader;
+    class PropertyGrid;
     class UUID;
-} // namespace up
 
-namespace up::inline editor {
     class PropertyEditor {
     public:
         virtual ~PropertyEditor() = default;
@@ -24,7 +23,7 @@ namespace up::inline editor {
 
     class PropertyGrid {
     public:
-        void bindResourceLoader(AssetLoader* assetLoader) { _assetLoader = assetLoader; }
+        explicit PropertyGrid(AssetLoader& assetLoader) noexcept : _assetLoader(&assetLoader) { }
 
         bool beginItem(char const* label);
         void endItem();
@@ -66,4 +65,4 @@ namespace up::inline editor {
 
         AssetLoader* _assetLoader = nullptr;
     };
-} // namespace up::inline editor
+} // namespace up

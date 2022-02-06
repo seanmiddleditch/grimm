@@ -15,7 +15,9 @@ namespace up::shell {
     namespace {
         class MaterialEditorFactory : public EditorFactory<MaterialEditor> {
         public:
-            MaterialEditorFactory(AssetLoader& assetLoader) : _assetLoader(assetLoader) { }
+            MaterialEditorFactory(PropertyGrid& propertyGrid, AssetLoader& assetLoader) noexcept
+                : _propertyGrid(propertyGrid)
+                , _assetLoader(assetLoader) { }
 
             box<EditorBase> createEditor(EditorParams const& params) override {
                 if (auto [rs, text] = fs::readText(params.documentPath); rs == IOResult::Success) {
@@ -24,6 +26,7 @@ namespace up::shell {
                     if (reflex::decodeFromJson(jsonDoc, *material)) {
                         return new_box<MaterialEditor>(
                             params,
+                            _propertyGrid,
                             _assetLoader,
                             std::move(material),
                             string(params.documentPath));
@@ -33,6 +36,7 @@ namespace up::shell {
             }
 
         private:
+            PropertyGrid& _propertyGrid;
             AssetLoader& _assetLoader;
         };
     } // namespace
@@ -40,18 +44,21 @@ namespace up::shell {
 
 up::shell::MaterialEditor::MaterialEditor(
     EditorParams const& params,
+    PropertyGrid& propertyGrid,
     AssetLoader& assetLoader,
     box<schema::Material> material,
     string filename)
     : Editor(params)
     , _assetLoader(assetLoader)
     , _material(std::move(material))
-    , _filename(std::move(filename)) {
-    _propertyGrid.bindResourceLoader(&_assetLoader);
-}
+    , _filename(std::move(filename))
+    , _propertyGrid(propertyGrid) { }
 
-void up::shell::MaterialEditor::addFactory(EditorManager& editors, AssetLoader& assetLoader) {
-    editors.addFactory<MaterialEditorFactory>(assetLoader);
+void up::shell::MaterialEditor::addFactory(
+    EditorManager& editors,
+    PropertyGrid& propertyGrid,
+    AssetLoader& assetLoader) {
+    editors.addFactory<MaterialEditorFactory>(propertyGrid, assetLoader);
 }
 
 void up::shell::MaterialEditor::content(CommandManager&) {
