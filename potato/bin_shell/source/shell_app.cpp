@@ -252,8 +252,8 @@ int up::shell::ShellApp::initialize() {
         "loading",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        800,
-        600,
+        1024,
+        768,
         SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
     if (_window == nullptr) {
         _errorDialog("Could not create window");
@@ -264,18 +264,28 @@ int up::shell::ShellApp::initialize() {
     int const displayIndex = SDL_GetWindowDisplayIndex(_window.get());
     int const displayResult = SDL_GetCurrentDisplayMode(displayIndex, &desktopMode);
     if (displayResult == 0) {
-        int currentWidth = 0;
-        int currentHeight = 0;
-        SDL_GetWindowSize(_window.get(), &currentWidth, &currentHeight);
+        int const minWidth = 640;
+        int const minHeight = 480;
+        auto const maxWidth = static_cast<int>(desktopMode.w * 0.8);
+        auto const maxHeight = static_cast<int>(desktopMode.h * 0.8);
+        int const ratioWidth = 3;
+        int const ratioHeight = 2;
 
-        int const newWidth = clamp(static_cast<int>(desktopMode.w * 0.8), 640, 1024);
-        int const newHeight = clamp(static_cast<int>(desktopMode.h * 0.8), 480, 768);
+        int defaultWidth = maxWidth;
+        int defaultHeight = maxHeight;
 
-        int const newPosX = static_cast<int>((desktopMode.w - newWidth) * 0.5);
-        int const newPosY = static_cast<int>((desktopMode.h - newHeight) * 0.5);
+        if (defaultHeight < defaultWidth) {
+            defaultWidth = clamp(defaultHeight / ratioHeight * ratioWidth, minWidth, maxWidth);
+        }
+        else {
+            defaultHeight = clamp(defaultWidth / ratioWidth * ratioHeight, minHeight, maxHeight);
+        }
 
-        SDL_SetWindowSize(_window.get(), newWidth, newHeight);
-        SDL_SetWindowPosition(_window.get(), newPosX, newPosY);
+        int const posX = static_cast<int>((desktopMode.w - defaultWidth) * 0.5);
+        int const posY = static_cast<int>((desktopMode.h - defaultHeight) * 0.5);
+
+        SDL_SetWindowSize(_window.get(), defaultWidth, defaultHeight);
+        SDL_SetWindowPosition(_window.get(), posX, posY);
     }
 
     SDL_ShowWindow(_window.get());
