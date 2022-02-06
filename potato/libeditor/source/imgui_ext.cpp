@@ -47,6 +47,32 @@ namespace ImGui::inline Potato {
             nullptr);
     }
 
+    bool ToggleHeader(char const* label, char const* icon) noexcept {
+        ImGuiID const openId = ImGui::GetID("open");
+
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+
+        ImGuiStorage* const storage = ImGui::GetStateStorage();
+        bool open = storage->GetBool(openId, true);
+
+        char buf[256];
+        char const* selectLabel = label;
+        if (icon != nullptr) {
+            nanofmt::format_to(buf, "{} {}", icon, label);
+            selectLabel = buf;
+        }
+
+        ImGuiSelectableFlags const flags = ImGuiSelectableFlags_SpanAllColumns;
+
+        if (ImGui::Selectable(selectLabel, open, flags)) {
+            open = !open;
+            storage->SetBool(openId, open);
+        }
+
+        return open;
+    }
+
     bool IconButton(char const* label, char const* icon, ImVec2 size, ImGuiButtonFlags flags) {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems) {

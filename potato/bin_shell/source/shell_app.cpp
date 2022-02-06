@@ -342,6 +342,7 @@ int up::shell::ShellApp::initialize() {
     _sceneDatabase.registerComponent<SpinEditComponent>();
     _sceneDatabase.registerComponent<DingEditComponent>();
     _sceneDatabase.registerComponent<BodyEditComponent>();
+    _sceneDatabase.registerComponent<TestEditComponent>();
 
     AssetBrowser::addFactory(_editors, _assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
         _openAssetEditor(uuid);

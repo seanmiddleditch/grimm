@@ -11,6 +11,8 @@
 namespace ImGui::inline Potato {
     UP_EDITOR_API bool BeginContextPopup();
 
+    UP_EDITOR_API bool ToggleHeader(char const* label, char const* icon = nullptr) noexcept;
+
     UP_EDITOR_API bool IconButton(
         char const* label,
         char const* icon,

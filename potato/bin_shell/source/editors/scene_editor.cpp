@@ -345,7 +345,7 @@ namespace up::shell {
         for (auto& component : entity.components) {
             ImGui::PushID(component.get());
 
-            const bool open = _propertyGrid.beginItem(component->name.c_str());
+            const bool open = ImGui::ToggleHeader(component->name.c_str());
 
             if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
                 ImGui::OpenPopup("##component_context_menu");
@@ -365,7 +365,6 @@ namespace up::shell {
                 if (_propertyGrid.editObjectRaw(*component->info->typeInfo().schema, component->data.get())) {
                     component->state = SceneComponent::State::Pending;
                 }
-                _propertyGrid.endItem();
             }
 
             ImGui::PopID();

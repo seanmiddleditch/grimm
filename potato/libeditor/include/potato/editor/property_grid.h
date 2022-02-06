@@ -4,7 +4,9 @@
 
 #include "potato/reflex/schema.h"
 #include "potato/spud/concepts.h"
+#include "potato/spud/hash_map.h"
 #include "potato/spud/string.h"
+#include "potato/spud/vector.h"
 
 #include <glm/fwd.hpp>
 
@@ -13,20 +15,24 @@ namespace up {
     class PropertyGrid;
     class UUID;
 
+    struct PropertyInfo {
+        reflex::SchemaField const& field;
+        reflex::Schema const& schema;
+        void* object = nullptr;
+    };
+
     class PropertyEditor {
     public:
         virtual ~PropertyEditor() = default;
 
-        virtual void drawLabel(reflex::SchemaField const& field, void* member) = 0;
-        virtual void drawInput(reflex::SchemaField const& field, void* member) = 0;
+        virtual void label(PropertyInfo const& info);
+        virtual bool edit(PropertyInfo const& info) = 0;
+        virtual bool expandable(PropertyInfo const& info) const { return false; }
     };
 
     class PropertyGrid {
     public:
-        explicit PropertyGrid(AssetLoader& assetLoader) noexcept : _assetLoader(&assetLoader) { }
-
-        bool beginItem(char const* label);
-        void endItem();
+        explicit PropertyGrid(AssetLoader& assetLoader) noexcept;
 
         bool editObjectRaw(reflex::Schema const& schema, void* object) { return _editProperties(schema, object); }
 
@@ -35,34 +41,18 @@ namespace up {
             editObjectRaw(reflex::getSchema<T>(), &value);
         }
 
-    private:
-        bool _beginProperty(reflex::SchemaField const& field, void* object);
-        void _endProperty();
+        void addPropertyEditor(box<PropertyEditor> editor);
 
+    private:
         bool _editProperties(reflex::Schema const& schema, void* object);
-        bool _editProperty(reflex::SchemaField const& field, void* object);
 
         bool _editField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
         bool _drawObjectEditor(reflex::Schema const& schema, void* object);
         bool _editArrayField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
 
-        bool _editIntegerField(reflex::SchemaField const& field, int& value) noexcept;
-        template <integral T>
-        bool _editIntegerField(reflex::SchemaField const& field, T& value) noexcept {
-            int tmp = static_cast<int>(value);
-            bool const edit = _editIntegerField(field, tmp);
-            value = static_cast<T>(tmp);
-            return edit;
-        }
-        bool _editFloatField(reflex::SchemaField const& field, float& value) noexcept;
-        bool _editFloatField(reflex::SchemaField const& field, double& value) noexcept;
-        bool _editVec3Field(reflex::SchemaField const& field, glm::vec3& value) noexcept;
-        bool _editMat4x4Field(reflex::SchemaField const& field, glm::mat4x4& value) noexcept;
-        bool _editQuatField(reflex::SchemaField const& field, glm::quat& value) noexcept;
-        bool _editStringField(reflex::SchemaField const& field, string& value) noexcept;
-        bool _editAssetField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
-        bool _editUuidField(reflex::SchemaField const& field, UUID& value) noexcept;
+        PropertyEditor* _selectEditor(PropertyInfo const& info) noexcept;
 
-        AssetLoader* _assetLoader = nullptr;
+        vector<box<PropertyEditor>> _propertyEditors;
+        hash_map<reflex::SchemaPrimitive, uint32> _primitiveEditorMap;
     };
 } // namespace up

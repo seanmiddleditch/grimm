@@ -38,6 +38,6 @@ namespace up::shell {
         AssetLoader& _assetLoader;
         box<schema::Material> _material;
         string _filename;
-        PropertyGrid _propertyGrid;
+        PropertyGrid& _propertyGrid;
     };
 } // namespace up::shell

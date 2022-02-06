@@ -34,11 +34,7 @@
                     },
                     {
                         "$schema": "Body",
-                        "linearVelocity": [
-                            4.0,
-                            12.0,
-                            -9.0
-                        ]
+                        "mass": 0.0
                     }
                 ],
                 "name": "Center"
@@ -3383,7 +3379,14 @@
                 "name": "Ring"
             }
         ],
-        "components": [],
+        "components": [
+            {
+                "$schema": "Test",
+                "integer": 0,
+                "real": 7.550000190734863,
+                "text": "hmm"
+            }
+        ],
         "name": "Root"
     }
 }

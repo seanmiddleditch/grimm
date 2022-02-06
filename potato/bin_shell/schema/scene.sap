@@ -40,3 +40,15 @@ scene_component Body {
     float mass = 1;
 }
 
+scene_component Test {
+    string text = "test";
+    int integer = 42;
+    [IntRange(-10,10)]
+    int limit;
+    float real = -7;
+    UUID ref;
+    vec3 vec;
+    quat rot;
+    bool enabled;
+}
+
