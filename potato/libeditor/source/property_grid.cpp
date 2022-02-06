@@ -171,7 +171,7 @@ bool up::editor::PropertyGrid::_editArrayField(
 
         // Icon for deleting a row
         if (schema.operations->arrayEraseAt != nullptr) {
-            float const availWidth = ImGui::GetContentRegionAvailWidth();
+            float const availWidth = ImGui::GetContentRegionAvail().x;
             float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
             float const adjustWidth = availWidth - buttonWidth;
             ImGui::SetCursorPos({ImGui::GetCursorPosX() + adjustWidth, rowY});
@@ -192,7 +192,7 @@ bool up::editor::PropertyGrid::_editArrayField(
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         ImGui::AlignTextToFramePadding();
-        float const availWidth = ImGui::GetContentRegionAvailWidth();
+        float const availWidth = ImGui::GetContentRegionAvail().x;
         float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
         float const adjustWidth = availWidth - buttonWidth;
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + adjustWidth);

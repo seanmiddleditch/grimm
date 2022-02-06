@@ -77,7 +77,7 @@ void up::shell::LogWindow::content(CommandManager&) {
     }
 
     ImVec2 const statusSize = ImVec2(
-        ImGui::GetContentRegionAvailWidth(),
+        ImGui::GetContentRegionAvail().x,
         ImGui::GetTextLineHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y);
 
     ImGui::BeginChildFrame(
