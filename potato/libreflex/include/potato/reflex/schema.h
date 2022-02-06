@@ -43,7 +43,6 @@ namespace up::reflex {
         UInt64,
         Enum,
         Vec3,
-        Mat4x4,
         Quat,
         Float,
         Double,
