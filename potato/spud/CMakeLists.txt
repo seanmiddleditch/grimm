@@ -13,6 +13,8 @@ add_library(potato::spud ALIAS potato_spud)
 #    "include/potato/spud/map.h"
 #    "include/potato/spud/overload.h"
 #    "include/potato/spud/result.h"
+#    "include/potato/spud/key.h"
+#    "include/potato/spud/static_id.h"
 #)
 
 include(up_set_common_properties)
@@ -45,7 +47,7 @@ target_sources(potato_spud_test PRIVATE
     "tests/test_string_writer.cpp"
     "tests/test_vector.cpp"
     "tests/test_zstring_view.cpp"
- "include/potato/spud/key.h" "include/potato/spud/static_id.h")
+)
 
 target_link_libraries(potato_spud INTERFACE
     nanofmt::nanofmt

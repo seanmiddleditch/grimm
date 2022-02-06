@@ -68,17 +68,10 @@ void up::shell::MaterialEditor::content(CommandManager&) {
     }
     ImGui::EndGroup();
 
-    if (!ImGui::BeginTable(
-            "##material",
-            2,
-            ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBodyUntilResize |
-                ImGuiTableFlags_SizingStretchProp)) {
-        return;
+    if (_propertyGrid.beginTable()) {
+        _propertyGrid.editObject(*_material);
+        _propertyGrid.endTable();
     }
-
-    _propertyGrid.editObject(*_material);
-
-    ImGui::EndTable();
 }
 
 void up::shell::MaterialEditor::_save() {

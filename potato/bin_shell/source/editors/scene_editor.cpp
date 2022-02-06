@@ -331,11 +331,7 @@ namespace up::shell {
             }
         }
 
-        if (!ImGui::BeginTable(
-                "##inspector_table",
-                2,
-                ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBodyUntilResize |
-                    ImGuiTableFlags_SizingStretchProp)) {
+        if (!_propertyGrid.beginTable()) {
             return;
         }
 
@@ -370,7 +366,7 @@ namespace up::shell {
             ImGui::PopID();
         }
 
-        ImGui::EndTable();
+        _propertyGrid.endTable();
 
         erase(entity.components, nullptr);
 

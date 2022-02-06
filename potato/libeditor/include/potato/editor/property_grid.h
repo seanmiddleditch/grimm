@@ -19,22 +19,25 @@ namespace up {
         reflex::SchemaField const& field;
         reflex::Schema const& schema;
         void* object = nullptr;
+        int index = -1; // for arrays
+        bool canRemove = false; // if a remove icon should be present
     };
 
     class PropertyEditor {
     public:
         virtual ~PropertyEditor() = default;
 
-        virtual void label(PropertyInfo const& info);
         virtual bool edit(PropertyInfo const& info) = 0;
-        virtual bool expandable(PropertyInfo const& info) const { return false; }
     };
 
     class PropertyGrid {
     public:
         explicit PropertyGrid(AssetLoader& assetLoader) noexcept;
 
-        bool editObjectRaw(reflex::Schema const& schema, void* object) { return _editProperties(schema, object); }
+        bool beginTable();
+        void endTable();
+
+        bool editObjectRaw(reflex::Schema const& schema, void* object);
 
         template <typename T>
         void editObject(T& value) {
@@ -44,11 +47,15 @@ namespace up {
         void addPropertyEditor(box<PropertyEditor> editor);
 
     private:
-        bool _editProperties(reflex::Schema const& schema, void* object);
+        struct ArrayOps;
+        struct ItemState;
 
-        bool _editField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
-        bool _drawObjectEditor(reflex::Schema const& schema, void* object);
-        bool _editArrayField(reflex::SchemaField const& field, reflex::Schema const& schema, void* object);
+        bool _editElements(PropertyInfo const& info, ItemState& state);
+        bool _editProperty(PropertyInfo const& info);
+
+        void _label(PropertyInfo const& info, ItemState& state, ArrayOps* ops = nullptr) noexcept;
+        bool _applyState(PropertyInfo const& info, ItemState const& state);
+        bool _editField(PropertyInfo const& info, ItemState& state, ArrayOps* ops = nullptr);
 
         PropertyEditor* _selectEditor(PropertyInfo const& info) noexcept;
 
