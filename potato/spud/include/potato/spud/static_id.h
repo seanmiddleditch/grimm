@@ -17,8 +17,11 @@ namespace up {
             : _value(hash_value(string.c_str()))
             , _name(string.c_str()) { }
 
-        auto operator<=>(StaticId const& rhs) const noexcept = default;
-
+        auto operator<(StaticId const& rhs) const noexcept { return value() < rhs.value(); }
+        auto operator==(StaticId const& rhs) const noexcept { return value() == rhs.value(); }
+        auto operator>(StaticId const& rhs) const noexcept { return value() > rhs.value(); }
+        auto operator!=(StaticId const& rhs) const noexcept { return value() != rhs.value(); }
+        
         explicit operator bool() const noexcept { return _value != Underlying{}; }
 
         constexpr bool valid() const noexcept { return _value != Underlying{}; }
