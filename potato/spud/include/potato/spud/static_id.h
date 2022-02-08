@@ -19,7 +19,7 @@ namespace up {
 
         auto operator<=>(StaticId const& rhs) const noexcept { return _value <=> rhs._value; }
         auto operator==(StaticId const& rhs) const noexcept { return _value == rhs._value; }
-        
+
         explicit operator bool() const noexcept { return _value != Underlying{}; }
 
         constexpr bool valid() const noexcept { return _value != Underlying{}; }
