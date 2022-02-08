@@ -125,6 +125,10 @@ namespace up::shell {
 
         commandScope().addHandler<PlayCommandHandler>(*this);
         commandScope().addHandler<ToggleGridHandler>(*this);
+
+        if (!_doc->indices().empty()) {
+            _selection.select(static_cast<SelectionId>(_doc->entityAt(0).sceneId));
+        }
     }
 
     void SceneEditor::addFactory(EditorManager& editors, SceneDatabase& database, AssetLoader& assetLoader) {
