@@ -64,6 +64,7 @@ namespace up::reflex {
         using ArrayElementAt = void const* (*)(void const* arr, size_t index);
         using ArrayMutableElementAt = void* (*)(void* arr, size_t index);
         using ArraySwapIndices = void (*)(void* arr, size_t first, size_t second);
+        using ArrayMoveTo = void (*)(void* arr, size_t to, size_t from);
         using ArrayEraseAt = void (*)(void* arr, size_t index);
         using ArrayInsertAt = void (*)(void* arr, size_t index);
         using ArrayResize = void (*)(void* arr, size_t size);
@@ -76,6 +77,7 @@ namespace up::reflex {
         ArrayElementAt arrayElementAt = nullptr;
         ArrayMutableElementAt arrayMutableElementAt = nullptr;
         ArraySwapIndices arraySwapIndices = nullptr;
+        ArrayMoveTo arrayMoveTo = nullptr;
         ArrayEraseAt arrayEraseAt = nullptr;
         ArrayInsertAt arrayInsertAt = nullptr;
         ArrayResize arrayResize = nullptr;
@@ -229,9 +231,18 @@ namespace up::reflex {
                 },
                 .arraySwapIndices =
                     [](void* array, size_t first, size_t second) noexcept {
+                .arrayMoveTo =
+                    [](void* array, size_t to, size_t from) noexcept {
                         auto& arr = *static_cast<Type*>(array);
                         using std::swap;
                         swap(arr[first], arr[second]);
+                        int const step = to > from ? +1 : -1;
+                        while (from != to) {
+                            using std::swap;
+                            size_t const next = from + step;
+                            swap(arr[from], arr[next]);
+                            from = next;
+                        }
                     },
                 .arrayEraseAt =
                     [](void* array, size_t index) {
