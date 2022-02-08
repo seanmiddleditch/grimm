@@ -39,10 +39,7 @@ namespace up::shell {
     namespace {
         class SceneEditorFactory : public EditorFactory<SceneEditor> {
         public:
-            SceneEditorFactory(
-                SceneDatabase& database,
-                PropertyGrid& propertyGrid,
-                AssetLoader& assetLoader)
+            SceneEditorFactory(SceneDatabase& database, PropertyGrid& propertyGrid, AssetLoader& assetLoader)
                 : _database(database)
                 , _propertyGrid(propertyGrid)
                 , _assetLoader(assetLoader) { }

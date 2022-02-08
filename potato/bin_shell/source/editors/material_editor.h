@@ -23,10 +23,7 @@ namespace up::shell {
             box<schema::Material> material,
             string filename);
 
-        static void addFactory(
-            EditorManager& editors,
-            PropertyGrid& propertyGrid,
-            AssetLoader& assetLoader);
+        static void addFactory(EditorManager& editors, PropertyGrid& propertyGrid, AssetLoader& assetLoader);
 
         zstring_view displayName() const override { return "Material"_zsv; }
 
