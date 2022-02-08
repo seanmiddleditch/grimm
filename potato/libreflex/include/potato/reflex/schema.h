@@ -63,10 +63,8 @@ namespace up::reflex {
         using ArrayGetSize = size_t (*)(void const* arr);
         using ArrayElementAt = void const* (*)(void const* arr, size_t index);
         using ArrayMutableElementAt = void* (*)(void* arr, size_t index);
-        using ArraySwapIndices = void (*)(void* arr, size_t first, size_t second);
         using ArrayMoveTo = void (*)(void* arr, size_t to, size_t from);
         using ArrayEraseAt = void (*)(void* arr, size_t index);
-        using ArrayInsertAt = void (*)(void* arr, size_t index);
         using ArrayResize = void (*)(void* arr, size_t size);
 
         using PointerDeref = void const* (*)(void const* ptr);
@@ -76,10 +74,8 @@ namespace up::reflex {
         ArrayGetSize arrayGetSize = nullptr;
         ArrayElementAt arrayElementAt = nullptr;
         ArrayMutableElementAt arrayMutableElementAt = nullptr;
-        ArraySwapIndices arraySwapIndices = nullptr;
         ArrayMoveTo arrayMoveTo = nullptr;
         ArrayEraseAt arrayEraseAt = nullptr;
-        ArrayInsertAt arrayInsertAt = nullptr;
         ArrayResize arrayResize = nullptr;
 
         PointerDeref pointerDeref = nullptr;
@@ -229,13 +225,9 @@ namespace up::reflex {
                     auto& arr = *static_cast<Type*>(array);
                     return arr.data() + index;
                 },
-                .arraySwapIndices =
-                    [](void* array, size_t first, size_t second) noexcept {
                 .arrayMoveTo =
                     [](void* array, size_t to, size_t from) noexcept {
                         auto& arr = *static_cast<Type*>(array);
-                        using std::swap;
-                        swap(arr[first], arr[second]);
                         int const step = to > from ? +1 : -1;
                         while (from != to) {
                             using std::swap;
@@ -248,11 +240,6 @@ namespace up::reflex {
                     [](void* array, size_t index) {
                         auto& arr = *static_cast<Type*>(array);
                         arr.erase(arr.begin() + index);
-                    },
-                .arrayInsertAt =
-                    [](void* array, size_t index) {
-                        auto& arr = *static_cast<Type*>(array);
-                        arr.insert(arr.begin() + index, {});
                     },
                 .arrayResize =
                     [](void* array, size_t size) {
