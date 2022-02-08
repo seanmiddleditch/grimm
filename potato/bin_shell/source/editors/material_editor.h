@@ -24,6 +24,7 @@ namespace up::shell {
         static void addFactory(EditorManager& editors, AssetLoader& assetLoader);
 
         zstring_view displayName() const override { return "Material"_zsv; }
+        zstring_view documentPath() const override { return _filename; }
 
     private:
         void content(CommandManager&) override;
