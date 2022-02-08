@@ -50,9 +50,6 @@ namespace ImGui::inline Potato {
     bool ToggleHeader(char const* label, char const* icon) noexcept {
         ImGuiID const openId = ImGui::GetID("open");
 
-        ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0);
-
         ImGuiStorage* const storage = ImGui::GetStateStorage();
         bool open = storage->GetBool(openId, true);
 

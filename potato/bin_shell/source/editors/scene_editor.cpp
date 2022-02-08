@@ -328,18 +328,13 @@ namespace up::shell {
             }
         }
 
-        if (!_propertyGrid.beginTable()) {
-            return;
-        }
-
         ImGuiID const addComponentId = ImGui::GetID("##add_component_list");
 
         SceneEntity& entity = _doc->entityAt(index);
         for (auto& component : entity.components) {
-            ImGui::PushID(component.get());
-
             const bool open = ImGui::ToggleHeader(component->name.c_str());
 
+            ImGui::PushID(component->name.c_str());
             if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
                 ImGui::OpenPopup("##component_context_menu");
             }
@@ -353,17 +348,19 @@ namespace up::shell {
                 }
                 ImGui::EndPopup();
             }
-
-            if (open && component != nullptr) {
-                if (_propertyGrid.editObjectRaw(*component->info->typeInfo().schema, component->data.get())) {
-                    component->state = SceneComponent::State::Pending;
-                }
-            }
-
             ImGui::PopID();
-        }
 
-        _propertyGrid.endTable();
+            if (_propertyGrid.beginTable()) {
+                ImGui::PushID(component->name.c_str());
+                if (open && component != nullptr) {
+                    if (_propertyGrid.editObjectRaw(*component->info->typeInfo().schema, component->data.get())) {
+                        component->state = SceneComponent::State::Pending;
+                    }
+                }
+                ImGui::PopID();
+                _propertyGrid.endTable();
+            }
+        }
 
         erase(entity.components, nullptr);
 

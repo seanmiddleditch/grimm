@@ -34,7 +34,7 @@ namespace up {
     public:
         explicit PropertyGrid(AssetLoader& assetLoader) noexcept;
 
-        bool beginTable();
+        bool beginTable(char const* label = nullptr);
         void endTable();
 
         bool editObjectRaw(reflex::Schema const& schema, void* object);

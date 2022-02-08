@@ -207,7 +207,6 @@ namespace up {
             explicit AssetRefPropertyEditor(AssetLoader& assetLoader) noexcept : _assetLoader(assetLoader) { }
 
             bool edit(PropertyInfo const& info) override {
-                ImGui::BeginGroup();
                 UP_GUARD(info.schema.primitive == reflex::SchemaPrimitive::AssetRef, false);
 
                 zstring_view assetType{};
@@ -251,8 +250,6 @@ namespace up {
                         edit = true;
                     }
                 }
-
-                ImGui::EndGroup();
 
                 return edit;
             }
@@ -364,9 +361,11 @@ namespace up {
     //    return edit;
     //}
 
-    bool PropertyGrid::beginTable() {
-        bool const open =
-            ImGui::BeginTable("##property_grid", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchProp);
+    bool PropertyGrid::beginTable(char const* label) {
+        bool const open = ImGui::BeginTable(
+            label != nullptr ? label : "##property_grid",
+            2,
+            ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchProp);
         ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_None, 0.4f);
         ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_None, 0.6f);
         return open;
