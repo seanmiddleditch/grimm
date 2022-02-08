@@ -20,13 +20,6 @@
 
 namespace up {
     namespace {
-        struct DefaultPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
-                ImGui::Text("<%s>", info.schema.name.c_str());
-                return false;
-            }
-        };
-
         struct BoolPropertyEditor final : PropertyEditor {
             bool edit(PropertyInfo const& info) override {
                 return ImGui::Checkbox("##bool", static_cast<bool*>(info.object));
@@ -160,8 +153,22 @@ namespace up {
                     ImGui::Text("%zu %s", size, size == 1 ? "item" : "items");
                 }
                 else {
-                    ImGui::Text("<%s>");
+                    ImGui::Text("<%s>", info.schema.name.c_str());
                 }
+                return false;
+            }
+        };
+
+        struct ObjectPropertyEditor final : PropertyEditor {
+            bool edit(PropertyInfo const& info) override {
+                ImGui::Text("<%s>", info.schema.elementType->name.c_str());
+                return false;
+            }
+        };
+
+        struct PointerPropertyEditor final : PropertyEditor {
+            bool edit(PropertyInfo const& info) override {
+                ImGui::Text("<%s>", info.schema.elementType->name.c_str());
                 return false;
             }
         };
@@ -272,9 +279,6 @@ namespace up {
     };
 
     PropertyGrid::PropertyGrid(AssetLoader& assetLoader) noexcept {
-        // default editor should always be index 0
-        _propertyEditors.push_back(new_box<DefaultPropertyEditor>());
-
         {
             uint32 const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<BoolPropertyEditor>());
@@ -327,6 +331,18 @@ namespace up {
 
         {
             uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<ObjectPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Object, index);
+        }
+
+        {
+            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<PointerPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Pointer, index);
+        }
+
+        {
+            uint32 const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<UuidPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Uuid, index);
         }
@@ -339,27 +355,6 @@ namespace up {
     }
 
     void PropertyGrid::addPropertyEditor(box<PropertyEditor> editor) { _propertyEditors.push_back(std::move(editor)); }
-
-    // bool PropertyGrid::_editField(PropertyInfo const& info) {
-    //     bool edit = false;
-
-    //    switch (info.schema.primitive) {
-    //        case reflex::SchemaPrimitive::Pointer:
-    //            if (info.schema.operations->pointerMutableDeref != nullptr) {
-    //                if (void* pointee = info.schema.operations->pointerMutableDeref(info.object)) {
-    //                    edit = _editField({.field = info.field, .schema = *info.schema.elementType, .object =
-    //                    pointee}); break;
-    //                }
-    //            }
-    //            edit = false;
-    //            break;
-    //        default:
-    //            ImGui::Text("Unsupported primitive type for schema `%s`", info.schema.name.c_str());
-    //            break;
-    //    }
-
-    //    return edit;
-    //}
 
     bool PropertyGrid::beginTable(char const* label) {
         bool const open = ImGui::BeginTable(
@@ -463,7 +458,9 @@ namespace up {
 
     void PropertyGrid::_label(PropertyInfo const& info, ItemState& state, ArrayOps* ops) noexcept {
         bool const isExpandable = info.schema.primitive == reflex::SchemaPrimitive::Object ||
-            info.schema.primitive == reflex::SchemaPrimitive::Array;
+            info.schema.primitive == reflex::SchemaPrimitive::Array ||
+            (info.schema.primitive == reflex::SchemaPrimitive::Pointer &&
+             info.schema.operations->pointerDeref(info.object) != nullptr);
 
         ImGui::TableSetColumnIndex(0);
         ImGui::AlignTextToFramePadding();
@@ -567,9 +564,6 @@ namespace up {
     }
 
     bool PropertyGrid::_editField(PropertyInfo const& info, ItemState& state, ArrayOps* ops) {
-        PropertyEditor* const propertyEditor = _selectEditor(info);
-        UP_ASSERT(propertyEditor != nullptr);
-
         bool edits = false;
 
         _label(info, state, ops);
@@ -577,6 +571,12 @@ namespace up {
 
         ImGui::TableSetColumnIndex(1);
         ImGui::AlignTextToFramePadding();
+
+        PropertyEditor* const propertyEditor = _selectEditor(info);
+        if (!UP_VERIFY(propertyEditor != nullptr)) {
+            ImGui::TextColored(ImVec4{1.f, 0.f, 0.f, 1.f}, "Unsupported Schema type");
+            return edits;
+        }
 
         edits |= propertyEditor->edit(info);
 
@@ -587,6 +587,15 @@ namespace up {
             }
             else if (info.schema.primitive == reflex::SchemaPrimitive::Array) {
                 edits |= _editElements(info, state);
+            }
+            else if (info.schema.primitive == reflex::SchemaPrimitive::Pointer) {
+                if (void* const pointee = info.schema.operations->pointerMutableDeref(info.object);
+                    pointee != nullptr) {
+                    edits |= _editField(
+                        {.field = info.field, .schema = *info.schema.elementType, .object = pointee},
+                        state,
+                        ops);
+                }
             }
             ImGui::Unindent();
         }
@@ -599,7 +608,6 @@ namespace up {
         if (primIt) {
             return _propertyEditors[primIt->value].get();
         }
-
-        return _propertyEditors.front().get();
+        return nullptr;
     }
 } // namespace up
