@@ -36,10 +36,8 @@ namespace up {
 template <typename InputIt, typename SizeT>
 void up::default_construct_n(InputIt first, SizeT count) {
     using type = std::remove_reference_t<decltype(*first)>;
-    if constexpr (!std::is_trivially_constructible_v<type>) {
-        while (count-- > 0) {
-            new (first++) type{};
-        }
+    while (count-- > 0) {
+        new (first++) type{};
     }
 }
 
