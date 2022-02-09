@@ -341,11 +341,11 @@ namespace ImGui::inline Potato {
     void ApplyStyle() {
         auto& style = ImGui::GetStyle();
 
-        style.FrameRounding = 4.0f;
+        style.FrameRounding = 0.0f;
         style.GrabRounding = 4.0f;
         style.WindowRounding = 6.0f;
-        style.PopupRounding = 2.0f;
-        style.ChildRounding = 2.0f;
+        style.PopupRounding = 0.0f;
+        style.ChildRounding = 0.0f;
 
         style.WindowPadding = ImVec2(4.0f, 4.0f);
         style.FramePadding = ImVec2(4.0f, 4.0f);
@@ -362,7 +362,7 @@ namespace ImGui::inline Potato {
         colors[ImGuiCol_WindowBg] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
         colors[ImGuiCol_ChildBg] = ImVec4(0.15f, 0.18f, 0.22f, 1.00f);
         colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-        colors[ImGuiCol_Border] = ImVec4(0.15f, 0.18f, 0.22f, 1.00f); // ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
+        colors[ImGuiCol_Border] = ImVec4(0.10f, 0.14f, 0.16f, 1.00f); // ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
         colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
         colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
         colors[ImGuiCol_FrameBgHovered] = ImVec4(0.12f, 0.20f, 0.28f, 1.00f);
