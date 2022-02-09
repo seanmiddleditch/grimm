@@ -8,10 +8,19 @@
 #include <glm/fwd.hpp>
 #include <imgui.h>
 
+inline namespace Potato {
+    enum ImGuiInteractiveFlags_ { ImGuiInteractiveFlags_None = 0, ImGuiInteractiveFlags_AllowItemOverlap };
+}
+
 namespace ImGui::inline Potato {
+
     UP_EDITOR_API bool BeginContextPopup();
 
     UP_EDITOR_API bool ToggleHeader(char const* label, char const* icon = nullptr) noexcept;
+
+    UP_EDITOR_API void Interactive(
+        char const* label,
+        ImGuiInteractiveFlags_ flags = ImGuiInteractiveFlags_None) noexcept;
 
     UP_EDITOR_API bool IconButton(
         char const* label,

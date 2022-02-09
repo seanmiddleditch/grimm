@@ -60,14 +60,57 @@ namespace ImGui::inline Potato {
             selectLabel = buf;
         }
 
-        ImGuiSelectableFlags const flags = ImGuiSelectableFlags_SpanAllColumns;
-
-        if (ImGui::Selectable(selectLabel, open, flags)) {
+        if (ImGui::Selectable(selectLabel, open, ImGuiSelectableFlags_None)) {
             open = !open;
             storage->SetBool(openId, open);
         }
 
         return open;
+    }
+
+    void Interactive(char const* label, ImGuiInteractiveFlags_ flags) noexcept {
+        ImGuiWindow* const window = ImGui::GetCurrentWindow();
+        if (window->SkipItems) {
+            return;
+        }
+
+        auto const& style = ImGui::GetStyle();
+
+        auto const pos = window->DC.CursorPos;
+        auto const maxPos = window->WorkRect.Max;
+        float const frameHeight = ImGui::GetFontSize() + style.FramePadding.y * 2.f;
+
+        auto size = CalcItemSize({maxPos.x - pos.x, frameHeight}, 0.f, 0.f);
+        ItemSize(size);
+        auto const id = ImGui::GetID(label);
+        auto const bounds = ImRect(pos, {pos.x + size.x, pos.y + size.y});
+        if (!ItemAdd(bounds, id)) {
+            return;
+        }
+
+        int buttonFlags = ImGuiButtonFlags_MouseButtonLeft;
+        if ((flags & ImGuiInteractiveFlags_AllowItemOverlap) != 0) {
+            buttonFlags |= ImGuiButtonFlags_AllowItemOverlap;
+        }
+
+        bool hovered = false;
+        bool held = false;
+        ButtonBehavior(bounds, id, &hovered, &held, buttonFlags);
+
+        if ((flags & ImGuiInteractiveFlags_AllowItemOverlap) != 0) {
+            SetItemAllowOverlap();
+        }
+
+        if (hovered || held) {
+            const ImU32 col = GetColorU32(held ? ImGuiCol_HeaderActive : ImGuiCol_HeaderHovered);
+            RenderFrame(bounds.Min, bounds.Max, col, false, 0.0f);
+        }
+        RenderNavHighlight(bounds, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
+
+        ImGui::RenderText(pos, label, nullptr, true);
+
+        window->DC.CursorPosPrevLine = pos;
+        window->DC.CursorPos = {pos.x, pos.y + frameHeight};
     }
 
     bool IconButton(char const* label, char const* icon, ImVec2 size, ImGuiButtonFlags flags) {
