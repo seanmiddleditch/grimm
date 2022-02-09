@@ -12,22 +12,38 @@
 
 namespace up {
     class AssetLoader;
+    class PropertyEditor;
     class PropertyGrid;
     class UUID;
 
-    struct PropertyInfo {
-        reflex::SchemaField const& field;
+    enum class PropertyExpandable { None, Empty, Children };
+
+    struct PropertyItemInfo {
+        struct ArrayOps {
+            bool canRemove = false; // if a remove icon should be present
+            bool canMove = false; // if drag-and-drop move should be present
+            bool wantRemove = false; // true if the item should be removed
+            int moveFromIndex = -1; // >= 0 to replace with item at given index
+        };
+
         reflex::Schema const& schema;
         void* object = nullptr;
+        reflex::SchemaField const* field = nullptr; // either this or index are required
         int index = -1; // for arrays
-        bool canRemove = false; // if a remove icon should be present
+        ArrayOps* arrayOps = nullptr;
     };
 
     class PropertyEditor {
     public:
         virtual ~PropertyEditor() = default;
 
-        virtual bool edit(PropertyInfo const& info) = 0;
+        virtual bool edit(PropertyItemInfo const& info) = 0;
+
+        virtual PropertyExpandable expandable(PropertyItemInfo const& info) { return PropertyExpandable::None; }
+        virtual bool children(PropertyGrid& propertyGrid, PropertyItemInfo const& info) { return false; }
+
+        virtual bool canAddItem(PropertyItemInfo const& info) { return false; }
+        virtual void addItem(PropertyItemInfo const& info) { }
     };
 
     class PropertyGrid {
@@ -38,6 +54,7 @@ namespace up {
         void endTable();
 
         bool editObjectRaw(reflex::Schema const& schema, void* object);
+        bool editItem(PropertyItemInfo const& info);
 
         template <typename T>
         void editObject(T& value) {
@@ -46,18 +63,11 @@ namespace up {
 
         void addPropertyEditor(box<PropertyEditor> editor);
 
+        PropertyEditor* findPropertyEditor(reflex::Schema const& schema) const noexcept;
+
     private:
-        struct ArrayOps;
-        struct ItemState;
-
-        bool _editElements(PropertyInfo const& info, ItemState& state);
-        bool _editProperty(PropertyInfo const& info);
-
-        void _label(PropertyInfo const& info, ItemState& state, ArrayOps* ops = nullptr) noexcept;
-        bool _applyState(PropertyInfo const& info, ItemState const& state);
-        bool _editField(PropertyInfo const& info, ItemState& state, ArrayOps* ops = nullptr);
-
-        PropertyEditor* _selectEditor(PropertyInfo const& info) noexcept;
+        bool _editInternal(PropertyEditor& propertyEditor, PropertyItemInfo const& info);
+        void _showLabel(PropertyItemInfo const& info) noexcept;
 
         vector<box<PropertyEditor>> _propertyEditors;
         hash_map<reflex::SchemaPrimitive, uint32> _primitiveEditorMap;

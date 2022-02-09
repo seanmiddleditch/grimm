@@ -9,6 +9,10 @@ namespace up::ascii {
         return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
     }
 
+    constexpr auto is_lower(char const ch) noexcept -> bool { return ch >= 'a' && ch <= 'z'; }
+
+    constexpr auto is_upper(char const ch) noexcept -> bool { return ch >= 'A' && ch <= 'Z'; }
+
     constexpr auto is_alnum(char const ch) noexcept -> bool { return is_digit(ch) || is_alpha(ch); }
 
     constexpr auto is_hex_digit(char const ch) noexcept -> bool {

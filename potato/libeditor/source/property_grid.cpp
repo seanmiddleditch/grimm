@@ -16,18 +16,19 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <numeric>
 
 namespace up {
     namespace {
         struct BoolPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 return ImGui::Checkbox("##bool", static_cast<bool*>(info.object));
             }
         };
 
         struct IntegerPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 switch (info.schema.primitive) {
                     case reflex::SchemaPrimitive::Int8:
                         return _edit(info, ImGuiDataType_S8, *static_cast<int8*>(info.object));
@@ -52,14 +53,16 @@ namespace up {
 
         private:
             template <integral IntT>
-            bool _edit(PropertyInfo const& info, ImGuiDataType imguiType, IntT& value) noexcept {
+            bool _edit(PropertyItemInfo const& info, ImGuiDataType imguiType, IntT& value) noexcept {
                 ImGui::SetNextItemWidth(-1.f);
 
-                auto const* const rangeAnnotation = queryAnnotation<up::schema::IntRange>(info.field);
-                if (rangeAnnotation != nullptr) {
-                    auto const minValue = narrow_cast<IntT>(rangeAnnotation->min);
-                    auto const maxValue = narrow_cast<IntT>(rangeAnnotation->max);
-                    return ImGui::SliderScalar("##value", imguiType, &value, &minValue, &maxValue);
+                if (info.field != nullptr) {
+                    auto const* const rangeAnnotation = reflex::queryAnnotation<up::schema::IntRange>(*info.field);
+                    if (rangeAnnotation != nullptr) {
+                        auto const minValue = narrow_cast<IntT>(rangeAnnotation->min);
+                        auto const maxValue = narrow_cast<IntT>(rangeAnnotation->max);
+                        return ImGui::SliderScalar("##value", imguiType, &value, &minValue, &maxValue);
+                    }
                 }
 
                 return ImGui::InputScalar("##value", imguiType, &value);
@@ -67,7 +70,7 @@ namespace up {
         };
 
         struct FloatPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 switch (info.schema.primitive) {
                     case reflex::SchemaPrimitive::Float:
                         return _edit(info, ImGuiDataType_Float, *static_cast<float*>(info.object));
@@ -80,28 +83,30 @@ namespace up {
 
         private:
             template <typename FloatT>
-            bool _edit(PropertyInfo const& info, ImGuiDataType imguiType, FloatT& value) noexcept {
+            bool _edit(PropertyItemInfo const& info, ImGuiDataType imguiType, FloatT& value) noexcept {
                 ImGui::SetNextItemWidth(-1.f);
 
-                auto const* const rangeAnnotation = queryAnnotation<up::schema::FloatRange>(info.field);
-                if (rangeAnnotation != nullptr) {
-                    auto const minValue = narrow_cast<FloatT>(rangeAnnotation->min);
-                    auto const maxValue = narrow_cast<FloatT>(rangeAnnotation->max);
-                    return ImGui::SliderScalar(
-                        "##value",
-                        imguiType,
-                        &value,
-                        &minValue,
-                        &maxValue,
-                        "%f",
-                        ImGuiSliderFlags_AlwaysClamp);
+                if (info.field != nullptr) {
+                    auto const* const rangeAnnotation = reflex::queryAnnotation<up::schema::FloatRange>(*info.field);
+                    if (rangeAnnotation != nullptr) {
+                        auto const minValue = narrow_cast<FloatT>(rangeAnnotation->min);
+                        auto const maxValue = narrow_cast<FloatT>(rangeAnnotation->max);
+                        return ImGui::SliderScalar(
+                            "##value",
+                            imguiType,
+                            &value,
+                            &minValue,
+                            &maxValue,
+                            "%f",
+                            ImGuiSliderFlags_AlwaysClamp);
+                    }
                 }
 
                 return ImGui::InputScalar("##value", imguiType, &value);
             }
 
             template <integral IntT>
-            bool _edit(PropertyInfo const& info, IntT& value) noexcept {
+            bool _edit(PropertyItemInfo const& info, IntT& value) noexcept {
                 int tmp = static_cast<int>(value);
                 bool const edit = _edit(info, tmp);
                 value = static_cast<IntT>(tmp);
@@ -110,21 +115,21 @@ namespace up {
         };
 
         struct Vec3PropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 ImGui::SetNextItemWidth(-1.f);
                 return ImGui::InputVec3("##vec3", *static_cast<glm::vec3*>(info.object));
             }
         };
 
         struct QuaternionPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 ImGui::SetNextItemWidth(-1.f);
                 return ImGui::InputQuat("##quat", *static_cast<glm::quat*>(info.object));
             }
         };
 
         struct StringPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 ImGui::SetNextItemWidth(-1.f);
 
                 auto& value = *static_cast<string*>(info.object);
@@ -147,7 +152,7 @@ namespace up {
         };
 
         struct ArrayPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 if (info.schema.operations != nullptr && info.schema.operations->arrayGetSize != nullptr) {
                     auto const size = info.schema.operations->arrayGetSize(info.object);
                     ImGui::Text("%zu %s", size, size == 1 ? "item" : "items");
@@ -157,24 +162,145 @@ namespace up {
                 }
                 return false;
             }
+
+            PropertyExpandable expandable(PropertyItemInfo const& info) override {
+                if (info.schema.operations != nullptr && info.schema.operations->arrayGetSize != nullptr &&
+                    info.schema.operations->arrayGetSize(info.object) != 0) {
+                    return PropertyExpandable::Children;
+                }
+                return PropertyExpandable::Empty;
+            }
+
+            bool children(PropertyGrid& propertyGrid, PropertyItemInfo const& info) override {
+                if (!UP_VERIFY(info.schema.operations != nullptr)) {
+                    return false;
+                }
+
+                if (!UP_VERIFY(
+                        info.schema.operations->arrayGetSize != nullptr &&
+                        info.schema.operations->arrayMutableElementAt != nullptr)) {
+                    return false;
+                }
+
+                size_t const size = info.schema.operations->arrayGetSize(info.object);
+                bool const canRemoveElement = info.schema.operations->arrayEraseAt != nullptr;
+                bool const canMoveElement = info.schema.operations->arrayMoveTo != nullptr;
+
+                bool wantRemove = false;
+                size_t removeIndex = 0;
+
+                bool wantMove = false;
+                size_t moveFromIndex = 0;
+                size_t moveToIndex = 0;
+
+                bool edits = false;
+
+                for (size_t index = 0; index != size; ++index) {
+                    PropertyItemInfo::ArrayOps ops{.canRemove = canRemoveElement, .canMove = canMoveElement};
+                    PropertyItemInfo const elementInfo{
+                        .schema = *info.schema.elementType,
+                        .object = info.schema.operations->arrayMutableElementAt(info.object, index),
+                        .index = narrow_cast<int>(index),
+                        .arrayOps = &ops};
+
+                    ImGui::PushID(static_cast<int>(index));
+
+                    edits |= propertyGrid.editItem(elementInfo);
+                    if (ops.wantRemove) {
+                        wantRemove = true;
+                        removeIndex = index;
+                    }
+                    if (ops.moveFromIndex >= 0) {
+                        wantMove = true;
+                        moveToIndex = index;
+                        moveFromIndex = ops.moveFromIndex;
+                    }
+
+                    ImGui::PopID();
+                }
+
+                if (wantRemove && canRemoveElement) {
+                    info.schema.operations->arrayEraseAt(info.object, removeIndex);
+                    edits = true;
+                }
+                else if (wantMove && canMoveElement) {
+                    info.schema.operations->arrayMoveTo(info.object, moveToIndex, moveFromIndex);
+                    edits = true;
+                }
+
+                return edits;
+            }
+
+            bool canAddItem(PropertyItemInfo const& info) override {
+                return info.schema.operations != nullptr && info.schema.operations->arrayGetSize != nullptr &&
+                    info.schema.operations->arrayResize != nullptr;
+            }
+
+            void addItem(PropertyItemInfo const& info) override {
+                info.schema.operations->arrayResize(info.object, info.schema.operations->arrayGetSize(info.object) + 1);
+            }
         };
 
         struct ObjectPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
-                ImGui::Text("<%s>", info.schema.elementType->name.c_str());
+            bool edit(PropertyItemInfo const& info) override {
+                ImGui::Text("<%s>", info.schema.name.c_str());
                 return false;
+            }
+
+            PropertyExpandable expandable(PropertyItemInfo const& info) override {
+                if (info.schema.fields.empty()) {
+                    return PropertyExpandable::None;
+                }
+                return PropertyExpandable::Children;
+            }
+
+            bool children(PropertyGrid& propertyGrid, PropertyItemInfo const& info) override {
+                bool edits = false;
+                for (reflex::SchemaField const& field : info.schema.fields) {
+                    edits |= propertyGrid.editItem({
+                        .schema = *field.schema,
+                        .object = static_cast<char*>(info.object) + field.offset,
+                        .field = &field,
+                    });
+                }
+                return edits;
             }
         };
 
         struct PointerPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
-                ImGui::Text("<%s>", info.schema.elementType->name.c_str());
+            bool edit(PropertyItemInfo const& info) override {
+                if (info.schema.operations != nullptr && info.schema.operations->pointerDeref(info.object) != nullptr) {
+                    ImGui::Text("<%s>", info.schema.elementType->name.c_str());
+                }
+                else {
+                    ImGui::Text("empty :: <%s>", info.schema.elementType->name.c_str());
+                }
+                return false;
+            }
+
+            PropertyExpandable expandable(PropertyItemInfo const& info) override {
+                if (info.schema.operations != nullptr && info.schema.operations->pointerDeref(info.object) != nullptr) {
+                    return PropertyExpandable::Children;
+                }
+                return PropertyExpandable::Empty;
+            }
+
+            bool children(PropertyGrid& propertyGrid, PropertyItemInfo const& info) override {
+                if (void* const pointee = info.schema.operations->pointerMutableDeref(info.object);
+                    pointee != nullptr) {
+                    return propertyGrid.editItem({
+                        .schema = *info.schema.elementType,
+                        .object = pointee,
+                        .index = info.index,
+                        .arrayOps = info.arrayOps,
+                    });
+                }
                 return false;
             }
         };
 
         struct UuidPropertyEditor final : PropertyEditor {
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 ImGui::SetNextItemWidth(-1.f);
 
                 auto& value = *static_cast<UUID*>(info.object);
@@ -213,11 +339,11 @@ namespace up {
         struct AssetRefPropertyEditor final : PropertyEditor {
             explicit AssetRefPropertyEditor(AssetLoader& assetLoader) noexcept : _assetLoader(assetLoader) { }
 
-            bool edit(PropertyInfo const& info) override {
+            bool edit(PropertyItemInfo const& info) override {
                 UP_GUARD(info.schema.primitive == reflex::SchemaPrimitive::AssetRef, false);
 
                 zstring_view assetType{};
-                if (auto const* const assetTypeAnno = queryAnnotation<schema::AssetType>(info.schema);
+                if (auto const* const assetTypeAnno = reflex::queryAnnotation<schema::AssetType>(info.schema);
                     assetTypeAnno != nullptr) {
                     assetType = assetTypeAnno->assetType;
                 }
@@ -265,18 +391,6 @@ namespace up {
             AssetLoader& _assetLoader;
         };
     } // namespace
-
-    struct PropertyGrid::ArrayOps {
-        int moveFromIndex = -1;
-        int moveToIndex = -1;
-        bool canMove = false;
-    };
-
-    struct PropertyGrid::ItemState {
-        bool open = false;
-        bool wantAdd = false;
-        bool wantRemove = false;
-    };
 
     PropertyGrid::PropertyGrid(AssetLoader& assetLoader) noexcept {
         {
@@ -369,245 +483,259 @@ namespace up {
     void PropertyGrid::endTable() { ImGui::EndTable(); }
 
     bool PropertyGrid::editObjectRaw(reflex::Schema const& schema, void* object) {
-        UP_GUARD(schema.primitive == reflex::SchemaPrimitive::Object, false);
-
-        bool edits = false;
-
-        for (reflex::SchemaField const& field : schema.fields) {
-            edits |= _editProperty(
-                {.field = field, .schema = *field.schema, .object = static_cast<char*>(object) + field.offset});
+        PropertyEditor* const editor = findPropertyEditor(schema);
+        if (!UP_VERIFY(editor != nullptr)) {
+            ImGui::TextColored(ImVec4{1.f, 0.f, 0.f, 1.f}, "Unsupported Schema type");
+            return false;
         }
 
-        return edits;
+        return editor->children(*this, {.schema = schema, .object = object});
     }
 
-    bool PropertyGrid::_editElements(PropertyInfo const& info, ItemState& state) {
-        if (!UP_VERIFY(info.schema.operations != nullptr)) {
-            return false;
-        }
-
-        if (!UP_VERIFY(
-                info.schema.operations->arrayGetSize != nullptr &&
-                info.schema.operations->arrayMutableElementAt != nullptr)) {
-            return false;
-        }
-
-        size_t const size = info.schema.operations->arrayGetSize(info.object);
-        ArrayOps ops;
-        ops.canMove = info.schema.operations->arrayMoveTo != nullptr;
-        bool const canRemoveElement = info.schema.operations->arrayEraseAt != nullptr;
-
-        bool wantRemove = false;
-        size_t removeIndex = 0;
-
-        bool edits = false;
-
-        for (size_t index = 0; index != size; ++index) {
-            PropertyInfo const elementInfo{
-                .field = info.field,
-                .schema = *info.schema.elementType,
-                .object = info.schema.operations->arrayMutableElementAt(info.object, index),
-                .index = narrow_cast<int>(index),
-                .canRemove = canRemoveElement};
-
-            ImGui::PushID(static_cast<int>(index));
-            ImGui::TableNextRow();
-
-            ItemState state{};
-            edits |= _editField(elementInfo, state, &ops);
-            if (state.wantRemove) {
-                wantRemove = true;
-                removeIndex = index;
-            }
-
-            ImGui::PopID();
-        }
-
-        if (wantRemove) {
-            info.schema.operations->arrayEraseAt(info.object, removeIndex);
-            edits = true;
-        }
-        else if (ops.moveToIndex >= 0 && ops.moveFromIndex >= 0) {
-            info.schema.operations->arrayMoveTo(info.object, ops.moveToIndex, ops.moveFromIndex);
-            edits = true;
-        }
-
-        return edits;
-    }
-
-    bool PropertyGrid::_editProperty(PropertyInfo const& info) {
-        if (info.schema.primitive == reflex::SchemaPrimitive::Object &&
-            queryAnnotation<schema::Flatten>(info.field) != nullptr) {
-            return editObjectRaw(info.schema, info.object);
-        }
-
-        if (queryAnnotation<schema::Hidden>(info.field) != nullptr) {
-            return false;
-        }
-
-        ImGui::PushID(info.field.name.c_str());
+    bool PropertyGrid::editItem(PropertyItemInfo const& info) {
         ImGui::TableNextRow();
 
-        ItemState state{};
-        bool const edits = _editField(info, state);
-
-        ImGui::PopID();
-
-        return edits;
-    }
-
-    void PropertyGrid::_label(PropertyInfo const& info, ItemState& state, ArrayOps* ops) noexcept {
-        bool const isExpandable = info.schema.primitive == reflex::SchemaPrimitive::Object ||
-            info.schema.primitive == reflex::SchemaPrimitive::Array ||
-            (info.schema.primitive == reflex::SchemaPrimitive::Pointer &&
-             info.schema.operations->pointerDeref(info.object) != nullptr);
-
-        ImGui::TableSetColumnIndex(0);
-        ImGui::AlignTextToFramePadding();
-
-        // expand for objects/arrays, or drag for reordering array elements
-        if (isExpandable) {
-            ImGuiTreeNodeFlags const flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_NoTreePushOnOpen |
-                ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow |
-                ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-            state.open = ImGui::TreeNodeEx("##expand", flags);
-            ImGui::SameLine();
-        }
-        else if (ops != nullptr && ops->canMove) {
-            ImGuiTreeNodeFlags const flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf |
-                ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-            ImGui::TreeNodeEx("##expand", flags);
-            ImGui::SameLine();
-
-            if (ImGui::BeginDragDropTarget()) {
-                if (ImGuiPayload const* payload = ImGui::AcceptDragDropPayload("reorder"); payload != nullptr) {
-                    ops->moveFromIndex = *static_cast<int const*>(payload->Data);
-                    ops->moveToIndex = info.index;
-                }
-                ImGui::EndDragDropTarget();
-            }
-
-            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAutoExpirePayload)) {
-                ImGui::SetDragDropPayload("reorder", &info.index, sizeof(info.index));
-                ImGui::Text("%d", info.index + 1);
-                ImGui::EndDragDropSource();
-            }
-        }
-
-        // button bar and text
-        {
-            auto const windowPos = ImGui::GetWindowPos();
-            auto availSize = ImGui::GetContentRegionAvail();
-            float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
-            float const buttonSpacing = ImGui::GetStyle().ItemInnerSpacing.x;
-            auto const pos = ImGui::GetCursorPos();
-
-            // add row icon for arrays
-            if (info.schema.operations != nullptr && info.schema.operations->arrayResize != nullptr) {
-                availSize.x -= buttonWidth;
-                ImGui::SetCursorPos({pos.x + availSize.x, pos.y});
-                availSize.x -= buttonSpacing;
-                if (ImGui::IconButton("##add", ICON_FA_PLUS)) {
-                    state.wantAdd = true;
-                }
-            }
-
-            // delete row icon for array elements
+        PropertyEditor* const editor = findPropertyEditor(info.schema);
+        if (UP_VERIFY(editor != nullptr)) {
             if (info.index >= 0) {
-                availSize.x -= buttonWidth;
-                ImGui::SetCursorPos({pos.x + availSize.x, pos.y});
-                availSize.x -= buttonSpacing;
-                if (ImGui::IconButton("##remove", ICON_FA_TRASH)) {
-                    state.wantRemove = true;
-                }
+                ImGui::PushID(info.index);
             }
-
-            ImGui::SetCursorPos(pos);
-            ImGui::PushClipRect(
-                ImVec2(windowPos.x + pos.x, windowPos.y + pos.y),
-                ImVec2(windowPos.x + pos.x + availSize.x, windowPos.y + pos.y + availSize.y),
-                true);
-
-            // text label
-            if (info.index >= 0) {
-                ImGui::Text("%d", info.index + 1);
-            }
-            else if (auto const* const displayNameAnnotation = queryAnnotation<schema::DisplayName>(info.field);
-                     displayNameAnnotation != nullptr && !displayNameAnnotation->name.empty()) {
-                ImGui::Text("%s", displayNameAnnotation->name.c_str());
+            else if (info.field != nullptr) {
+                ImGui::PushID(info.field->name.c_str());
             }
             else {
-                ImGui::Text("%s", info.field.name.c_str());
+                ImGui::PushID(info.schema.name.c_str());
             }
 
-            ImGui::PopClipRect();
-        }
+            bool const edits = _editInternal(*editor, info);
 
-        // label tooltip
-        if (ImGui::IsItemHovered()) {
-            if (auto const* const tooltipAnnotation = queryAnnotation<schema::Tooltip>(info.field);
-                tooltipAnnotation != nullptr) {
-                ImGui::BeginTooltip();
-                ImGui::Text("%s", tooltipAnnotation->text.c_str());
-                ImGui::EndTooltip();
-            }
-        }
-    }
+            ImGui::PopID();
 
-    bool PropertyGrid::_applyState(PropertyInfo const& info, ItemState const& state) {
-        if (state.wantAdd && info.schema.operations != nullptr && info.schema.operations->arrayResize != nullptr &&
-            info.schema.operations->arrayGetSize != nullptr) {
-            info.schema.operations->arrayResize(info.object, info.schema.operations->arrayGetSize(info.object) + 1);
-            return true;
-        }
-        return false;
-    }
-
-    bool PropertyGrid::_editField(PropertyInfo const& info, ItemState& state, ArrayOps* ops) {
-        bool edits = false;
-
-        _label(info, state, ops);
-        edits |= _applyState(info, state);
-
-        ImGui::TableSetColumnIndex(1);
-        ImGui::AlignTextToFramePadding();
-
-        PropertyEditor* const propertyEditor = _selectEditor(info);
-        if (!UP_VERIFY(propertyEditor != nullptr)) {
-            ImGui::TextColored(ImVec4{1.f, 0.f, 0.f, 1.f}, "Unsupported Schema type");
             return edits;
         }
 
-        edits |= propertyEditor->edit(info);
+        ImGui::TableSetColumnIndex(0);
+        _showLabel(info);
 
-        if (state.open) {
-            ImGui::Indent();
-            if (info.schema.primitive == reflex::SchemaPrimitive::Object) {
-                edits |= editObjectRaw(info.schema, info.object);
-            }
-            else if (info.schema.primitive == reflex::SchemaPrimitive::Array) {
-                edits |= _editElements(info, state);
-            }
-            else if (info.schema.primitive == reflex::SchemaPrimitive::Pointer) {
-                if (void* const pointee = info.schema.operations->pointerMutableDeref(info.object);
-                    pointee != nullptr) {
-                    edits |= _editField(
-                        {.field = info.field, .schema = *info.schema.elementType, .object = pointee},
-                        state,
-                        ops);
-                }
-            }
-            ImGui::Unindent();
-        }
+        ImGui::TableSetColumnIndex(1);
+        ImGui::TextColored(ImVec4{1.f, 0.f, 0.f, 1.f}, "Unsupported Schema type");
 
-        return edits;
+        return false;
     }
 
-    PropertyEditor* PropertyGrid::_selectEditor(PropertyInfo const& info) noexcept {
-        auto const primIt = _primitiveEditorMap.find(info.schema.primitive);
+    PropertyEditor* PropertyGrid::findPropertyEditor(reflex::Schema const& schema) const noexcept {
+        auto const primIt = _primitiveEditorMap.find(schema.primitive);
         if (primIt) {
             return _propertyEditors[primIt->value].get();
         }
         return nullptr;
+    }
+
+    bool PropertyGrid::_editInternal(PropertyEditor& propertyEditor, PropertyItemInfo const& info) {
+        // behavior overrides
+        if (info.field != nullptr) {
+            if (reflex::queryAnnotation<schema::Hidden>(*info.field) != nullptr) {
+                return false;
+            }
+
+            if (reflex::queryAnnotation<schema::Flatten>(*info.field) != nullptr) {
+                return editObjectRaw(info.schema, info.object);
+            }
+        }
+
+        bool edits = false;
+        bool open = false;
+
+        // label
+        {
+            ImGui::TableSetColumnIndex(0);
+
+            // expand for objects/arrays, or drag for reordering array elements
+            {
+                auto const expandable = propertyEditor.expandable(info);
+
+                if (expandable == PropertyExpandable::Children) {
+                    ImGuiTreeNodeFlags const flags = ImGuiTreeNodeFlags_DefaultOpen |
+                        ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
+                        ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_AllowItemOverlap |
+                        ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_FramePadding;
+                    open = ImGui::TreeNodeEx("##expand", flags);
+                    ImGui::SameLine();
+                }
+                else if (expandable == PropertyExpandable::Empty) {
+                    ImGuiTreeNodeFlags const flags = ImGuiTreeNodeFlags_NoTreePushOnOpen |
+                        ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap |
+                        ImGuiTreeNodeFlags_FramePadding;
+                    ImGui::BeginDisabled(true);
+                    ImGui::SetNextItemOpen(false, ImGuiCond_Always);
+                    open = ImGui::TreeNodeEx("##empty", flags);
+                    ImGui::SameLine();
+                    ImGui::EndDisabled();
+                }
+                else if (info.arrayOps != nullptr && info.arrayOps->canMove) {
+                    ImGui::Interactive("##drag", ImGuiInteractiveFlags_AllowItemOverlap);
+                    ImGui::SameLine();
+
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (ImGuiPayload const* payload = ImGui::AcceptDragDropPayload("reorder"); payload != nullptr) {
+                            info.arrayOps->moveFromIndex = *static_cast<int const*>(payload->Data);
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
+
+                    if (ImGui::BeginDragDropSource(
+                            ImGuiDragDropFlags_SourceAutoExpirePayload | ImGuiDragDropFlags_SourceAllowNullID)) {
+                        ImGui::SetDragDropPayload("reorder", &info.index, sizeof(info.index));
+                        _showLabel(info);
+                        ImGui::EndDragDropSource();
+                    }
+                }
+                else {
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetItemSpacing().x);
+                }
+            }
+
+            // label buttons
+            {
+                auto const windowPos = ImGui::GetWindowPos();
+                auto availSize = ImGui::GetContentRegionAvail();
+                float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
+                float const buttonSpacing = ImGui::GetStyle().ItemInnerSpacing.x;
+                auto const pos = ImGui::GetCursorPos();
+
+                // add row icon for arrays
+                if (propertyEditor.canAddItem(info)) {
+                    availSize.x -= buttonWidth + buttonSpacing;
+                    ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
+                    if (ImGui::IconButton("##add", ICON_FA_PLUS)) {
+                        propertyEditor.addItem(info);
+                    }
+                }
+
+                // delete row icon for array elements
+                if (info.arrayOps != nullptr && info.arrayOps->canRemove) {
+                    availSize.x -= buttonWidth + buttonSpacing;
+                    ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
+                    if (ImGui::IconButton("##remove", ICON_FA_TRASH)) {
+                        info.arrayOps->wantRemove = true;
+                    }
+                }
+
+                ImGui::SetCursorPos(pos);
+                ImGui::PushClipRect(
+                    ImVec2(windowPos.x + pos.x, windowPos.y + pos.y),
+                    ImVec2(windowPos.x + pos.x + availSize.x, windowPos.y + pos.y + availSize.y),
+                    true);
+            }
+
+            // label
+            {
+                ImGui::AlignTextToFramePadding();
+                _showLabel(info);
+
+                ImGui::PopClipRect();
+            }
+
+            // label tooltip
+            if (info.field != nullptr && ImGui::IsItemHovered()) {
+                if (auto const* const tooltipAnnotation = reflex::queryAnnotation<schema::Tooltip>(*info.field);
+                    tooltipAnnotation != nullptr) {
+                    ImGui::BeginTooltip();
+                    ImGui::Text("%s", tooltipAnnotation->text.c_str());
+                    ImGui::EndTooltip();
+                }
+            }
+        }
+
+        // editor
+        {
+            ImGui::TableSetColumnIndex(1);
+            ImGui::AlignTextToFramePadding();
+
+            edits |= propertyEditor.edit(info);
+        }
+
+        // recurse into children
+        if (open) {
+            ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
+            propertyEditor.children(*this, info);
+            ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+        }
+
+        return edits;
+    }
+
+    void PropertyGrid::_showLabel(PropertyItemInfo const& info) noexcept {
+        if (info.index >= 0) {
+            char buffer[64];
+            nanofmt::format_to(buffer, "{}", info.index + 1);
+            ImGui::TextUnformatted(buffer);
+            return;
+        }
+
+        if (info.field == nullptr) {
+            ImGui::TextUnformatted("<Unknown>");
+            return;
+        }
+
+        if (auto const* const displayNameAnnotation = reflex::queryAnnotation<schema::DisplayName>(*info.field);
+            displayNameAnnotation != nullptr && !displayNameAnnotation->name.empty()) {
+            ImGui::TextUnformatted(displayNameAnnotation->name.c_str());
+            return;
+        }
+
+        // format field names pretty
+        {
+            bool first = true;
+            char const* ch = info.field->name.c_str();
+            while (*ch != '\0') {
+                if (*ch == '_') {
+                    ++ch;
+                    continue;
+                }
+
+                if (!first) {
+                    ImGui::TextUnformatted(" ");
+                    ImGui::SameLine(0.f, 0.f);
+                }
+                first = false;
+
+                char const* start = ch;
+
+                if (ascii::is_digit(*ch)) {
+                    ++ch;
+                    while (ascii::is_digit(*ch)) {
+                        ++ch;
+                    }
+                }
+                else if (ascii::is_upper(*ch)) {
+                    ++ch;
+                    if (ascii::is_upper(*ch)) {
+                        ++ch;
+                        while (ascii::is_upper(*ch)) {
+                            ++ch;
+                        }
+                    }
+                    else if (ascii::is_lower(*ch)) {
+                        ++ch;
+                        while (ascii::is_lower(*ch)) {
+                            ++ch;
+                        }
+                    }
+                }
+                else {
+                    ImGui::Text("%c", ascii::toUppercase(*ch));
+                    ImGui::SameLine(0.f, 0.f);
+
+                    start = ++ch;
+                    while (ascii::is_lower(*ch)) {
+                        ++ch;
+                    }
+                }
+
+                ImGui::TextUnformatted(start, ch);
+                ImGui::SameLine(0.f, 0.f);
+            }
+        }
     }
 } // namespace up
