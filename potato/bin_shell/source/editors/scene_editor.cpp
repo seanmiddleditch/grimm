@@ -54,13 +54,7 @@ namespace up::shell {
                     doc->fromJson(jsonDoc, _assetLoader);
                 }
 
-                return new_box<SceneEditor>(
-                    params,
-                    std::move(doc),
-                    std::move(space),
-                    _database,
-                    _propertyGrid,
-                    _assetLoader);
+                return new_box<SceneEditor>(params, std::move(doc), std::move(space), _database, _propertyGrid);
             }
 
         private:
@@ -118,14 +112,12 @@ namespace up::shell {
         box<SceneDocument> sceneDoc,
         box<Space> previewScene,
         SceneDatabase& database,
-        PropertyGrid& propertyGrid,
-        AssetLoader& assetLoader)
+        PropertyGrid& propertyGrid)
         : Editor(params)
         , _previewScene(std::move(previewScene))
         , _doc(std::move(sceneDoc))
-        , _propertyGrid(propertyGrid)
         , _database(database)
-        , _assetLoader(assetLoader) {
+        , _propertyGrid(propertyGrid) {
         _arcball.target = {0, 0, 0};
         _arcball.boomLength = 40.f;
         _arcball.pitch = -glm::quarter_pi<float>();

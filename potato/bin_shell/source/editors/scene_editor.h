@@ -34,8 +34,7 @@ namespace up::shell {
             box<SceneDocument> sceneDoc,
             box<Space> previewScene,
             SceneDatabase& database,
-            PropertyGrid& propertyGrid,
-            AssetLoader& assetLoader);
+            PropertyGrid& propertyGrid);
 
         zstring_view displayName() const override { return "Scene"_zsv; }
         zstring_view documentPath() const override { return _doc->filename(); }
@@ -77,6 +76,5 @@ namespace up::shell {
         EntityId _cameraId = EntityId::None;
         SceneDatabase& _database;
         PropertyGrid& _propertyGrid;
-        AssetLoader& _assetLoader;
     };
 } // namespace up::shell
