@@ -124,8 +124,7 @@ namespace up::reflex {
     struct SchemaHolder;
 
     template <typename T>
-    concept schema_glm_type =
-        std::is_same_v<T, glm::vec3> || std::is_same_v<T, glm::mat4x4> || std::is_same_v<T, glm::quat>;
+    concept schema_glm_type = std::is_same_v<T, glm::vec3> || std::is_same_v<T, glm::quat>;
     template <typename T>
     concept schema_primitive = std::is_scalar_v<T> || std::is_same_v<T, string> || schema_glm_type<T> || is_vector_v<T>;
     template <typename T>
@@ -187,10 +186,6 @@ namespace up::reflex {
         }
         else if constexpr (std::is_same_v<Type, glm::vec3>) {
             static constexpr Schema schema{.name = "vec3"_zsv, .primitive = SchemaPrimitive::Vec3};
-            return schema;
-        }
-        else if constexpr (std::is_same_v<Type, glm::mat4x4>) {
-            static constexpr Schema schema{.name = "mat4x4"_zsv, .primitive = SchemaPrimitive::Mat4x4};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, glm::quat>) {
