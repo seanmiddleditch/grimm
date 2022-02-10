@@ -43,7 +43,6 @@ namespace up::reflex {
         UInt64,
         Enum,
         Vec3,
-        Mat4x4,
         Quat,
         Float,
         Double,
@@ -64,9 +63,8 @@ namespace up::reflex {
         using ArrayGetSize = size_t (*)(void const* arr);
         using ArrayElementAt = void const* (*)(void const* arr, size_t index);
         using ArrayMutableElementAt = void* (*)(void* arr, size_t index);
-        using ArraySwapIndices = void (*)(void* arr, size_t first, size_t second);
+        using ArrayMoveTo = void (*)(void* arr, size_t to, size_t from);
         using ArrayEraseAt = void (*)(void* arr, size_t index);
-        using ArrayInsertAt = void (*)(void* arr, size_t index);
         using ArrayResize = void (*)(void* arr, size_t size);
 
         using PointerDeref = void const* (*)(void const* ptr);
@@ -76,9 +74,8 @@ namespace up::reflex {
         ArrayGetSize arrayGetSize = nullptr;
         ArrayElementAt arrayElementAt = nullptr;
         ArrayMutableElementAt arrayMutableElementAt = nullptr;
-        ArraySwapIndices arraySwapIndices = nullptr;
+        ArrayMoveTo arrayMoveTo = nullptr;
         ArrayEraseAt arrayEraseAt = nullptr;
-        ArrayInsertAt arrayInsertAt = nullptr;
         ArrayResize arrayResize = nullptr;
 
         PointerDeref pointerDeref = nullptr;
@@ -127,8 +124,7 @@ namespace up::reflex {
     struct SchemaHolder;
 
     template <typename T>
-    concept schema_glm_type =
-        std::is_same_v<T, glm::vec3> || std::is_same_v<T, glm::mat4x4> || std::is_same_v<T, glm::quat>;
+    concept schema_glm_type = std::is_same_v<T, glm::vec3> || std::is_same_v<T, glm::quat>;
     template <typename T>
     concept schema_primitive = std::is_scalar_v<T> || std::is_same_v<T, string> || schema_glm_type<T> || is_vector_v<T>;
     template <typename T>
@@ -192,10 +188,6 @@ namespace up::reflex {
             static constexpr Schema schema{.name = "vec3"_zsv, .primitive = SchemaPrimitive::Vec3};
             return schema;
         }
-        else if constexpr (std::is_same_v<Type, glm::mat4x4>) {
-            static constexpr Schema schema{.name = "mat4x4"_zsv, .primitive = SchemaPrimitive::Mat4x4};
-            return schema;
-        }
         else if constexpr (std::is_same_v<Type, glm::quat>) {
             static constexpr Schema schema{.name = "quat"_zsv, .primitive = SchemaPrimitive::Quat};
             return schema;
@@ -228,21 +220,21 @@ namespace up::reflex {
                     auto& arr = *static_cast<Type*>(array);
                     return arr.data() + index;
                 },
-                .arraySwapIndices =
-                    [](void* array, size_t first, size_t second) noexcept {
+                .arrayMoveTo =
+                    [](void* array, size_t to, size_t from) noexcept {
                         auto& arr = *static_cast<Type*>(array);
-                        using std::swap;
-                        swap(arr[first], arr[second]);
+                        int const step = to > from ? +1 : -1;
+                        while (from != to) {
+                            using std::swap;
+                            size_t const next = from + step;
+                            swap(arr[from], arr[next]);
+                            from = next;
+                        }
                     },
                 .arrayEraseAt =
                     [](void* array, size_t index) {
                         auto& arr = *static_cast<Type*>(array);
                         arr.erase(arr.begin() + index);
-                    },
-                .arrayInsertAt =
-                    [](void* array, size_t index) {
-                        auto& arr = *static_cast<Type*>(array);
-                        arr.insert(arr.begin() + index, {});
                     },
                 .arrayResize =
                     [](void* array, size_t size) {

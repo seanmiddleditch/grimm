@@ -34,11 +34,7 @@
                     },
                     {
                         "$schema": "Body",
-                        "linearVelocity": [
-                            4.0,
-                            12.0,
-                            -9.0
-                        ]
+                        "mass": 0.0
                     }
                 ],
                 "name": "Center"
@@ -3383,7 +3379,38 @@
                 "name": "Ring"
             }
         ],
-        "components": [],
+        "components": [
+            {
+                "$schema": "Test",
+                "angles": {
+                    "$schema": "Euler",
+                    "pitch": 0.0,
+                    "roll": 0.0,
+                    "yaw": 0.0
+                },
+                "array": [],
+                "embedded": null,
+                "enabled": false,
+                "integer": 0,
+                "limit": 0,
+                "numbers": [
+                    1001,
+                    2002,
+                    3003,
+                    4004,
+                    5005
+                ],
+                "real": 7.550000190734863,
+                "ref": null,
+                "rot": null,
+                "text": "hmm",
+                "vec": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ],
         "name": "Root"
     }
 }

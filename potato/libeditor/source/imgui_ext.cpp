@@ -47,6 +47,72 @@ namespace ImGui::inline Potato {
             nullptr);
     }
 
+    bool ToggleHeader(char const* label, char const* icon) noexcept {
+        ImGuiID const openId = ImGui::GetID("open");
+
+        ImGuiStorage* const storage = ImGui::GetStateStorage();
+        bool open = storage->GetBool(openId, true);
+
+        char buf[256];
+        char const* selectLabel = label;
+        if (icon != nullptr) {
+            nanofmt::format_to(buf, "{} {}", icon, label);
+            selectLabel = buf;
+        }
+
+        if (ImGui::Selectable(selectLabel, open, ImGuiSelectableFlags_None)) {
+            open = !open;
+            storage->SetBool(openId, open);
+        }
+
+        return open;
+    }
+
+    void Interactive(char const* label, ImGuiInteractiveFlags_ flags) noexcept {
+        ImGuiWindow* const window = ImGui::GetCurrentWindow();
+        if (window->SkipItems) {
+            return;
+        }
+
+        auto const& style = ImGui::GetStyle();
+
+        auto const pos = window->DC.CursorPos;
+        auto const maxPos = window->WorkRect.Max;
+        float const frameHeight = ImGui::GetFontSize() + style.FramePadding.y * 2.f;
+
+        auto size = CalcItemSize({maxPos.x - pos.x, frameHeight}, 0.f, 0.f);
+        ItemSize(size);
+        auto const id = ImGui::GetID(label);
+        auto const bounds = ImRect(pos, {pos.x + size.x, pos.y + size.y});
+        if (!ItemAdd(bounds, id)) {
+            return;
+        }
+
+        int buttonFlags = ImGuiButtonFlags_MouseButtonLeft;
+        if ((flags & ImGuiInteractiveFlags_AllowItemOverlap) != 0) {
+            buttonFlags |= ImGuiButtonFlags_AllowItemOverlap;
+        }
+
+        bool hovered = false;
+        bool held = false;
+        ButtonBehavior(bounds, id, &hovered, &held, buttonFlags);
+
+        if ((flags & ImGuiInteractiveFlags_AllowItemOverlap) != 0) {
+            SetItemAllowOverlap();
+        }
+
+        if (hovered || held) {
+            const ImU32 col = GetColorU32(held ? ImGuiCol_HeaderActive : ImGuiCol_HeaderHovered);
+            RenderFrame(bounds.Min, bounds.Max, col, false, 0.0f);
+        }
+        RenderNavHighlight(bounds, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
+
+        ImGui::RenderText(pos, label, nullptr, true);
+
+        window->DC.CursorPosPrevLine = pos;
+        window->DC.CursorPos = {pos.x, pos.y + frameHeight};
+    }
+
     bool IconButton(char const* label, char const* icon, ImVec2 size, ImGuiButtonFlags flags) {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems) {
@@ -275,11 +341,11 @@ namespace ImGui::inline Potato {
     void ApplyStyle() {
         auto& style = ImGui::GetStyle();
 
-        style.FrameRounding = 4.0f;
+        style.FrameRounding = 0.0f;
         style.GrabRounding = 4.0f;
         style.WindowRounding = 6.0f;
-        style.PopupRounding = 2.0f;
-        style.ChildRounding = 2.0f;
+        style.PopupRounding = 0.0f;
+        style.ChildRounding = 0.0f;
 
         style.WindowPadding = ImVec2(4.0f, 4.0f);
         style.FramePadding = ImVec2(4.0f, 4.0f);
@@ -296,7 +362,7 @@ namespace ImGui::inline Potato {
         colors[ImGuiCol_WindowBg] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
         colors[ImGuiCol_ChildBg] = ImVec4(0.15f, 0.18f, 0.22f, 1.00f);
         colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-        colors[ImGuiCol_Border] = ImVec4(0.15f, 0.18f, 0.22f, 1.00f); // ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
+        colors[ImGuiCol_Border] = ImVec4(0.10f, 0.14f, 0.16f, 1.00f); // ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
         colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
         colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
         colors[ImGuiCol_FrameBgHovered] = ImVec4(0.12f, 0.20f, 0.28f, 1.00f);

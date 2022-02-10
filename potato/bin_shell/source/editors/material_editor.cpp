@@ -15,7 +15,7 @@ namespace up::shell {
     namespace {
         class MaterialEditorFactory : public EditorFactory<MaterialEditor> {
         public:
-            MaterialEditorFactory(AssetLoader& assetLoader) : _assetLoader(assetLoader) { }
+            explicit MaterialEditorFactory(PropertyGrid& propertyGrid) noexcept : _propertyGrid(propertyGrid) { }
 
             box<EditorBase> createEditor(EditorParams const& params) override {
                 if (auto [rs, text] = fs::readText(params.documentPath); rs == IOResult::Success) {
@@ -24,7 +24,7 @@ namespace up::shell {
                     if (reflex::decodeFromJson(jsonDoc, *material)) {
                         return new_box<MaterialEditor>(
                             params,
-                            _assetLoader,
+                            _propertyGrid,
                             std::move(material),
                             string(params.documentPath));
                     }
@@ -33,25 +33,23 @@ namespace up::shell {
             }
 
         private:
-            AssetLoader& _assetLoader;
+            PropertyGrid& _propertyGrid;
         };
     } // namespace
 } // namespace up::shell
 
 up::shell::MaterialEditor::MaterialEditor(
     EditorParams const& params,
-    AssetLoader& assetLoader,
+    PropertyGrid& propertyGrid,
     box<schema::Material> material,
     string filename)
     : Editor(params)
-    , _assetLoader(assetLoader)
     , _material(std::move(material))
-    , _filename(std::move(filename)) {
-    _propertyGrid.bindResourceLoader(&_assetLoader);
-}
+    , _filename(std::move(filename))
+    , _propertyGrid(propertyGrid) { }
 
-void up::shell::MaterialEditor::addFactory(EditorManager& editors, AssetLoader& assetLoader) {
-    editors.addFactory<MaterialEditorFactory>(assetLoader);
+void up::shell::MaterialEditor::addFactory(EditorManager& editors, PropertyGrid& propertyGrid) {
+    editors.addFactory<MaterialEditorFactory>(propertyGrid);
 }
 
 void up::shell::MaterialEditor::content(CommandManager&) {
@@ -61,17 +59,10 @@ void up::shell::MaterialEditor::content(CommandManager&) {
     }
     ImGui::EndGroup();
 
-    if (!ImGui::BeginTable(
-            "##material",
-            2,
-            ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBodyUntilResize |
-                ImGuiTableFlags_SizingStretchProp)) {
-        return;
+    if (_propertyGrid.beginTable()) {
+        _propertyGrid.editObject(*_material);
+        _propertyGrid.endTable();
     }
-
-    _propertyGrid.editObject(*_material);
-
-    ImGui::EndTable();
 }
 
 void up::shell::MaterialEditor::_save() {

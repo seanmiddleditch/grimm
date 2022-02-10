@@ -8,6 +8,7 @@
 
 namespace up {
     class AssetLoader;
+    class PropertyGrid;
 } // namespace up
 
 namespace up::shell {
@@ -17,11 +18,11 @@ namespace up::shell {
 
         MaterialEditor(
             EditorParams const& params,
-            AssetLoader& assetLoader,
+            PropertyGrid& propertyGrid,
             box<schema::Material> material,
             string filename);
 
-        static void addFactory(EditorManager& editors, AssetLoader& assetLoader);
+        static void addFactory(EditorManager& editors, PropertyGrid& propertyGrid);
 
         zstring_view displayName() const override { return "Material"_zsv; }
         zstring_view documentPath() const override { return _filename; }
@@ -31,9 +32,8 @@ namespace up::shell {
 
         void _save();
 
-        AssetLoader& _assetLoader;
         box<schema::Material> _material;
         string _filename;
-        PropertyGrid _propertyGrid;
+        PropertyGrid& _propertyGrid;
     };
 } // namespace up::shell

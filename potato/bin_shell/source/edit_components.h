@@ -78,4 +78,16 @@ namespace up {
     class BodyEditComponent final : public SimpleEditComponent<scene::components::Body, RigidBodyComponent> {
         RigidBodyComponent createFrom(scene::components::Body const& sceneComponent) const override;
     };
+
+    class TestEditComponent final : public EditComponent {
+    public:
+        zstring_view name() const noexcept final { return typeInfo().name; }
+        reflex::TypeInfo const& typeInfo() const noexcept final {
+            return reflex::getTypeInfo<scene::components::Test>();
+        }
+        bool syncAdd(Space&, EntityId, SceneComponent const&) const final { return false; }
+        bool syncUpdate(Space&, EntityId, SceneComponent const&) const final { return false; }
+        bool syncRemove(Space&, EntityId, SceneComponent const&) const final { return false; }
+        bool syncGame(Space& space, EntityId entityId, SceneComponent const& component) const final { return false; }
+    };
 } // namespace up

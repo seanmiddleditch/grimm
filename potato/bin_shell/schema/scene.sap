@@ -9,6 +9,15 @@ import sound;
 [cxxnamespace("up::scene::components")]
 use scene_component : struct;
 
+struct Euler {
+    [FloatRange(-180,180)]
+    float pitch;
+    [FloatRange(-180,180)]
+    float yaw;
+    [FloatRange(-180,180)]
+    float roll;
+}
+
 scene_component Transform {
     [DisplayName("Pos")]
     vec3 position;
@@ -38,5 +47,28 @@ scene_component Ding {
 
 scene_component Body {
     float mass = 1;
+}
+
+scene_component Test {
+    [DisplayName("Wordy Name")]
+    string text = "test";
+
+    int integer = 42;
+    [IntRange(-10,10)]
+    int _limit10;
+
+    float real_number = -7;
+
+    [DisplayName("Reference")]
+    UUID ref_uuid;
+
+    [Tooltip("This is a handy tip")]
+    vec3 position;
+    quat rotation;
+    bool enabled;
+    Euler angles;
+    int[] numbers;
+    Euler[] euler_array;
+    Euler* euler_object;
 }
 

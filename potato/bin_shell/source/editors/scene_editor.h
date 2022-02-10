@@ -22,7 +22,11 @@ namespace up::shell {
     public:
         static constexpr EditorTypeId editorTypeId{"potato.editor.scene"};
 
-        static void addFactory(EditorManager& editors, SceneDatabase& database, AssetLoader& assetLoader);
+        static void addFactory(
+            EditorManager& editors,
+            SceneDatabase& database,
+            PropertyGrid& propertyGrid,
+            AssetLoader& assetLoader);
         static void addCommands(CommandManager& commands);
 
         explicit SceneEditor(
@@ -30,7 +34,7 @@ namespace up::shell {
             box<SceneDocument> sceneDoc,
             box<Space> previewScene,
             SceneDatabase& database,
-            AssetLoader& assetLoader);
+            PropertyGrid& propertyGrid);
 
         zstring_view displayName() const override { return "Scene"_zsv; }
         zstring_view documentPath() const override { return _doc->filename(); }
@@ -64,7 +68,6 @@ namespace up::shell {
         box<GpuResourceView> _bufferView;
         ArcBall _arcball;
         SelectionState _selection;
-        PropertyGrid _propertyGrid;
         glm::ivec2 _sceneDimensions = {0, 0};
         bool _enableGrid = true;
         bool _create = false;
@@ -72,6 +75,6 @@ namespace up::shell {
         SceneEntityId _targetId = SceneEntityId::None;
         EntityId _cameraId = EntityId::None;
         SceneDatabase& _database;
-        AssetLoader& _assetLoader;
+        PropertyGrid& _propertyGrid;
     };
 } // namespace up::shell

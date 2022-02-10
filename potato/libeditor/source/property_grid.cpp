@@ -16,437 +16,726 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <numeric>
 
-bool up::editor::PropertyGrid::beginItem(char const* label) {
-    ImGuiID const openId = ImGui::GetID("open");
+namespace up {
+    namespace {
+        struct BoolPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                return ImGui::Checkbox("##bool", static_cast<bool*>(info.object));
+            }
+        };
 
-    ImGui::TableNextRow();
-    ImGui::TableSetColumnIndex(0);
-
-    ImGuiStorage* const storage = ImGui::GetStateStorage();
-    bool open = storage->GetBool(openId, true);
-
-    ImGuiSelectableFlags const flags = ImGuiSelectableFlags_SpanAllColumns;
-
-    if (ImGui::Selectable(label, open, flags)) {
-        open = !open;
-        storage->SetBool(openId, open);
-    }
-
-    return open;
-}
-
-void up::editor::PropertyGrid::endItem() { }
-
-bool up::editor::PropertyGrid::_editField(
-    reflex::SchemaField const& field,
-    reflex::Schema const& schema,
-    void* object) {
-    ImGui::PushID(object);
-
-    bool edit = false;
-
-    switch (schema.primitive) {
-        case reflex::SchemaPrimitive::Int16:
-            edit = _editIntegerField(field, *static_cast<int16*>(object));
-            break;
-        case reflex::SchemaPrimitive::Int32:
-            edit = _editIntegerField(field, *static_cast<int32*>(object));
-            break;
-        case reflex::SchemaPrimitive::Int64:
-            edit = _editIntegerField(field, *static_cast<int64*>(object));
-            break;
-        case reflex::SchemaPrimitive::Float:
-            edit = _editFloatField(field, *static_cast<float*>(object));
-            break;
-        case reflex::SchemaPrimitive::Double:
-            edit = _editFloatField(field, *static_cast<double*>(object));
-            break;
-        case reflex::SchemaPrimitive::Vec3:
-            edit = _editVec3Field(field, *static_cast<glm::vec3*>(object));
-            break;
-        case reflex::SchemaPrimitive::Mat4x4:
-            edit = _editMat4x4Field(field, *static_cast<glm::mat4x4*>(object));
-            break;
-        case reflex::SchemaPrimitive::Quat:
-            edit = _editQuatField(field, *static_cast<glm::quat*>(object));
-            break;
-        case reflex::SchemaPrimitive::String:
-            edit = _editStringField(field, *static_cast<string*>(object));
-            break;
-        case reflex::SchemaPrimitive::Pointer:
-            if (schema.operations->pointerMutableDeref != nullptr) {
-                if (void* pointee = schema.operations->pointerMutableDeref(object)) {
-                    edit = _editField(field, *schema.elementType, pointee);
-                    break;
+        struct IntegerPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                switch (info.schema.primitive) {
+                    case reflex::SchemaPrimitive::Int8:
+                        return _edit(info, ImGuiDataType_S8, *static_cast<int8*>(info.object));
+                    case reflex::SchemaPrimitive::UInt8:
+                        return _edit(info, ImGuiDataType_U8, *static_cast<uint8*>(info.object));
+                    case reflex::SchemaPrimitive::Int16:
+                        return _edit(info, ImGuiDataType_S16, *static_cast<int16*>(info.object));
+                    case reflex::SchemaPrimitive::UInt16:
+                        return _edit(info, ImGuiDataType_U16, *static_cast<uint16*>(info.object));
+                    case reflex::SchemaPrimitive::Int32:
+                        return _edit(info, ImGuiDataType_S32, *static_cast<int32*>(info.object));
+                    case reflex::SchemaPrimitive::UInt32:
+                        return _edit(info, ImGuiDataType_U32, *static_cast<uint32*>(info.object));
+                    case reflex::SchemaPrimitive::Int64:
+                        return _edit(info, ImGuiDataType_S64, *static_cast<int64*>(info.object));
+                    case reflex::SchemaPrimitive::UInt64:
+                        return _edit(info, ImGuiDataType_U64, *static_cast<uint64*>(info.object));
+                    default:
+                        return false;
                 }
             }
-            edit = false;
-            break;
-        case reflex::SchemaPrimitive::Array:
-            edit = _editArrayField(field, schema, object);
-            break;
-        case reflex::SchemaPrimitive::Object:
-            edit = _drawObjectEditor(schema, object);
-            break;
-        case reflex::SchemaPrimitive::AssetRef:
-            edit = _editAssetField(field, schema, object);
-            break;
-        case reflex::SchemaPrimitive::Uuid:
-            edit = _editUuidField(field, *static_cast<UUID*>(object));
-            break;
-        default:
-            ImGui::Text("Unsupported primitive type for schema `%s`", schema.name.c_str());
-            break;
-    }
 
-    ImGui::PopID();
+        private:
+            template <integral IntT>
+            bool _edit(PropertyItemInfo const& info, ImGuiDataType imguiType, IntT& value) noexcept {
+                ImGui::SetNextItemWidth(-1.f);
 
-    return edit;
-}
-
-bool up::editor::PropertyGrid::_drawObjectEditor(reflex::Schema const& schema, void* object) {
-    ImGui::TextDisabled("%s", schema.name.c_str());
-
-    return _editProperties(schema, object);
-}
-
-bool up::editor::PropertyGrid::_editArrayField(
-    reflex::SchemaField const& field,
-    reflex::Schema const& schema,
-    void* object) {
-    if (schema.operations == nullptr) {
-        ImGui::TextDisabled("Unsupported type");
-        return false;
-    }
-
-    if (schema.operations->arrayGetSize == nullptr || schema.operations->arrayElementAt == nullptr) {
-        ImGui::TextDisabled("Unsupported type");
-        return false;
-    }
-
-    size_t const size = schema.operations->arrayGetSize(object);
-
-    ImGui::Text("%d items :: %s", static_cast<int>(size), schema.name.c_str());
-
-    size_t eraseIndex = size;
-    size_t swapFirst = size;
-    size_t swapSecond = size;
-
-    bool edit = false;
-
-    for (size_t index = 0; index != size; ++index) {
-        void* element = schema.operations->arrayMutableElementAt(object, index);
-
-        ImGui::PushID(static_cast<int>(index));
-        ImGui::TableNextRow();
-
-        ImGui::TableSetColumnIndex(0);
-        ImGui::AlignTextToFramePadding();
-        ImGui::BeginGroup();
-
-        float const rowY = ImGui::GetCursorPosY();
-
-        // Row for handling drag-n-drop reordering of items
-        if (schema.operations->arraySwapIndices != nullptr) {
-            bool selected = false;
-            ImGui::Selectable("##row", &selected, ImGuiSelectableFlags_AllowItemOverlap);
-
-            if (ImGui::BeginDragDropTarget()) {
-                if (ImGuiPayload const* payload = ImGui::AcceptDragDropPayload("reorder"); payload != nullptr) {
-                    swapFirst = *static_cast<size_t const*>(payload->Data);
-                    swapSecond = index;
+                if (info.field != nullptr) {
+                    auto const* const rangeAnnotation = reflex::queryAnnotation<up::schema::IntRange>(*info.field);
+                    if (rangeAnnotation != nullptr) {
+                        auto const minValue = narrow_cast<IntT>(rangeAnnotation->min);
+                        auto const maxValue = narrow_cast<IntT>(rangeAnnotation->max);
+                        return ImGui::SliderScalar("##value", imguiType, &value, &minValue, &maxValue);
+                    }
                 }
-                ImGui::EndDragDropTarget();
+
+                return ImGui::InputScalar("##value", imguiType, &value);
+            }
+        };
+
+        struct FloatPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                switch (info.schema.primitive) {
+                    case reflex::SchemaPrimitive::Float:
+                        return _edit(info, ImGuiDataType_Float, *static_cast<float*>(info.object));
+                    case reflex::SchemaPrimitive::Double:
+                        return _edit(info, ImGuiDataType_Double, *static_cast<double*>(info.object));
+                    default:
+                        return false;
+                }
             }
 
-            if (ImGui::BeginDragDropSource(
-                    ImGuiDragDropFlags_SourceAutoExpirePayload | ImGuiDragDropFlags_SourceNoPreviewTooltip |
-                    ImGuiDragDropFlags_SourceNoDisableHover)) {
-                ImGui::SetDragDropPayload("reorder", &index, sizeof(index));
-                ImGui::EndDragDropSource();
+        private:
+            template <typename FloatT>
+            bool _edit(PropertyItemInfo const& info, ImGuiDataType imguiType, FloatT& value) noexcept {
+                ImGui::SetNextItemWidth(-1.f);
+
+                if (info.field != nullptr) {
+                    auto const* const rangeAnnotation = reflex::queryAnnotation<up::schema::FloatRange>(*info.field);
+                    if (rangeAnnotation != nullptr) {
+                        auto const minValue = narrow_cast<FloatT>(rangeAnnotation->min);
+                        auto const maxValue = narrow_cast<FloatT>(rangeAnnotation->max);
+                        return ImGui::SliderScalar(
+                            "##value",
+                            imguiType,
+                            &value,
+                            &minValue,
+                            &maxValue,
+                            "%f",
+                            ImGuiSliderFlags_AlwaysClamp);
+                    }
+                }
+
+                return ImGui::InputScalar("##value", imguiType, &value);
             }
+
+            template <integral IntT>
+            bool _edit(PropertyItemInfo const& info, IntT& value) noexcept {
+                int tmp = static_cast<int>(value);
+                bool const edit = _edit(info, tmp);
+                value = static_cast<IntT>(tmp);
+                return edit;
+            }
+        };
+
+        struct Vec3PropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                ImGui::SetNextItemWidth(-1.f);
+                return ImGui::InputVec3("##vec3", *static_cast<glm::vec3*>(info.object));
+            }
+        };
+
+        struct QuaternionPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                ImGui::SetNextItemWidth(-1.f);
+                return ImGui::InputQuat("##quat", *static_cast<glm::quat*>(info.object));
+            }
+        };
+
+        struct StringPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                ImGui::SetNextItemWidth(-1.f);
+
+                auto& value = *static_cast<string*>(info.object);
+
+                // FIXME:
+                // up::string is an immutable string type, which isn't easy to make editable
+                // in a well-performing way. we ideally want to know when a string is being
+                // edited, make a temporary copy into a cheaply-resizable buffer, then post-
+                // edit copy that back into a new up::string. For now... just this.
+                char buffer[512];
+                nanofmt::format_to(buffer, "{}", value);
+
+                if (ImGui::InputText("##string", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                    value = string(buffer);
+                    return true;
+                }
+
+                return false;
+            }
+        };
+
+        struct ArrayPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                if (info.schema.operations != nullptr && info.schema.operations->arrayGetSize != nullptr) {
+                    auto const size = info.schema.operations->arrayGetSize(info.object);
+                    ImGui::Text("%zu %s", size, size == 1 ? "item" : "items");
+                }
+                else {
+                    ImGui::Text("<%s>", info.schema.name.c_str());
+                }
+                return false;
+            }
+
+            PropertyExpandable expandable(PropertyItemInfo const& info) override {
+                if (info.schema.operations != nullptr && info.schema.operations->arrayGetSize != nullptr &&
+                    info.schema.operations->arrayGetSize(info.object) != 0) {
+                    return PropertyExpandable::Children;
+                }
+                return PropertyExpandable::Empty;
+            }
+
+            bool children(PropertyGrid& propertyGrid, PropertyItemInfo const& info) override {
+                if (!UP_VERIFY(info.schema.operations != nullptr)) {
+                    return false;
+                }
+
+                if (!UP_VERIFY(
+                        info.schema.operations->arrayGetSize != nullptr &&
+                        info.schema.operations->arrayMutableElementAt != nullptr)) {
+                    return false;
+                }
+
+                size_t const size = info.schema.operations->arrayGetSize(info.object);
+                bool const canRemoveElement = info.schema.operations->arrayEraseAt != nullptr;
+                bool const canMoveElement = info.schema.operations->arrayMoveTo != nullptr;
+
+                bool wantRemove = false;
+                size_t removeIndex = 0;
+
+                bool wantMove = false;
+                size_t moveFromIndex = 0;
+                size_t moveToIndex = 0;
+
+                bool edits = false;
+
+                for (size_t index = 0; index != size; ++index) {
+                    PropertyItemInfo::ArrayOps ops{.canRemove = canRemoveElement, .canMove = canMoveElement};
+                    PropertyItemInfo const elementInfo{
+                        .schema = *info.schema.elementType,
+                        .object = info.schema.operations->arrayMutableElementAt(info.object, index),
+                        .index = narrow_cast<int>(index),
+                        .arrayOps = &ops};
+
+                    ImGui::PushID(static_cast<int>(index));
+
+                    edits |= propertyGrid.editItem(elementInfo);
+                    if (ops.wantRemove) {
+                        wantRemove = true;
+                        removeIndex = index;
+                    }
+                    if (ops.moveFromIndex >= 0) {
+                        wantMove = true;
+                        moveToIndex = index;
+                        moveFromIndex = ops.moveFromIndex;
+                    }
+
+                    ImGui::PopID();
+                }
+
+                if (wantRemove && canRemoveElement) {
+                    info.schema.operations->arrayEraseAt(info.object, removeIndex);
+                    edits = true;
+                }
+                else if (wantMove && canMoveElement) {
+                    info.schema.operations->arrayMoveTo(info.object, moveToIndex, moveFromIndex);
+                    edits = true;
+                }
+
+                return edits;
+            }
+
+            bool canAddItem(PropertyItemInfo const& info) override {
+                return info.schema.operations != nullptr && info.schema.operations->arrayGetSize != nullptr &&
+                    info.schema.operations->arrayResize != nullptr;
+            }
+
+            void addItem(PropertyItemInfo const& info) override {
+                info.schema.operations->arrayResize(info.object, info.schema.operations->arrayGetSize(info.object) + 1);
+            }
+        };
+
+        struct ObjectPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                ImGui::Text("<%s>", info.schema.name.c_str());
+                return false;
+            }
+
+            PropertyExpandable expandable(PropertyItemInfo const& info) override {
+                if (info.schema.fields.empty()) {
+                    return PropertyExpandable::None;
+                }
+                return PropertyExpandable::Children;
+            }
+
+            bool children(PropertyGrid& propertyGrid, PropertyItemInfo const& info) override {
+                bool edits = false;
+                for (reflex::SchemaField const& field : info.schema.fields) {
+                    edits |= propertyGrid.editItem({
+                        .schema = *field.schema,
+                        .object = static_cast<char*>(info.object) + field.offset,
+                        .field = &field,
+                    });
+                }
+                return edits;
+            }
+        };
+
+        struct PointerPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                if (info.schema.operations != nullptr && info.schema.operations->pointerDeref(info.object) != nullptr) {
+                    ImGui::Text("<%s>", info.schema.elementType->name.c_str());
+                }
+                else {
+                    ImGui::Text("empty :: <%s>", info.schema.elementType->name.c_str());
+                }
+                return false;
+            }
+
+            PropertyExpandable expandable(PropertyItemInfo const& info) override {
+                if (info.schema.operations != nullptr && info.schema.operations->pointerDeref(info.object) != nullptr) {
+                    return PropertyExpandable::Children;
+                }
+                return PropertyExpandable::Empty;
+            }
+
+            bool children(PropertyGrid& propertyGrid, PropertyItemInfo const& info) override {
+                if (void* const pointee = info.schema.operations->pointerMutableDeref(info.object);
+                    pointee != nullptr) {
+                    return propertyGrid.editItem({
+                        .schema = *info.schema.elementType,
+                        .object = pointee,
+                        .index = info.index,
+                        .arrayOps = info.arrayOps,
+                    });
+                }
+                return false;
+            }
+        };
+
+        struct UuidPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                ImGui::SetNextItemWidth(-1.f);
+
+                auto& value = *static_cast<UUID*>(info.object);
+
+                char buffer[UUID::strLength];
+                nanofmt::format_to(buffer, "{}", value);
+
+                if (ImGui::InputText(
+                        "##uuid",
+                        buffer,
+                        sizeof(buffer),
+                        ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCharFilter,
+                        &_callback,
+                        this)) {
+                    value = UUID::fromString(buffer);
+                    return true;
+                }
+
+                return false;
+            }
+
+            static int _callback(ImGuiInputTextCallbackData* data) {
+                switch (data->EventFlag) {
+                    case ImGuiInputTextFlags_CallbackCharFilter:
+                        if (data->EventChar <= 255) {
+                            char const ch = static_cast<char>(data->EventChar);
+                            return ascii::is_hex_digit(ch) || ch == '-' ? 0 : 1;
+                        }
+                        return 1;
+                    default:
+                        return 0;
+                }
+            }
+        };
+
+        struct AssetRefPropertyEditor final : PropertyEditor {
+            explicit AssetRefPropertyEditor(AssetLoader& assetLoader) noexcept : _assetLoader(assetLoader) { }
+
+            bool edit(PropertyItemInfo const& info) override {
+                UP_GUARD(info.schema.primitive == reflex::SchemaPrimitive::AssetRef, false);
+
+                zstring_view assetType{};
+                if (auto const* const assetTypeAnno = reflex::queryAnnotation<schema::AssetType>(info.schema);
+                    assetTypeAnno != nullptr) {
+                    assetType = assetTypeAnno->assetType;
+                }
+
+                auto* const handle = static_cast<UntypedAssetHandle*>(info.object);
+                AssetId const assetId = handle->assetId();
+                zstring_view displayName = "<empty>"_zsv;
+
+                if (handle->isSet()) {
+                    displayName = _assetLoader.debugName(assetId);
+                }
+
+                bool edit = false;
+
+                ImGui::Text("%s", displayName.c_str());
+                ImGui::SameLine();
+                if (ImGui::IconButton("##clear", ICON_FA_TRASH) && info.schema.operations->pointerAssign != nullptr) {
+                    info.schema.operations->pointerAssign(info.object, nullptr);
+                    edit = true;
+                }
+                ImGui::SameLine();
+
+                char browserId[32] = {
+                    0,
+                };
+                nanofmt::format_to(browserId, "##assets{}", ImGui::GetID("popup"));
+
+                if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
+                    ImGui::OpenPopup(browserId);
+                }
+
+                if (info.schema.operations != nullptr && info.schema.operations->pointerAssign != nullptr) {
+                    AssetId targetAssetId = assetId;
+                    if (up::assetBrowserPopup(browserId, targetAssetId, assetType, _assetLoader) &&
+                        targetAssetId != assetId) {
+                        *handle = _assetLoader.loadAssetSync(targetAssetId, assetType);
+                        edit = true;
+                    }
+                }
+
+                return edit;
+            }
+
+        private:
+            AssetLoader& _assetLoader;
+        };
+    } // namespace
+
+    PropertyGrid::PropertyGrid(AssetLoader& assetLoader) noexcept {
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<BoolPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Bool, index);
         }
 
-        // Icon for deleting a row
-        if (schema.operations->arrayEraseAt != nullptr) {
-            float const availWidth = ImGui::GetContentRegionAvail().x;
-            float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
-            float const adjustWidth = availWidth - buttonWidth;
-            ImGui::SetCursorPos({ImGui::GetCursorPosX() + adjustWidth, rowY});
-            if (ImGui::IconButton("##remove", ICON_FA_TRASH)) {
-                eraseIndex = index;
-            }
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<IntegerPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Int8, index);
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::UInt8, index);
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Int16, index);
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::UInt16, index);
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Int32, index);
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::UInt32, index);
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Int64, index);
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::UInt64, index);
         }
 
-        ImGui::EndGroup();
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<FloatPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Float, index);
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Double, index);
+        }
 
-        ImGui::TableSetColumnIndex(1);
-        ImGui::AlignTextToFramePadding();
-        edit |= _editField(field, *schema.elementType, element);
-        ImGui::PopID();
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<Vec3PropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Vec3, index);
+        }
+
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<QuaternionPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Quat, index);
+        }
+
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<StringPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::String, index);
+        }
+
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<ArrayPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Array, index);
+        }
+
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<ObjectPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Object, index);
+        }
+
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<PointerPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Pointer, index);
+        }
+
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<UuidPropertyEditor>());
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Uuid, index);
+        }
+
+        {
+            auto const index = static_cast<uint32>(_propertyEditors.size());
+            _propertyEditors.push_back(new_box<AssetRefPropertyEditor>(assetLoader));
+            _primitiveEditorMap.insert(reflex::SchemaPrimitive::AssetRef, index);
+        }
     }
 
-    if (schema.operations->arrayInsertAt != nullptr) {
+    void PropertyGrid::addPropertyEditor(box<PropertyEditor> editor) { _propertyEditors.push_back(std::move(editor)); }
+
+    bool PropertyGrid::beginTable(char const* label) {
+        bool const open = ImGui::BeginTable(
+            label != nullptr ? label : "##property_grid",
+            2,
+            ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchProp);
+        ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_None, 0.4f);
+        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_None, 0.6f);
+        return open;
+    }
+
+    void PropertyGrid::endTable() { ImGui::EndTable(); }
+
+    bool PropertyGrid::editObjectRaw(reflex::Schema const& schema, void* object) {
+        PropertyEditor* const editor = findPropertyEditor(schema);
+        if (!UP_VERIFY(editor != nullptr)) {
+            ImGui::TextColored(ImVec4{1.f, 0.f, 0.f, 1.f}, "Unsupported Schema type");
+            return false;
+        }
+
+        return editor->children(*this, {.schema = schema, .object = object});
+    }
+
+    bool PropertyGrid::editItem(PropertyItemInfo const& info) {
         ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0);
-        ImGui::AlignTextToFramePadding();
-        float const availWidth = ImGui::GetContentRegionAvail().x;
-        float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
-        float const adjustWidth = availWidth - buttonWidth;
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + adjustWidth);
-        if (ImGui::IconButton("##add", ICON_FA_PLUS)) {
-            schema.operations->arrayInsertAt(object, size);
-            edit = true;
+
+        PropertyEditor* const editor = findPropertyEditor(info.schema);
+        if (UP_VERIFY(editor != nullptr)) {
+            if (info.index >= 0) {
+                ImGui::PushID(info.index);
+            }
+            else if (info.field != nullptr) {
+                ImGui::PushID(info.field->name.c_str());
+            }
+            else {
+                ImGui::PushID(info.schema.name.c_str());
+            }
+
+            bool const edits = _editInternal(*editor, info);
+
+            ImGui::PopID();
+
+            return edits;
         }
 
+        ImGui::TableSetColumnIndex(0);
+        _showLabel(info);
+
         ImGui::TableSetColumnIndex(1);
-        ImGui::AlignTextToFramePadding();
-        ImGui::TextDisabled("Add new row");
-    }
+        ImGui::TextColored(ImVec4{1.f, 0.f, 0.f, 1.f}, "Unsupported Schema type");
 
-    if (eraseIndex < size) {
-        schema.operations->arrayEraseAt(object, eraseIndex);
-        edit = true;
-    }
-    else if (swapFirst < size) {
-        schema.operations->arraySwapIndices(object, swapFirst, swapSecond);
-        edit = true;
-    }
-
-    return edit;
-}
-
-bool up::editor::PropertyGrid::_beginProperty(reflex::SchemaField const& field, void* object) {
-    if (queryAnnotation<schema::Hidden>(field) != nullptr) {
         return false;
     }
 
-    auto const* const displayNameAnnotation = queryAnnotation<schema::DisplayName>(field);
-    zstring_view const displayName = displayNameAnnotation != nullptr && !displayNameAnnotation->name.empty()
-        ? displayNameAnnotation->name
-        : field.name;
-
-    ImGuiTreeNodeFlags flags =
-        ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
-    bool const expandable =
-        (field.schema->primitive == reflex::SchemaPrimitive::Object ||
-         field.schema->primitive == reflex::SchemaPrimitive::Mat4x4);
-    if (!expandable) {
-        flags |= ImGuiTreeNodeFlags_Leaf;
+    PropertyEditor* PropertyGrid::findPropertyEditor(reflex::Schema const& schema) const noexcept {
+        auto const primIt = _primitiveEditorMap.find(schema.primitive);
+        if (primIt) {
+            return _propertyEditors[primIt->value].get();
+        }
+        return nullptr;
     }
 
-    ImGui::TableNextRow();
-    ImGui::TableSetColumnIndex(0);
-    ImGui::AlignTextToFramePadding();
+    bool PropertyGrid::_editInternal(PropertyEditor& propertyEditor, PropertyItemInfo const& info) {
+        // behavior overrides
+        if (info.field != nullptr) {
+            if (reflex::queryAnnotation<schema::Hidden>(*info.field) != nullptr) {
+                return false;
+            }
 
-    void* const member = static_cast<char*>(object) + field.offset;
-
-    ImGui::PushID(member);
-    bool const open = ImGui::TreeNodeEx(displayName.c_str(), flags);
-    ImGui::PopID();
-
-    auto const* const tooltipAnnotation = queryAnnotation<schema::Tooltip>(field);
-    if (tooltipAnnotation != nullptr && ImGui::IsItemHovered()) {
-        ImGui::BeginTooltip();
-        ImGui::Text("%s", tooltipAnnotation->text.c_str());
-        ImGui::EndTooltip();
-    }
-
-    if (open) {
-        ImGui::TreePush(member);
-    }
-    return open;
-}
-
-void up::editor::PropertyGrid::_endProperty() {
-    ImGui::TreePop();
-}
-
-bool up::editor::PropertyGrid::_editProperties(reflex::Schema const& schema, void* object) {
-    UP_GUARD(schema.primitive == reflex::SchemaPrimitive::Object, false);
-
-    bool edits = false;
-
-    for (reflex::SchemaField const& field : schema.fields) {
-        if (field.schema->primitive == reflex::SchemaPrimitive::Object &&
-            queryAnnotation<schema::Flatten>(field) != nullptr) {
-            void* const member = static_cast<char*>(object) + field.offset;
-            edits |= _editProperties(*field.schema, member);
-            continue;
+            if (reflex::queryAnnotation<schema::Flatten>(*info.field) != nullptr) {
+                return editObjectRaw(info.schema, info.object);
+            }
         }
 
-        if (_beginProperty(field, object)) {
-            edits |= _editProperty(field, object);
-            _endProperty();
+        bool edits = false;
+        bool open = false;
+
+        // label
+        {
+            ImGui::TableSetColumnIndex(0);
+
+            // expand for objects/arrays, or drag for reordering array elements
+            {
+                auto const expandable = propertyEditor.expandable(info);
+
+                if (expandable == PropertyExpandable::Children) {
+                    ImGuiTreeNodeFlags const flags = ImGuiTreeNodeFlags_DefaultOpen |
+                        ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanAvailWidth |
+                        ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_AllowItemOverlap |
+                        ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_FramePadding;
+                    open = ImGui::TreeNodeEx("##expand", flags);
+                    ImGui::SameLine();
+                }
+                else if (expandable == PropertyExpandable::Empty) {
+                    ImGuiTreeNodeFlags const flags = ImGuiTreeNodeFlags_NoTreePushOnOpen |
+                        ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap |
+                        ImGuiTreeNodeFlags_FramePadding;
+                    ImGui::BeginDisabled(true);
+                    ImGui::SetNextItemOpen(false, ImGuiCond_Always);
+                    open = ImGui::TreeNodeEx("##empty", flags);
+                    ImGui::SameLine();
+                    ImGui::EndDisabled();
+                }
+                else if (info.arrayOps != nullptr && info.arrayOps->canMove) {
+                    ImGui::Interactive("##drag", ImGuiInteractiveFlags_AllowItemOverlap);
+                    ImGui::SameLine();
+
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (ImGuiPayload const* payload = ImGui::AcceptDragDropPayload("reorder"); payload != nullptr) {
+                            info.arrayOps->moveFromIndex = *static_cast<int const*>(payload->Data);
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
+
+                    if (ImGui::BeginDragDropSource(
+                            ImGuiDragDropFlags_SourceAutoExpirePayload | ImGuiDragDropFlags_SourceAllowNullID)) {
+                        ImGui::SetDragDropPayload("reorder", &info.index, sizeof(info.index));
+                        _showLabel(info);
+                        ImGui::EndDragDropSource();
+                    }
+                }
+                else {
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetItemSpacing().x);
+                }
+            }
+
+            // label buttons
+            {
+                auto const windowPos = ImGui::GetWindowPos();
+                auto availSize = ImGui::GetContentRegionAvail();
+                float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
+                float const buttonSpacing = ImGui::GetStyle().ItemInnerSpacing.x;
+                auto const pos = ImGui::GetCursorPos();
+
+                // add row icon for arrays
+                if (propertyEditor.canAddItem(info)) {
+                    availSize.x -= buttonWidth + buttonSpacing;
+                    ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
+                    if (ImGui::IconButton("##add", ICON_FA_PLUS)) {
+                        propertyEditor.addItem(info);
+                    }
+                }
+
+                // delete row icon for array elements
+                if (info.arrayOps != nullptr && info.arrayOps->canRemove) {
+                    availSize.x -= buttonWidth + buttonSpacing;
+                    ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
+                    if (ImGui::IconButton("##remove", ICON_FA_TRASH)) {
+                        info.arrayOps->wantRemove = true;
+                    }
+                }
+
+                ImGui::SetCursorPos(pos);
+                ImGui::PushClipRect(
+                    ImVec2(windowPos.x + pos.x, windowPos.y + pos.y),
+                    ImVec2(windowPos.x + pos.x + availSize.x, windowPos.y + pos.y + availSize.y),
+                    true);
+            }
+
+            // label
+            {
+                ImGui::AlignTextToFramePadding();
+                _showLabel(info);
+
+                ImGui::PopClipRect();
+            }
+
+            // label tooltip
+            if (info.field != nullptr && ImGui::IsItemHovered()) {
+                if (auto const* const tooltipAnnotation = reflex::queryAnnotation<schema::Tooltip>(*info.field);
+                    tooltipAnnotation != nullptr) {
+                    ImGui::BeginTooltip();
+                    ImGui::Text("%s", tooltipAnnotation->text.c_str());
+                    ImGui::EndTooltip();
+                }
+            }
+        }
+
+        // editor
+        {
+            ImGui::TableSetColumnIndex(1);
+            ImGui::AlignTextToFramePadding();
+
+            edits |= propertyEditor.edit(info);
+        }
+
+        // recurse into children
+        if (open) {
+            ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
+            propertyEditor.children(*this, info);
+            ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+        }
+
+        return edits;
+    }
+
+    void PropertyGrid::_showLabel(PropertyItemInfo const& info) noexcept {
+        if (info.index >= 0) {
+            char buffer[64];
+            nanofmt::format_to(buffer, "{}", info.index + 1);
+            ImGui::TextUnformatted(buffer);
+            return;
+        }
+
+        if (info.field == nullptr) {
+            ImGui::TextUnformatted("<Unknown>");
+            return;
+        }
+
+        if (auto const* const displayNameAnnotation = reflex::queryAnnotation<schema::DisplayName>(*info.field);
+            displayNameAnnotation != nullptr && !displayNameAnnotation->name.empty()) {
+            ImGui::TextUnformatted(displayNameAnnotation->name.c_str());
+            return;
+        }
+
+        // format field names pretty
+        {
+            bool first = true;
+            char const* ch = info.field->name.c_str();
+            while (*ch != '\0') {
+                if (*ch == '_') {
+                    ++ch;
+                    continue;
+                }
+
+                if (!first) {
+                    ImGui::TextUnformatted(" ");
+                    ImGui::SameLine(0.f, 0.f);
+                }
+                first = false;
+
+                char const* start = ch;
+
+                if (ascii::is_digit(*ch)) {
+                    ++ch;
+                    while (ascii::is_digit(*ch)) {
+                        ++ch;
+                    }
+                }
+                else if (ascii::is_upper(*ch)) {
+                    ++ch;
+                    if (ascii::is_upper(*ch)) {
+                        ++ch;
+                        while (ascii::is_upper(*ch)) {
+                            ++ch;
+                        }
+                    }
+                    else if (ascii::is_lower(*ch)) {
+                        ++ch;
+                        while (ascii::is_lower(*ch)) {
+                            ++ch;
+                        }
+                    }
+                }
+                else {
+                    ImGui::Text("%c", ascii::toUppercase(*ch));
+                    ImGui::SameLine(0.f, 0.f);
+
+                    start = ++ch;
+                    while (ascii::is_lower(*ch)) {
+                        ++ch;
+                    }
+                }
+
+                ImGui::TextUnformatted(start, ch);
+                ImGui::SameLine(0.f, 0.f);
+            }
         }
     }
-
-    return edits;
-}
-
-bool up::editor::PropertyGrid::_editProperty(reflex::SchemaField const& field, void* object) {
-    void* const member = static_cast<char*>(object) + field.offset;
-
-    ImGui::TableSetColumnIndex(1);
-    ImGui::AlignTextToFramePadding();
-
-    return _editField(field, *field.schema, member);
-}
-
-bool up::editor::PropertyGrid::_editIntegerField(reflex::SchemaField const& field, int& value) noexcept {
-    ImGui::SetNextItemWidth(-1.f);
-
-    auto const* const rangeAnnotation = queryAnnotation<up::schema::IntRange>(field);
-    if (rangeAnnotation != nullptr) {
-        return ImGui::SliderInt("##int", &value, rangeAnnotation->min, rangeAnnotation->max);
-    }
-
-    return ImGui::InputInt("##int", &value);
-}
-
-bool up::editor::PropertyGrid::_editFloatField(reflex::SchemaField const& field, float& value) noexcept {
-    ImGui::SetNextItemWidth(-1.f);
-
-    auto const* const rangeAnnotation = queryAnnotation<up::schema::FloatRange>(field);
-    if (rangeAnnotation != nullptr) {
-        return ImGui::SliderFloat("##float", &value, rangeAnnotation->min, rangeAnnotation->max);
-    }
-
-    return ImGui::InputFloat("##float", &value);
-}
-
-bool up::editor::PropertyGrid::_editFloatField(
-    [[maybe_unused]] reflex::SchemaField const& field,
-    double& value) noexcept {
-    ImGui::SetNextItemWidth(-1.f);
-
-    return ImGui::InputDouble("##double", &value);
-}
-
-bool up::editor::PropertyGrid::_editVec3Field(
-    [[maybe_unused]] reflex::SchemaField const& field,
-    glm::vec3& value) noexcept {
-    ImGui::SetNextItemWidth(-1.f);
-    return ImGui::InputVec3("##vec3", value);
-}
-
-bool up::editor::PropertyGrid::_editMat4x4Field(
-    [[maybe_unused]] reflex::SchemaField const& field,
-    glm::mat4x4& value) noexcept {
-    bool edit = false;
-    ImGui::SetNextItemWidth(-1.f);
-    edit |= ImGui::InputFloat4("##a", &value[0].x);
-    ImGui::SetNextItemWidth(-1.f);
-    edit |= ImGui::InputFloat4("##b", &value[1].x);
-    ImGui::SetNextItemWidth(-1.f);
-    edit |= ImGui::InputFloat4("##c", &value[2].x);
-    ImGui::SetNextItemWidth(-1.f);
-    edit |= ImGui::InputFloat4("##d", &value[3].x);
-    return edit;
-}
-
-bool up::editor::PropertyGrid::_editQuatField(
-    [[maybe_unused]] reflex::SchemaField const& field,
-    glm::quat& value) noexcept {
-    ImGui::SetNextItemWidth(-1.f);
-    return ImGui::InputQuat("##quat", value);
-}
-
-bool up::editor::PropertyGrid::_editStringField(
-    [[maybe_unused]] reflex::SchemaField const& field,
-    string& value) noexcept {
-    ImGui::SetNextItemWidth(-1.f);
-
-    // FIXME:
-    // up::string is an immutable string type, which isn't easy to make editable
-    // in a well-performing way. we ideally want to know when a string is being
-    // edited, make a temporary copy into a cheaply-resizable buffer, then post-
-    // edit copy that back into a new up::string. For now... just this.
-    char buffer[512];
-    nanofmt::format_to(buffer, "{}", value);
-
-    if (ImGui::InputText("##string", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-        value = string(buffer);
-        return true;
-    }
-
-    return false;
-}
-
-bool up::editor::PropertyGrid::_editAssetField(
-    reflex::SchemaField const& field,
-    reflex::Schema const& schema,
-    void* object) {
-    ImGui::BeginGroup();
-    UP_GUARD(schema.primitive == reflex::SchemaPrimitive::AssetRef, false);
-
-    zstring_view assetType{};
-    if (auto const* const assetTypeAnno = queryAnnotation<schema::AssetType>(schema); assetTypeAnno != nullptr) {
-        assetType = assetTypeAnno->assetType;
-    }
-
-    auto* const handle = static_cast<UntypedAssetHandle*>(object);
-    AssetId const assetId = handle->assetId();
-    zstring_view displayName = "<empty>"_zsv;
-
-    if (handle->isSet()) {
-        displayName = _assetLoader->debugName(assetId);
-    }
-
-    bool edit = false;
-
-    ImGui::Text("%s", displayName.c_str());
-    ImGui::SameLine();
-    if (ImGui::IconButton("##clear", ICON_FA_TRASH) && schema.operations->pointerAssign != nullptr) {
-        schema.operations->pointerAssign(object, nullptr);
-        edit = true;
-    }
-    ImGui::SameLine();
-
-    char browserId[32] = {
-        0,
-    };
-    nanofmt::format_to(browserId, "##assets{}", ImGui::GetID("popup"));
-
-    if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
-        ImGui::OpenPopup(browserId);
-    }
-
-    if (_assetLoader != nullptr && schema.operations != nullptr && schema.operations->pointerAssign != nullptr) {
-        AssetId targetAssetId = assetId;
-        if (up::assetBrowserPopup(browserId, targetAssetId, assetType, *_assetLoader) && targetAssetId != assetId) {
-            *handle = _assetLoader->loadAssetSync(targetAssetId, assetType);
-            edit = true;
-        }
-    }
-
-    ImGui::EndGroup();
-
-    return edit;
-}
-
-bool up::editor::PropertyGrid::_editUuidField([[maybe_unused]] reflex::SchemaField const& field, UUID& value) noexcept {
-    ImGui::SetNextItemWidth(-1.f);
-
-    // FIXME:
-    // up::string is an immutable string type, which isn't easy to make editable
-    // in a well-performing way. we ideally want to know when a string is being
-    // edited, make a temporary copy into a cheaply-resizable buffer, then post-
-    // edit copy that back into a new up::string. For now... just this.
-    char buffer[UUID::strLength];
-    nanofmt::format_to(buffer, "{}", value);
-
-    if (ImGui::InputText(
-            "##uuid",
-            buffer,
-            sizeof(buffer),
-            ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsHexadecimal |
-                ImGuiInputTextFlags_CharsDecimal /* for dash */)) {
-        value = UUID::fromString(buffer);
-        return true;
-    }
-
-    return false;
-}
+} // namespace up

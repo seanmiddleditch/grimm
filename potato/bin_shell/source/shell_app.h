@@ -6,6 +6,7 @@
 #include "potato/editor/asset_edit_service.h"
 #include "potato/editor/command.h"
 #include "potato/editor/editor_manager.h"
+#include "potato/editor/property_grid.h"
 #include "potato/recon/recon_client.h"
 #include "potato/shell/log_history.h"
 #include "potato/shell/scene_doc.h"
@@ -94,6 +95,7 @@ namespace up::shell {
         std::chrono::nanoseconds _lastFrameDuration = {};
         string _projectName;
         AssetLoader _assetLoader;
+        PropertyGrid _propertyGrid;
         LogHistory _logHistory;
         ReconClient _reconClient;
         AssetEditService _assetEditService;

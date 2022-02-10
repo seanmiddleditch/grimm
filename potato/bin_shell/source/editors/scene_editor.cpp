@@ -39,8 +39,9 @@ namespace up::shell {
     namespace {
         class SceneEditorFactory : public EditorFactory<SceneEditor> {
         public:
-            SceneEditorFactory(SceneDatabase& database, AssetLoader& assetLoader)
+            SceneEditorFactory(SceneDatabase& database, PropertyGrid& propertyGrid, AssetLoader& assetLoader)
                 : _database(database)
+                , _propertyGrid(propertyGrid)
                 , _assetLoader(assetLoader) { }
 
             box<EditorBase> createEditor(EditorParams const& params) override {
@@ -53,11 +54,12 @@ namespace up::shell {
                     doc->fromJson(jsonDoc, _assetLoader);
                 }
 
-                return new_box<SceneEditor>(params, std::move(doc), std::move(space), _database, _assetLoader);
+                return new_box<SceneEditor>(params, std::move(doc), std::move(space), _database, _propertyGrid);
             }
 
         private:
             SceneDatabase& _database;
+            PropertyGrid& _propertyGrid;
             AssetLoader& _assetLoader;
         };
 
@@ -110,12 +112,12 @@ namespace up::shell {
         box<SceneDocument> sceneDoc,
         box<Space> previewScene,
         SceneDatabase& database,
-        AssetLoader& assetLoader)
+        PropertyGrid& propertyGrid)
         : Editor(params)
         , _previewScene(std::move(previewScene))
         , _doc(std::move(sceneDoc))
         , _database(database)
-        , _assetLoader(assetLoader) {
+        , _propertyGrid(propertyGrid) {
         _arcball.target = {0, 0, 0};
         _arcball.boomLength = 40.f;
         _arcball.pitch = -glm::quarter_pi<float>();
@@ -131,8 +133,12 @@ namespace up::shell {
         }
     }
 
-    void SceneEditor::addFactory(EditorManager& editors, SceneDatabase& database, AssetLoader& assetLoader) {
-        editors.addFactory<SceneEditorFactory>(database, assetLoader);
+    void SceneEditor::addFactory(
+        EditorManager& editors,
+        SceneDatabase& database,
+        PropertyGrid& propertyGrid,
+        AssetLoader& assetLoader) {
+        editors.addFactory<SceneEditorFactory>(database, propertyGrid, assetLoader);
     }
 
     void SceneEditor::addCommands(CommandManager& commands) {
@@ -314,24 +320,13 @@ namespace up::shell {
             }
         }
 
-        if (!ImGui::BeginTable(
-                "##inspector_table",
-                2,
-                ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBodyUntilResize |
-                    ImGuiTableFlags_SizingStretchProp)) {
-            return;
-        }
-
         ImGuiID const addComponentId = ImGui::GetID("##add_component_list");
-
-        _propertyGrid.bindResourceLoader(&_assetLoader);
 
         SceneEntity& entity = _doc->entityAt(index);
         for (auto& component : entity.components) {
-            ImGui::PushID(component.get());
+            const bool open = ImGui::ToggleHeader(component->name.c_str());
 
-            const bool open = _propertyGrid.beginItem(component->name.c_str());
-
+            ImGui::PushID(component->name.c_str());
             if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) {
                 ImGui::OpenPopup("##component_context_menu");
             }
@@ -345,18 +340,19 @@ namespace up::shell {
                 }
                 ImGui::EndPopup();
             }
-
-            if (open && component != nullptr) {
-                if (_propertyGrid.editObjectRaw(*component->info->typeInfo().schema, component->data.get())) {
-                    component->state = SceneComponent::State::Pending;
-                }
-                _propertyGrid.endItem();
-            }
-
             ImGui::PopID();
-        }
 
-        ImGui::EndTable();
+            if (_propertyGrid.beginTable()) {
+                ImGui::PushID(component->name.c_str());
+                if (open && component != nullptr) {
+                    if (_propertyGrid.editObjectRaw(*component->info->typeInfo().schema, component->data.get())) {
+                        component->state = SceneComponent::State::Pending;
+                    }
+                }
+                ImGui::PopID();
+                _propertyGrid.endTable();
+            }
+        }
 
         erase(entity.components, nullptr);
 

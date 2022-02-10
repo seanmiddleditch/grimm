@@ -197,7 +197,7 @@ namespace up {
     } // namespace
 } // namespace up
 
-up::shell::ShellApp::ShellApp() : _logger("shell") { }
+up::shell::ShellApp::ShellApp() : _logger("shell"), _propertyGrid(_assetLoader) { }
 
 up::shell::ShellApp::~ShellApp() {
     _renderer.reset();
@@ -342,12 +342,13 @@ int up::shell::ShellApp::initialize() {
     _sceneDatabase.registerComponent<SpinEditComponent>();
     _sceneDatabase.registerComponent<DingEditComponent>();
     _sceneDatabase.registerComponent<BodyEditComponent>();
+    _sceneDatabase.registerComponent<TestEditComponent>();
 
     AssetBrowser::addFactory(_editors, _assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
         _openAssetEditor(uuid);
     });
-    SceneEditor::addFactory(_editors, _sceneDatabase, _assetLoader);
-    MaterialEditor::addFactory(_editors, _assetLoader);
+    SceneEditor::addFactory(_editors, _sceneDatabase, _propertyGrid, _assetLoader);
+    MaterialEditor::addFactory(_editors, _propertyGrid);
     LogWindow::addFactory(_editors, _logHistory);
     GameEditor::addFactory(_editors, *_audio);
 
