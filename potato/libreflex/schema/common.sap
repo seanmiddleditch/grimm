@@ -21,11 +21,5 @@ struct vec3 {
     float z;
 }
 
-[ignore, cxximport("glm::mat4x4", "glm/mat4x4.hpp")]
-using mat4x4;
-
-[ignore, cxximport("glm::quat", "glm/gtx/quaternion.hpp")]
-using quat;
-
 [cxximport("up::UUID", "potato/runtime/uuid.h")]
 using UUID;
