@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "schema.h"
+#include "codegen_schema.h"
 
 #include <ostream>
 #include <sstream>

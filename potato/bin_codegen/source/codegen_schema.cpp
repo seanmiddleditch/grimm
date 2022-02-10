@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "schema.h"
+#include "codegen_schema.h"
 
 #include <nlohmann/json.hpp>
 #include <cassert>

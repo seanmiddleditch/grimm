@@ -1,8 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "../cxx.h"
-#include "../generator.h"
-#include "../schema.h"
+#include "../codegen_cxx.h"
+#include "../codegen_generator.h"
+#include "../codegen_schema.h"
 
 #include <nanofmt/std_string.h>
 #include <memory>
