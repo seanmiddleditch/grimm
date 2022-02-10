@@ -394,13 +394,13 @@ namespace up {
 
     PropertyGrid::PropertyGrid(AssetLoader& assetLoader) noexcept {
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<BoolPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Bool, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<IntegerPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Int8, index);
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::UInt8, index);
@@ -413,56 +413,56 @@ namespace up {
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<FloatPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Float, index);
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Double, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<Vec3PropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Vec3, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<QuaternionPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Quat, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<StringPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::String, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<ArrayPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Array, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<ObjectPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Object, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<PointerPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Pointer, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<UuidPropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Uuid, index);
         }
 
         {
-            uint32 const index = static_cast<uint32>(_propertyEditors.size());
+            auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<AssetRefPropertyEditor>(assetLoader));
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::AssetRef, index);
         }
