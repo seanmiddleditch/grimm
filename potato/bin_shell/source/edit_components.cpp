@@ -7,6 +7,13 @@
 
 #include <BulletCollision/CollisionShapes/btBoxShape.h>
 
+static constexpr glm::quat eulerToQuat(up::schema::Euler const& euler) noexcept {
+    float const pitch = glm::radians(euler.pitch);
+    float const yaw = glm::radians(euler.yaw);
+    float const roll = glm::radians(euler.roll);
+    return glm::quat({pitch, yaw, roll});
+}
+
 auto up::TransformEditComponent::data(SceneComponent const& component) noexcept -> scene::components::Transform& {
     return *static_cast<scene::components::Transform*>(component.data.get());
 }
@@ -14,14 +21,14 @@ auto up::TransformEditComponent::data(SceneComponent const& component) noexcept 
 bool up::TransformEditComponent::syncAdd(Space& space, EntityId entityId, SceneComponent const& component) const {
     auto& trans = space.entities().addComponent<TransformComponent>(entityId);
     trans.position = data(component).position;
-    trans.rotation = data(component).rotation;
+    trans.rotation = eulerToQuat(data(component).rotation);
     return true;
 }
 
 bool up::TransformEditComponent::syncUpdate(Space& space, EntityId entityId, SceneComponent const& component) const {
     auto& trans = *space.entities().getComponentSlow<TransformComponent>(entityId);
     trans.position = data(component).position;
-    trans.rotation = data(component).rotation;
+    trans.rotation = eulerToQuat(data(component).rotation);
     return true;
 }
 
