@@ -8,7 +8,7 @@ target_sources(potato_recon PRIVATE
     "importer_context.h"
     "importer_factory.cpp"
     "importer_factory.h"
-    "main.cpp"
+    "recon_main.cpp"
     "meta_file.cpp"
     "meta_file.h"
     "posql.h"

@@ -5,7 +5,7 @@ add_executable(potato_bin_headerify)
 add_executable(potato::bin_headerify ALIAS potato_bin_headerify)
 
 target_sources(potato_bin_headerify PRIVATE
-    "source/main.cpp"
+    "source/headerify_main.cpp"
 )
 
 include(up_set_common_properties)

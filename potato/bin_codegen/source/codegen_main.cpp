@@ -1,7 +1,7 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "generator.h"
-#include "schema.h"
+#include "codegen_generator.h"
+#include "codegen_schema.h"
 
 #include <nlohmann/json.hpp>
 #include <filesystem>

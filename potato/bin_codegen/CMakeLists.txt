@@ -5,14 +5,14 @@ add_executable(potato_bin_codegen)
 add_executable(potato::bin_codegen ALIAS potato_bin_codegen)
 
 target_sources(potato_bin_codegen PRIVATE
-    "source/cxx.h"
-    "source/generator.cpp"
-    "source/generator.h"
+    "source/codegen_cxx.h"
+    "source/codegen_generator.cpp"
+    "source/codegen_generator.h"
+    "source/codegen_main.cpp"
+    "source/codegen_schema.cpp"
+    "source/codegen_schema.h"
     "source/generators/schema_header_gen.cpp"
     "source/generators/schema_source_gen.cpp"
-    "source/main.cpp"
-    "source/schema.cpp"
-    "source/schema.h"
 )
 
 target_link_libraries(potato_bin_codegen PRIVATE
