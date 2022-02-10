@@ -7,7 +7,7 @@
 #include <compare>
 
 namespace up {
-    template <typename Tag, typename Underlying = uint32, Underlying Invalid = Underlying{}>
+    template <typename Tag, typename Underlying = uint64, Underlying Invalid = Underlying{}>
     class Key {
     public:
         using underlying_type = Underlying;

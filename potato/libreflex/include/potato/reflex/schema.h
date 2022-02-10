@@ -6,6 +6,8 @@
 
 #include "potato/spud/box.h"
 #include "potato/spud/concepts.h"
+#include "potato/spud/hash.h"
+#include "potato/spud/key.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/span.h"
 #include "potato/spud/string.h"
@@ -24,6 +26,10 @@ namespace up::reflex {
     struct TypeInfo;
     struct SchemaType;
     struct Schema;
+
+    struct SchemaId : Key<SchemaId> {
+        using Key<SchemaId>::Key;
+    };
 
     struct SchemaAttribute { };
 
@@ -95,6 +101,7 @@ namespace up::reflex {
     };
 
     struct Schema {
+        SchemaId id;
         zstring_view name;
         SchemaPrimitive primitive = SchemaPrimitive::Null;
         Schema const* baseSchema = nullptr;
@@ -140,63 +147,84 @@ namespace up::reflex {
     Schema const& getSchema() noexcept {
         using Type = std::remove_cv_t<std::decay_t<T>>;
         if constexpr (std::is_same_v<Type, bool>) {
-            static constexpr Schema schema{.name = "bool"_zsv, .primitive = SchemaPrimitive::Bool};
+            static constexpr Schema schema{.id = SchemaId(1), .name = "bool"_zsv, .primitive = SchemaPrimitive::Bool};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, int8> || (std::is_same_v<Type, char> && std::is_signed_v<char>)) {
-            static constexpr Schema schema{.name = "int8"_zsv, .primitive = SchemaPrimitive::Int8};
+            static constexpr Schema schema{.id = SchemaId(2), .name = "int8"_zsv, .primitive = SchemaPrimitive::Int8};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, int16>) {
-            static constexpr Schema schema{.name = "int16"_zsv, .primitive = SchemaPrimitive::Int16};
+            static constexpr Schema schema{.id = SchemaId(3), .name = "int16"_zsv, .primitive = SchemaPrimitive::Int16};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, int32>) {
-            static constexpr Schema schema{.name = "int32"_zsv, .primitive = SchemaPrimitive::Int32};
+            static constexpr Schema schema{.id = SchemaId(4), .name = "int32"_zsv, .primitive = SchemaPrimitive::Int32};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, int64>) {
-            static constexpr Schema schema{.name = "int64"_zsv, .primitive = SchemaPrimitive::Int64};
+            static constexpr Schema schema{.id = SchemaId(5), .name = "int64"_zsv, .primitive = SchemaPrimitive::Int64};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, uint8> || (std::is_same_v<Type, char> && std::is_unsigned_v<char>)) {
-            static constexpr Schema schema{.name = "uint8"_zsv, .primitive = SchemaPrimitive::UInt8};
+            static constexpr Schema schema{.id = SchemaId(6), .name = "uint8"_zsv, .primitive = SchemaPrimitive::UInt8};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, uint16>) {
-            static constexpr Schema schema{.name = "uint16"_zsv, .primitive = SchemaPrimitive::UInt16};
+            static constexpr Schema schema{
+                .id = SchemaId(7),
+                .name = "uint16"_zsv,
+                .primitive = SchemaPrimitive::UInt16};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, uint32>) {
-            static constexpr Schema schema{.name = "uint32"_zsv, .primitive = SchemaPrimitive::UInt32};
+            static constexpr Schema schema{
+                .id = SchemaId(8),
+                .name = "uint32"_zsv,
+                .primitive = SchemaPrimitive::UInt32};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, uint64>) {
-            static constexpr Schema schema{.name = "uint64"_zsv, .primitive = SchemaPrimitive::UInt64};
+            static constexpr Schema schema{
+                .id = SchemaId(9),
+                .name = "uint64"_zsv,
+                .primitive = SchemaPrimitive::UInt64};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, float>) {
-            static constexpr Schema schema{.name = "float"_zsv, .primitive = SchemaPrimitive::Float};
+            static constexpr Schema schema{
+                .id = SchemaId{10},
+                .name = "float"_zsv,
+                .primitive = SchemaPrimitive::Float};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, double>) {
-            static constexpr Schema schema{.name = "double"_zsv, .primitive = SchemaPrimitive::Double};
+            static constexpr Schema schema{
+                .id = SchemaId{11},
+                .name = "double"_zsv,
+                .primitive = SchemaPrimitive::Double};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, glm::vec3>) {
-            static constexpr Schema schema{.name = "vec3"_zsv, .primitive = SchemaPrimitive::Vec3};
+            static constexpr Schema schema{.id = SchemaId{12}, .name = "vec3"_zsv, .primitive = SchemaPrimitive::Vec3};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, string>) {
-            static constexpr Schema schema{.name = "string"_zsv, .primitive = SchemaPrimitive::String};
+            static constexpr Schema schema{
+                .id = SchemaId{13},
+                .name = "string"_zsv,
+                .primitive = SchemaPrimitive::String};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, std::nullptr_t>) {
-            static constexpr Schema schema{.name = "nullptr"_zsv, .primitive = SchemaPrimitive::Pointer};
+            static constexpr Schema schema{
+                .id = SchemaId{14},
+                .name = "nullptr"_zsv,
+                .primitive = SchemaPrimitive::Pointer};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, up::UUID>) {
-            static constexpr Schema schema{.name = "uuid"_zsv, .primitive = SchemaPrimitive::Uuid};
+            static constexpr Schema schema{.id = SchemaId{15}, .name = "uuid"_zsv, .primitive = SchemaPrimitive::Uuid};
             return schema;
         }
         else if constexpr (is_vector_v<Type>) {
@@ -238,6 +266,7 @@ namespace up::reflex {
                     }};
 
             static Schema const schema{
+                .id = SchemaId(hash_combine(elementSchema.id.value(), hash_value("vector"_sv))),
                 .name = "vector"_zsv,
                 .primitive = SchemaPrimitive::Array,
                 .elementType = &elementSchema,
@@ -255,6 +284,7 @@ namespace up::reflex {
             };
 
             static Schema const schema{
+                .id = SchemaId(hash_combine(elementSchema.id.value(), hash_value("box"_sv))),
                 .name = "box"_zsv,
                 .primitive = SchemaPrimitive::Pointer,
                 .elementType = &elementSchema,
@@ -272,6 +302,7 @@ namespace up::reflex {
             };
 
             static Schema const schema{
+                .id = SchemaId(hash_combine(elementSchema.id.value(), hash_value("rc"_sv))),
                 .name = "rc"_zsv,
                 .primitive = SchemaPrimitive::Pointer,
                 .elementType = &elementSchema,

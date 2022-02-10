@@ -169,6 +169,7 @@ void SchemaSourceGenerator::writeSchema() {
                 _output << "  };\n\n";
 
                 _output << "  static Schema const schema = {\n";
+                _output << "    .id = SchemaId(hash_value(\"" << type->name << "\")),\n";
                 _output << "    .name = \"" << type->name << "\",\n";
                 _output << "    .primitive = up::reflex::SchemaPrimitive::Enum,\n";
                 _output << "    .elementType = &getSchema<std::underlying_type_t<" << cxx::QualifiedName{*type}
@@ -187,6 +188,7 @@ void SchemaSourceGenerator::writeSchema() {
                 break;
             case TypeKind::Alias:
                 _output << "  static Schema const schema = {\n";
+                _output << "    .id = SchemaId(hash_value(\"" << type->name << "\")),\n";
                 _output << "    .name = \"" << type->name << "\",\n";
                 _output << "    .primitive = up::reflex::SchemaPrimitive::Object,\n";
                 _output << "    .baseSchema = &getSchema<" << cxx::Type{*static_cast<TypeIndirect const&>(*type).ref}
@@ -196,6 +198,7 @@ void SchemaSourceGenerator::writeSchema() {
                 break;
             default:
                 _output << "  static Schema const schema = {\n";
+                _output << "    .id = SchemaId(hash_value(\"" << type->name << "\")),\n";
                 _output << "    .name = \"" << type->name << "\",\n";
                 _output << "    .annotations = type_annotations\n";
                 _output << "  };\n\n";
@@ -245,6 +248,7 @@ void SchemaSourceGenerator::writeObjectSchema(schema::TypeAggregate const& type)
     }
 
     _output << "  static Schema const schema = {\n";
+    _output << "    .id = SchemaId(hash_value(\"" << type.name << "\")),\n";
     _output << "    .name = \"" << type.name << "\",\n";
     _output << "    .primitive = up::reflex::SchemaPrimitive::" << (isAssetRef ? "AssetRef" : "Object") << ",\n";
     if (type.baseType != nullptr) {
