@@ -169,9 +169,7 @@ void up::SceneDocument::createTestObjects(
     auto const rootId = createEntity("Root");
 
     auto const centerId = createEntity("Center", rootId);
-    addComponentData(
-        centerId,
-        scene::components::Transform{.position = {0, 5, 0}, .rotation = {}});
+    addComponentData(centerId, scene::components::Transform{.position = {0, 5, 0}, .rotation = {}});
     addComponentData(centerId, scene::components::Mesh{.mesh = cube, .material = mat});
     addComponentData(centerId, scene::components::Ding{.period = 2, .sound = {ding}});
 
