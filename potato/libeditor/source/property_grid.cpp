@@ -116,8 +116,40 @@ namespace up {
 
         struct Vec3PropertyEditor final : PropertyEditor {
             bool edit(PropertyItemInfo const& info) override {
+#if 0
                 ImGui::SetNextItemWidth(-1.f);
                 return ImGui::InputVec3("##vec3", *static_cast<glm::vec3*>(info.object));
+#else
+                glm::vec3& vec3 = *static_cast<glm::vec3*>(info.object);
+
+                float const availWidth = ImGui::GetContentRegionAvail().x;
+                float const textWidth =
+                    ImGui::CalcTextSize("X").x + ImGui::CalcTextSize("Y").x + ImGui::CalcTextSize("Z").x;
+                float const totalSpacing = ImGui::GetItemSpacing().x * 2.f;
+                float const inputWidth = ImFloor((availWidth - textWidth - totalSpacing) / 3.f);
+
+                bool edits = false;
+
+                ImGui::TextUnformatted("X");
+                ImGui::SameLine(0.f, 0.f);
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InputFloat("##vec3_x", &vec3.x);
+                ImGui::SameLine(0.f, -1.f);
+
+                ImGui::TextUnformatted("Y");
+                ImGui::SameLine(0.f, 0.f);
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InputFloat("##vec3_y", &vec3.y);
+                ImGui::SameLine(0.f, -1.f);
+
+                ImGui::TextUnformatted("Z");
+                ImGui::SameLine(0.f, 0.f);
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InputFloat("##vec3_z", &vec3.z);
+
+                return edits;
+
+#endif
             }
         };
 
