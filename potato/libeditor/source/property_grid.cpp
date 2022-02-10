@@ -658,7 +658,7 @@ namespace up {
         // recurse into children
         if (open) {
             ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-            propertyEditor.children(*this, info);
+            edits |= propertyEditor.children(*this, info);
             ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         }
 
