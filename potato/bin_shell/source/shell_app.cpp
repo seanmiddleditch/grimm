@@ -348,7 +348,7 @@ int up::shell::ShellApp::initialize() {
         _openAssetEditor(uuid);
     });
     SceneEditor::addFactory(_editors, _sceneDatabase, _propertyGrid, _assetLoader);
-    MaterialEditor::addFactory(_editors, _propertyGrid, _assetLoader);
+    MaterialEditor::addFactory(_editors, _propertyGrid);
     LogWindow::addFactory(_editors, _logHistory);
     GameEditor::addFactory(_editors, *_audio);
 

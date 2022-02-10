@@ -19,11 +19,10 @@ namespace up::shell {
         MaterialEditor(
             EditorParams const& params,
             PropertyGrid& propertyGrid,
-            AssetLoader& assetLoader,
             box<schema::Material> material,
             string filename);
 
-        static void addFactory(EditorManager& editors, PropertyGrid& propertyGrid, AssetLoader& assetLoader);
+        static void addFactory(EditorManager& editors, PropertyGrid& propertyGrid);
 
         zstring_view displayName() const override { return "Material"_zsv; }
 
@@ -32,7 +31,6 @@ namespace up::shell {
 
         void _save();
 
-        AssetLoader& _assetLoader;
         box<schema::Material> _material;
         string _filename;
         PropertyGrid& _propertyGrid;
