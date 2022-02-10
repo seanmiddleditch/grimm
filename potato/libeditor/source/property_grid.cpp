@@ -425,12 +425,6 @@ namespace up {
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Vec3, index);
         }
 
-        //{
-        //    auto const index = static_cast<uint32>(_propertyEditors.size());
-        //    _propertyEditors.push_back(new_box<QuaternionPropertyEditor>());
-        //    _primitiveEditorMap.insert(reflex::SchemaPrimitive::Quat, index);
-        //}
-
         {
             auto const index = static_cast<uint32>(_propertyEditors.size());
             _propertyEditors.push_back(new_box<StringPropertyEditor>());
@@ -467,8 +461,6 @@ namespace up {
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::AssetRef, index);
         }
     }
-
-    void PropertyGrid::addPropertyEditor(box<PropertyEditor> editor) { _propertyEditors.push_back(std::move(editor)); }
 
     bool PropertyGrid::beginTable(char const* label) {
         bool const open = ImGui::BeginTable(
@@ -523,7 +515,21 @@ namespace up {
         return false;
     }
 
+    void PropertyGrid::addPropertyEditor(reflex::SchemaId schemaId, box<PropertyEditor> editor) {
+        UP_GUARD_VOID(editor != nullptr);
+        UP_GUARD_VOID(!_typedEditorMap.find(schemaId));
+
+        auto const index = static_cast<uint32>(_propertyEditors.size());
+        _propertyEditors.push_back(std::move(editor));
+        _typedEditorMap.insert(schemaId, index);
+    }
+
     PropertyEditor* PropertyGrid::findPropertyEditor(reflex::Schema const& schema) const noexcept {
+        auto const typeIt = _typedEditorMap.find(schema.id);
+        if (typeIt) {
+            return _propertyEditors[typeIt->value].get();
+        }
+
         auto const primIt = _primitiveEditorMap.find(schema.primitive);
         if (primIt) {
             return _propertyEditors[primIt->value].get();

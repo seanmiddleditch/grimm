@@ -61,7 +61,7 @@ namespace up {
             editObjectRaw(reflex::getSchema<T>(), &value);
         }
 
-        void addPropertyEditor(box<PropertyEditor> editor);
+        void addPropertyEditor(reflex::SchemaId schemaId, box<PropertyEditor> editor);
 
         PropertyEditor* findPropertyEditor(reflex::Schema const& schema) const noexcept;
 
@@ -71,5 +71,6 @@ namespace up {
 
         vector<box<PropertyEditor>> _propertyEditors;
         hash_map<reflex::SchemaPrimitive, uint32> _primitiveEditorMap;
+        hash_map<reflex::SchemaId, uint32> _typedEditorMap;
     };
 } // namespace up
