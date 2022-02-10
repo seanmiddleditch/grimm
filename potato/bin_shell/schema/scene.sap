@@ -19,11 +19,8 @@ struct Euler {
 }
 
 scene_component Transform {
-    [DisplayName("Pos")]
     vec3 position;
-
-    [DisplayName("Rot")]
-    quat rotation;
+    Euler rotation;
 }
 
 scene_component Mesh {
@@ -64,7 +61,6 @@ scene_component Test {
 
     [Tooltip("This is a handy tip")]
     vec3 position;
-    quat rotation;
     bool enabled;
     Euler angles;
     int[] numbers;

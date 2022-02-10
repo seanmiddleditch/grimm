@@ -43,7 +43,6 @@ namespace up::reflex {
         UInt64,
         Enum,
         Vec3,
-        Quat,
         Float,
         Double,
         Pointer,
@@ -186,10 +185,6 @@ namespace up::reflex {
         }
         else if constexpr (std::is_same_v<Type, glm::vec3>) {
             static constexpr Schema schema{.name = "vec3"_zsv, .primitive = SchemaPrimitive::Vec3};
-            return schema;
-        }
-        else if constexpr (std::is_same_v<Type, glm::quat>) {
-            static constexpr Schema schema{.name = "quat"_zsv, .primitive = SchemaPrimitive::Quat};
             return schema;
         }
         else if constexpr (std::is_same_v<Type, string>) {

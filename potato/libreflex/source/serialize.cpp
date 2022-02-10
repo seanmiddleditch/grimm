@@ -160,8 +160,6 @@ bool up::reflex::_detail::encodeValue(nlohmann::json& json, Schema const& schema
             json.push_back(static_cast<glm::vec3 const*>(obj)->y);
             json.push_back(static_cast<glm::vec3 const*>(obj)->z);
             return true;
-        case SchemaPrimitive::Quat:
-            return false;
         case SchemaPrimitive::Float:
             json = *static_cast<float const*>(obj);
             return true;
@@ -315,8 +313,6 @@ bool up::reflex::_detail::decodeValue(nlohmann::json const& json, Schema const& 
             static_cast<glm::vec3*>(obj)->y = json[1].get<float>();
             static_cast<glm::vec3*>(obj)->z = json[2].get<float>();
             return true;
-        case SchemaPrimitive::Quat:
-            return false;
         case SchemaPrimitive::Float:
             return decodeSimple<float>(json, obj);
         case SchemaPrimitive::Double:

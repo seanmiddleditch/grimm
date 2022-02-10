@@ -425,11 +425,11 @@ namespace up {
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Vec3, index);
         }
 
-        {
-            auto const index = static_cast<uint32>(_propertyEditors.size());
-            _propertyEditors.push_back(new_box<QuaternionPropertyEditor>());
-            _primitiveEditorMap.insert(reflex::SchemaPrimitive::Quat, index);
-        }
+        //{
+        //    auto const index = static_cast<uint32>(_propertyEditors.size());
+        //    _propertyEditors.push_back(new_box<QuaternionPropertyEditor>());
+        //    _primitiveEditorMap.insert(reflex::SchemaPrimitive::Quat, index);
+        //}
 
         {
             auto const index = static_cast<uint32>(_propertyEditors.size());

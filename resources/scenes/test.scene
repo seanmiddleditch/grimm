@@ -22,7 +22,12 @@
                             5.0,
                             0.0
                         ],
-                        "rotation": null
+                        "rotation": {
+                            "$schema": "Euler",
+                            "pitch": 0.0,
+                            "roll": 0.0,
+                            "yaw": 0.0
+                        }
                     },
                     {
                         "$schema": "Ding",
@@ -69,7 +74,12 @@
                                     1.0,
                                     20.0
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -102,7 +112,12 @@
                                     3.9389262199401855,
                                     20.587200164794922
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -135,7 +150,12 @@
                                     5.755282878875732,
                                     21.085742950439453
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -168,7 +188,12 @@
                                     5.755282402038574,
                                     21.48636817932129
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -201,7 +226,12 @@
                                     3.9389259815216064,
                                     21.780431747436523
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -234,7 +264,12 @@
                                     0.9999995827674866,
                                     21.96005630493164
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -267,7 +302,12 @@
                                     -1.9389266967773438,
                                     22.018264770507813
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -300,7 +340,12 @@
                                     -3.755282402038574,
                                     21.949108123779297
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -333,7 +378,12 @@
                                     -3.755282402038574,
                                     21.747772216796875
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -366,7 +416,12 @@
                                     -1.938924789428711,
                                     21.410694122314453
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -399,7 +454,12 @@
                                     1.0000008344650269,
                                     20.935623168945313
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -432,7 +492,12 @@
                                     3.9389281272888184,
                                     20.321701049804688
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -465,7 +530,12 @@
                                     5.755282878875732,
                                     19.56950569152832
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -498,7 +568,12 @@
                                     5.755283355712891,
                                     18.681076049804688
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -531,7 +606,12 @@
                                     3.938927173614502,
                                     17.659915924072266
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -564,7 +644,12 @@
                                     0.9999951124191284,
                                     16.510986328125
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -597,7 +682,12 @@
                                     -1.938927412033081,
                                     15.240669250488281
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -630,7 +720,12 @@
                                     -3.7552833557128906,
                                     13.856711387634277
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -663,7 +758,12 @@
                                     -3.755281448364258,
                                     12.368149757385254
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -696,7 +796,12 @@
                                     -1.9389259815216064,
                                     10.785225868225098
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -729,7 +834,12 @@
                                     1.0000017881393433,
                                     9.11926555633545
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -762,7 +872,12 @@
                                     3.938924789428711,
                                     7.382568359375
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -795,7 +910,12 @@
                                     5.755283832550049,
                                     5.5882463455200195
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -828,7 +948,12 @@
                                     5.7552809715271,
                                     3.750110387802124
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -861,7 +986,12 @@
                                     3.9389243125915527,
                                     1.8824758529663086
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -894,7 +1024,12 @@
                                     0.9999966025352478,
                                     -1.3113416343912832e-06
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -927,7 +1062,12 @@
                                     -1.93892240524292,
                                     -1.8824750185012817
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -960,7 +1100,12 @@
                                     -3.755284309387207,
                                     -3.7501168251037598
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -993,7 +1138,12 @@
                                     -3.7552833557128906,
                                     -5.5882487297058105
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1026,7 +1176,12 @@
                                     -1.938927173614502,
                                     -7.382567405700684
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1059,7 +1214,12 @@
                                     1.0000097751617432,
                                     -9.119270324707031
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1092,7 +1252,12 @@
                                     3.938927412033081,
                                     -10.785228729248047
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1125,7 +1290,12 @@
                                     5.755283355712891,
                                     -12.368154525756836
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1158,7 +1328,12 @@
                                     5.755281448364258,
                                     -13.85671615600586
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1191,7 +1366,12 @@
                                     3.9389219284057617,
                                     -15.24067497253418
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1224,7 +1404,12 @@
                                     1.0000028610229492,
                                     -16.510986328125
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1257,7 +1442,12 @@
                                     -1.9389328956604004,
                                     -17.65991973876953
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1290,7 +1480,12 @@
                                     -3.755282402038574,
                                     -18.681076049804688
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1323,7 +1518,12 @@
                                     -3.755282402038574,
                                     -19.56950569152832
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1356,7 +1556,12 @@
                                     -1.9389243125915527,
                                     -20.321701049804688
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1389,7 +1594,12 @@
                                     1.000003457069397,
                                     -20.935623168945313
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1422,7 +1632,12 @@
                                     3.938930034637451,
                                     -21.410694122314453
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1455,7 +1670,12 @@
                                     5.755281448364258,
                                     -21.747772216796875
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1488,7 +1708,12 @@
                                     5.755280494689941,
                                     -21.949108123779297
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1521,7 +1746,12 @@
                                     3.9389193058013916,
                                     -22.018264770507813
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1554,7 +1784,12 @@
                                     0.9999996423721313,
                                     -21.96005630493164
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1587,7 +1822,12 @@
                                     -1.9389352798461914,
                                     -21.78042984008789
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1620,7 +1860,12 @@
                                     -3.7552833557128906,
                                     -21.48636817932129
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1653,7 +1898,12 @@
                                     -3.755281448364258,
                                     -21.085742950439453
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1686,7 +1936,12 @@
                                     -1.9389216899871826,
                                     -20.587200164794922
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1719,7 +1974,12 @@
                                     1.0000067949295044,
                                     -20.0
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1752,7 +2012,12 @@
                                     3.9389328956604004,
                                     -19.333866119384766
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1785,7 +2050,12 @@
                                     5.755279541015625,
                                     -18.598844528198242
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1818,7 +2088,12 @@
                                     5.755285263061523,
                                     -17.805124282836914
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1851,7 +2126,12 @@
                                     3.9389166831970215,
                                     -16.962892532348633
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1884,7 +2164,12 @@
                                     0.9999868273735046,
                                     -16.08220100402832
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1917,7 +2202,12 @@
                                     -1.938922643661499,
                                     -15.172794342041016
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1950,7 +2240,12 @@
                                     -3.755281448364258,
                                     -14.243974685668945
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -1983,7 +2278,12 @@
                                     -3.7552833557128906,
                                     -13.304492950439453
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2016,7 +2316,12 @@
                                     -1.9389266967773438,
                                     -12.362424850463867
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2049,7 +2354,12 @@
                                     1.0000195503234863,
                                     -11.42505168914795
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2082,7 +2392,12 @@
                                     3.93892765045166,
                                     -10.49882698059082
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2115,7 +2430,12 @@
                                     5.755283355712891,
                                     -9.58923625946045
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2148,7 +2468,12 @@
                                     5.755281448364258,
                                     -8.7008056640625
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2181,7 +2506,12 @@
                                     3.9389216899871826,
                                     -7.837040901184082
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2214,7 +2544,12 @@
                                     1.0000121593475342,
                                     -7.000425815582275
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2247,7 +2582,12 @@
                                     -1.9389328956604004,
                                     -6.192397594451904
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2280,7 +2620,12 @@
                                     -3.7552852630615234,
                                     -5.413430690765381
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2313,7 +2658,12 @@
                                     -3.755279064178467,
                                     -4.663015842437744
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2346,7 +2696,12 @@
                                     -1.9389166831970215,
                                     -3.9397518634796143
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2379,7 +2734,12 @@
                                     0.9999942183494568,
                                     -3.241414785385132
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2412,7 +2772,12 @@
                                     3.938922643661499,
                                     -2.565030336380005
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2445,7 +2810,12 @@
                                     5.7552876472473145,
                                     -1.9069993495941162
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2478,7 +2848,12 @@
                                     5.755277156829834,
                                     -1.2632107734680176
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2511,7 +2886,12 @@
                                     3.9389266967773438,
                                     -0.6291443705558777
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2544,7 +2924,12 @@
                                     0.9999994039535522,
                                     1.1924880993774423e-07
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2577,7 +2962,12 @@
                                     -1.9389276504516602,
                                     0.6291446089744568
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2610,7 +3000,12 @@
                                     -3.7552833557128906,
                                     1.2632157802581787
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2643,7 +3038,12 @@
                                     -3.755281448364258,
                                     1.907004475593567
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2676,7 +3076,12 @@
                                     -1.9389216899871826,
                                     2.565030574798584
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2709,7 +3114,12 @@
                                     1.0000070333480835,
                                     3.241415023803711
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2742,7 +3152,12 @@
                                     3.9389331340789795,
                                     3.9397573471069336
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2775,7 +3190,12 @@
                                     5.755285739898682,
                                     4.663021564483643
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2808,7 +3228,12 @@
                                     5.755279064178467,
                                     5.413435935974121
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2841,7 +3266,12 @@
                                     3.938931941986084,
                                     6.1923980712890625
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2874,7 +3304,12 @@
                                     0.9999865889549255,
                                     7.000426292419434
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2907,7 +3342,12 @@
                                     -1.9389381408691406,
                                     7.837047576904297
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2940,7 +3380,12 @@
                                     -3.7552876472473145,
                                     8.700813293457031
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -2973,7 +3418,12 @@
                                     -3.755277156829834,
                                     9.58924388885498
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3006,7 +3456,12 @@
                                     -1.9389266967773438,
                                     10.49882698059082
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3039,7 +3494,12 @@
                                     1.0000007152557373,
                                     11.425055503845215
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3072,7 +3532,12 @@
                                     3.9389431476593018,
                                     12.36242961883545
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3105,7 +3570,12 @@
                                     5.755289554595947,
                                     13.304499626159668
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3138,7 +3608,12 @@
                                     5.755281448364258,
                                     14.243974685668945
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3171,7 +3646,12 @@
                                     3.9389214515686035,
                                     15.172794342041016
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3204,7 +3684,12 @@
                                     0.9999929070472717,
                                     16.082204818725586
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3237,7 +3722,12 @@
                                     -1.9389331340789795,
                                     16.962894439697266
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3270,7 +3760,12 @@
                                     -3.75529146194458,
                                     17.805130004882813
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3303,7 +3798,12 @@
                                     -3.755279064178467,
                                     18.598846435546875
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3336,7 +3836,12 @@
                                     -1.9389164447784424,
                                     19.33386993408203
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3369,7 +3874,12 @@
                                     1.0000134706497192,
                                     20.000001907348633
                                 ],
-                                "rotation": null
+                                "rotation": {
+                                    "$schema": "Euler",
+                                    "pitch": 0.0,
+                                    "roll": 0.0,
+                                    "yaw": 0.0
+                                }
                             }
                         ],
                         "name": "Orbit"
@@ -3382,17 +3892,17 @@
         "components": [
             {
                 "$schema": "Test",
+                "_limit10": 0,
                 "angles": {
                     "$schema": "Euler",
                     "pitch": 0.0,
                     "roll": 0.0,
                     "yaw": 0.0
                 },
-                "array": [],
-                "embedded": null,
                 "enabled": false,
+                "euler_array": [],
+                "euler_object": null,
                 "integer": 0,
-                "limit": 0,
                 "numbers": [
                     1001,
                     2002,
@@ -3400,15 +3910,14 @@
                     4004,
                     5005
                 ],
-                "real": 7.550000190734863,
-                "ref": null,
-                "rot": null,
-                "text": "hmm",
-                "vec": [
+                "position": [
                     0.0,
                     0.0,
                     0.0
-                ]
+                ],
+                "real_number": 0.0,
+                "ref_uuid": null,
+                "text": "hmm"
             }
         ],
         "name": "Root"
