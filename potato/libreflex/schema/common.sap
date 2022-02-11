@@ -1,5 +1,6 @@
 module common;
 
+// attributes that drive the codegen specifically
 attribute ignore;
 attribute required { bool require = true; }
 attribute cxxname { string id; }
@@ -9,8 +10,10 @@ attribute json { string name; }
 attribute serialize {}
 attribute virtualbase {}
 
+// core C++ types we want expose
 [ignore, cxxname("char")]
 using char;
+
 [ignore, cxxname("double")]
 using double;
 
@@ -19,6 +22,30 @@ struct vec3 {
     float x;
     float y;
     float z;
+}
+
+// editor attributes, mostly for property grid
+attribute DisplayName { string name; }
+attribute Hidden;
+attribute Flatten;
+attribute Tooltip { string text; }
+attribute AssetType { string assetType; }
+attribute AssetReference;
+attribute IntRange { int min; int max; }
+attribute FloatRange { float min; float max; }
+
+[cxximport("up::AssetHandle<$AssetT>", "potato/runtime/asset.h")]
+[AssetReference]
+struct AssetRef<AssetT> { }
+
+// useful types for source content
+struct Euler {
+    [FloatRange(-180,180)]
+    float pitch;
+    [FloatRange(-180,180)]
+    float yaw;
+    [FloatRange(-180,180)]
+    float roll;
 }
 
 [cxximport("up::UUID", "potato/runtime/uuid.h")]
