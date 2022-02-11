@@ -312,12 +312,26 @@ namespace up::shell {
             return;
         }
 
-        {
+        if (_propertyGrid.beginTable()) {
+            ImGui::TableNextRow();
+
+            ImGui::TableSetColumnIndex(0);
+            ImGui::AlignTextToFramePadding();
+
+            ImGui::TextUnformatted("Name");
+
+            ImGui::TableSetColumnIndex(1);
+            ImGui::AlignTextToFramePadding();
+
             char buffer[128];
             nanofmt::format_to(buffer, "{}", _doc->entityAt(index).name);
-            if (ImGui::InputText("Name", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+
+            ImGui::SetNextItemWidth(-1.f);
+            if (ImGui::InputText("##name", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
                 _doc->entityAt(index).name = string{buffer};
             }
+
+            _propertyGrid.endTable();
         }
 
         ImGuiID const addComponentId = ImGui::GetID("##add_component_list");
