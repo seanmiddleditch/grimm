@@ -8,6 +8,7 @@
 #include "potato/schema/common_schema.h"
 #include "potato/runtime/asset.h"
 #include "potato/runtime/asset_loader.h"
+#include "potato/runtime/path.h"
 #include "potato/runtime/resource_manifest.h"
 
 #include <glm/mat4x4.hpp>
@@ -359,29 +360,54 @@ namespace up {
 
                 auto* const handle = static_cast<UntypedAssetHandle*>(info.object);
                 AssetId const assetId = handle->assetId();
-                zstring_view displayName = "<empty>"_zsv;
 
+                char baseName[256] = "<empty>";
                 if (handle->isSet()) {
-                    displayName = _assetLoader.debugName(assetId);
+                    nanofmt::format_to(baseName, "{}", up::path::filebasename(_assetLoader.debugName(assetId)));
                 }
 
                 bool edit = false;
-
-                ImGui::Text("%s", displayName.c_str());
-                ImGui::SameLine();
-                if (ImGui::IconButton("##clear", ICON_FA_TRASH) && info.schema.operations->pointerAssign != nullptr) {
-                    info.schema.operations->pointerAssign(info.object, nullptr);
-                    edit = true;
-                }
-                ImGui::SameLine();
 
                 char browserId[32] = {
                     0,
                 };
                 nanofmt::format_to(browserId, "##assets{}", ImGui::GetID("popup"));
 
-                if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
-                    ImGui::OpenPopup(browserId);
+                // render
+                {
+                    auto const windowPos = ImGui::GetWindowPos();
+                    auto availSize = ImGui::GetContentRegionAvail();
+                    float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
+                    float const buttonSpacing = ImGui::GetStyle().ItemInnerSpacing.x;
+                    auto const pos = ImGui::GetCursorPos();
+
+                    // open asset browser
+                    availSize.x -= buttonWidth + buttonSpacing;
+                    ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
+                    if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
+                        ImGui::OpenPopup(browserId);
+                    }
+
+                    // clear asset
+                    availSize.x -= buttonWidth + buttonSpacing;
+                    ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
+                    ImGui::BeginDisabled(!handle->isSet());
+                    if (ImGui::IconButton("##clear", ICON_FA_TRASH) &&
+                        info.schema.operations->pointerAssign != nullptr) {
+                        info.schema.operations->pointerAssign(info.object, nullptr);
+                        edit = true;
+                    }
+                    ImGui::EndDisabled();
+
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::RenderTextClipped(
+                        ImVec2(
+                            windowPos.x + pos.x,
+                            windowPos.y + pos.y + ImGui::GetCurrentWindow()->DC.CurrLineTextBaseOffset),
+                        ImVec2(windowPos.x + pos.x + availSize.x, windowPos.y + pos.y + availSize.y),
+                        baseName,
+                        nullptr,
+                        nullptr);
                 }
 
                 if (info.schema.operations != nullptr && info.schema.operations->pointerAssign != nullptr) {
