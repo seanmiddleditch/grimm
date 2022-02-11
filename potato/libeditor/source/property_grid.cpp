@@ -10,7 +10,6 @@
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/resource_manifest.h"
 
-#include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <imgui.h>
@@ -135,13 +134,6 @@ namespace up {
                 edits |= ImGui::InlineInputScalar("Z", ImGuiDataType_Float, &vec3.z);
 
                 return edits;
-            }
-        };
-
-        struct QuaternionPropertyEditor final : PropertyEditor {
-            bool edit(PropertyItemInfo const& info) override {
-                ImGui::SetNextItemWidth(-1.f);
-                return ImGui::InputQuat("##quat", *static_cast<glm::quat*>(info.object));
             }
         };
 

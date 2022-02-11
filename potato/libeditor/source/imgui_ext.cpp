@@ -192,23 +192,6 @@ namespace ImGui::inline Potato {
         return (io.KeyMods & modifiers) == modifiers;
     }
 
-    bool InputVec3(char const* label, glm::vec3& value, char const* format, ImGuiInputTextFlags flags) {
-        return ImGui::InputFloat3(label, &value.x, format, flags);
-    }
-
-    bool InputQuat(char const* label, glm::quat& value, char const* format, ImGuiSliderFlags flags) {
-        auto euler = glm::eulerAngles(value);
-        auto eulerDegrees = glm::vec3(glm::degrees(euler.x), glm::degrees(euler.y), glm::degrees(euler.z));
-
-        ImGui::SetNextItemWidth(-1.f);
-        if (ImGui::SliderFloat3(label, &eulerDegrees.x, 0.f, +359.f, format, flags)) {
-            value = glm::vec3(glm::radians(eulerDegrees.x), glm::radians(eulerDegrees.y), glm::radians(eulerDegrees.z));
-            return true;
-        }
-
-        return false;
-    }
-
     bool BeginContextPopup() {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems) {

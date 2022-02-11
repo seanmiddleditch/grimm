@@ -36,17 +36,6 @@ namespace ImGui::inline Potato {
 
     UP_EDITOR_API bool IsModifierDown(ImGuiKeyModFlags modifiers) noexcept;
 
-    UP_EDITOR_API bool InputVec3(
-        char const* label,
-        glm::vec3& value,
-        char const* format = "%.3f",
-        ImGuiInputTextFlags flags = ImGuiInputTextFlags_None);
-    UP_EDITOR_API bool InputQuat(
-        char const* label,
-        glm::quat& value,
-        char const* format = "%.3f",
-        ImGuiSliderFlags flags = ImGuiSliderFlags_None);
-
     UP_EDITOR_API ImVec2 GetItemSpacing();
     UP_EDITOR_API ImVec2 GetItemInnerSpacing();
 
