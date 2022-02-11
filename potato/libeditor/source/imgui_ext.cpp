@@ -338,6 +338,79 @@ namespace ImGui::inline Potato {
         return clicked;
     }
 
+    static bool BeginInlineEditor(const char* label, ImRect& out_rect) {
+        auto const& style = ImGui::GetStyle();
+        ImGuiWindow* const window = ImGui::GetCurrentWindow();
+        ImDrawList* const draw = window->DrawList;
+
+        ImGui::BeginGroup();
+        ImGui::PushID(label);
+
+        const char* labelEnd = ImGui::FindRenderedTextEnd(label);
+
+        ImVec2 const totalSize{ImGui::CalcItemWidth(), ImGui::GetFrameHeight()};
+        ImVec2 const textSize = ImGui::CalcTextSize(label, labelEnd, true);
+        ImVec2 textBoxSize{textSize.x + style.FramePadding.x * 2.f, totalSize.y};
+
+        out_rect.Min = window->DC.CursorPos;
+        out_rect.Max = out_rect.Min + totalSize;
+
+        const ImU32 textBgColor = ImGui::GetColorU32(style.Colors[ImGuiCol_Header]);
+        const ImU32 textColor = ImGui::GetColorU32(style.Colors[ImGuiCol_Text]);
+
+        draw->AddRectFilled(out_rect.Min, out_rect.Min + textBoxSize, textBgColor, 0.f);
+        draw->AddText({out_rect.Min.x + style.FramePadding.x, out_rect.Min.y + window->DC.CurrLineTextBaseOffset}, textColor, label, labelEnd);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
+        ImGui::SetNextItemWidth(totalSize.x - textBoxSize.x);
+
+        window->DC.CursorPos.x = out_rect.Min.x + textBoxSize.x;
+        return true;
+    }
+
+    static void EndInlineEditor(ImRect const& rect) {
+        ImGui::PopStyleVar();
+
+        ImGui::RenderFrameBorder(rect.Min, rect.Max, 0.f);
+
+        ImGui::PopID();
+        ImGui::EndGroup();
+    }
+
+    bool InlineSliderScalar(
+        const char* label,
+        ImGuiDataType dataType,
+        void* pData,
+        const void* pMin,
+        const void* pMax,
+        const char* format,
+        ImGuiSliderFlags flags) {
+        ImRect rect;
+        if (!BeginInlineEditor(label, rect)) {
+            return false;
+        }
+        bool const edits = ImGui::SliderScalar("##slider", dataType, pData, pMin, pMax, format, flags);
+        EndInlineEditor(rect);
+        return edits;
+    }
+
+    bool InlineInputScalar(
+        const char* label,
+        ImGuiDataType dataType,
+        void* pData,
+        const void* pStep,
+        const void* pStepFast,
+        const char* format,
+        ImGuiInputTextFlags flags) {
+        ImRect rect;
+        if (!BeginInlineEditor(label, rect)) {
+            return false;
+        }
+        bool const edits = ImGui::InputScalar("##input", dataType, pData, pStep, pStepFast, format, flags);
+        EndInlineEditor(rect);
+        return edits;
+    }
+
     void ApplyStyle() {
         auto& style = ImGui::GetStyle();
 
