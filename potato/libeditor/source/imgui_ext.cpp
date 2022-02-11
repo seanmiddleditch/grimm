@@ -342,7 +342,11 @@ namespace ImGui::inline Potato {
         const ImU32 textColor = ImGui::GetColorU32(style.Colors[ImGuiCol_Text]);
 
         draw->AddRectFilled(out_rect.Min, out_rect.Min + textBoxSize, textBgColor, 0.f);
-        draw->AddText({out_rect.Min.x + style.FramePadding.x, out_rect.Min.y + window->DC.CurrLineTextBaseOffset}, textColor, label, labelEnd);
+        draw->AddText(
+            {out_rect.Min.x + style.FramePadding.x, out_rect.Min.y + window->DC.CurrLineTextBaseOffset},
+            textColor,
+            label,
+            labelEnd);
 
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
         ImGui::SetNextItemWidth(totalSize.x - textBoxSize.x);
