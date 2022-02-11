@@ -442,7 +442,7 @@ namespace up {
 
                 ImGui::SetNextItemWidth(inputWidth);
                 edits |= ImGui::InlineSliderScalar(
-                    "Z",
+                    "X",
                     ImGuiDataType_Float,
                     &euler.yaw,
                     &minDeg,
