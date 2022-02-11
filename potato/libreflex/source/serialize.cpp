@@ -3,7 +3,6 @@
 #include "potato/reflex/serialize.h"
 
 #include "potato/schema/common_schema.h"
-#include "potato/schema/tools_schema.h"
 #include "potato/runtime/assertion.h"
 #include "potato/runtime/asset.h"
 #include "potato/runtime/json.h"

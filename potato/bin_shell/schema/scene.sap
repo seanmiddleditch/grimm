@@ -1,22 +1,11 @@
 module scene;
 
 import common;
-import constraint;
-import tools;
 import material;
 import sound;
 
 [cxxnamespace("up::scene::components")]
 use scene_component : struct;
-
-struct Euler {
-    [FloatRange(-180,180)]
-    float pitch;
-    [FloatRange(-180,180)]
-    float yaw;
-    [FloatRange(-180,180)]
-    float roll;
-}
 
 scene_component Transform {
     vec3 position;

@@ -36,17 +36,6 @@ namespace ImGui::inline Potato {
 
     UP_EDITOR_API bool IsModifierDown(ImGuiKeyModFlags modifiers) noexcept;
 
-    UP_EDITOR_API bool InputVec3(
-        char const* label,
-        glm::vec3& value,
-        char const* format = "%.3f",
-        ImGuiInputTextFlags flags = ImGuiInputTextFlags_None);
-    UP_EDITOR_API bool InputQuat(
-        char const* label,
-        glm::quat& value,
-        char const* format = "%.3f",
-        ImGuiSliderFlags flags = ImGuiSliderFlags_None);
-
     UP_EDITOR_API ImVec2 GetItemSpacing();
     UP_EDITOR_API ImVec2 GetItemInnerSpacing();
 
@@ -59,6 +48,24 @@ namespace ImGui::inline Potato {
         float width = 96.f,
         float rounding = 8.f);
     UP_EDITOR_API void EndIconGrid();
+
+    UP_EDITOR_API bool InlineSliderScalar(
+        const char* label,
+        ImGuiDataType dataType,
+        void* pData,
+        const void* pMin = nullptr,
+        const void* pMax = nullptr,
+        const char* format = nullptr,
+        ImGuiSliderFlags flags = ImGuiSliderFlags_None);
+
+    UP_EDITOR_API bool InlineInputScalar(
+        const char* label,
+        ImGuiDataType dataType,
+        void* pData,
+        const void* pStep = nullptr,
+        const void* pStepFast = nullptr,
+        const char* format = nullptr,
+        ImGuiInputTextFlags flags = ImGuiInputTextFlags_None);
 
     UP_EDITOR_API void ApplyStyle();
 } // namespace ImGui::inline Potato

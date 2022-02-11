@@ -13,18 +13,17 @@ up_compile_sap(potato_libreflex
     SCHEMAS
         schema/common.sap
         schema/reflex.sap
-        schema/constraint.sap
-        schema/tools.sap
 )
 
 target_sources(potato_libreflex PRIVATE
     "include/potato/reflex/_export.h"
     "include/potato/reflex/schema.h"
+    "include/potato/reflex/serialize.h"
     "include/potato/reflex/traits.h"
     "include/potato/reflex/type.h"
-    "include/potato/reflex/serialize.h"
+    "include/potato/reflex/typeid.h"
     "source/serialize.cpp"
- "include/potato/reflex/typeid.h")
+)
 
 target_link_libraries(potato_libreflex
     PUBLIC

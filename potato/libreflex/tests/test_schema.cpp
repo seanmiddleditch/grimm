@@ -20,6 +20,8 @@ TEST_CASE("potato.reflex.Schema", "[potato][reflex]") {
 
     SECTION("getSchema") {
         reflex::Schema const& schema = reflex::getSchema<TestStruct>();
+        CHECK(schema.id);
+        CHECK(schema.id.value() == hash_value(schema.name.c_str()));
         CHECK(schema.name == "TestStruct"_sv);
         CHECK(schema.primitive == reflex::SchemaPrimitive::Object);
         REQUIRE(schema.fields.size() == 1);

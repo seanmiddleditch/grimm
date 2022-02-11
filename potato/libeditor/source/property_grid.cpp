@@ -6,13 +6,11 @@
 #include "potato/editor/icons.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/schema/common_schema.h"
-#include "potato/schema/constraint_schema.h"
-#include "potato/schema/tools_schema.h"
 #include "potato/runtime/asset.h"
 #include "potato/runtime/asset_loader.h"
+#include "potato/runtime/path.h"
 #include "potato/runtime/resource_manifest.h"
 
-#include <glm/gtx/quaternion.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <imgui.h>
@@ -116,15 +114,27 @@ namespace up {
 
         struct Vec3PropertyEditor final : PropertyEditor {
             bool edit(PropertyItemInfo const& info) override {
-                ImGui::SetNextItemWidth(-1.f);
-                return ImGui::InputVec3("##vec3", *static_cast<glm::vec3*>(info.object));
-            }
-        };
+                auto& vec3 = *static_cast<glm::vec3*>(info.object);
 
-        struct QuaternionPropertyEditor final : PropertyEditor {
-            bool edit(PropertyItemInfo const& info) override {
-                ImGui::SetNextItemWidth(-1.f);
-                return ImGui::InputQuat("##quat", *static_cast<glm::quat*>(info.object));
+                float const availWidth = ImGui::GetContentRegionAvail().x;
+                float const innerSpacing = ImGui::GetItemInnerSpacing().x;
+                float const totalSpacing = innerSpacing * 2.f;
+                float const inputWidth = ImFloor((availWidth - totalSpacing) / 3.f);
+
+                bool edits = false;
+
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InlineInputScalar("X", ImGuiDataType_Float, &vec3.x);
+                ImGui::SameLine(0.f, innerSpacing);
+
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InlineInputScalar("Y", ImGuiDataType_Float, &vec3.y);
+                ImGui::SameLine(0.f, innerSpacing);
+
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InlineInputScalar("Z", ImGuiDataType_Float, &vec3.z);
+
+                return edits;
             }
         };
 
@@ -350,29 +360,54 @@ namespace up {
 
                 auto* const handle = static_cast<UntypedAssetHandle*>(info.object);
                 AssetId const assetId = handle->assetId();
-                zstring_view displayName = "<empty>"_zsv;
 
+                char baseName[256] = "<empty>";
                 if (handle->isSet()) {
-                    displayName = _assetLoader.debugName(assetId);
+                    nanofmt::format_to(baseName, "{}", up::path::filebasename(_assetLoader.debugName(assetId)));
                 }
 
                 bool edit = false;
-
-                ImGui::Text("%s", displayName.c_str());
-                ImGui::SameLine();
-                if (ImGui::IconButton("##clear", ICON_FA_TRASH) && info.schema.operations->pointerAssign != nullptr) {
-                    info.schema.operations->pointerAssign(info.object, nullptr);
-                    edit = true;
-                }
-                ImGui::SameLine();
 
                 char browserId[32] = {
                     0,
                 };
                 nanofmt::format_to(browserId, "##assets{}", ImGui::GetID("popup"));
 
-                if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
-                    ImGui::OpenPopup(browserId);
+                // render
+                {
+                    auto const windowPos = ImGui::GetWindowPos();
+                    auto availSize = ImGui::GetContentRegionAvail();
+                    float const buttonWidth = ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.x * 2.f;
+                    float const buttonSpacing = ImGui::GetStyle().ItemInnerSpacing.x;
+                    auto const pos = ImGui::GetCursorPos();
+
+                    // open asset browser
+                    availSize.x -= buttonWidth + buttonSpacing;
+                    ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
+                    if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
+                        ImGui::OpenPopup(browserId);
+                    }
+
+                    // clear asset
+                    availSize.x -= buttonWidth + buttonSpacing;
+                    ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
+                    ImGui::BeginDisabled(!handle->isSet());
+                    if (ImGui::IconButton("##clear", ICON_FA_TRASH) &&
+                        info.schema.operations->pointerAssign != nullptr) {
+                        info.schema.operations->pointerAssign(info.object, nullptr);
+                        edit = true;
+                    }
+                    ImGui::EndDisabled();
+
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::RenderTextClipped(
+                        ImVec2(
+                            windowPos.x + pos.x,
+                            windowPos.y + pos.y + ImGui::GetCurrentWindow()->DC.CurrLineTextBaseOffset),
+                        ImVec2(windowPos.x + pos.x + availSize.x, windowPos.y + pos.y + availSize.y),
+                        baseName,
+                        nullptr,
+                        nullptr);
                 }
 
                 if (info.schema.operations != nullptr && info.schema.operations->pointerAssign != nullptr) {
@@ -390,6 +425,57 @@ namespace up {
         private:
             AssetLoader& _assetLoader;
         };
+
+        struct EulerPropertyEditor final : PropertyEditor {
+            bool edit(PropertyItemInfo const& info) override {
+                auto& euler = *static_cast<schema::Euler*>(info.object);
+
+                float const availWidth = ImGui::GetContentRegionAvail().x;
+                float const innerSpacing = ImGui::GetItemInnerSpacing().x;
+                float const totalSpacing = innerSpacing * 2.f;
+                float const inputWidth = ImFloor((availWidth - totalSpacing) / 3.f);
+
+                bool edits = false;
+
+                float const minDeg = -180.f;
+                float const maxDeg = +180.f;
+
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InlineSliderScalar(
+                    "X",
+                    ImGuiDataType_Float,
+                    &euler.yaw,
+                    &minDeg,
+                    &maxDeg,
+                    "%g\u00B0",
+                    ImGuiSliderFlags_AlwaysClamp);
+                ImGui::SameLine(0.f, innerSpacing);
+
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InlineSliderScalar(
+                    "Y",
+                    ImGuiDataType_Float,
+                    &euler.pitch,
+                    &minDeg,
+                    &maxDeg,
+                    "%g\u00B0",
+                    ImGuiSliderFlags_AlwaysClamp);
+                ImGui::SameLine(0.f, innerSpacing);
+
+                ImGui::SetNextItemWidth(inputWidth);
+                edits |= ImGui::InlineSliderScalar(
+                    "Z",
+                    ImGuiDataType_Float,
+                    &euler.roll,
+                    &minDeg,
+                    &maxDeg,
+                    "%g\u00B0",
+                    ImGuiSliderFlags_AlwaysClamp);
+
+                return edits;
+            }
+        };
+
     } // namespace
 
     PropertyGrid::PropertyGrid(AssetLoader& assetLoader) noexcept {
@@ -424,12 +510,6 @@ namespace up {
             _propertyEditors.push_back(new_box<Vec3PropertyEditor>());
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::Vec3, index);
         }
-
-        //{
-        //    auto const index = static_cast<uint32>(_propertyEditors.size());
-        //    _propertyEditors.push_back(new_box<QuaternionPropertyEditor>());
-        //    _primitiveEditorMap.insert(reflex::SchemaPrimitive::Quat, index);
-        //}
 
         {
             auto const index = static_cast<uint32>(_propertyEditors.size());
@@ -466,9 +546,9 @@ namespace up {
             _propertyEditors.push_back(new_box<AssetRefPropertyEditor>(assetLoader));
             _primitiveEditorMap.insert(reflex::SchemaPrimitive::AssetRef, index);
         }
-    }
 
-    void PropertyGrid::addPropertyEditor(box<PropertyEditor> editor) { _propertyEditors.push_back(std::move(editor)); }
+        { addPropertyEditor(reflex::getSchema<schema::Euler>().id, new_box<EulerPropertyEditor>()); }
+    }
 
     bool PropertyGrid::beginTable(char const* label) {
         bool const open = ImGui::BeginTable(
@@ -523,7 +603,21 @@ namespace up {
         return false;
     }
 
+    void PropertyGrid::addPropertyEditor(reflex::SchemaId schemaId, box<PropertyEditor> editor) {
+        UP_GUARD_VOID(editor != nullptr);
+        UP_GUARD_VOID(!_typedEditorMap.find(schemaId));
+
+        auto const index = static_cast<uint32>(_propertyEditors.size());
+        _propertyEditors.push_back(std::move(editor));
+        _typedEditorMap.insert(schemaId, index);
+    }
+
     PropertyEditor* PropertyGrid::findPropertyEditor(reflex::Schema const& schema) const noexcept {
+        auto const typeIt = _typedEditorMap.find(schema.id);
+        if (typeIt) {
+            return _propertyEditors[typeIt->value].get();
+        }
+
         auto const primIt = _primitiveEditorMap.find(schema.primitive);
         if (primIt) {
             return _propertyEditors[primIt->value].get();
