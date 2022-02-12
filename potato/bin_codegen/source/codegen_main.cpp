@@ -57,12 +57,6 @@ int main(int argc, char const* argv[]) {
         return 1;
     }
 
-    if (outputPath.empty()) {
-        std::cerr << "Missing output path argument\n";
-        usage(argv[0]);
-        return 1;
-    }
-
     std::ifstream input(inputPath, std::ios::binary);
     if (!input) {
         std::cerr << "Failed to open `" << inputPath << "` for reading\n";
@@ -88,18 +82,26 @@ int main(int argc, char const* argv[]) {
         return 5;
     }
 
-    std::ofstream output(outputPath, std::ios::binary | std::ios::trunc);
-    if (!output) {
-        std::cerr << "Failed to open `" << outputPath << "` for writing\n";
-        return 7;
+    std::ofstream outputFile;
+    std::ostream* outputStream = &std::cout;
+
+    if (!outputPath.empty()) {
+        outputFile = std::ofstream(outputPath, std::ios::binary | std::ios::trunc);
+        if (!outputFile) {
+            std::cerr << "Failed to open `" << outputPath << "` for writing\n";
+            return 7;
+        }
+        outputStream = &outputFile;
     }
 
-    GeneratorContext ctx{output, mod, config};
+    GeneratorContext ctx{*outputStream, mod, config};
     auto generator = factory(ctx);
 
     auto const rs = generator->generate();
 
-    output.close();
+    if (outputFile) {
+        outputFile.close();
+    }
 
     if (!rs) {
         std::cerr << "Generator '" << mode << "' failed\n";
@@ -114,7 +116,7 @@ int main(int argc, char const* argv[]) {
 }
 
 void usage(char const* program) {
-    std::cerr << "Usage: " << program << " -m <mode> -i <input> -o <output>\n ";
+    std::cerr << "Usage: " << program << " -m <mode> -i <input> [-o <output>]\n ";
 }
 
 GeneratorFactory selectGeneratorFactory(std::string_view mode) {

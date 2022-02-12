@@ -13,8 +13,8 @@ scene_component Transform {
 }
 
 scene_component Mesh {
-    MeshRef mesh;
-    MaterialRef material;
+    MeshAsset mesh;
+    MaterialAsset material;
 }
 
 scene_component Wave {
@@ -28,7 +28,7 @@ scene_component Spin {
 scene_component Ding {
     [FloatRange(0, 3600)]
     float period = 1;
-    SoundRef sound;
+    SoundAsset sound;
 }
 
 scene_component Body {
@@ -55,5 +55,7 @@ scene_component Test {
     int[] numbers;
     Euler[] euler_array;
     Euler* euler_object;
+
+    MeshAsset mesh;
 }
 

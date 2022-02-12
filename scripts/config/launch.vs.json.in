@@ -7,7 +7,7 @@
       "project": "CMakeLists.txt",
       "projectTarget": "test_runtime.exe (bin\\test_runtime.exe)",
       "name": "test_runtime.exe (bin\\test_runtime.exe)",
-      "currentDir": "@UP_ROOT_DIR@/source/libruntime/tests/fixtures"
+      "currentDir": "@UP_ROOT_DIR@/potato/libruntime/tests/fixtures"
     },
     {
       "type": "default",
@@ -20,6 +20,19 @@
         "@UP_ROOT_DIR@/resources",
         "-config",
         "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/recon.config.json"
+      ]
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "bin_codegen.exe (bin\\bin_codegen.exe)",
+      "name": "bin_codegen.exe (bin\\bin_codegen.exe)",
+      "currentDir": "@CMAKE_BINARY_DIR@",
+      "args": [
+        "-m",
+        "schema_source",
+        "-i",
+        "@CMAKE_OUTPUT_DIRECTORY@/potato/librender/gen/sap/material.json"
       ]
     }
   ]

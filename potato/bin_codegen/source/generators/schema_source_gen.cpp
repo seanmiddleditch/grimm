@@ -213,7 +213,7 @@ void SchemaSourceGenerator::writeSchema() {
 void SchemaSourceGenerator::writeObjectSchema(schema::TypeAggregate const& type) {
     using namespace schema;
 
-    bool const isAssetRef = hasAnnotation(type.annotations, "AssetReference");
+    bool const isAssetRef = hasAnnotation(type.annotations, "AssetType");
 
     if (!static_cast<TypeAggregate const&>(type).fields.empty()) {
         for (auto const* const field : type.fields) {

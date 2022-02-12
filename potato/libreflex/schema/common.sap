@@ -30,13 +30,8 @@ attribute Hidden;
 attribute Flatten;
 attribute Tooltip { string text; }
 attribute AssetType { string assetType; }
-attribute AssetReference;
 attribute IntRange { int min; int max; }
 attribute FloatRange { float min; float max; }
-
-[cxximport("up::AssetHandle<$AssetT>", "potato/runtime/asset.h")]
-[AssetReference]
-struct AssetRef<AssetT> { }
 
 // useful types for source content
 struct Euler {
