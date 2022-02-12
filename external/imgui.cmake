@@ -33,3 +33,7 @@ target_sources(imgui_backend_sdl INTERFACE
     "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.cpp"
     "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.h"
 )
+# bug in 1.87 WIP - remove when it's fixed
+target_compile_options(imgui_backend_sdl INTERFACE
+    $<$<CXX_COMPILER_ID:GNU>:-Wno-error=array-bounds>
+)
