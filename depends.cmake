@@ -18,7 +18,7 @@ up_require(catch2
 )
 up_require(imgui
     GIT_REPOSITORY git://github.com/ocornut/imgui.git
-    GIT_COMMIT bac748fa95ac003c7b354139980f8b4b7f6ac5da
+    GIT_COMMIT 0647ba3badb9db94cb2dbc971cfc034e1c72f48a
     CMAKE_FILE imgui.cmake
 )
 up_require(glm
