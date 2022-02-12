@@ -3,6 +3,7 @@
 #pragma once
 
 #include "traits.h"
+#include "type.h"
 
 #include "potato/spud/box.h"
 #include "potato/spud/concepts.h"
