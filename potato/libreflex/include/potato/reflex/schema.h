@@ -3,6 +3,7 @@
 #pragma once
 
 #include "traits.h"
+#include "type.h"
 
 #include "potato/spud/box.h"
 #include "potato/spud/concepts.h"
@@ -115,7 +116,7 @@ namespace up::reflex {
         AttributeT const* queryAnnotation() const noexcept requires(std::is_base_of_v<SchemaAttribute, AttributeT>) {
             TypeInfo const& type = TypeHolder<AttributeT>::get();
             for (SchemaAnnotation const& anno : annotations) {
-                if (anno.type == &type) {
+                if (anno.type->hash == type.hash) {
                     return static_cast<AttributeT const*>(anno.attr);
                 }
             }
@@ -318,7 +319,7 @@ namespace up::reflex {
     constexpr auto queryAnnotation(view<SchemaAnnotation> annotations) noexcept -> AttributeT const* {
         TypeInfo const& type = TypeHolder<AttributeT>::get();
         for (SchemaAnnotation const& anno : annotations) {
-            if (anno.type == &type) {
+            if (anno.type->hash == type.hash) {
                 return static_cast<AttributeT const*>(anno.attr);
             }
         }
