@@ -288,10 +288,10 @@ void up::shell::AssetEditor::_showBreadcrumbs() {
             float const spacingBefore = availWidth - searchWidth;
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + spacingBefore);
 
-            ImGui::TextUnformatted(ICON_FA_SEARCH);
-            ImGui::SameLine(0.f, 0.f);
-            ImGui::SetNextItemWidth(-1.f);
-            ImGui::InputText("##search", _searchBuffer, sizeof(_searchBuffer));
+            if (ImGui::BeginInlineFrame(ICON_FA_SEARCH "##searchbar")) {
+                ImGui::InputText("##search", _searchBuffer, sizeof(_searchBuffer));
+                ImGui::EndInlineFrame();
+            }
         }
 
         ImGui::EndToolbar();

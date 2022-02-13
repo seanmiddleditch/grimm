@@ -36,7 +36,7 @@
 #include <imgui_internal.h>
 
 namespace ImGui::inline Potato {
-    static void DrawIcon(const char* icon, ImVec2 minPos, ImVec2 maxPos) {
+    static void DrawIcon(char const* icon, ImVec2 minPos, ImVec2 maxPos) {
         ImGui::RenderTextClipped(
             minPos,
             maxPos,
@@ -66,6 +66,28 @@ namespace ImGui::inline Potato {
         }
 
         return open;
+    }
+
+    bool ClickableText(char const* text, char const* textEnd) noexcept {
+        char const* idStr = text;
+        char const* const idStrEnd = textEnd;
+
+        if (textEnd == nullptr) {
+            textEnd = ImGui::FindRenderedTextEnd(text);
+            if (*textEnd != '\0') {
+                idStr = textEnd;
+            }
+        }
+
+        ImVec2 pos = ImGui::GetCursorPos();
+        ImGui::TextUnformatted(text, textEnd);
+        ImGui::SetCursorPos(pos);
+
+        ImVec2 const textSize = ImGui::CalcTextSize(text, textEnd);
+        ImGui::PushID(ImGui::GetID(idStr, idStrEnd));
+        bool const clicked = ImGui::InvisibleButton("##text", textSize);
+        ImGui::PopID();
+        return clicked;
     }
 
     void Interactive(char const* label, ImGuiInteractiveFlags_ flags) noexcept {
@@ -139,11 +161,11 @@ namespace ImGui::inline Potato {
     }
 
     void EndToolbar() {
-        //auto const& style = ImGui::GetStyle();
+        // auto const& style = ImGui::GetStyle();
 
         ImGui::EndChild();
 
-        //ImGui::SetCursorPosY(ImGui::GetCursorPosY() + style.ItemSpacing.y);
+        // ImGui::SetCursorPosY(ImGui::GetCursorPosY() + style.ItemSpacing.y);
     }
 
     bool IconButton(char const* label, char const* icon, ImVec2 size, ImGuiButtonFlags flags) {
@@ -354,81 +376,59 @@ namespace ImGui::inline Potato {
         return clicked;
     }
 
-    static bool BeginInlineEditor(const char* label, ImRect& out_rect) {
-        auto const& style = ImGui::GetStyle();
-        ImGuiWindow* const window = ImGui::GetCurrentWindow();
-        ImDrawList* const draw = window->DrawList;
-
-        ImGui::BeginGroup();
-        ImGui::PushID(label);
-
-        const char* labelEnd = ImGui::FindRenderedTextEnd(label);
-
-        ImVec2 const totalSize{ImGui::CalcItemWidth(), ImGui::GetFrameHeight()};
-        ImVec2 const textSize = ImGui::CalcTextSize(label, labelEnd, true);
-        ImVec2 textBoxSize{textSize.x + style.FramePadding.x * 2.f, totalSize.y};
-
-        out_rect.Min = window->DC.CursorPos;
-        out_rect.Max = out_rect.Min + totalSize;
-
-        const ImU32 textBgColor = ImGui::GetColorU32(style.Colors[ImGuiCol_Header]);
-        const ImU32 textColor = ImGui::GetColorU32(style.Colors[ImGuiCol_Text]);
-
-        draw->AddRectFilled(out_rect.Min, out_rect.Min + textBoxSize, textBgColor, 0.f);
-        draw->AddText(
-            {out_rect.Min.x + style.FramePadding.x, out_rect.Min.y + window->DC.CurrLineTextBaseOffset},
-            textColor,
-            label,
-            labelEnd);
-
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
-        ImGui::SetNextItemWidth(totalSize.x - textBoxSize.x);
-
-        window->DC.CursorPos.x = out_rect.Min.x + textBoxSize.x;
-        return true;
-    }
-
-    static void EndInlineEditor(ImRect const& rect) {
-        ImGui::PopStyleVar();
-
-        ImGui::RenderFrameBorder(rect.Min, rect.Max, 0.f);
-
-        ImGui::PopID();
-        ImGui::EndGroup();
-    }
-
-    bool InlineSliderScalar(
-        const char* label,
-        ImGuiDataType dataType,
-        void* pData,
-        const void* pMin,
-        const void* pMax,
-        const char* format,
-        ImGuiSliderFlags flags) {
-        ImRect rect;
-        if (!BeginInlineEditor(label, rect)) {
-            return false;
+    static float CalcItemWidth(float width) {
+        if (width < 0.f) {
+            ImGuiWindow const* const window = ImGui::GetCurrentWindowRead();
+            float region_max_x = GetContentRegionMaxAbs().x;
+            width = ImMax(1.0f, region_max_x - window->DC.CursorPos.x + width);
         }
-        bool const edits = ImGui::SliderScalar("##slider", dataType, pData, pMin, pMax, format, flags);
-        EndInlineEditor(rect);
-        return edits;
+        return IM_FLOOR(width);
     }
 
-    bool InlineInputScalar(
-        const char* label,
-        ImGuiDataType dataType,
-        void* pData,
-        const void* pStep,
-        const void* pStepFast,
-        const char* format,
-        ImGuiInputTextFlags flags) {
-        ImRect rect;
-        if (!BeginInlineEditor(label, rect)) {
-            return false;
+    bool BeginInlineFrame(char const* label, float width) {
+        ImGuiStyle const& style = ImGui::GetStyle();
+
+        ImVec2 const framePadding = style.FramePadding;
+        ImVec2 const innerItemSpacing = style.ItemInnerSpacing;
+        ImVec2 const size{CalcItemWidth(width), ImGui::GetTextLineHeight() + framePadding.y * 2};
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, style.FrameRounding);
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, style.FrameBorderSize);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.f, 0.f});
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetColorU32(ImGuiCol_Header));
+
+        bool const visible = ImGui::BeginChild(
+            ImGui::GetID(label),
+            size,
+            true,
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoScrollbar |
+                ImGuiWindowFlags_NoScrollWithMouse);
+
+        ImGui::PopStyleColor(1);
+        ImGui::PopStyleVar(3);
+
+        if (visible) {
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
+
+            char const* const labelEnd = ImGui::FindRenderedTextEnd(label);
+            if (label != labelEnd) {
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + framePadding.x);
+
+                ImGui::AlignTextToFramePadding();
+                if (ClickableText(label, labelEnd)) {
+                    ImGui::SetKeyboardFocusHere();
+                }
+                ImGui::SameLine(0.f, innerItemSpacing.x);
+            }
+            ImGui::SetNextItemWidth(-1.f);
         }
-        bool const edits = ImGui::InputScalar("##input", dataType, pData, pStep, pStepFast, format, flags);
-        EndInlineEditor(rect);
-        return edits;
+
+        return visible;
+    }
+
+    void EndInlineFrame() {
+        ImGui::PopStyleVar(1);
+        ImGui::EndChild();
     }
 
     void ApplyStyle() {

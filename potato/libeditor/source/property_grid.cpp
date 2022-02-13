@@ -123,16 +123,22 @@ namespace up {
 
                 bool edits = false;
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineInputScalar("X", ImGuiDataType_Float, &vec3.x);
-                ImGui::SameLine(0.f, innerSpacing);
+                if (ImGui::BeginInlineFrame("X", inputWidth)) {
+                    edits |= ImGui::InputScalar("##x", ImGuiDataType_Float, &vec3.x);
+                    ImGui::EndInlineFrame();
+                    ImGui::SameLine(0.f, innerSpacing);
+                }
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineInputScalar("Y", ImGuiDataType_Float, &vec3.y);
-                ImGui::SameLine(0.f, innerSpacing);
+                if (ImGui::BeginInlineFrame("Y", inputWidth)) {
+                    edits |= ImGui::InputScalar("##y", ImGuiDataType_Float, &vec3.y);
+                    ImGui::EndInlineFrame();
+                    ImGui::SameLine(0.f, innerSpacing);
+                }
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineInputScalar("Z", ImGuiDataType_Float, &vec3.z);
+                if (ImGui::BeginInlineFrame("Z", inputWidth)) {
+                    edits |= ImGui::InputScalar("##z", ImGuiDataType_Float, &vec3.z);
+                    ImGui::EndInlineFrame();
+                }
 
                 return edits;
             }
@@ -440,37 +446,43 @@ namespace up {
                 float const minDeg = -180.f;
                 float const maxDeg = +180.f;
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineSliderScalar(
-                    "X",
-                    ImGuiDataType_Float,
-                    &euler.yaw,
-                    &minDeg,
-                    &maxDeg,
-                    "%g\u00B0",
-                    ImGuiSliderFlags_AlwaysClamp);
-                ImGui::SameLine(0.f, innerSpacing);
+                if (ImGui::BeginInlineFrame("X", inputWidth)) {
+                    edits |= ImGui::SliderScalar(
+                        "##yaw",
+                        ImGuiDataType_Float,
+                        &euler.yaw,
+                        &minDeg,
+                        &maxDeg,
+                        "%g\u00B0",
+                        ImGuiSliderFlags_AlwaysClamp);
+                    ImGui::EndInlineFrame();
+                    ImGui::SameLine(0.f, innerSpacing);
+                }
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineSliderScalar(
-                    "Y",
-                    ImGuiDataType_Float,
-                    &euler.pitch,
-                    &minDeg,
-                    &maxDeg,
-                    "%g\u00B0",
-                    ImGuiSliderFlags_AlwaysClamp);
-                ImGui::SameLine(0.f, innerSpacing);
+                if (ImGui::BeginInlineFrame("Y", inputWidth)) {
+                    edits |= ImGui::SliderScalar(
+                        "##pitch",
+                        ImGuiDataType_Float,
+                        &euler.pitch,
+                        &minDeg,
+                        &maxDeg,
+                        "%g\u00B0",
+                        ImGuiSliderFlags_AlwaysClamp);
+                    ImGui::EndInlineFrame();
+                    ImGui::SameLine(0.f, innerSpacing);
+                }
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineSliderScalar(
-                    "Z",
-                    ImGuiDataType_Float,
-                    &euler.roll,
-                    &minDeg,
-                    &maxDeg,
-                    "%g\u00B0",
-                    ImGuiSliderFlags_AlwaysClamp);
+                if (ImGui::BeginInlineFrame("Z", inputWidth)) {
+                    edits |= ImGui::SliderScalar(
+                        "##roll",
+                        ImGuiDataType_Float,
+                        &euler.roll,
+                        &minDeg,
+                        &maxDeg,
+                        "%g\u00B0",
+                        ImGuiSliderFlags_AlwaysClamp);
+                    ImGui::EndInlineFrame();
+                }
 
                 return edits;
             }
