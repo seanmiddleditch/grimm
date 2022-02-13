@@ -83,11 +83,15 @@ namespace up::shell {
         }
 
         _showBreadcrumbs();
-        if (_searchBuffer[0] != '\0') {
-            _showSearchAssets(_searchBuffer);
-        }
-        else {
-            _showAssets(_entries[_currentFolder]);
+
+        if (ImGui::BeginIconGrid("##assets")) {
+            if (_searchBuffer[0] != '\0') {
+                _showSearchAssets(_searchBuffer);
+            }
+            else {
+                _showAssets(_entries[_currentFolder]);
+            }
+            ImGui::EndIconGrid();
         }
 
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !ImGui::IsAnyItemHovered() &&
@@ -111,16 +115,13 @@ namespace up::shell {
     }
 
     void AssetEditor::_showAssets(Entry const& folder) {
-        if (ImGui::BeginIconGrid("##assets")) {
-            for (Entry const& entry : _children(folder)) {
-                if (entry.typeHash == folderTypeHash) {
-                    _showFolder(entry);
-                }
-                else {
-                    _showAsset(entry);
-                }
+        for (Entry const& entry : _children(folder)) {
+            if (entry.typeHash == folderTypeHash) {
+                _showFolder(entry);
             }
-            ImGui::EndIconGrid();
+            else {
+                _showAsset(entry);
+            }
         }
     }
 
@@ -220,21 +221,17 @@ namespace up::shell {
     }
 
     void AssetEditor::_showSearchAssets(string_view searchText) {
-        if (ImGui::BeginIconGrid("##assets")) {
-            for (Entry const& entry : _entries) {
-                if (stringIndexOfNoCase(entry.name.data(), entry.name.size(), searchText.data(), searchText.size()) <
-                    0) {
-                    continue;
-                }
-
-                if (entry.typeHash == folderTypeHash) {
-                    _showFolder(entry);
-                }
-                else {
-                    _showAsset(entry);
-                }
+        for (Entry const& entry : _entries) {
+            if (stringIndexOfNoCase(entry.name.data(), entry.name.size(), searchText.data(), searchText.size()) < 0) {
+                continue;
             }
-            ImGui::EndIconGrid();
+
+            if (entry.typeHash == folderTypeHash) {
+                _showFolder(entry);
+            }
+            else {
+                _showAsset(entry);
+            }
         }
     }
 
