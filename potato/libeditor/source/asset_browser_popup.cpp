@@ -34,7 +34,11 @@ bool up::showAssetBrowser(AssetBrowserState& state, AssetLoader& assetLoader) {
     ImGui::SetNextWindowSizeConstraints(minSize, maxSize);
 
     char popupName[64] = {0};
-    nanofmt::format_to(popupName, "Asset Browser - {}{}", state.assetType.empty() ? "any"_sv : state.assetType, popupNameId);
+    nanofmt::format_to(
+        popupName,
+        "Asset Browser - {}{}",
+        state.assetType.empty() ? "any"_sv : state.assetType,
+        popupNameId);
 
     if (ImGui::BeginTitlebarPopup(popupName)) {
         if (ImGui::BeginToolbar("##assetbrowser_toolbar")) {
@@ -55,10 +59,8 @@ bool up::showAssetBrowser(AssetBrowserState& state, AssetLoader& assetLoader) {
 
                 nanofmt::format_to(filename, "{}", path::filename(asset.filename));
 
-                if (searchLength > 0 && stringIndexOfNoCase(
-                        filename,
-                        stringLength(filename),
-                        state.searchBuffer, searchLength) < 0) {
+                if (searchLength > 0 &&
+                    stringIndexOfNoCase(filename, stringLength(filename), state.searchBuffer, searchLength) < 0) {
                     continue;
                 }
 
