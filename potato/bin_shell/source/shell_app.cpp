@@ -2,9 +2,9 @@
 
 #include "shell_app.h"
 #include "edit_components.h"
-#include "editors/asset_browser.h"
+#include "editors/asset_editor.h"
 #include "editors/game_editor.h"
-#include "editors/log_window.h"
+#include "editors/log_editor.h"
 #include "editors/material_editor.h"
 #include "editors/scene_editor.h"
 
@@ -150,7 +150,7 @@ namespace up {
         struct ShowLogsHandler final : CommandHandler<ShowLogsCommand> {
             ShowLogsHandler(EditorManager& editors) : _editors(editors) { }
 
-            void invoke(ShowLogsCommand&) override { _editors.openEditor(shell::LogWindow::editorTypeId); }
+            void invoke(ShowLogsCommand&) override { _editors.openEditor(shell::LogEditor::editorTypeId); }
 
         private:
             EditorManager& _editors;
@@ -344,12 +344,12 @@ int up::shell::ShellApp::initialize() {
     _sceneDatabase.registerComponent<BodyEditComponent>();
     _sceneDatabase.registerComponent<TestEditComponent>();
 
-    AssetBrowser::addFactory(_editors, _assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
+    AssetEditor::addFactory(_editors, _assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
         _openAssetEditor(uuid);
     });
     SceneEditor::addFactory(_editors, _sceneDatabase, _propertyGrid, _assetLoader);
     MaterialEditor::addFactory(_editors, _propertyGrid);
-    LogWindow::addFactory(_editors, _logHistory);
+    LogEditor::addFactory(_editors, _logHistory);
     GameEditor::addFactory(_editors, *_audio);
 
     _commands.addCommand<QuitCommand>();
@@ -421,7 +421,7 @@ bool up::shell::ShellApp::_loadProject(zstring_view path) {
     _loadManifest();
 
     _editors.closeAll();
-    _editors.openEditor(AssetBrowser::editorTypeId);
+    _editors.openEditor(AssetEditor::editorTypeId);
     _updateTitle();
 
     if (!_reconClient.start(_ioLoop, _project->resourceRootPath())) {

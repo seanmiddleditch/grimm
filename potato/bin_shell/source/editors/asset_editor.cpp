@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "asset_browser.h"
+#include "asset_editor.h"
 
 #include "potato/editor/desktop.h"
 #include "potato/editor/editor.h"
@@ -23,39 +23,39 @@
 #include <imgui_internal.h>
 
 namespace up {
-    static constexpr zstring_view assetBrowserRenameDialogName = "Rename Files and Folders##asset_browser_rename"_zsv;
-    static constexpr zstring_view assetBrowserNewFolderDialogName = "New Folder##asset_browser_new_folder"_zsv;
-    static constexpr zstring_view assetBrowserNewAssetDialogName = "New Asset##asset_browser_new_asset"_zsv;
+    static constexpr zstring_view AssetEditorRenameDialogName = "Rename Files and Folders##asset_browser_rename"_zsv;
+    static constexpr zstring_view AssetEditorNewFolderDialogName = "New Folder##asset_browser_new_folder"_zsv;
+    static constexpr zstring_view AssetEditorNewAssetDialogName = "New Asset##asset_browser_new_asset"_zsv;
 } // namespace up
 
 namespace up::shell {
     namespace {
-        class AssetBrowserFactory : public EditorFactory<AssetBrowser> {
+        class AssetEditorFactory : public EditorFactory<AssetEditor> {
         public:
-            AssetBrowserFactory(
+            AssetEditorFactory(
                 AssetLoader& assetLoader,
                 ReconClient& reconClient,
                 AssetEditService& assetEditService,
-                AssetBrowser::OnFileSelected onFileSelected)
+                AssetEditor::OnFileSelected onFileSelected)
                 : _assetLoader(assetLoader)
                 , _reconClient(reconClient)
                 , _assetEditService(assetEditService)
                 , _onFileSelected(std::move(onFileSelected)) { }
 
             box<EditorBase> createEditor(EditorParams const& params) override {
-                return new_box<AssetBrowser>(params, _assetLoader, _reconClient, _assetEditService, _onFileSelected);
+                return new_box<AssetEditor>(params, _assetLoader, _reconClient, _assetEditService, _onFileSelected);
             }
 
         private:
             AssetLoader& _assetLoader;
             ReconClient& _reconClient;
             AssetEditService& _assetEditService;
-            AssetBrowser::OnFileSelected _onFileSelected;
+            AssetEditor::OnFileSelected _onFileSelected;
         };
     } // namespace
 } // namespace up::shell
 
-up::shell::AssetBrowser::AssetBrowser(
+up::shell::AssetEditor::AssetEditor(
     EditorParams const& params,
     AssetLoader& assetLoader,
     ReconClient& reconClient,
@@ -69,16 +69,16 @@ up::shell::AssetBrowser::AssetBrowser(
     _rebuild();
 }
 
-void up::shell::AssetBrowser::addFactory(
+void up::shell::AssetEditor::addFactory(
     EditorManager& editors,
     AssetLoader& assetLoader,
     ReconClient& reconClient,
     AssetEditService& assetEditService,
-    AssetBrowser::OnFileSelected onFileSelected) {
-    editors.addFactory<AssetBrowserFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
+    AssetEditor::OnFileSelected onFileSelected) {
+    editors.addFactory<AssetEditorFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
 }
 
-void up::shell::AssetBrowser::content(CommandManager&) {
+void up::shell::AssetEditor::content(CommandManager&) {
     if (_manifestRevision != _assetLoader.manifestRevision()) {
         _rebuild();
     }
@@ -121,7 +121,7 @@ void up::shell::AssetBrowser::content(CommandManager&) {
     _executeCommand();
 }
 
-void up::shell::AssetBrowser::_showAssets(Entry const& folder) {
+void up::shell::AssetEditor::_showAssets(Entry const& folder) {
     if (ImGui::BeginIconGrid("##assets")) {
         for (Entry const& entry : _children(folder)) {
             if (entry.typeHash == folderTypeHash) {
@@ -135,7 +135,7 @@ void up::shell::AssetBrowser::_showAssets(Entry const& folder) {
     }
 }
 
-void up::shell::AssetBrowser::_showAsset(Entry const& asset) {
+void up::shell::AssetEditor::_showAsset(Entry const& asset) {
     UP_GUARD_VOID(asset.typeHash != folderTypeHash);
 
     if (ImGui::IconGridItem(
@@ -189,7 +189,7 @@ void up::shell::AssetBrowser::_showAsset(Entry const& asset) {
     }
 }
 
-void up::shell::AssetBrowser::_showFolder(Entry const& folder) {
+void up::shell::AssetEditor::_showFolder(Entry const& folder) {
     UP_GUARD_VOID(folder.typeHash == folderTypeHash);
 
     if (ImGui::IconGridItem(
@@ -230,7 +230,7 @@ void up::shell::AssetBrowser::_showFolder(Entry const& folder) {
     }
 }
 
-void up::shell::AssetBrowser::_showBreadcrumb(int index) {
+void up::shell::AssetEditor::_showBreadcrumb(int index) {
     if (_entries[index].parentIndex != -1) {
         _showBreadcrumb(_entries[index].parentIndex);
         ImGui::SameLine(0, 0);
@@ -247,7 +247,7 @@ void up::shell::AssetBrowser::_showBreadcrumb(int index) {
     ImGui::SameLine();
 }
 
-void up::shell::AssetBrowser::_showBreadcrumbs() {
+void up::shell::AssetEditor::_showBreadcrumbs() {
     ImGuiWindow* const window = ImGui::GetCurrentWindow();
     ImDrawList* const drawList = window->DrawList;
     ImGuiStyle const& style = ImGui::GetStyle();
@@ -311,7 +311,7 @@ void up::shell::AssetBrowser::_showBreadcrumbs() {
     window->DC.CursorPos.y += ImGui::GetItemSpacing().y;
 }
 
-void up::shell::AssetBrowser::_showTreeFolder(int index) {
+void up::shell::AssetEditor::_showTreeFolder(int index) {
     int flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
 
     UP_GUARD_VOID(_entries[index].typeHash == folderTypeHash);
@@ -344,14 +344,14 @@ void up::shell::AssetBrowser::_showTreeFolder(int index) {
     }
 }
 
-void up::shell::AssetBrowser::_showTreeFolders() {
+void up::shell::AssetEditor::_showTreeFolders() {
     if (!_entries.empty()) {
         _showTreeFolder(0);
     }
 }
 
-void up::shell::AssetBrowser::_showRenameDialog() {
-    if (ImGui::BeginPopupModal(assetBrowserRenameDialogName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+void up::shell::AssetEditor::_showRenameDialog() {
+    if (ImGui::BeginPopupModal(AssetEditorRenameDialogName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         auto filterCallback = +[](ImGuiInputTextCallbackData* data) -> int {
             constexpr string_view banList = "/\\;:"_sv;
             if (banList.find(static_cast<char>(data->EventChar)) != string_view::npos) {
@@ -388,8 +388,8 @@ void up::shell::AssetBrowser::_showRenameDialog() {
     }
 }
 
-void up::shell::AssetBrowser::_showNewFolderDialog() {
-    if (ImGui::BeginPopupModal(assetBrowserNewFolderDialogName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+void up::shell::AssetEditor::_showNewFolderDialog() {
+    if (ImGui::BeginPopupModal(AssetEditorNewFolderDialogName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         auto filterCallback = +[](ImGuiInputTextCallbackData* data) -> int {
             constexpr string_view banList = "/\\;:"_sv;
             if (banList.find(static_cast<char>(data->EventChar)) != string_view::npos) {
@@ -417,8 +417,8 @@ void up::shell::AssetBrowser::_showNewFolderDialog() {
     }
 }
 
-void up::shell::AssetBrowser::_showNewAssetDialog() {
-    if (ImGui::BeginPopupModal(assetBrowserNewAssetDialogName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+void up::shell::AssetEditor::_showNewAssetDialog() {
+    if (ImGui::BeginPopupModal(AssetEditorNewAssetDialogName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         auto filterCallback = +[](ImGuiInputTextCallbackData* data) -> int {
             constexpr string_view banList = "/\\;:"_sv;
             if (banList.find(static_cast<char>(data->EventChar)) != string_view::npos) {
@@ -468,7 +468,7 @@ void up::shell::AssetBrowser::_showNewAssetDialog() {
     }
 }
 
-void up::shell::AssetBrowser::_rebuild() {
+void up::shell::AssetEditor::_rebuild() {
     ResourceManifest const* const manifest = _assetLoader.manifest();
     _manifestRevision = _assetLoader.manifestRevision();
 
@@ -536,7 +536,7 @@ void up::shell::AssetBrowser::_rebuild() {
     }
 }
 
-int up::shell::AssetBrowser::_addFolder(string_view name, int parentIndex) {
+int up::shell::AssetEditor::_addFolder(string_view name, int parentIndex) {
     UP_ASSERT(parentIndex >= 0 && parentIndex < static_cast<int>(_entries.size()));
     UP_ASSERT(_entries[parentIndex].typeHash == folderTypeHash);
 
@@ -585,7 +585,7 @@ int up::shell::AssetBrowser::_addFolder(string_view name, int parentIndex) {
     return newIndex;
 }
 
-int up::shell::AssetBrowser::_addFolders(string_view folderPath) {
+int up::shell::AssetEditor::_addFolders(string_view folderPath) {
     int folderIndex = 0;
 
     string_view::size_type sep = string_view::npos;
@@ -603,7 +603,7 @@ int up::shell::AssetBrowser::_addFolders(string_view folderPath) {
     return folderIndex;
 }
 
-void up::shell::AssetBrowser::_openFolder(int index) {
+void up::shell::AssetEditor::_openFolder(int index) {
     // cut any of the "future" history
     if (_folderHistory.size() > _folderHistoryIndex + 1) {
         _folderHistory.resize(_folderHistoryIndex + 1);
@@ -625,7 +625,7 @@ void up::shell::AssetBrowser::_openFolder(int index) {
     _selection.clear();
 }
 
-void up::shell::AssetBrowser::_importAsset(UUID const& uuid, bool force) {
+void up::shell::AssetEditor::_importAsset(UUID const& uuid, bool force) {
     if (!uuid.isValid()) {
         return;
     }
@@ -636,7 +636,7 @@ void up::shell::AssetBrowser::_importAsset(UUID const& uuid, bool force) {
     _reconClient.send<ReconImportMessage>({});
 }
 
-void up::shell::AssetBrowser::_executeCommand() {
+void up::shell::AssetEditor::_executeCommand() {
     Command cmd = _command;
     _command = Command::None;
 
@@ -706,16 +706,16 @@ void up::shell::AssetBrowser::_executeCommand() {
                 }
             }
 
-            ImGui::OpenPopup(assetBrowserRenameDialogName.c_str());
+            ImGui::OpenPopup(AssetEditorRenameDialogName.c_str());
             break;
         case Command::ShowNewFolderDialog:
             _nameBuffer[0] = '\0';
-            ImGui::OpenPopup(assetBrowserNewFolderDialogName.c_str());
+            ImGui::OpenPopup(AssetEditorNewFolderDialogName.c_str());
             break;
         case Command::ShowNewAssetDialog:
             nanofmt::format_to(_nameBuffer, "new.scene");
             _newAssetType = hash_value("potato.asset.scene");
-            ImGui::OpenPopup(assetBrowserNewAssetDialogName.c_str());
+            ImGui::OpenPopup(AssetEditorNewAssetDialogName.c_str());
             break;
         case Command::CreateFolder:
             if (auto const rs = fs::createDirectories(

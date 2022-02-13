@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "log_window.h"
+#include "log_editor.h"
 
 #include "potato/editor/editor_manager.h"
 #include "potato/editor/imgui_ext.h"
@@ -13,12 +13,12 @@
 
 namespace up::shell {
     namespace {
-        class LogWindowFactory : public EditorFactory<LogWindow> {
+        class LogEditorFactory : public EditorFactory<LogEditor> {
         public:
-            explicit LogWindowFactory(LogHistory& history) : _history(history) { }
+            explicit LogEditorFactory(LogHistory& history) : _history(history) { }
 
             box<EditorBase> createEditor(EditorParams const& params) override {
-                return new_box<LogWindow>(params, _history);
+                return new_box<LogEditor>(params, _history);
             }
 
         private:
@@ -27,11 +27,11 @@ namespace up::shell {
     } // namespace
 } // namespace up::shell
 
-void up::shell::LogWindow::addFactory(EditorManager& editors, LogHistory& history) {
-    editors.addFactory<LogWindowFactory>(history);
+void up::shell::LogEditor::addFactory(EditorManager& editors, LogHistory& history) {
+    editors.addFactory<LogEditorFactory>(history);
 }
 
-void up::shell::LogWindow::content(CommandManager&) {
+void up::shell::LogEditor::content(CommandManager&) {
     auto severityCombo = [this](LogSeverityMask mask, zstring_view label) {
         bool selected = (mask & _mask) == mask;
         if (ImGui::Selectable(label.c_str(), &selected)) {

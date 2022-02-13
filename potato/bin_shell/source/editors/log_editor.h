@@ -10,14 +10,14 @@
 namespace up::shell {
     class LogHistory;
 
-    class LogWindow : public Editor<LogWindow> {
+    class LogEditor : public Editor<LogEditor> {
     public:
         static constexpr EditorTypeId editorTypeId{"potato.editor.logs"};
 
-        explicit LogWindow(EditorParams const& params, LogHistory& history) : Editor(params), _history(history) { }
+        explicit LogEditor(EditorParams const& params, LogHistory& history) : Editor(params), _history(history) { }
 
-        LogWindow(LogWindow const&) = delete;
-        LogWindow& operator=(LogWindow const&) = delete;
+        LogEditor(LogEditor const&) = delete;
+        LogEditor& operator=(LogEditor const&) = delete;
 
         zstring_view displayName() const override { return "Logs"_zsv; }
 
