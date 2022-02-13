@@ -17,8 +17,6 @@ namespace up {
     class AssetLoader;
     class ResourceManifest;
 
-    enum class AssetId : uint64;
-
     struct AssetLoadContext {
         AssetKey key;
         Stream& stream;

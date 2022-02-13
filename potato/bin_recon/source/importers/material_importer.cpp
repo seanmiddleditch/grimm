@@ -53,13 +53,13 @@ bool up::MaterialImporter::import(ImporterContext& ctx) {
 
     flatbuffers::FlatBufferBuilder builder;
 
-    flat::AssetId vertexId{static_cast<uint64>(material.shaders.vertex.assetId())};
-    flat::AssetId pixelId{static_cast<uint64>(material.shaders.pixel.assetId())};
+    flat::AssetId vertexId{material.shaders.vertex.assetId().value()};
+    flat::AssetId pixelId{material.shaders.pixel.assetId().value()};
 
     std::vector<flat::AssetId> textures;
     auto jsonTextures = doc["textures"];
     for (auto const& handle : material.textures) {
-        textures.emplace_back(flat::AssetId(static_cast<uint64>(handle.assetId())));
+        textures.emplace_back(flat::AssetId(handle.assetId().value()));
     }
 
     auto mat = flat::CreateMaterialDirect(builder, flat::CreateMaterialShader(builder, &vertexId, &pixelId), &textures);

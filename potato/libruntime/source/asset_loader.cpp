@@ -31,7 +31,7 @@ auto up::AssetLoader::translate(UUID const& uuid, string_view logicalName) const
 }
 
 auto up::AssetLoader::debugName(AssetId logicalId) const noexcept -> zstring_view {
-    auto const* record = _manifest != nullptr ? _manifest->findRecord(static_cast<uint64>(logicalId)) : nullptr;
+    auto const* record = _manifest != nullptr ? _manifest->findRecord(logicalId.value()) : nullptr;
     return record != nullptr ? record->filename : zstring_view{};
 }
 
@@ -43,7 +43,7 @@ auto up::AssetLoader::loadAssetSync(AssetId id, string_view type) -> UntypedAsse
     }
 
     ResourceManifest::Record const* const record =
-        _manifest != nullptr ? _manifest->findRecord(static_cast<uint64>(id)) : nullptr;
+        _manifest != nullptr ? _manifest->findRecord(id.value()) : nullptr;
     if (record == nullptr) {
         _logger.error("Failed to find asset `{}` ({})", id, type);
         return {};
