@@ -13,7 +13,7 @@
 #include <imgui_internal.h>
 
 bool up::showAssetBrowser(AssetBrowserState& state, AssetLoader& assetLoader) {
-    constexpr auto popupName = "Asset Browser##assetbrowser_popup";
+    constexpr auto popupNameId = "###assetbrowser_popup";
 
     bool changed = false;
 
@@ -21,9 +21,9 @@ bool up::showAssetBrowser(AssetBrowserState& state, AssetLoader& assetLoader) {
 
     if (state.wantOpen) {
         state.wantOpen = false;
-        if (!ImGui::IsPopupOpen(popupName)) {
+        if (!ImGui::IsPopupOpen(popupNameId)) {
             state.searchBuffer[0] = '\0';
-            ImGui::OpenPopup(popupName);
+            ImGui::OpenPopup(popupNameId);
         }
     }
 
@@ -32,6 +32,10 @@ bool up::showAssetBrowser(AssetBrowserState& state, AssetLoader& assetLoader) {
     ImVec2 const maxSize{displaySize.x * 0.5f, displaySize.y * 0.5f};
 
     ImGui::SetNextWindowSizeConstraints(minSize, maxSize);
+
+    char popupName[64] = {0};
+    nanofmt::format_to(popupName, "Asset Browser - {}{}", state.assetType.empty() ? "any"_sv : state.assetType, popupNameId);
+
     if (ImGui::BeginTitlebarPopup(popupName)) {
         if (ImGui::BeginToolbar("##assetbrowser_toolbar")) {
             if (ImGui::BeginInlineFrame(ICON_FA_SEARCH "##assetbrowser_toolbar_search")) {
