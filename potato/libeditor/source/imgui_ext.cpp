@@ -152,7 +152,7 @@ namespace ImGui::inline Potato {
             id,
             toolbarSize,
             false,
-            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding);
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NavFlattened);
 
         ImGui::PopStyleVar(3);
         ImGui::PopStyleColor(1);
@@ -402,7 +402,7 @@ namespace ImGui::inline Potato {
             size,
             true,
             ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoScrollbar |
-                ImGuiWindowFlags_NoScrollWithMouse);
+                ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NavFlattened);
 
         ImGui::PopStyleColor(1);
         ImGui::PopStyleVar(3);

@@ -447,6 +447,7 @@ namespace up {
                 float const maxDeg = +180.f;
 
                 if (ImGui::BeginInlineFrame("X", inputWidth)) {
+                    const bool tooltip = ImGui::IsItemHovered();
                     edits |= ImGui::SliderScalar(
                         "##yaw",
                         ImGuiDataType_Float,
@@ -455,11 +456,17 @@ namespace up {
                         &maxDeg,
                         "%g\u00B0",
                         ImGuiSliderFlags_AlwaysClamp);
+                    if (tooltip) {
+                        ImGui::BeginTooltip();
+                        ImGui::TextUnformatted("Yaw: rotation around the X axis");
+                        ImGui::EndTooltip();
+                    }
                     ImGui::EndInlineFrame();
                     ImGui::SameLine(0.f, innerSpacing);
                 }
 
                 if (ImGui::BeginInlineFrame("Y", inputWidth)) {
+                    const bool tooltip = ImGui::IsItemHovered();
                     edits |= ImGui::SliderScalar(
                         "##pitch",
                         ImGuiDataType_Float,
@@ -468,11 +475,17 @@ namespace up {
                         &maxDeg,
                         "%g\u00B0",
                         ImGuiSliderFlags_AlwaysClamp);
+                    if (tooltip) {
+                        ImGui::BeginTooltip();
+                        ImGui::TextUnformatted("Pitch: rotation around the Y axis");
+                        ImGui::EndTooltip();
+                    }
                     ImGui::EndInlineFrame();
                     ImGui::SameLine(0.f, innerSpacing);
                 }
 
                 if (ImGui::BeginInlineFrame("Z", inputWidth)) {
+                    const bool tooltip = ImGui::IsItemHovered();
                     edits |= ImGui::SliderScalar(
                         "##roll",
                         ImGuiDataType_Float,
@@ -481,6 +494,11 @@ namespace up {
                         &maxDeg,
                         "%g\u00B0",
                         ImGuiSliderFlags_AlwaysClamp);
+                    if (tooltip) {
+                        ImGui::BeginTooltip();
+                        ImGui::TextUnformatted("Roll: rotation around the Z axis");
+                        ImGui::EndTooltip();
+                    }
                     ImGui::EndInlineFrame();
                 }
 
@@ -651,6 +669,7 @@ namespace up {
 
         bool edits = false;
         bool open = false;
+        bool labelClicked = false;
 
         // label
         {
@@ -737,7 +756,7 @@ namespace up {
             // label
             {
                 ImGui::AlignTextToFramePadding();
-                _showLabel(info);
+                labelClicked = _showLabel(info);
 
                 ImGui::PopClipRect();
             }
@@ -758,6 +777,10 @@ namespace up {
             ImGui::TableSetColumnIndex(1);
             ImGui::AlignTextToFramePadding();
 
+            if (labelClicked) {
+                ImGui::SetKeyboardFocusHere();
+            }
+
             edits |= propertyEditor.edit(info);
         }
 
@@ -771,27 +794,26 @@ namespace up {
         return edits;
     }
 
-    void PropertyGrid::_showLabel(PropertyItemInfo const& info) noexcept {
+    bool PropertyGrid::_showLabel(PropertyItemInfo const& info) noexcept {
         if (info.index >= 0) {
             char buffer[64];
             nanofmt::format_to(buffer, "{}", info.index + 1);
-            ImGui::TextUnformatted(buffer);
-            return;
+            return ImGui::ClickableText(buffer);
         }
 
         if (info.field == nullptr) {
-            ImGui::TextUnformatted("<Unknown>");
-            return;
+            return ImGui::ClickableText("<Unknown>");
         }
 
         if (auto const* const displayNameAnnotation = reflex::queryAnnotation<schema::DisplayName>(*info.field);
             displayNameAnnotation != nullptr && !displayNameAnnotation->name.empty()) {
-            ImGui::TextUnformatted(displayNameAnnotation->name.c_str());
-            return;
+            return ImGui::ClickableText(displayNameAnnotation->name.c_str());
         }
 
         // format field names pretty
         {
+            ImVec2 const pos = ImGui::GetCursorPos();
+
             bool first = true;
             char const* ch = info.field->name.c_str();
             while (*ch != '\0') {
@@ -842,6 +864,10 @@ namespace up {
                 ImGui::TextUnformatted(start, ch);
                 ImGui::SameLine(0.f, 0.f);
             }
+
+            ImVec2 const textSize{ImGui::GetCursorPos().x - pos.x, ImGui::GetTextLineHeight()};
+            ImGui::SetCursorPos(pos);
+            return ImGui::InvisibleButton("##label", textSize);
         }
     }
 } // namespace up
