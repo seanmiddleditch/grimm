@@ -249,65 +249,66 @@ void up::shell::AssetEditor::_showBreadcrumb(int index) {
 
 void up::shell::AssetEditor::_showBreadcrumbs() {
     ImGuiWindow* const window = ImGui::GetCurrentWindow();
-    ImDrawList* const drawList = window->DrawList;
-    ImGuiStyle const& style = ImGui::GetStyle();
 
-    drawList->AddRectFilled(
-        window->DC.CursorPos,
-        window->DC.CursorPos +
-            ImVec2{
-                ImGui::GetContentRegionAvail().x - style.FramePadding.x,
-                ImGui::GetTextLineHeightWithSpacing() + ImGui::GetItemSpacing().y * 3},
-        ImGui::GetColorU32(ImGuiCol_Header),
-        4.f);
-
-    window->DC.CursorPos += ImGui::GetItemSpacing();
-    ImGui::BeginGroup();
-    ImGui::PushID("##breadcrumbs");
-
-    if (ImGui::BeginIconButtonDropdown("New", ICON_FA_PLUS)) {
-        if (ImGui::MenuItemEx("New Asset", ICON_FA_FILE)) {
-            _command = Command::ShowNewAssetDialog;
+    ImGui::Spacing();
+    if (ImGui::BeginToolbar("##breadcrums")) {
+        if (ImGui::BeginIconButtonDropdown("New", ICON_FA_PLUS)) {
+            if (ImGui::MenuItemEx("New Asset", ICON_FA_FILE)) {
+                _command = Command::ShowNewAssetDialog;
+            }
+            if (ImGui::MenuItemEx("New Folder", ICON_FA_FOLDER)) {
+                _command = Command::ShowNewFolderDialog;
+            }
+            ImGui::EndIconButtonDropdown();
         }
-        if (ImGui::MenuItemEx("New Folder", ICON_FA_FOLDER)) {
-            _command = Command::ShowNewFolderDialog;
+        ImGui::SameLine();
+
+        ImGui::BeginDisabled(_folderHistoryIndex == 0);
+        if (ImGui::IconButton("##back", ICON_FA_ARROW_LEFT)) {
+            _currentFolder = _folderHistory[--_folderHistoryIndex];
+            _selection.clear();
         }
-        ImGui::EndIconButtonDropdown();
+        ImGui::EndDisabled();
+        ImGui::SameLine(0, 1.f);
+
+        ImGui::BeginDisabled(_folderHistory.size() < 2 || _folderHistoryIndex == _folderHistory.size() - 1);
+        if (ImGui::IconButton("##forward", ICON_FA_ARROW_RIGHT)) {
+            _currentFolder = _folderHistory[++_folderHistoryIndex];
+            _selection.clear();
+        }
+        ImGui::EndDisabled();
+        ImGui::SameLine(0, 1.f);
+
+        ImGui::BeginDisabled(_entries[_currentFolder].parentIndex == -1);
+        if (ImGui::IconButton("##parent", ICON_FA_ARROW_UP)) {
+            _openFolder(_entries[_currentFolder].parentIndex);
+            _selection.clear();
+        }
+        ImGui::EndDisabled();
+        ImGui::SameLine();
+
+        _showBreadcrumb(_currentFolder);
+        ImGui::SameLine();
+
+        ImGui::Spacing();
+        ImGui::SameLine();
+
+        float const minSearchWidth = 100.f;
+        float const maxSearchWidth = 400.f;
+        float const availWidth = ImGui::GetContentRegionAvail().x;
+        if (availWidth >= minSearchWidth) {
+            float const searchWidth = min(availWidth, maxSearchWidth);
+            float const spacingBefore = availWidth - searchWidth;
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + spacingBefore);
+
+            ImGui::TextUnformatted(ICON_FA_SEARCH);
+            ImGui::SameLine(0.f, 0.f);
+            ImGui::SetNextItemWidth(-1.f);
+            ImGui::InputText("##search", _searchBuffer, sizeof(_searchBuffer));
+        }
+
+        ImGui::EndToolbar();
     }
-
-    ImGui::SameLine();
-
-    ImGui::BeginDisabled(_folderHistoryIndex == 0);
-    if (ImGui::IconButton("##back", ICON_FA_ARROW_LEFT)) {
-        _currentFolder = _folderHistory[--_folderHistoryIndex];
-        _selection.clear();
-    }
-    ImGui::EndDisabled();
-
-    ImGui::SameLine(0, 1.f);
-
-    ImGui::BeginDisabled(_folderHistory.size() < 2 || _folderHistoryIndex == _folderHistory.size() - 1);
-    if (ImGui::IconButton("##forward", ICON_FA_ARROW_RIGHT)) {
-        _currentFolder = _folderHistory[++_folderHistoryIndex];
-        _selection.clear();
-    }
-    ImGui::EndDisabled();
-
-    ImGui::SameLine(0, 1.f);
-
-    ImGui::BeginDisabled(_entries[_currentFolder].parentIndex == -1);
-    if (ImGui::IconButton("##parent", ICON_FA_ARROW_UP)) {
-        _openFolder(_entries[_currentFolder].parentIndex);
-        _selection.clear();
-    }
-    ImGui::EndDisabled();
-
-    ImGui::SameLine();
-
-    _showBreadcrumb(_currentFolder);
-
-    ImGui::PopID();
-    ImGui::EndGroup();
     window->DC.CursorPos.y += ImGui::GetItemSpacing().y;
 }
 

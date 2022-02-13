@@ -155,15 +155,17 @@ namespace up::shell {
     void SceneEditor::content(CommandManager& commands) {
         auto& io = ImGui::GetIO();
 
-        ImGui::BeginGroup();
-        if (ImGui::CommandButton(commands, PlayCommand::meta.id)) {
-            commands.invoke<PlayCommand>();
+        ImGui::Spacing();
+        if (ImGui::BeginToolbar("##toolbar")) {
+            if (ImGui::CommandButton(commands, PlayCommand::meta.id)) {
+                commands.invoke<PlayCommand>();
+            }
+            ImGui::SameLine();
+            if (ImGui::IconButton("Save", ICON_FA_SAVE)) {
+                _save();
+            }
+            ImGui::EndToolbar();
         }
-        ImGui::SameLine();
-        if (ImGui::IconButton("Save", ICON_FA_SAVE)) {
-            _save();
-        }
-        ImGui::EndGroup();
 
         auto const contentSize = ImGui::GetContentRegionAvail();
         if (contentSize.x <= 0 || contentSize.y <= 0) {

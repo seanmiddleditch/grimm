@@ -113,6 +113,39 @@ namespace ImGui::inline Potato {
         window->DC.CursorPos = {pos.x, pos.y + frameHeight};
     }
 
+    bool BeginToolbar(char const* id) {
+        auto const& style = ImGui::GetStyle();
+
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + style.FramePadding.x);
+
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetColorU32(ImGuiCol_Header));
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 4.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, style.FrameBorderSize);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, style.FramePadding);
+
+        ImVec2 toolbarSize{
+            ImGui::GetContentRegionAvail().x - style.FramePadding.x,
+            ImGui::GetTextLineHeight() + style.FramePadding.y * 4.f};
+        bool const open = ImGui::BeginChild(
+            id,
+            toolbarSize,
+            false,
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding);
+
+        ImGui::PopStyleVar(3);
+        ImGui::PopStyleColor(1);
+
+        return open;
+    }
+
+    void EndToolbar() {
+        //auto const& style = ImGui::GetStyle();
+
+        ImGui::EndChild();
+
+        //ImGui::SetCursorPosY(ImGui::GetCursorPosY() + style.ItemSpacing.y);
+    }
+
     bool IconButton(char const* label, char const* icon, ImVec2 size, ImGuiButtonFlags flags) {
         ImGuiWindow* window = GetCurrentWindow();
         if (window->SkipItems) {

@@ -118,6 +118,7 @@ namespace up::shell {
         Command _command = Command::None;
         char _nameBuffer[128] = {0};
         char _renameBuffer[128] = {0};
+        char _searchBuffer[128] = {0};
         uint64 _newAssetType = 0;
 
         static constexpr int assetIconWidth = 96;

@@ -22,6 +22,9 @@ namespace ImGui::inline Potato {
         char const* label,
         ImGuiInteractiveFlags_ flags = ImGuiInteractiveFlags_None) noexcept;
 
+    UP_EDITOR_API bool BeginToolbar(char const* id);
+    UP_EDITOR_API void EndToolbar();
+
     UP_EDITOR_API bool IconButton(
         char const* label,
         char const* icon,
