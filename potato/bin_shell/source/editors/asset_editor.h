@@ -81,6 +81,7 @@ namespace up::shell {
         void _showAssets(Entry const& folder);
         void _showAsset(Entry const& asset);
         void _showFolder(Entry const& folder);
+        void _showSearchAssets(string_view searchText);
 
         void _showBreadcrumb(int index);
         void _showBreadcrumbs();
