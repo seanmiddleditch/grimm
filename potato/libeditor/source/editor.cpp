@@ -65,6 +65,10 @@ namespace up {
         if (ImGui::DockBuilderGetNode(dockSpaceId) == nullptr || _wantReset) {
             _wantReset = false;
 
+            for (auto& panel : _panels) {
+                panel->open = true;
+            }
+
             ImGui::DockBuilderRemoveNode(dockSpaceId);
             auto mainId = ImGui::DockBuilderAddNode(
                 dockSpaceId,
@@ -149,7 +153,10 @@ namespace up {
             for (auto const& panel : _panels) {
                 if (panel->open) {
                     ImGui::SetNextWindowClass(&_panelClass);
-                    if (ImGui::Begin(panel->imguiLabel.c_str(), &panel->open, ImGuiWindowFlags_NoCollapse)) {
+                    if (ImGui::Begin(
+                            panel->imguiLabel.c_str(),
+                            isCloseable() ? &panel->open : nullptr,
+                            ImGuiWindowFlags_NoCollapse | (isCloseable() ? 0 : ImGuiWindowFlags_NoMove))) {
                         panel->update();
                     }
                     ImGui::End();
@@ -184,8 +191,6 @@ namespace up {
         char tmp[128] = {};
         nanofmt::format_to(tmp, "{}##{}", panel->title, panel.get());
         panel->imguiLabel = tmp;
-
-        panel->id = ImGui::GetID(panel.get());
 
         _panels.push_back(std::move(panel));
     }

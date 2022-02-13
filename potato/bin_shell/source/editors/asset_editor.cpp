@@ -66,6 +66,8 @@ up::shell::AssetEditor::AssetEditor(
     , _assetEditService(assetEditService)
     , _reconClient(reconClient)
     , _onFileSelected(onFileSelected) {
+    addPanel("Asset Tree", PanelDir::Left, [this] { _showTreeFolders(); });
+
     _rebuild();
 }
 
@@ -83,35 +85,20 @@ void up::shell::AssetEditor::content(CommandManager&) {
         _rebuild();
     }
 
-    if (ImGui::BeginTable(
-            "##asset_browser",
-            2,
-            ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp,
-            ImGui::GetContentRegionAvail())) {
-        ImGui::TableSetupColumn("##files", 0, 1);
-        ImGui::TableSetupColumn("##assets", 0, 4);
+    _showBreadcrumbs();
+    _showAssets(_entries[_currentFolder]);
 
-        ImGui::TableNextColumn();
-        _showTreeFolders();
-
-        ImGui::TableNextColumn();
-        _showBreadcrumbs();
-        _showAssets(_entries[_currentFolder]);
-
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !ImGui::IsAnyItemHovered() &&
-            ImGui::TableGetHoveredColumn() == 1) {
-            ImGui::OpenPopup("##folder_popup");
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !ImGui::IsAnyItemHovered() &&
+        ImGui::TableGetHoveredColumn() == 1) {
+        ImGui::OpenPopup("##folder_popup");
+    }
+    if (ImGui::BeginPopup(
+            "##folder_popup",
+            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings)) {
+        if (ImGui::MenuItemEx("New Folder", ICON_FA_FOLDER)) {
+            _command = Command::ShowNewFolderDialog;
         }
-        if (ImGui::BeginPopup(
-                "##folder_popup",
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings)) {
-            if (ImGui::MenuItemEx("New Folder", ICON_FA_FOLDER)) {
-                _command = Command::ShowNewFolderDialog;
-            }
-            ImGui::EndPopup();
-        }
-
-        ImGui::EndTable();
+        ImGui::EndPopup();
     }
 
     _showRenameDialog();
