@@ -57,5 +57,7 @@ namespace ImGui::inline Potato {
     UP_EDITOR_API bool BeginInlineFrame(char const* label, float width = -1.f);
     UP_EDITOR_API void EndInlineFrame();
 
+    UP_EDITOR_API bool BeginTitlebarPopup(char const* title, ImGuiWindowFlags flags = ImGuiWindowFlags_None);
+
     UP_EDITOR_API void ApplyStyle();
 } // namespace ImGui::inline Potato

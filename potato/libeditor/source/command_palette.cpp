@@ -77,7 +77,11 @@ namespace up {
         //
         if (state.wantOpen) {
             state.wantOpen = false;
-            ImGui::OpenPopup(popupName);
+            if (!ImGui::IsPopupOpen(popupName)) {
+                state.activeId = CommandId{};
+                state.input[0] = '\0';
+                ImGui::OpenPopup(popupName);
+            }
         }
 
         // Position and display the popup

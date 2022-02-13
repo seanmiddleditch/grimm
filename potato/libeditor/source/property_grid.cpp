@@ -374,11 +374,6 @@ namespace up {
 
                 bool edit = false;
 
-                char browserId[32] = {
-                    0,
-                };
-                nanofmt::format_to(browserId, "##assets{}", ImGui::GetID("popup"));
-
                 // render
                 {
                     auto const windowPos = ImGui::GetWindowPos();
@@ -391,7 +386,7 @@ namespace up {
                     availSize.x -= buttonWidth + buttonSpacing;
                     ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
                     if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
-                        ImGui::OpenPopup(browserId);
+                        _browserState.wantOpen = true;
                     }
 
                     // clear asset
@@ -416,19 +411,20 @@ namespace up {
                         nullptr);
                 }
 
-                if (info.schema.operations != nullptr && info.schema.operations->pointerAssign != nullptr) {
-                    AssetId targetAssetId = assetId;
-                    if (up::assetBrowserPopup(browserId, targetAssetId, assetType, _assetLoader) &&
-                        targetAssetId != assetId) {
-                        *handle = _assetLoader.loadAssetSync(targetAssetId, assetType);
-                        edit = true;
-                    }
+                _browserState.assetType = assetType;
+                _browserState.selected = assetId;
+                bool const changed = up::showAssetBrowser(_browserState, _assetLoader);
+
+                if (changed && info.schema.operations != nullptr && info.schema.operations->pointerAssign != nullptr) {
+                    *handle = _assetLoader.loadAssetSync(_browserState.selected, assetType);
+                    edit = true;
                 }
 
                 return edit;
             }
 
         private:
+            AssetBrowserState _browserState;
             AssetLoader& _assetLoader;
         };
 

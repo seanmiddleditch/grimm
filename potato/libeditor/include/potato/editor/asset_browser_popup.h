@@ -8,9 +8,12 @@
 #include "potato/spud/string.h"
 
 namespace up {
-    UP_EDITOR_API bool assetBrowserPopup(
-        zstring_view,
-        AssetId& inout_asset,
-        string_view type,
-        AssetLoader& assetLoader);
-}
+    struct AssetBrowserState {
+        bool wantOpen = false;
+        AssetId selected;
+        string_view assetType;
+        char searchBuffer[128] = {0};
+    };
+
+    UP_EDITOR_API bool showAssetBrowser(AssetBrowserState& state, AssetLoader& assetLoader);
+} // namespace up

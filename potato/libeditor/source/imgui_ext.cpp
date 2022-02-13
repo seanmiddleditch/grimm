@@ -268,14 +268,12 @@ namespace ImGui::inline Potato {
     ImVec2 GetItemInnerSpacing() { return GetStyle().ItemInnerSpacing; }
 
     bool BeginIconGrid(char const* label, float iconWidth) {
-        auto const& style = ImGui::GetStyle();
-
         ImGui::PushStyleColor(ImGuiCol_ChildBg, 0);
-        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, style.FrameBorderSize);
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
         bool const open = ImGui::BeginChild(
             label,
             ImVec2{},
-            true,
+            false,
             ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NavFlattened | ImGuiWindowFlags_AlwaysUseWindowPadding);
         ImGui::PopStyleVar(1);
         ImGui::PopStyleColor(1);
@@ -345,7 +343,6 @@ namespace ImGui::inline Potato {
         if (showBg) {
             window->DrawList->AddRectFilled(bounds.Min, bounds.Max, bgColor, rounding);
         }
-        window->DrawList->AddRect(bounds.Min, bounds.Max, textColor, rounding);
 
         // must calculate this _before_ pushing the icon font, since we want to calcualte the size of the
         // label's height
@@ -452,6 +449,19 @@ namespace ImGui::inline Potato {
     void EndInlineFrame() {
         ImGui::PopStyleVar(1);
         ImGui::EndChild();
+    }
+
+    bool BeginTitlebarPopup(char const* title, ImGuiWindowFlags flags) {
+        if (!ImGui::IsPopupOpen(title, ImGuiPopupFlags_None)) {
+            ImGui::GetCurrentContext()->NextWindowData.ClearFlags();
+            return false;
+        }
+
+        flags |= ImGuiWindowFlags_Popup | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings;
+        bool const open = ImGui::Begin(title, nullptr, flags);
+        if (!open)
+            EndPopup();
+        return open;
     }
 
     void ApplyStyle() {

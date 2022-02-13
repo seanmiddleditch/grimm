@@ -10,34 +10,56 @@
 
 #include <nanofmt/format.h>
 #include <imgui.h>
+#include <imgui_internal.h>
 
-bool up::assetBrowserPopup(zstring_view id, AssetId& inout_asset, string_view type, AssetLoader& assetLoader) {
+bool up::showAssetBrowser(AssetBrowserState& state, AssetLoader& assetLoader) {
+    constexpr auto popupName = "Asset Browser##assetbrowser_popup";
+
     bool changed = false;
 
-    if (assetLoader.manifest() == nullptr) {
-        return false;
+    char filename[64] = {0};
+
+    if (state.wantOpen) {
+        state.wantOpen = false;
+        if (!ImGui::IsPopupOpen(popupName)) {
+            state.searchBuffer[0] = '\0';
+            ImGui::OpenPopup(popupName);
+        }
     }
 
-    char filename[64] = {
-        0,
-    };
-
-    ImVec2 const viewportSize = ImGui::GetIO().DisplaySize;
-    ImVec2 const minSize{viewportSize.x * 0.25f, viewportSize.y * 0.25f};
-    ImVec2 const maxSize{viewportSize.x * 0.5f, viewportSize.y * 0.5f};
+    ImVec2 const displaySize = ImGui::GetIO().DisplaySize;
+    ImVec2 const minSize{displaySize.x * 0.25f, displaySize.y * 0.25f};
+    ImVec2 const maxSize{displaySize.x * 0.5f, displaySize.y * 0.5f};
 
     ImGui::SetNextWindowSizeConstraints(minSize, maxSize);
-    if (ImGui::BeginPopup(id.c_str())) {
+    if (ImGui::BeginTitlebarPopup(popupName)) {
+        if (ImGui::BeginToolbar("##assetbrowser_toolbar")) {
+            if (ImGui::BeginInlineFrame(ICON_FA_SEARCH "##assetbrowser_toolbar_search")) {
+                ImGui::InputText("##assetbrowser_search_text", state.searchBuffer, sizeof state.searchBuffer);
+                ImGui::EndInlineFrame();
+            }
+            ImGui::EndToolbar();
+        }
+
+        auto const searchLength = stringLength(state.searchBuffer);
+
         if (ImGui::BeginIconGrid("##assetbrowser_grid")) {
             for (ResourceManifest::Record const& asset : assetLoader.manifest()->records()) {
-                if (!type.empty() && type != asset.type) {
+                if (!state.assetType.empty() && state.assetType != asset.type) {
                     continue;
                 }
 
                 nanofmt::format_to(filename, "{}", path::filename(asset.filename));
 
+                if (searchLength > 0 && stringIndexOfNoCase(
+                        filename,
+                        stringLength(filename),
+                        state.searchBuffer, searchLength) < 0) {
+                    continue;
+                }
+
                 if (ImGui::IconGridItem(static_cast<ImGuiID>(hash_value(asset.uuid)), filename, ICON_FA_FILE)) {
-                    inout_asset = static_cast<AssetId>(asset.logicalId);
+                    state.selected = static_cast<AssetId>(asset.logicalId);
                     changed = true;
                     ImGui::CloseCurrentPopup();
                 }
