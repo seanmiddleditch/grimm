@@ -84,7 +84,7 @@ namespace ImGui::inline Potato {
         ImGui::SetCursorPos(pos);
 
         ImVec2 const textSize = ImGui::CalcTextSize(text, textEnd);
-        ImGui::PushID(ImGui::GetID(idStr, idStrEnd));
+        ImGui::PushID(idStr, idStrEnd);
         bool const clicked = ImGui::InvisibleButton("##text", textSize);
         ImGui::PopID();
         return clicked;
@@ -459,8 +459,9 @@ namespace ImGui::inline Potato {
 
         flags |= ImGuiWindowFlags_Popup | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings;
         bool const open = ImGui::Begin(title, nullptr, flags);
-        if (!open)
+        if (!open) {
             EndPopup();
+        }
         return open;
     }
 
