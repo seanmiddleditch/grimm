@@ -42,8 +42,7 @@ auto up::AssetLoader::loadAssetSync(AssetId id, string_view type) -> UntypedAsse
         return {asset->assetKey(), rc<Asset>{rc_acquire, asset}};
     }
 
-    ResourceManifest::Record const* const record =
-        _manifest != nullptr ? _manifest->findRecord(id.value()) : nullptr;
+    ResourceManifest::Record const* const record = _manifest != nullptr ? _manifest->findRecord(id.value()) : nullptr;
     if (record == nullptr) {
         _logger.error("Failed to find asset `{}` ({})", id, type);
         return {};
