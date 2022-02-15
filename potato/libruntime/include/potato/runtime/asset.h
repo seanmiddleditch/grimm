@@ -7,12 +7,13 @@
 
 #include "potato/spud/hash.h"
 #include "potato/spud/int_types.h"
+#include "potato/spud/key.h"
 #include "potato/spud/rc.h"
 #include "potato/spud/string.h"
 #include "potato/spud/zstring_view.h"
 
 namespace up {
-    enum class AssetId : uint64 { Invalid };
+    using AssetId = Key<struct AssetIdTag, uint64>;
 
     class Asset;
     template <typename AssetT>

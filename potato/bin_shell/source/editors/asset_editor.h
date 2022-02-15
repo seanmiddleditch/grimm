@@ -20,13 +20,13 @@ namespace up {
 }
 
 namespace up::shell {
-    class AssetBrowser final : public Editor<AssetBrowser> {
+    class AssetEditor final : public Editor<AssetEditor> {
     public:
         static constexpr EditorTypeId editorTypeId{"potato.editor.asset_browser"};
 
         using OnFileSelected = delegate<void(UUID const& uuid)>;
 
-        AssetBrowser(
+        AssetEditor(
             EditorParams const& params,
             AssetLoader& assetLoader,
             ReconClient& reconClient,
@@ -40,7 +40,7 @@ namespace up::shell {
             AssetLoader& assetLoader,
             ReconClient& reconClient,
             AssetEditService& assetEditService,
-            AssetBrowser::OnFileSelected onFileSelected);
+            AssetEditor::OnFileSelected onFileSelected);
 
     protected:
         void content(CommandManager&) override;
@@ -81,6 +81,7 @@ namespace up::shell {
         void _showAssets(Entry const& folder);
         void _showAsset(Entry const& asset);
         void _showFolder(Entry const& folder);
+        void _showSearchAssets(string_view searchText);
 
         void _showBreadcrumb(int index);
         void _showBreadcrumbs();
@@ -118,6 +119,7 @@ namespace up::shell {
         Command _command = Command::None;
         char _nameBuffer[128] = {0};
         char _renameBuffer[128] = {0};
+        char _searchBuffer[128] = {0};
         uint64 _newAssetType = 0;
 
         static constexpr int assetIconWidth = 96;

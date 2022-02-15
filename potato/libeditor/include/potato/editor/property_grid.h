@@ -67,7 +67,7 @@ namespace up {
 
     private:
         bool _editInternal(PropertyEditor& propertyEditor, PropertyItemInfo const& info);
-        void _showLabel(PropertyItemInfo const& info) noexcept;
+        bool _showLabel(PropertyItemInfo const& info) noexcept;
 
         vector<box<PropertyEditor>> _propertyEditors;
         hash_map<reflex::SchemaPrimitive, uint32> _primitiveEditorMap;

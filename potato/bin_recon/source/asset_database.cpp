@@ -142,7 +142,7 @@ void up::AssetDatabase::addImportDependency(UUID const& uuid, zstring_view outpu
 void up::AssetDatabase::addAssetImport(UUID const& uuid, zstring_view name, zstring_view assetType, uint64 outputHash) {
     (void)_db.execute(
         "INSERT INTO imported_assets (id, uuid, name, type, hash) VALUES(?, ?, ?, ?, ?)",
-        createLogicalAssetId(uuid, name),
+        createLogicalAssetId(uuid, name).value(),
         uuid,
         name,
         assetType,

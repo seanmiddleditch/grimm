@@ -55,7 +55,6 @@ namespace up {
             string imguiLabel;
             bool open = true;
             PanelUpdate update;
-            ImGuiID id = 0;
             PanelDir initialDir = PanelDir::Right;
         };
 

@@ -101,7 +101,7 @@ bool up::reflex::_detail::encodeAssetRef(nlohmann::json& json, Schema const& sch
         }
     }
     else if (assetHandle->isSet()) {
-        json["$assetId"] = to_underlying(assetHandle->assetId());
+        json["$assetId"] = assetHandle->assetId().value();
     }
     return true;
 }

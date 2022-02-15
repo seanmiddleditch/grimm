@@ -123,16 +123,22 @@ namespace up {
 
                 bool edits = false;
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineInputScalar("X", ImGuiDataType_Float, &vec3.x);
-                ImGui::SameLine(0.f, innerSpacing);
+                if (ImGui::BeginInlineFrame("X", inputWidth)) {
+                    edits |= ImGui::InputScalar("##x", ImGuiDataType_Float, &vec3.x);
+                    ImGui::EndInlineFrame();
+                    ImGui::SameLine(0.f, innerSpacing);
+                }
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineInputScalar("Y", ImGuiDataType_Float, &vec3.y);
-                ImGui::SameLine(0.f, innerSpacing);
+                if (ImGui::BeginInlineFrame("Y", inputWidth)) {
+                    edits |= ImGui::InputScalar("##y", ImGuiDataType_Float, &vec3.y);
+                    ImGui::EndInlineFrame();
+                    ImGui::SameLine(0.f, innerSpacing);
+                }
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineInputScalar("Z", ImGuiDataType_Float, &vec3.z);
+                if (ImGui::BeginInlineFrame("Z", inputWidth)) {
+                    edits |= ImGui::InputScalar("##z", ImGuiDataType_Float, &vec3.z);
+                    ImGui::EndInlineFrame();
+                }
 
                 return edits;
             }
@@ -368,11 +374,6 @@ namespace up {
 
                 bool edit = false;
 
-                char browserId[32] = {
-                    0,
-                };
-                nanofmt::format_to(browserId, "##assets{}", ImGui::GetID("popup"));
-
                 // render
                 {
                     auto const windowPos = ImGui::GetWindowPos();
@@ -385,7 +386,7 @@ namespace up {
                     availSize.x -= buttonWidth + buttonSpacing;
                     ImGui::SetCursorPos({pos.x + availSize.x + buttonSpacing, pos.y});
                     if (ImGui::IconButton("##select", ICON_FA_FOLDER)) {
-                        ImGui::OpenPopup(browserId);
+                        _browserState.wantOpen = true;
                     }
 
                     // clear asset
@@ -410,19 +411,20 @@ namespace up {
                         nullptr);
                 }
 
-                if (info.schema.operations != nullptr && info.schema.operations->pointerAssign != nullptr) {
-                    AssetId targetAssetId = assetId;
-                    if (up::assetBrowserPopup(browserId, targetAssetId, assetType, _assetLoader) &&
-                        targetAssetId != assetId) {
-                        *handle = _assetLoader.loadAssetSync(targetAssetId, assetType);
-                        edit = true;
-                    }
+                _browserState.assetType = assetType;
+                _browserState.selected = assetId;
+                bool const changed = up::showAssetBrowser(_browserState, _assetLoader);
+
+                if (changed && info.schema.operations != nullptr && info.schema.operations->pointerAssign != nullptr) {
+                    *handle = _assetLoader.loadAssetSync(_browserState.selected, assetType);
+                    edit = true;
                 }
 
                 return edit;
             }
 
         private:
+            AssetBrowserState _browserState;
             AssetLoader& _assetLoader;
         };
 
@@ -440,37 +442,61 @@ namespace up {
                 float const minDeg = -180.f;
                 float const maxDeg = +180.f;
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineSliderScalar(
-                    "X",
-                    ImGuiDataType_Float,
-                    &euler.yaw,
-                    &minDeg,
-                    &maxDeg,
-                    "%g\u00B0",
-                    ImGuiSliderFlags_AlwaysClamp);
-                ImGui::SameLine(0.f, innerSpacing);
+                if (ImGui::BeginInlineFrame("X", inputWidth)) {
+                    const bool tooltip = ImGui::IsItemHovered();
+                    edits |= ImGui::SliderScalar(
+                        "##yaw",
+                        ImGuiDataType_Float,
+                        &euler.yaw,
+                        &minDeg,
+                        &maxDeg,
+                        "%g\u00B0",
+                        ImGuiSliderFlags_AlwaysClamp);
+                    if (tooltip) {
+                        ImGui::BeginTooltip();
+                        ImGui::TextUnformatted("Yaw: rotation around the X axis");
+                        ImGui::EndTooltip();
+                    }
+                    ImGui::EndInlineFrame();
+                    ImGui::SameLine(0.f, innerSpacing);
+                }
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineSliderScalar(
-                    "Y",
-                    ImGuiDataType_Float,
-                    &euler.pitch,
-                    &minDeg,
-                    &maxDeg,
-                    "%g\u00B0",
-                    ImGuiSliderFlags_AlwaysClamp);
-                ImGui::SameLine(0.f, innerSpacing);
+                if (ImGui::BeginInlineFrame("Y", inputWidth)) {
+                    const bool tooltip = ImGui::IsItemHovered();
+                    edits |= ImGui::SliderScalar(
+                        "##pitch",
+                        ImGuiDataType_Float,
+                        &euler.pitch,
+                        &minDeg,
+                        &maxDeg,
+                        "%g\u00B0",
+                        ImGuiSliderFlags_AlwaysClamp);
+                    if (tooltip) {
+                        ImGui::BeginTooltip();
+                        ImGui::TextUnformatted("Pitch: rotation around the Y axis");
+                        ImGui::EndTooltip();
+                    }
+                    ImGui::EndInlineFrame();
+                    ImGui::SameLine(0.f, innerSpacing);
+                }
 
-                ImGui::SetNextItemWidth(inputWidth);
-                edits |= ImGui::InlineSliderScalar(
-                    "Z",
-                    ImGuiDataType_Float,
-                    &euler.roll,
-                    &minDeg,
-                    &maxDeg,
-                    "%g\u00B0",
-                    ImGuiSliderFlags_AlwaysClamp);
+                if (ImGui::BeginInlineFrame("Z", inputWidth)) {
+                    const bool tooltip = ImGui::IsItemHovered();
+                    edits |= ImGui::SliderScalar(
+                        "##roll",
+                        ImGuiDataType_Float,
+                        &euler.roll,
+                        &minDeg,
+                        &maxDeg,
+                        "%g\u00B0",
+                        ImGuiSliderFlags_AlwaysClamp);
+                    if (tooltip) {
+                        ImGui::BeginTooltip();
+                        ImGui::TextUnformatted("Roll: rotation around the Z axis");
+                        ImGui::EndTooltip();
+                    }
+                    ImGui::EndInlineFrame();
+                }
 
                 return edits;
             }
@@ -639,6 +665,7 @@ namespace up {
 
         bool edits = false;
         bool open = false;
+        bool labelClicked = false;
 
         // label
         {
@@ -725,7 +752,7 @@ namespace up {
             // label
             {
                 ImGui::AlignTextToFramePadding();
-                _showLabel(info);
+                labelClicked = _showLabel(info);
 
                 ImGui::PopClipRect();
             }
@@ -746,6 +773,10 @@ namespace up {
             ImGui::TableSetColumnIndex(1);
             ImGui::AlignTextToFramePadding();
 
+            if (labelClicked) {
+                ImGui::SetKeyboardFocusHere();
+            }
+
             edits |= propertyEditor.edit(info);
         }
 
@@ -759,27 +790,26 @@ namespace up {
         return edits;
     }
 
-    void PropertyGrid::_showLabel(PropertyItemInfo const& info) noexcept {
+    bool PropertyGrid::_showLabel(PropertyItemInfo const& info) noexcept {
         if (info.index >= 0) {
             char buffer[64];
             nanofmt::format_to(buffer, "{}", info.index + 1);
-            ImGui::TextUnformatted(buffer);
-            return;
+            return ImGui::ClickableText(buffer);
         }
 
         if (info.field == nullptr) {
-            ImGui::TextUnformatted("<Unknown>");
-            return;
+            return ImGui::ClickableText("<Unknown>");
         }
 
         if (auto const* const displayNameAnnotation = reflex::queryAnnotation<schema::DisplayName>(*info.field);
             displayNameAnnotation != nullptr && !displayNameAnnotation->name.empty()) {
-            ImGui::TextUnformatted(displayNameAnnotation->name.c_str());
-            return;
+            return ImGui::ClickableText(displayNameAnnotation->name.c_str());
         }
 
         // format field names pretty
         {
+            ImVec2 const pos = ImGui::GetCursorPos();
+
             bool first = true;
             char const* ch = info.field->name.c_str();
             while (*ch != '\0') {
@@ -830,6 +860,10 @@ namespace up {
                 ImGui::TextUnformatted(start, ch);
                 ImGui::SameLine(0.f, 0.f);
             }
+
+            ImVec2 const textSize{ImGui::GetCursorPos().x - pos.x, ImGui::GetTextLineHeight()};
+            ImGui::SetCursorPos(pos);
+            return ImGui::InvisibleButton("##label", textSize);
         }
     }
 } // namespace up

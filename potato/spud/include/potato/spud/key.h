@@ -4,6 +4,7 @@
 
 #include "potato/spud/int_types.h"
 
+#include <nanofmt/forward.h>
 #include <compare>
 
 namespace up {
@@ -33,3 +34,13 @@ namespace up {
         underlying_type _value{Invalid};
     };
 } // namespace up
+
+namespace nanofmt {
+    template <typename Tag, typename Underlying, Underlying Invalid>
+    struct formatter<up::Key<Tag, Underlying, Invalid>> : formatter<Underlying> {
+        template <typename OutputT>
+        void format(up::Key<Tag, Underlying, Invalid> key, OutputT& out) {
+            formatter<Underlying>::format(key.value(), out);
+        }
+    };
+} // namespace nanofmt

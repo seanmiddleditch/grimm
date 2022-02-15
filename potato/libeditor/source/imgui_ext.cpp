@@ -36,7 +36,7 @@
 #include <imgui_internal.h>
 
 namespace ImGui::inline Potato {
-    static void DrawIcon(const char* icon, ImVec2 minPos, ImVec2 maxPos) {
+    static void DrawIcon(char const* icon, ImVec2 minPos, ImVec2 maxPos) {
         ImGui::RenderTextClipped(
             minPos,
             maxPos,
@@ -66,6 +66,28 @@ namespace ImGui::inline Potato {
         }
 
         return open;
+    }
+
+    bool ClickableText(char const* text, char const* textEnd) noexcept {
+        char const* idStr = text;
+        char const* const idStrEnd = textEnd;
+
+        if (textEnd == nullptr) {
+            textEnd = ImGui::FindRenderedTextEnd(text);
+            if (*textEnd != '\0') {
+                idStr = textEnd;
+            }
+        }
+
+        ImVec2 pos = ImGui::GetCursorPos();
+        ImGui::TextUnformatted(text, textEnd);
+        ImGui::SetCursorPos(pos);
+
+        ImVec2 const textSize = ImGui::CalcTextSize(text, textEnd);
+        ImGui::PushID(idStr, idStrEnd);
+        bool const clicked = ImGui::InvisibleButton("##text", textSize);
+        ImGui::PopID();
+        return clicked;
     }
 
     void Interactive(char const* label, ImGuiInteractiveFlags_ flags) noexcept {
@@ -111,6 +133,39 @@ namespace ImGui::inline Potato {
 
         window->DC.CursorPosPrevLine = pos;
         window->DC.CursorPos = {pos.x, pos.y + frameHeight};
+    }
+
+    bool BeginToolbar(char const* id) {
+        auto const& style = ImGui::GetStyle();
+
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + style.FramePadding.x);
+
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetColorU32(ImGuiCol_Header));
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 4.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, style.FrameBorderSize);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, style.FramePadding);
+
+        ImVec2 toolbarSize{
+            ImGui::GetContentRegionAvail().x - style.FramePadding.x,
+            ImGui::GetTextLineHeight() + style.FramePadding.y * 4.f};
+        bool const open = ImGui::BeginChild(
+            id,
+            toolbarSize,
+            false,
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NavFlattened);
+
+        ImGui::PopStyleVar(3);
+        ImGui::PopStyleColor(1);
+
+        return open;
+    }
+
+    void EndToolbar() {
+        // auto const& style = ImGui::GetStyle();
+
+        ImGui::EndChild();
+
+        // ImGui::SetCursorPosY(ImGui::GetCursorPosY() + style.ItemSpacing.y);
     }
 
     bool IconButton(char const* label, char const* icon, ImVec2 size, ImGuiButtonFlags flags) {
@@ -213,16 +268,25 @@ namespace ImGui::inline Potato {
     ImVec2 GetItemInnerSpacing() { return GetStyle().ItemInnerSpacing; }
 
     bool BeginIconGrid(char const* label, float iconWidth) {
-        ImGuiStyle const& style = GetStyle();
-        float const availWidth =
-            up::max(ImGui::GetContentRegionAvail().x - style.WindowPadding.x - style.FramePadding.x * 2.f, 0.f);
-        float const paddedIconWidth = iconWidth + style.ColumnsMinSpacing;
-        int const columns = up::clamp(static_cast<int>(availWidth / paddedIconWidth), 1, 64);
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, 0);
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
+        bool const open = ImGui::BeginChild(
+            label,
+            ImVec2{},
+            false,
+            ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NavFlattened | ImGuiWindowFlags_AlwaysUseWindowPadding);
+        ImGui::PopStyleVar(1);
+        ImGui::PopStyleColor(1);
 
-        return ImGui::BeginTable(label, columns);
+        ImGui::BeginGroup();
+
+        return open;
     }
 
-    void EndIconGrid() { ImGui::EndTable(); }
+    void EndIconGrid() {
+        ImGui::EndGroup();
+        ImGui::EndChild();
+    }
 
     bool IconGridItem(ImGuiID id, char const* label, char const* icon, bool selected, float width, float rounding) {
         UP_GUARD(label != nullptr, false);
@@ -230,7 +294,7 @@ namespace ImGui::inline Potato {
         UP_GUARD(width > 0, false);
         UP_GUARD(rounding >= 0, false);
 
-        ImGui::TableNextColumn();
+        auto const& style = ImGui::GetStyle();
 
         ImGuiWindow* const window = ImGui::GetCurrentWindow();
         if (window->SkipItems) {
@@ -238,164 +302,167 @@ namespace ImGui::inline Potato {
         }
 
         ImVec2 const size = ImGui::CalcItemSize({width, width}, 0.0f, 0.0f);
+
+        {
+            if (window->DC.CursorPosPrevLine.x > window->Pos.x + style.FramePadding.x) {
+                ImGui::SameLine(0.f, style.ItemSpacing.x);
+            }
+
+            ImVec2 const availSize = ImGui::GetContentRegionAvail();
+            if (availSize.x < width) {
+                ImGui::Spacing();
+            }
+        }
+
         ImRect const bounds{window->DC.CursorPos, window->DC.CursorPos + size};
         ImRect const innerBounds{bounds.Min + ImGui::GetItemSpacing(), bounds.Max - ImGui::GetItemSpacing()};
 
-        bool clicked = false;
-
         ImGui::ItemSize(size);
-        if (ImGui::ItemAdd(bounds, id)) {
-            bool hovered = false;
-            bool held = false;
-            clicked = ButtonBehavior(
-                bounds,
-                id,
-                &hovered,
-                &held,
-                ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_PressedOnDoubleClick |
-                    ImGuiButtonFlags_NoKeyModifiers);
+        if (!ImGui::ItemAdd(bounds, id)) {
+            return false;
+        }
 
-            ImU32 const textColor = ImGui::GetColorU32(ImGuiCol_Text);
-            ImU32 const bgColor = ImGui::GetColorU32(
-                held           ? ImGuiCol_ButtonActive
-                    : hovered  ? ImGuiCol_ButtonHovered
-                    : selected ? ImGuiCol_Header
-                               : ImGuiCol_Button);
+        bool hovered = false;
+        bool held = false;
+        bool const clicked = ButtonBehavior(
+            bounds,
+            id,
+            &hovered,
+            &held,
+            ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_PressedOnDoubleClick | ImGuiButtonFlags_NoKeyModifiers);
 
-            bool const showBg = hovered || held || selected;
+        ImU32 const textColor = ImGui::GetColorU32(ImGuiCol_Text);
+        ImU32 const bgColor = ImGui::GetColorU32(
+            held           ? ImGuiCol_ButtonActive
+                : hovered  ? ImGuiCol_ButtonHovered
+                : selected ? ImGuiCol_Header
+                           : ImGuiCol_Button);
 
-            if (showBg) {
-                window->DrawList->AddRectFilled(bounds.Min, bounds.Max, bgColor, rounding);
-            }
+        bool const showBg = hovered || held || selected;
 
-            // must calculate this _before_ pushing the icon font, since we want to calcualte the size of the
-            // label's height
-            float const iconMaxHeight =
-                innerBounds.GetHeight() - ImGui::GetTextLineHeightWithSpacing() - ImGui::GetItemInnerSpacing().y;
+        if (showBg) {
+            window->DrawList->AddRectFilled(bounds.Min, bounds.Max, bgColor, rounding);
+        }
 
-            ImGui::PushFont(ImGui::UpFont::FontAwesome_72);
-            ImVec2 iconSize = ImGui::CalcTextSize(reinterpret_cast<char const*>(icon));
-            float iconScale = 1.f;
-            if (iconSize.y > iconMaxHeight) {
-                iconScale = iconMaxHeight / iconSize.y;
-            }
-            ImGui::SetWindowFontScale(iconScale);
-            ImVec2 const iconPos{
-                innerBounds.Min.x + (innerBounds.GetWidth() - iconSize.x * iconScale) * 0.5f,
-                innerBounds.Min.y};
-            window->DrawList->AddText(iconPos, textColor, reinterpret_cast<char const*>(icon));
-            ImGui::SetWindowFontScale(1.f);
-            ImGui::PopFont();
+        // must calculate this _before_ pushing the icon font, since we want to calcualte the size of the
+        // label's height
+        float const iconMaxHeight =
+            innerBounds.GetHeight() - ImGui::GetTextLineHeightWithSpacing() - ImGui::GetItemInnerSpacing().y;
 
-            char const* const labelEnd = ImGui::FindRenderedTextEnd(label);
-            float const textHeight = ImGui::GetTextLineHeight();
-            ImRect const textBounds{
-                ImVec2{bounds.Min.x, innerBounds.Max.y - ImGui::GetItemSpacing().y - textHeight},
-                ImVec2{bounds.Max.x, innerBounds.Max.y - ImGui::GetItemSpacing().y}};
+        ImGui::PushFont(ImGui::UpFont::FontAwesome_72);
+        ImVec2 iconSize = ImGui::CalcTextSize(reinterpret_cast<char const*>(icon));
+        float iconScale = 1.f;
+        if (iconSize.y > iconMaxHeight) {
+            iconScale = iconMaxHeight / iconSize.y;
+        }
+        ImGui::SetWindowFontScale(iconScale);
+        ImVec2 const iconPos{
+            innerBounds.Min.x + (innerBounds.GetWidth() - iconSize.x * iconScale) * 0.5f,
+            innerBounds.Min.y};
+        window->DrawList->AddText(iconPos, textColor, reinterpret_cast<char const*>(icon));
+        ImGui::SetWindowFontScale(1.f);
+        ImGui::PopFont();
 
-            if (showBg) {
-                window->DrawList->AddRectFilled(textBounds.Min, textBounds.Max, ImGui::GetColorU32(ImGuiCol_Header));
-            }
+        char const* const labelEnd = ImGui::FindRenderedTextEnd(label);
+        float const textHeight = ImGui::GetTextLineHeight();
+        ImRect const textBounds{
+            ImVec2{bounds.Min.x, innerBounds.Max.y - ImGui::GetItemSpacing().y - textHeight},
+            ImVec2{bounds.Max.x, innerBounds.Max.y - ImGui::GetItemSpacing().y}};
 
-            ImFont const* const font = GetFont();
-            ImVec2 const textSize = CalcTextSize(label, nullptr, true, 0.f);
-            ImVec4 const textFineBounds{textBounds.Min.x, textBounds.Min.y, textBounds.Max.x, textBounds.Max.y};
-            if (size.x > textBounds.GetWidth()) {
-                window->DrawList
-                    ->AddText(font, font->FontSize, textBounds.Min, textColor, label, labelEnd, 0.f, &textFineBounds);
-            }
-            else {
-                float const offsetX = (textBounds.GetWidth() - textSize.x) * 0.5f;
-                ImVec2 const centerPos{textBounds.Min.x + offsetX, textBounds.Min.y};
-                window->DrawList
-                    ->AddText(font, font->FontSize, centerPos, textColor, label, labelEnd, 0.f, &textFineBounds);
-            }
+        if (showBg) {
+            window->DrawList->AddRectFilled(textBounds.Min, textBounds.Max, ImGui::GetColorU32(ImGuiCol_Header));
+        }
 
-            if (ImGui::IsItemHovered()) {
-                ImGui::BeginTooltip();
-                ImGui::Text("%s", label);
-                ImGui::EndTooltip();
-            }
+        ImFont const* const font = GetFont();
+        ImVec2 const textSize = CalcTextSize(label, nullptr, true, 0.f);
+        ImVec4 const textFineBounds{textBounds.Min.x, textBounds.Min.y, textBounds.Max.x, textBounds.Max.y};
+        if (size.x > textBounds.GetWidth()) {
+            window->DrawList
+                ->AddText(font, font->FontSize, textBounds.Min, textColor, label, labelEnd, 0.f, &textFineBounds);
+        }
+        else {
+            float const offsetX = (textBounds.GetWidth() - textSize.x) * 0.5f;
+            ImVec2 const centerPos{textBounds.Min.x + offsetX, textBounds.Min.y};
+            window->DrawList
+                ->AddText(font, font->FontSize, centerPos, textColor, label, labelEnd, 0.f, &textFineBounds);
+        }
+
+        if (ImGui::IsItemHovered()) {
+            ImGui::BeginTooltip();
+            ImGui::Text("%s", label);
+            ImGui::EndTooltip();
         }
 
         return clicked;
     }
 
-    static bool BeginInlineEditor(const char* label, ImRect& out_rect) {
-        auto const& style = ImGui::GetStyle();
-        ImGuiWindow* const window = ImGui::GetCurrentWindow();
-        ImDrawList* const draw = window->DrawList;
-
-        ImGui::BeginGroup();
-        ImGui::PushID(label);
-
-        const char* labelEnd = ImGui::FindRenderedTextEnd(label);
-
-        ImVec2 const totalSize{ImGui::CalcItemWidth(), ImGui::GetFrameHeight()};
-        ImVec2 const textSize = ImGui::CalcTextSize(label, labelEnd, true);
-        ImVec2 textBoxSize{textSize.x + style.FramePadding.x * 2.f, totalSize.y};
-
-        out_rect.Min = window->DC.CursorPos;
-        out_rect.Max = out_rect.Min + totalSize;
-
-        const ImU32 textBgColor = ImGui::GetColorU32(style.Colors[ImGuiCol_Header]);
-        const ImU32 textColor = ImGui::GetColorU32(style.Colors[ImGuiCol_Text]);
-
-        draw->AddRectFilled(out_rect.Min, out_rect.Min + textBoxSize, textBgColor, 0.f);
-        draw->AddText(
-            {out_rect.Min.x + style.FramePadding.x, out_rect.Min.y + window->DC.CurrLineTextBaseOffset},
-            textColor,
-            label,
-            labelEnd);
-
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
-        ImGui::SetNextItemWidth(totalSize.x - textBoxSize.x);
-
-        window->DC.CursorPos.x = out_rect.Min.x + textBoxSize.x;
-        return true;
+    static float CalcItemWidth(float width) {
+        if (width < 0.f) {
+            ImGuiWindow const* const window = ImGui::GetCurrentWindowRead();
+            float region_max_x = GetContentRegionMaxAbs().x;
+            width = ImMax(1.0f, region_max_x - window->DC.CursorPos.x + width);
+        }
+        return IM_FLOOR(width);
     }
 
-    static void EndInlineEditor(ImRect const& rect) {
-        ImGui::PopStyleVar();
+    bool BeginInlineFrame(char const* label, float width) {
+        ImGuiStyle const& style = ImGui::GetStyle();
 
-        ImGui::RenderFrameBorder(rect.Min, rect.Max, 0.f);
+        ImVec2 const framePadding = style.FramePadding;
+        ImVec2 const innerItemSpacing = style.ItemInnerSpacing;
+        ImVec2 const size{CalcItemWidth(width), ImGui::GetTextLineHeight() + framePadding.y * 2};
 
-        ImGui::PopID();
-        ImGui::EndGroup();
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, style.FrameRounding);
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, style.FrameBorderSize);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0.f, 0.f});
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetColorU32(ImGuiCol_Header));
+
+        bool const visible = ImGui::BeginChild(
+            ImGui::GetID(label),
+            size,
+            true,
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoScrollbar |
+                ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NavFlattened);
+
+        ImGui::PopStyleColor(1);
+        ImGui::PopStyleVar(3);
+
+        if (visible) {
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.f);
+
+            char const* const labelEnd = ImGui::FindRenderedTextEnd(label);
+            if (label != labelEnd) {
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + framePadding.x);
+
+                ImGui::AlignTextToFramePadding();
+                if (ClickableText(label, labelEnd)) {
+                    ImGui::SetKeyboardFocusHere();
+                }
+                ImGui::SameLine(0.f, innerItemSpacing.x);
+            }
+            ImGui::SetNextItemWidth(-1.f);
+        }
+
+        return visible;
     }
 
-    bool InlineSliderScalar(
-        const char* label,
-        ImGuiDataType dataType,
-        void* pData,
-        const void* pMin,
-        const void* pMax,
-        const char* format,
-        ImGuiSliderFlags flags) {
-        ImRect rect;
-        if (!BeginInlineEditor(label, rect)) {
+    void EndInlineFrame() {
+        ImGui::PopStyleVar(1);
+        ImGui::EndChild();
+    }
+
+    bool BeginTitlebarPopup(char const* title, ImGuiWindowFlags flags) {
+        if (!ImGui::IsPopupOpen(title, ImGuiPopupFlags_None)) {
+            ImGui::GetCurrentContext()->NextWindowData.ClearFlags();
             return false;
         }
-        bool const edits = ImGui::SliderScalar("##slider", dataType, pData, pMin, pMax, format, flags);
-        EndInlineEditor(rect);
-        return edits;
-    }
 
-    bool InlineInputScalar(
-        const char* label,
-        ImGuiDataType dataType,
-        void* pData,
-        const void* pStep,
-        const void* pStepFast,
-        const char* format,
-        ImGuiInputTextFlags flags) {
-        ImRect rect;
-        if (!BeginInlineEditor(label, rect)) {
-            return false;
+        flags |= ImGuiWindowFlags_Popup | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings;
+        bool const open = ImGui::Begin(title, nullptr, flags);
+        if (!open) {
+            EndPopup();
         }
-        bool const edits = ImGui::InputScalar("##input", dataType, pData, pStep, pStepFast, format, flags);
-        EndInlineEditor(rect);
-        return edits;
+        return open;
     }
 
     void ApplyStyle() {

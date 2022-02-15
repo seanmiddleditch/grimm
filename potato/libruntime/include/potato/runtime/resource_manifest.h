@@ -13,11 +13,11 @@ namespace up {
     /// @brief Mapping of resource identifiers to CAS hashes and filenames
     class ResourceManifest {
     public:
-        using Id = uint64;
+        using LogicalId = uint64;
 
         struct Record {
             UUID uuid = {};
-            Id logicalId = {};
+            LogicalId logicalId = 0;
             uint64 hash = 0;
             string logicalName;
             string filename;
@@ -37,7 +37,7 @@ namespace up {
 
         view<Record> records() const noexcept { return _records; }
 
-        Record const* findRecord(Id logicalId) const noexcept {
+        Record const* findRecord(LogicalId logicalId) const noexcept {
             for (Record const& record : _records) {
                 if (record.logicalId == logicalId) {
                     return &record;

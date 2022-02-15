@@ -27,7 +27,7 @@ namespace up {
         struct ImportedAsset {
             zstring_view name;
             zstring_view type;
-            AssetId logicalAssetId = AssetId::Invalid;
+            AssetId logicalAssetId;
             uint64 contentHash = 0;
         };
 
@@ -83,7 +83,7 @@ namespace up {
 
     private:
         struct HashAssetId {
-            constexpr uint64 operator()(AssetId assetId) const noexcept { return static_cast<uint64>(assetId); }
+            constexpr uint64 operator()(AssetId assetId) const noexcept { return assetId.value(); }
         };
 
         Database _db;
