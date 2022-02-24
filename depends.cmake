@@ -17,8 +17,8 @@ up_require(catch2
     CMAKE_FILE catch2.cmake
 )
 up_require(imgui
-    GIT_REPOSITORY git://github.com/ocornut/imgui.git
-    GIT_COMMIT 0647ba3badb9db94cb2dbc971cfc034e1c72f48a
+    GIT_REPOSITORY git://github.com/rokups/imgui.git # temporary branch until upstream is fixed
+    GIT_COMMIT ce92c1b17ca58201522954a0662a91b2a2556a19 # rk/fix-5012-again
     CMAKE_FILE imgui.cmake
 )
 up_require(glm
@@ -39,8 +39,8 @@ up_require(json
     CMAKE_FILE json.cmake
 )
 up_require(sdl2_vc_sdk
-    URL https://www.libsdl.org/release/SDL2-devel-2.0.16-VC.zip
-    URL_HASH SHA1=13d952c333f3c2ebe9b7bc0075b4ad2f784e7584
+    URL http://libsdl.org/release/SDL2-devel-2.0.20-VC.zip
+    URL_HASH SHA1=4824400cc7ee56cc05061734fa04be081241b67c
     CMAKE_FILE sdl2_vc.cmake
 )
 up_require(assimp_win64_sdk
