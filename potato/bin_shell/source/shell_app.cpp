@@ -111,6 +111,13 @@ namespace up {
                 .menu = "Help\\About"};
         };
 
+        struct ShowImguiDemoCommand final : Command {
+            static constexpr CommandMeta meta{
+                .id = CommandId{"potato.editor.imgui_demo"},
+                .displayName = "Imgui Demo",
+                .menu = "Help\\Imgui Demo"};
+        };
+
         struct CommandPaletteCommand final : Command {
             static constexpr CommandMeta meta{
                 .id = CommandId{"potato.editor.command-palette.open"},
@@ -169,6 +176,15 @@ namespace up {
             ShowAboutHandler(shell::ShellApp& app) : _app(app) { }
 
             void invoke(ShowAboutCommand&) override { _app.showAboutDialog(); }
+
+        private:
+            shell::ShellApp& _app;
+        };
+
+        struct ShowImguiDemoHandler final : CommandHandler<ShowImguiDemoCommand> {
+            ShowImguiDemoHandler(shell::ShellApp& app) : _app(app) { }
+
+            void invoke(ShowImguiDemoCommand&) override { _app.showImguiDemo(); }
 
         private:
             shell::ShellApp& _app;
@@ -358,6 +374,7 @@ int up::shell::ShellApp::initialize() {
     _commands.addCommand<ShowLogsCommand>();
     _commands.addCommand<ImportResourcesCommand>();
     _commands.addCommand<ShowAboutCommand>();
+    _commands.addCommand<ShowImguiDemoCommand>();
     _commands.addCommand<CommandPaletteCommand>();
 
     _commandScope.addHandler<QuitHandler>(*this);
@@ -366,6 +383,7 @@ int up::shell::ShellApp::initialize() {
     _commandScope.addHandler<ShowLogsHandler>(_editors);
     _commandScope.addHandler<ImportResourcesHandler>(*this);
     _commandScope.addHandler<ShowAboutHandler>(*this);
+    _commandScope.addHandler<ShowImguiDemoHandler>(*this);
     _commandScope.addHandler<CommandPaletteHandler>(_editors);
     _commandScope.addHandler<PlaySceneHandler>(*_audio, _editors);
 
@@ -510,10 +528,6 @@ void up::shell::ShellApp::importResources() {
     _executeRecon();
 }
 
-void up::shell::ShellApp::showAboutDialog() {
-    _aboutDialog = true;
-}
-
 void up::shell::ShellApp::_onWindowClosed() {
     quit();
 }
@@ -609,6 +623,10 @@ void up::shell::ShellApp::_displayUI() {
     }
 
     _commands.popScope(_commandScope);
+
+    if (_imguiDemo) {
+        ImGui::ShowDemoWindow(&_imguiDemo);
+    }
 }
 
 void up::shell::ShellApp::_errorDialog(zstring_view message) {
