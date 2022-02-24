@@ -48,7 +48,9 @@ namespace up::shell {
         void openProject();
         void closeProject();
         void importResources();
-        void showAboutDialog();
+
+        void showAboutDialog() { _aboutDialog = true; }
+        void showImguiDemo() { _imguiDemo = true; }
 
         bool isRunning() const { return _running; }
 
@@ -78,6 +80,7 @@ namespace up::shell {
         bool _openProject = false;
         bool _closeProject = false;
         bool _aboutDialog = false;
+        bool _imguiDemo = false;
         rc<GpuDevice> _device;
         rc<GpuSwapChain> _swapChain;
         box<Renderer> _renderer;
