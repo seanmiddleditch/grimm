@@ -4,7 +4,7 @@ target_sources(tracy PRIVATE
     "${tracy_SOURCE_DIR}/TracyClient.cpp"
     "${tracy_SOURCE_DIR}/Tracy.hpp"
 )
-target_include_directories(tracy PUBLIC "${tracy_SOURCE_DIR}")
+target_include_directories(tracy SYSTEM PUBLIC "${tracy_SOURCE_DIR}")
 target_compile_definitions(tracy
     PUBLIC
         TRACY_ENABLE=1
