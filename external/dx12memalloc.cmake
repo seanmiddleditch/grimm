@@ -1,7 +1,7 @@
 FetchContent_Populate(dx12memalloc)
 add_library(dx12memalloc STATIC)
 target_include_directories(dx12memalloc
-    PUBLIC "${dx12memalloc_SOURCE_DIR}/include"
+    SYSTEM PUBLIC "${dx12memalloc_SOURCE_DIR}/include"
     PRIVATE "${dx12memalloc_SOURCE_DIR}/src"
 )
 

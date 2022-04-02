@@ -24,5 +24,5 @@ else()
 
     add_library(uv INTERFACE)
     target_link_libraries(uv INTERFACE ${libuv_LIBRARY})
-    target_include_directories(uv INTERFACE ${libuv_INCLUDE_DIR})
+    target_include_directories(uv SYSTEM INTERFACE ${libuv_INCLUDE_DIR})
 endif()

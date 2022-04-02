@@ -1,6 +1,6 @@
 FetchContent_Populate(imgui)
 add_library(imgui STATIC EXCLUDE_FROM_ALL)
-target_include_directories(imgui PUBLIC "${imgui_SOURCE_DIR}")
+target_include_directories(imgui SYSTEM PUBLIC "${imgui_SOURCE_DIR}")
 target_sources(imgui PRIVATE
     "${imgui_SOURCE_DIR}/imgui.cpp"
     "${imgui_SOURCE_DIR}/imgui_demo.cpp"
