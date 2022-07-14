@@ -155,12 +155,12 @@ namespace up {
         };
 
         struct ShowLogsHandler final : CommandHandler<ShowLogsCommand> {
-            ShowLogsHandler(EditorManager& editors) : _editors(editors) { }
+            ShowLogsHandler(Workspace& workspace) : _workspace(workspace) { }
 
-            void invoke(ShowLogsCommand&) override { _editors.openEditor(shell::LogEditor::editorTypeId); }
+            void invoke(ShowLogsCommand&) override { _workspace.openEditor(shell::LogEditor::editorTypeId); }
 
         private:
-            EditorManager& _editors;
+            Workspace& _workspace;
         };
 
         struct ImportResourcesHandler final : CommandHandler<ImportResourcesCommand> {
@@ -191,24 +191,24 @@ namespace up {
         };
 
         struct CommandPaletteHandler final : CommandHandler<CommandPaletteCommand> {
-            CommandPaletteHandler(EditorManager& editors) : _editors(editors) { }
+            CommandPaletteHandler(Workspace& workspace) : _workspace(workspace) { }
 
-            void invoke(CommandPaletteCommand&) override { _editors.showPalette(); }
+            void invoke(CommandPaletteCommand&) override { _workspace.showPalette(); }
 
         private:
-            EditorManager& _editors;
+            Workspace& _workspace;
         };
 
         struct PlaySceneHandler final : CommandHandler<shell::PlaySceneCommand> {
-            PlaySceneHandler(AudioEngine& audio, EditorManager& editors) : _audio(audio), _editors(editors) { }
+            PlaySceneHandler(AudioEngine& audio, Workspace& workspace) : _audio(audio), _workspace(workspace) { }
 
             void invoke(shell::PlaySceneCommand& cmd) override {
-                _editors.createEditor<shell::GameEditor>(_audio, std::move(cmd.space));
+                _workspace.createEditor<shell::GameEditor>(_audio, std::move(cmd.space));
             }
 
         private:
             AudioEngine& _audio;
-            EditorManager& _editors;
+            Workspace& _workspace;
         };
     } // namespace
 } // namespace up
@@ -360,13 +360,13 @@ int up::shell::ShellApp::initialize() {
     _sceneDatabase.registerComponent<BodyEditComponent>();
     _sceneDatabase.registerComponent<TestEditComponent>();
 
-    AssetEditor::addFactory(_editors, _assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
+    AssetEditor::addFactory(_workspace, _assetLoader, _reconClient, _assetEditService, [this](UUID const& uuid) {
         _openAssetEditor(uuid);
     });
-    SceneEditor::addFactory(_editors, _sceneDatabase, _propertyGrid, _assetLoader);
-    MaterialEditor::addFactory(_editors, _propertyGrid);
-    LogEditor::addFactory(_editors, _logHistory);
-    GameEditor::addFactory(_editors, *_audio);
+    SceneEditor::addFactory(_workspace, _sceneDatabase, _propertyGrid, _assetLoader);
+    MaterialEditor::addFactory(_workspace, _propertyGrid);
+    LogEditor::addFactory(_workspace, _logHistory);
+    GameEditor::addFactory(_workspace, *_audio);
 
     _commands.addCommand<QuitCommand>();
     _commands.addCommand<OpenProjectCommand>();
@@ -380,14 +380,14 @@ int up::shell::ShellApp::initialize() {
     _commandScope.addHandler<QuitHandler>(*this);
     _commandScope.addHandler<OpenProjectHandler>(*this);
     _commandScope.addHandler<CloseProjectHandler>(*this);
-    _commandScope.addHandler<ShowLogsHandler>(_editors);
+    _commandScope.addHandler<ShowLogsHandler>(_workspace);
     _commandScope.addHandler<ImportResourcesHandler>(*this);
     _commandScope.addHandler<ShowAboutHandler>(*this);
     _commandScope.addHandler<ShowImguiDemoHandler>(*this);
-    _commandScope.addHandler<CommandPaletteHandler>(_editors);
-    _commandScope.addHandler<PlaySceneHandler>(*_audio, _editors);
+    _commandScope.addHandler<CommandPaletteHandler>(_workspace);
+    _commandScope.addHandler<PlaySceneHandler>(*_audio, _workspace);
 
-    EditorManager::addCommands(_commands);
+    Workspace::addCommands(_commands);
     GameEditor::addCommands(_commands);
     SceneEditor::addCommands(_commands);
 
@@ -438,8 +438,8 @@ bool up::shell::ShellApp::_loadProject(zstring_view path) {
 
     _loadManifest();
 
-    _editors.closeAll();
-    _editors.openEditor(AssetEditor::editorTypeId);
+    _workspace.closeAll();
+    _workspace.openEditor(AssetEditor::editorTypeId);
     _updateTitle();
 
     if (!_reconClient.start(_ioLoop, _project->resourceRootPath())) {
@@ -499,7 +499,7 @@ void up::shell::ShellApp::run() {
         if (_closeProject) {
             _reconClient.stop();
             _closeProject = false;
-            _editors.closeAll();
+            _workspace.closeAll();
             _project = nullptr;
             _updateTitle();
         }
@@ -584,7 +584,7 @@ void up::shell::ShellApp::_processEvents() {
                 break;
             case SDL_KEYDOWN:
                 _commands.pushScope(_commandScope);
-                if (!_editors.evaluateHotkey(_commands, ev.key.keysym.sym, ev.key.keysym.mod)) {
+                if (!_workspace.evaluateHotkey(_commands, ev.key.keysym.sym, ev.key.keysym.mod)) {
                     _device->handleImguiEvent(ev);
                 }
                 _commands.popScope(_commandScope);
@@ -613,7 +613,7 @@ void up::shell::ShellApp::_displayUI() {
 
     _commands.pushScope(_commandScope);
 
-    _editors.update(*_renderer, _commands, _lastFrameTime);
+    _workspace.update(*_renderer, _commands, _lastFrameTime);
 
     if (_aboutDialog) {
         ImGui::SetNextWindowSizeConstraints({400, 300}, {});
@@ -660,7 +660,7 @@ void up::shell::ShellApp::_openAssetEditor(UUID const& uuid) {
 
     EditorTypeId const editor = _assetEditService.findInfoForAssetTypeHash(assetTypeHash).editor;
     if (editor.valid()) {
-        _editors.openEditorForDocument(editor, assetPath);
+        _workspace.openEditorForDocument(editor, assetPath);
     }
     else {
         if (!desktop::openInExternalEditor(assetPath)) {

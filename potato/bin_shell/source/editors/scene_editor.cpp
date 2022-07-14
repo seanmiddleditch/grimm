@@ -6,7 +6,7 @@
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
 #include "potato/editor/editor.h"
-#include "potato/editor/editor_manager.h"
+#include "potato/editor/workspace.h"
 #include "potato/editor/imgui_command.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/game/components/camera_component.h"
@@ -134,11 +134,11 @@ namespace up::shell {
     }
 
     void SceneEditor::addFactory(
-        EditorManager& editors,
+        Workspace& workspace,
         SceneDatabase& database,
         PropertyGrid& propertyGrid,
         AssetLoader& assetLoader) {
-        editors.addFactory<SceneEditorFactory>(database, propertyGrid, assetLoader);
+        workspace.addFactory<SceneEditorFactory>(database, propertyGrid, assetLoader);
     }
 
     void SceneEditor::addCommands(CommandManager& commands) {

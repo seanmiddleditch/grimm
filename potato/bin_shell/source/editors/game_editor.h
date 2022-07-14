@@ -23,7 +23,7 @@ namespace up::shell {
 
         explicit GameEditor(EditorParams const& params, AudioEngine& audio, box<Space> space);
 
-        static void addFactory(EditorManager& editors, AudioEngine& audio);
+        static void addFactory(Workspace& workspace, AudioEngine& audio);
         static void addCommands(CommandManager& commands);
 
         zstring_view displayName() const override { return "Game"_zsv; }

@@ -36,7 +36,7 @@ namespace up::shell {
         zstring_view displayName() const override { return "Assets"; }
 
         static void addFactory(
-            EditorManager& editors,
+            Workspace& workspace,
             AssetLoader& assetLoader,
             ReconClient& reconClient,
             AssetEditService& assetEditService,

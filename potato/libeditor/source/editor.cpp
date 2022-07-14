@@ -2,7 +2,7 @@
 
 #include "potato/editor/editor.h"
 
-#include "potato/editor/editor_manager.h"
+#include "potato/editor/workspace.h"
 #include "potato/editor/icons.h"
 #include "potato/spud/sequence.h"
 #include "potato/spud/string_writer.h"

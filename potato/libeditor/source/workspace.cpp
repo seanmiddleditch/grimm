@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "potato/editor/editor_manager.h"
+#include "potato/editor/workspace.h"
 
 #include "potato/editor/command.h"
 #include "potato/editor/editor.h"
@@ -28,29 +28,29 @@ namespace up {
         };
     } // namespace
 
-    struct EditorManager::ResetLayoutHandler final : CommandHandler<ResetLayoutCommand> {
-        ResetLayoutHandler(EditorManager& editors) : _editors(editors) { }
+    struct Workspace::ResetLayoutHandler final : CommandHandler<ResetLayoutCommand> {
+        ResetLayoutHandler(Workspace& workspace) : _workspace(workspace) { }
 
-        void invoke(ResetLayoutCommand&) override { _editors.resetLayout(_editors.focused()); }
+        void invoke(ResetLayoutCommand&) override { _workspace.resetLayout(_workspace.focused()); }
 
     private:
-        EditorManager& _editors;
+        Workspace& _workspace;
     };
 
-    struct EditorManager::CloseEditorHandler final : CommandHandler<CloseEditorCommand> {
-        CloseEditorHandler(EditorManager& editors) : _editors(editors) { }
+    struct Workspace::CloseEditorHandler final : CommandHandler<CloseEditorCommand> {
+        CloseEditorHandler(Workspace& workspace) : _workspace(workspace) { }
 
         CommandStatus status(CloseEditorCommand const&) override {
-            return _editors.isCloseable(_editors.focused()) ? CommandStatus::Default : CommandStatus::Disabled;
+            return _workspace.isCloseable(_workspace.focused()) ? CommandStatus::Default : CommandStatus::Disabled;
         }
 
-        void invoke(CloseEditorCommand&) override { _editors.close(_editors.focused()); }
+        void invoke(CloseEditorCommand&) override { _workspace.close(_workspace.focused()); }
 
     private:
-        EditorManager& _editors;
+        Workspace& _workspace;
     };
 
-    EditorManager::EditorManager() {
+    Workspace::Workspace() {
         _documentWindowClass.ClassId = narrow_cast<ImU32>(reinterpret_cast<uintptr_t>(this));
         _documentWindowClass.ViewportFlagsOverrideSet = ImGuiViewportFlags_NoAutoMerge;
         _documentWindowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoSplit;
@@ -62,14 +62,14 @@ namespace up {
         _commandScope.addHandler<CloseEditorHandler>(*this);
     }
 
-    EditorManager::~EditorManager() = default;
+    Workspace::~Workspace() = default;
 
-    void EditorManager::addCommands(CommandManager& commands) {
+    void Workspace::addCommands(CommandManager& commands) {
         commands.addCommand<ResetLayoutCommand>();
         commands.addCommand<CloseEditorCommand>();
     }
 
-    void EditorManager::update(Renderer& renderer, CommandManager& commands, float deltaTime) {
+    void Workspace::update(Renderer& renderer, CommandManager& commands, float deltaTime) {
         for (auto it = _editors.begin(); it != _editors.end();) {
             if (it->get()->isClosed()) {
                 it = _editors.erase(it);
@@ -118,13 +118,13 @@ namespace up {
         }
     }
 
-    void EditorManager::close(EditorId editorId) noexcept {
+    void Workspace::close(EditorId editorId) noexcept {
         if (EditorBase* const editor = _getEditor(editorId); editor != nullptr) {
             editor->close();
         }
     }
 
-    void EditorManager::closeAll() noexcept {
+    void Workspace::closeAll() noexcept {
         for (auto const& editor : _editors) {
             if (editor->isCloseable()) {
                 editor->close();
@@ -132,27 +132,27 @@ namespace up {
         }
     }
 
-    bool EditorManager::isCloseable(EditorId editorId) const noexcept {
+    bool Workspace::isCloseable(EditorId editorId) const noexcept {
         if (EditorBase* const editor = _getEditor(editorId); editor != nullptr) {
             return editor->isCloseable();
         }
         return false;
     }
 
-    bool EditorManager::isOpen(EditorId editorId) const noexcept {
+    bool Workspace::isOpen(EditorId editorId) const noexcept {
         if (EditorBase* const editor = _getEditor(editorId); editor != nullptr) {
             return !editor->isClosed();
         }
         return false;
     }
 
-    EditorId EditorManager::current() const noexcept { return _currentEditorId; }
+    EditorId Workspace::current() const noexcept { return _currentEditorId; }
 
-    EditorId EditorManager::focused() const noexcept { return _focusedEditorId; }
+    EditorId Workspace::focused() const noexcept { return _focusedEditorId; }
 
-    void EditorManager::showPalette() { _paletteState.wantOpen = true; }
+    void Workspace::showPalette() { _paletteState.wantOpen = true; }
 
-    bool EditorManager::evaluateHotkey(CommandManager& commands, int keysym, unsigned mods) {
+    bool Workspace::evaluateHotkey(CommandManager& commands, int keysym, unsigned mods) {
         EditorBase* const editor = _getEditor(focused());
         if (editor != nullptr) {
             commands.pushScope(editor->commandScope());
@@ -164,18 +164,18 @@ namespace up {
         return handled;
     }
 
-    void EditorManager::resetLayout(EditorId editorId) {
+    void Workspace::resetLayout(EditorId editorId) {
         if (EditorBase* const editor = _getEditor(editorId); editor != nullptr) {
             editor->resetLayout();
         }
     }
 
-    unsigned int EditorManager::imguiFocusedViewport() const noexcept {
+    unsigned int Workspace::imguiFocusedViewport() const noexcept {
         EditorBase const* const editor = _getEditor(focused());
         return editor != nullptr ? editor->imguiViewportId() : 0;
     }
 
-    EditorBase* EditorManager::_getEditor(EditorId editorId) const noexcept {
+    EditorBase* Workspace::_getEditor(EditorId editorId) const noexcept {
         for (auto const& editor : _editors) {
             if (editor->uniqueId() == editorId) {
                 return editor.get();
@@ -184,7 +184,7 @@ namespace up {
         return nullptr;
     }
 
-    EditorId EditorManager::openEditor(EditorTypeId editorType) {
+    EditorId Workspace::openEditor(EditorTypeId editorType) {
         for (auto const& editor : _editors) {
             if (editor->editorType() == editorType) {
                 editor->focus();
@@ -208,7 +208,7 @@ namespace up {
         return {};
     }
 
-    EditorId EditorManager::openEditorForDocument(EditorTypeId editorType, zstring_view documentPath) {
+    EditorId Workspace::openEditorForDocument(EditorTypeId editorType, zstring_view documentPath) {
         for (auto const& editor : _editors) {
             if (editor->editorType() == editorType && editor->documentPath() == documentPath) {
                 editor->focus();

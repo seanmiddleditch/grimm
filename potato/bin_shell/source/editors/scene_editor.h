@@ -23,7 +23,7 @@ namespace up::shell {
         static constexpr EditorTypeId editorTypeId{"potato.editor.scene"};
 
         static void addFactory(
-            EditorManager& editors,
+            Workspace& workspace,
             SceneDatabase& database,
             PropertyGrid& propertyGrid,
             AssetLoader& assetLoader);

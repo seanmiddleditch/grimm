@@ -4,7 +4,7 @@
 
 #include "potato/editor/desktop.h"
 #include "potato/editor/editor.h"
-#include "potato/editor/editor_manager.h"
+#include "potato/editor/workspace.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/editor/imgui_fonts.h"
 #include "potato/recon/recon_client.h"
@@ -69,12 +69,12 @@ namespace up::shell {
     }
 
     void AssetEditor::addFactory(
-        EditorManager& editors,
+        Workspace& workspace,
         AssetLoader& assetLoader,
         ReconClient& reconClient,
         AssetEditService& assetEditService,
         AssetEditor::OnFileSelected onFileSelected) {
-        editors.addFactory<AssetEditorFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
+        workspace.addFactory<AssetEditorFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
     }
 
     void AssetEditor::content(CommandManager&) {

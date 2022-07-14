@@ -2,7 +2,7 @@
 
 #include "material_editor.h"
 
-#include "potato/editor/editor_manager.h"
+#include "potato/editor/workspace.h"
 #include "potato/editor/icons.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/reflex/serialize.h"
@@ -48,8 +48,8 @@ up::shell::MaterialEditor::MaterialEditor(
     , _filename(std::move(filename))
     , _propertyGrid(propertyGrid) { }
 
-void up::shell::MaterialEditor::addFactory(EditorManager& editors, PropertyGrid& propertyGrid) {
-    editors.addFactory<MaterialEditorFactory>(propertyGrid);
+void up::shell::MaterialEditor::addFactory(Workspace& workspace, PropertyGrid& propertyGrid) {
+    workspace.addFactory<MaterialEditorFactory>(propertyGrid);
 }
 
 void up::shell::MaterialEditor::content(CommandManager&) {
