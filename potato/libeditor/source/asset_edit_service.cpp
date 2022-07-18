@@ -7,8 +7,8 @@
 #include "potato/spud/hash.h"
 
 namespace up {
-    static constexpr AssetEditService::AssetTypeInfo unknownAssetType = {.name = "Unknown"_zsv, .icon = ICON_FA_FILE};
-    static constexpr AssetEditService::AssetTypeInfo assetTypes[] = {
+    static constexpr AssetTypeInfo unknownAssetType = {.name = "Unknown"_zsv, .icon = ICON_FA_FILE};
+    static constexpr AssetTypeInfo assetTypes[] = {
         {.name = "Sound"_zsv, .icon = ICON_FA_FILE_AUDIO, .typeHash = hash_value("potato.asset.sound")},
         {.name = "Texture"_zsv, .icon = ICON_FA_FILE_IMAGE, .typeHash = hash_value("potato.asset.texture")},
         {.name = "Shader"_zsv, .icon = ICON_FA_FILE_CODE, .typeHash = hash_value("potato.asset.shader")},
@@ -25,24 +25,25 @@ namespace up {
          .typeHash = hash_value("potato.asset.scene")},
     };
     static constexpr int assetTypeCount = sizeof(assetTypes) / sizeof(assetTypes[0]);
-} // namespace up
 
-auto up::AssetEditService::findInfoForAssetTypeHash(uint64 typeHash) const noexcept -> AssetTypeInfo const& {
-    for (AssetTypeInfo const& info : assetTypes) {
-        if (info.typeHash == typeHash) {
-            return info;
+    auto AssetEditService::findInfoForAssetTypeHash(uint64 typeHash) const noexcept -> AssetTypeInfo const& {
+        for (AssetTypeInfo const& info : assetTypes) {
+            if (info.typeHash == typeHash) {
+                return info;
+            }
         }
+        return unknownAssetType;
     }
-    return unknownAssetType;
-}
 
-auto up::AssetEditService::findInfoForIndex(int index) const noexcept -> AssetTypeInfo const& {
-    if (index >= 0 && index < assetTypeCount) {
-        return assetTypes[index];
+    auto AssetEditService::findInfoForIndex(int index) const noexcept -> AssetTypeInfo const& {
+        if (index >= 0 && index < assetTypeCount) {
+            return assetTypes[index];
+        }
+        return unknownAssetType;
     }
-    return unknownAssetType;
-}
 
-auto up::AssetEditService::makeFullPath(zstring_view filename) const -> string {
-    return path::normalize(path::join(_assetRoot, filename), path::Separator::Native);
-}
+    auto AssetEditService::makeFullPath(zstring_view filename) const -> string {
+        return path::normalize(path::join(_assetRoot, filename), path::Separator::Native);
+    }
+
+} // namespace up

@@ -20,6 +20,7 @@ target_sources(potato_libeditor PRIVATE
     "source/workspace.cpp"
     "include/potato/editor/asset_browser_popup.h"
     "include/potato/editor/asset_edit_service.h"
+    "include/potato/editor/asset_type_info.h"
     "include/potato/editor/command.h"
     "include/potato/editor/command_palette.h"
     "include/potato/editor/desktop.h"

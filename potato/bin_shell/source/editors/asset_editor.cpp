@@ -440,8 +440,8 @@ namespace up::shell {
                     "Type",
                     _assetEditService.findInfoForAssetTypeHash(_newAssetType).name.c_str(),
                     ImGuiComboFlags_PopupAlignLeft)) {
-                AssetEditService::AssetTypeInfo info;
-                for (int index = 0; (info = _assetEditService.findInfoForIndex(index)).typeHash != 0; ++index) {
+                AssetTypeInfo info;
+                for (uint32 index = 0; (info = _assetEditService.findInfoForIndex(index)).typeHash != 0; ++index) {
                     bool selected = _newAssetType == 0;
                     if (ImGui::Selectable(info.name.c_str(), &selected)) {
                         _newAssetType = info.typeHash;
