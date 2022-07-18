@@ -4,7 +4,7 @@
 
 #include "potato/render/gpu_common.h"
 #include "potato/runtime/com_ptr.h"
-#include "potato/spud/platform_windows.h"
+#include "potato/runtime/platform_windows.h"
 #include "potato/spud/zstring_view.h"
 
 #include <D3D12MemAlloc.h>

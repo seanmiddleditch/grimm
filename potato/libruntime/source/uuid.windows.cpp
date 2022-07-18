@@ -3,7 +3,7 @@
 #include "potato/runtime/uuid.h"
 
 #include "potato/runtime/assertion.h"
-#include "potato/spud/platform_windows.h"
+#include "potato/runtime/platform_windows.h"
 
 #include <rpc.h>
 

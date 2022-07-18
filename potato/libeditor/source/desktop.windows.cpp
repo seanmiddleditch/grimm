@@ -3,7 +3,7 @@
 #include "potato/editor/desktop.h"
 
 #include "potato/runtime/assertion.h"
-#include "potato/spud/platform_windows.h"
+#include "potato/runtime/platform_windows.h"
 #include "potato/spud/unique_resource.h"
 #include "potato/spud/vector.h"
 

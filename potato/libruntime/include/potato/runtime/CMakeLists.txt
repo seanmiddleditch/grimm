@@ -14,6 +14,7 @@ target_sources(potato_libruntime PRIVATE
     "lock_guard.h"
     "logger.h"
     "path.h"
+    "platform_windows.h"
     "resource_manifest.h"
     "rwlock.h"
     "spinlock.h"
