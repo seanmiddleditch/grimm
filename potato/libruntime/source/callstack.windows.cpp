@@ -2,10 +2,10 @@
 
 #include "potato/runtime/callstack.h"
 
+#include "potato/runtime/platform_windows.h"
 #include "potato/spud/int_types.h"
 #include "potato/spud/numeric_util.h"
 #include "potato/spud/platform.h"
-#include "potato/spud/platform_windows.h"
 #include "potato/spud/string_view.h"
 
 #include <nanofmt/format.h>

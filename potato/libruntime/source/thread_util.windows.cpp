@@ -2,7 +2,7 @@
 
 #include "potato/runtime/thread_util.h"
 
-#include "potato/spud/platform_windows.h"
+#include "potato/runtime/platform_windows.h"
 
 // https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx
 void up::setCurrentThreadName(zstring_view name) noexcept {

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "platform.h"
+#include "potato/spud/platform.h"
 
 #if !defined(UP_PLATFORM_WINDOWS)
 #    error "WindowsKit.h must only be included on Windows, check for UP_PLATFORM_WINDOWS before including"

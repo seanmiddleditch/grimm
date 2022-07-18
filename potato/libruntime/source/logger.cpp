@@ -3,7 +3,7 @@
 #include "potato/runtime/logger.h"
 
 #if UP_PLATFORM_WINDOWS
-#    include "potato/spud/platform_windows.h"
+#    include "potato/runtime/platform_windows.h"
 #endif
 
 #include <nanofmt/format.h>
