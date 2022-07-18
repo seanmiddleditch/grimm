@@ -1,15 +1,15 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
+#include "log_history.h"
+#include "scene_doc.h"
 #include "settings.h"
 
 #include "potato/audio/audio_engine.h"
 #include "potato/editor/asset_edit_service.h"
 #include "potato/editor/command.h"
-#include "potato/editor/editor_manager.h"
 #include "potato/editor/property_grid.h"
+#include "potato/editor/workspace.h"
 #include "potato/recon/recon_client.h"
-#include "potato/shell/log_history.h"
-#include "potato/shell/scene_doc.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/io_loop.h"
 #include "potato/runtime/logger.h"
@@ -90,7 +90,7 @@ namespace up::shell {
         string _shellSettingsPath;
         unique_resource<SDL_Window*, SDL_DestroyWindow> _window;
         unique_resource<SDL_Cursor*, SDL_FreeCursor> _cursor;
-        EditorManager _editors;
+        Workspace _workspace;
         CommandManager _commands;
         CommandScope _commandScope;
         Logger _logger;

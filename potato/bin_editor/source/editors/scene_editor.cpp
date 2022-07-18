@@ -2,13 +2,16 @@
 
 #include "scene_editor.h"
 #include "game_editor.h"
+#include "../commands.h"
+#include "../scene_doc.h"
 
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
 #include "potato/editor/editor.h"
-#include "potato/editor/editor_manager.h"
 #include "potato/editor/imgui_command.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/editor/selection.h"
+#include "potato/editor/workspace.h"
 #include "potato/game/components/camera_component.h"
 #include "potato/game/components/transform_component.h"
 #include "potato/game/space.h"
@@ -21,9 +24,6 @@
 #include "potato/render/material.h"
 #include "potato/render/mesh.h"
 #include "potato/render/renderer.h"
-#include "potato/shell/commands.h"
-#include "potato/shell/scene_doc.h"
-#include "potato/shell/selection.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/spud/delegate.h"
@@ -134,11 +134,11 @@ namespace up::shell {
     }
 
     void SceneEditor::addFactory(
-        EditorManager& editors,
+        Workspace& workspace,
         SceneDatabase& database,
         PropertyGrid& propertyGrid,
         AssetLoader& assetLoader) {
-        editors.addFactory<SceneEditorFactory>(database, propertyGrid, assetLoader);
+        workspace.addFactory<SceneEditorFactory>(database, propertyGrid, assetLoader);
     }
 
     void SceneEditor::addCommands(CommandManager& commands) {

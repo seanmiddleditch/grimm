@@ -3,8 +3,8 @@
 #include "potato/editor/command_palette.h"
 
 #include "potato/editor/command.h"
-#include "potato/editor/editor_manager.h"
 #include "potato/editor/icons.h"
+#include "potato/editor/workspace.h"
 #include "potato/spud/enumerate.h"
 #include "potato/spud/sequence.h"
 #include "potato/spud/sort.h"

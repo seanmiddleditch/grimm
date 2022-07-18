@@ -4,9 +4,9 @@
 
 #include "potato/editor/desktop.h"
 #include "potato/editor/editor.h"
-#include "potato/editor/editor_manager.h"
 #include "potato/editor/imgui_ext.h"
 #include "potato/editor/imgui_fonts.h"
+#include "potato/editor/workspace.h"
 #include "potato/recon/recon_client.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/path.h"
@@ -69,12 +69,12 @@ namespace up::shell {
     }
 
     void AssetEditor::addFactory(
-        EditorManager& editors,
+        Workspace& workspace,
         AssetLoader& assetLoader,
         ReconClient& reconClient,
         AssetEditService& assetEditService,
         AssetEditor::OnFileSelected onFileSelected) {
-        editors.addFactory<AssetEditorFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
+        workspace.addFactory<AssetEditorFactory>(assetLoader, reconClient, assetEditService, std::move(onFileSelected));
     }
 
     void AssetEditor::content(CommandManager&) {
@@ -440,8 +440,8 @@ namespace up::shell {
                     "Type",
                     _assetEditService.findInfoForAssetTypeHash(_newAssetType).name.c_str(),
                     ImGuiComboFlags_PopupAlignLeft)) {
-                AssetEditService::AssetTypeInfo info;
-                for (int index = 0; (info = _assetEditService.findInfoForIndex(index)).typeHash != 0; ++index) {
+                AssetTypeInfo info;
+                for (uint32 index = 0; (info = _assetEditService.findInfoForIndex(index)).typeHash != 0; ++index) {
                     bool selected = _newAssetType == 0;
                     if (ImGui::Selectable(info.name.c_str(), &selected)) {
                         _newAssetType = info.typeHash;

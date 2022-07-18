@@ -2,14 +2,15 @@
 
 #pragma once
 
+#include "../scene_doc.h"
+
 #include "potato/editor/editor.h"
 #include "potato/editor/property_grid.h"
+#include "potato/editor/selection.h"
 #include "potato/game/arcball.h"
 #include "potato/render/gpu_device.h"
 #include "potato/render/gpu_resource.h"
 #include "potato/render/gpu_resource_view.h"
-#include "potato/shell/scene_doc.h"
-#include "potato/shell/selection.h"
 
 #include <glm/glm.hpp>
 
@@ -23,7 +24,7 @@ namespace up::shell {
         static constexpr EditorTypeId editorTypeId{"potato.editor.scene"};
 
         static void addFactory(
-            EditorManager& editors,
+            Workspace& workspace,
             SceneDatabase& database,
             PropertyGrid& propertyGrid,
             AssetLoader& assetLoader);

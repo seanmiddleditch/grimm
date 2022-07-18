@@ -4,7 +4,7 @@
 
 #include "potato/editor/asset_edit_service.h"
 #include "potato/editor/editor.h"
-#include "potato/shell/selection.h"
+#include "potato/editor/selection.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/uuid.h"
 #include "potato/spud/delegate.h"
@@ -36,7 +36,7 @@ namespace up::shell {
         zstring_view displayName() const override { return "Assets"; }
 
         static void addFactory(
-            EditorManager& editors,
+            Workspace& workspace,
             AssetLoader& assetLoader,
             ReconClient& reconClient,
             AssetEditService& assetEditService,

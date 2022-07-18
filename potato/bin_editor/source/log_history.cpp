@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "potato/shell/log_history.h"
+#include "log_history.h"
 
 class up::shell::LogHistory::LogHistorySink : public LogSink {
 public:

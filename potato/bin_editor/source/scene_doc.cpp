@@ -1,6 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "potato/shell/scene_doc.h"
+#include "scene_doc.h"
 
 #include "potato/game/common.h"
 #include "potato/game/space.h"

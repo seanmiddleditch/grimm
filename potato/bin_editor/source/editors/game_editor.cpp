@@ -3,8 +3,8 @@
 #include "game_editor.h"
 
 #include "potato/editor/editor.h"
-#include "potato/editor/editor_manager.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/editor/workspace.h"
 #include "potato/game/components/camera_component.h"
 #include "potato/game/components/camera_controllers.h"
 #include "potato/game/components/transform_component.h"
@@ -54,8 +54,8 @@ namespace up::shell {
         GameEditor& _editor;
     };
 
-    void GameEditor::addFactory(EditorManager& editors, AudioEngine& audio) {
-        editors.addFactory<GameEditorFactory>(audio);
+    void GameEditor::addFactory(Workspace& workspace, AudioEngine& audio) {
+        workspace.addFactory<GameEditorFactory>(audio);
     }
 
     GameEditor::GameEditor(EditorParams const& params, AudioEngine& audio, box<Space> space)

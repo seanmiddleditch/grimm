@@ -15,7 +15,7 @@
 namespace up {
     class CommandManager;
     class EditorBase;
-    class EditorManager;
+    class Workspace;
     class Renderer;
 
     struct EditorParams {

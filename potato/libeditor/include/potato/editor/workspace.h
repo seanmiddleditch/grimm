@@ -18,14 +18,14 @@ namespace up {
     class Menu;
 
     struct EditorFactoryParams {
-        EditorManager& manager;
+        Workspace& workspace;
         zstring_view documentPath;
     };
 
-    class EditorManager {
+    class Workspace {
     public:
-        EditorManager();
-        ~EditorManager();
+        Workspace();
+        ~Workspace();
 
         static void addCommands(CommandManager& commands);
 
@@ -74,14 +74,14 @@ namespace up {
     };
 
     template <typename EditorT, typename... Args>
-    EditorId EditorManager::createEditor(Args&&... args) {
+    EditorId Workspace::createEditor(Args&&... args) {
         EditorId const id{_nextId++};
         _editors.push_back(new_box<EditorT>(EditorParams{.id = id}, std::forward<Args>(args)...));
         return id;
     }
 
     template <derived_from<EditorFactoryBase> EditorFactoryT, typename... Args>
-    void EditorManager::addFactory(Args&&... args) {
+    void Workspace::addFactory(Args&&... args) {
         _editorFactories.push_back(new_box<EditorFactoryT>(std::forward<Args>(args)...));
     }
 

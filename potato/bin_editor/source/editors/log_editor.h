@@ -21,7 +21,7 @@ namespace up::shell {
 
         zstring_view displayName() const override { return "Logs"_zsv; }
 
-        static void addFactory(EditorManager& editors, LogHistory& history);
+        static void addFactory(Workspace& workspace, LogHistory& history);
 
         void content(CommandManager&) override;
 

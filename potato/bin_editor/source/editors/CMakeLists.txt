@@ -1,4 +1,4 @@
-target_sources(potato_shell PRIVATE
+target_sources(potato_editor PRIVATE
     "asset_editor.cpp"
     "asset_editor.h"
     "game_editor.cpp"

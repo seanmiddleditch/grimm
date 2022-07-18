@@ -1,10 +1,10 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "log_editor.h"
+#include "../log_history.h"
 
-#include "potato/editor/editor_manager.h"
 #include "potato/editor/imgui_ext.h"
-#include "potato/shell/log_history.h"
+#include "potato/editor/workspace.h"
 #include "potato/spud/nameof.h"
 #include "potato/spud/utility.h"
 
@@ -27,8 +27,8 @@ namespace up::shell {
     } // namespace
 } // namespace up::shell
 
-void up::shell::LogEditor::addFactory(EditorManager& editors, LogHistory& history) {
-    editors.addFactory<LogEditorFactory>(history);
+void up::shell::LogEditor::addFactory(Workspace& workspace, LogHistory& history) {
+    workspace.addFactory<LogEditorFactory>(history);
 }
 
 void up::shell::LogEditor::content(CommandManager&) {

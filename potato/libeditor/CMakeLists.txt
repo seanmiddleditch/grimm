@@ -10,7 +10,6 @@ target_sources(potato_libeditor PRIVATE
     "source/command.cpp"
     "source/command_palette.cpp"
     "source/editor.cpp"
-    "source/editor_manager.cpp"
     "source/hotkeys.cpp"
     "source/imgui_command.cpp"
     "source/imgui_ext.cpp"
@@ -18,14 +17,15 @@ target_sources(potato_libeditor PRIVATE
     "source/menu.cpp"
     "source/property_grid.cpp"
     "source/project.cpp"
+    "source/workspace.cpp"
     "include/potato/editor/asset_browser_popup.h"
     "include/potato/editor/asset_edit_service.h"
+    "include/potato/editor/asset_type_info.h"
     "include/potato/editor/command.h"
     "include/potato/editor/command_palette.h"
     "include/potato/editor/desktop.h"
     "include/potato/editor/editor.h"
     "include/potato/editor/editor_common.h"
-    "include/potato/editor/editor_manager.h"
     "include/potato/editor/hotkeys.h"
     "include/potato/editor/icons.h"
     "include/potato/editor/imgui_command.h"
@@ -33,6 +33,8 @@ target_sources(potato_libeditor PRIVATE
     "include/potato/editor/imgui_fonts.h"
     "include/potato/editor/menu.h"
     "include/potato/editor/property_grid.h"
+    "include/potato/editor/selection.h"
+    "include/potato/editor/workspace.h"
     $<$<BOOL:${UNIX}>:source/desktop.posix.cpp>
     $<$<PLATFORM_ID:Windows>:source/desktop.windows.cpp>
 )
