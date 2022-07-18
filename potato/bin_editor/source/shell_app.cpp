@@ -1,7 +1,6 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "shell_app.h"
-
 #include "commands.h"
 #include "edit_components.h"
 #include "editors/asset_editor.h"

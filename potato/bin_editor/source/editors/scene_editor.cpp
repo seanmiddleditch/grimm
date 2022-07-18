@@ -1,9 +1,9 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
-#include "../commands.h"
-#include "../scene_doc.h"
 #include "scene_editor.h"
 #include "game_editor.h"
+#include "../commands.h"
+#include "../scene_doc.h"
 
 #include "potato/audio/audio_engine.h"
 #include "potato/audio/sound_resource.h"
