@@ -35,7 +35,7 @@ namespace up {
         return unknownAssetType;
     }
 
-    auto AssetEditService::findInfoForIndex(int index) const noexcept -> AssetTypeInfo const& {
+    auto AssetEditService::findInfoForIndex(uint32 index) const noexcept -> AssetTypeInfo const& {
         if (index >= 0 && index < assetTypeCount) {
             return assetTypes[index];
         }

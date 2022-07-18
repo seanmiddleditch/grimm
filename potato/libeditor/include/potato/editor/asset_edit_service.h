@@ -15,7 +15,7 @@ namespace up {
         void setAssetRoot(string folder) noexcept { _assetRoot = std::move(folder); }
 
         UP_EDITOR_API AssetTypeInfo const& findInfoForAssetTypeHash(uint64 typeHash) const noexcept;
-        UP_EDITOR_API AssetTypeInfo const& findInfoForIndex(int index) const noexcept;
+        UP_EDITOR_API AssetTypeInfo const& findInfoForIndex(uint32 index) const noexcept;
         UP_EDITOR_API string makeFullPath(zstring_view filename) const;
 
     private:
