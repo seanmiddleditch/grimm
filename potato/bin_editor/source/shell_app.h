@@ -1,5 +1,7 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
+#include "log_history.h"
+#include "scene_doc.h"
 #include "settings.h"
 
 #include "potato/audio/audio_engine.h"
@@ -8,8 +10,6 @@
 #include "potato/editor/workspace.h"
 #include "potato/editor/property_grid.h"
 #include "potato/recon/recon_client.h"
-#include "potato/shell/log_history.h"
-#include "potato/shell/scene_doc.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/io_loop.h"
 #include "potato/runtime/logger.h"

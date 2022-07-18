@@ -2,14 +2,15 @@
 
 #pragma once
 
+#include "scene_doc.h"
+#include "scene/edit_component.h"
+
 #include "potato/game/components/demo_components.h"
 #include "potato/game/components/mesh_component.h"
 #include "potato/game/components/rigidbody_component.h"
 #include "potato/game/components/transform_component.h"
 #include "potato/game/space.h"
 #include "potato/schema/scene_schema.h"
-#include "potato/shell/scene/edit_component.h"
-#include "potato/shell/scene_doc.h"
 
 namespace up {
     struct SceneComponent;

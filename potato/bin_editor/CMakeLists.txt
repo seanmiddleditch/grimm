@@ -4,19 +4,18 @@ project(shell VERSION 0.1 LANGUAGES CXX)
 
 find_package(SDL2 REQUIRED)
 
-add_executable(potato_shell WIN32)
-add_executable(potato::shell ALIAS potato_shell)
+add_executable(potato_editor WIN32)
+add_executable(potato::editor ALIAS potato_editor)
 
-set_target_properties(potato_shell PROPERTIES OUTPUT_NAME shell)
+set_target_properties(potato_editor PROPERTIES OUTPUT_NAME editor)
 
 include(up_set_common_properties)
-up_set_common_properties(potato_shell)
+up_set_common_properties(potato_editor)
 
-add_subdirectory(include/potato/shell)
 add_subdirectory(source)
 
 include(up_compile_sap)
-up_compile_sap(potato_shell
+up_compile_sap(potato_editor
     PRIVATE
     SCHEMAS
         "schema/scene.sap"
@@ -24,7 +23,7 @@ up_compile_sap(potato_shell
 )
 
 
-target_link_libraries(potato_shell PRIVATE
+target_link_libraries(potato_editor PRIVATE
     potato::libruntime
     potato::spud
     potato::librender
@@ -43,4 +42,4 @@ target_link_libraries(potato_shell PRIVATE
 )
 
 include(up_copy_library_import)
-up_copy_library_import(SDL2::SDL2 potato_shell)
+up_copy_library_import(SDL2::SDL2 potato_editor)

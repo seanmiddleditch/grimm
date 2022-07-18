@@ -4,7 +4,7 @@
 
 #include "potato/editor/asset_edit_service.h"
 #include "potato/editor/editor.h"
-#include "potato/shell/selection.h"
+#include "potato/editor/selection.h"
 #include "potato/runtime/asset_loader.h"
 #include "potato/runtime/uuid.h"
 #include "potato/spud/delegate.h"

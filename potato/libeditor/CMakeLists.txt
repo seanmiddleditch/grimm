@@ -33,6 +33,7 @@ target_sources(potato_libeditor PRIVATE
     "include/potato/editor/imgui_fonts.h"
     "include/potato/editor/menu.h"
     "include/potato/editor/property_grid.h"
+    "include/potato/editor/selection.h"
     "include/potato/editor/workspace.h"
     $<$<BOOL:${UNIX}>:source/desktop.posix.cpp>
     $<$<PLATFORM_ID:Windows>:source/desktop.windows.cpp>

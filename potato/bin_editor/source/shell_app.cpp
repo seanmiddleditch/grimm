@@ -1,6 +1,8 @@
 // Copyright by Potato Engine contributors. See accompanying License.txt for copyright details.
 
 #include "shell_app.h"
+
+#include "commands.h"
 #include "edit_components.h"
 #include "editors/asset_editor.h"
 #include "editors/game_editor.h"
@@ -27,7 +29,6 @@
 #include "potato/render/shader.h"
 #include "potato/schema/recon_messages_schema.h"
 #include "potato/schema/scene_schema.h"
-#include "potato/shell/commands.h"
 #include "potato/runtime/filesystem.h"
 #include "potato/runtime/json.h"
 #include "potato/runtime/path.h"
