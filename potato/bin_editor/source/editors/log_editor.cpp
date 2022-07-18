@@ -3,8 +3,8 @@
 #include "log_editor.h"
 #include "../log_history.h"
 
-#include "potato/editor/workspace.h"
 #include "potato/editor/imgui_ext.h"
+#include "potato/editor/workspace.h"
 #include "potato/spud/nameof.h"
 #include "potato/spud/utility.h"
 
