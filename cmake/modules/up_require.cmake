@@ -24,6 +24,7 @@ function(up_require)
             URL_HASH "${ARG_URL_HASH}"
             #SUBBUILD_DIR "${SUBBUILD_DIR}"
             BINARY_DIR "${BINARY_DIR}"
+            DOWNLOAD_EXTRACT_TIMESTAMP YES
         )
         set_property(GLOBAL PROPERTY "${DESCRIPTION_PROPERTY}" "URL ${ARG_URL}")
     elseif(ARG_GIT_REPOSITORY AND ARG_GIT_COMMIT)
