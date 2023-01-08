@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
 project(potato VERSION 0.1 LANGUAGES CXX C)
 
 set(UP_DEFAULT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
