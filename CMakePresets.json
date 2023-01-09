@@ -11,7 +11,8 @@
       "cacheVariables": {
         "UP_OUTPUT_DIR": "${sourceDir}/out",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "FETCHCONTENT_QUIET": true
+        "FETCHCONTENT_QUIET": true,
+        "CMAKE_CONFIGURATION_TYPES": "Debug;RelWithDebInfo"
       },
       "binaryDir": "${sourceDir}/out/${presetName}",
       "generator": "Ninja Multi-Config"
