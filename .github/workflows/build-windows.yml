@@ -48,7 +48,7 @@ jobs:
       - name: Setup VS Environment
         uses: seanmiddleditch/gha-setup-vsdevenv@v3
       - name: Cache source dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@master
         with:
           path: ${{ github.workspace }}/deps
           key: ${{ runner.os }}-${{ hashFiles('depends.cmake') }}
