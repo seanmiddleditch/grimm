@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.24)
 project(potato VERSION 0.1 LANGUAGES CXX C)
 
+# We do not (yet) support modules, ensure this is forced off as it seems to
+# default to ON in some environments
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP OFF)
+
 set(UP_DEFAULT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 if(DEFINED ENV{UP_ROOT_DIR})
     set(UP_DEFAULT_ROOT_DIR "$ENV{UP_ROOT_DIR}")
