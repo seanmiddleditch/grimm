@@ -77,37 +77,37 @@
   "buildPresets": [
     {
       "name": "windows-msvc-static-debug",
-      "displayName": "Debug",
+      "displayName": "Debug (Static)",
       "configurePreset": "windows-msvc-static",
       "configuration": "Debug"
     },
     {
       "name": "windows-msvc-static-release",
-      "displayName": "Release",
+      "displayName": "Release (Static)",
       "configurePreset": "windows-msvc-static",
       "configuration": "RelWithDebInfo"
     },
     {
       "name": "windows-msvc-shared-debug",
-      "displayName": "Debug",
+      "displayName": "Debug (DLL)",
       "configurePreset": "windows-msvc-shared",
       "configuration": "Debug"
     },
     {
       "name": "windows-msvc-shared-release",
-      "displayName": "Release",
+      "displayName": "Release (DLL)",
       "configurePreset": "windows-msvc-shared",
       "configuration": "RelWithDebInfo"
     },
     {
       "name": "wsl-gcc-default",
-      "displayName": "Default",
+      "displayName": "Debug (GCC)",
       "configurePreset": "wsl-gcc",
       "configuration": "Debug"
     },
     {
       "name": "wsl-clang-default",
-      "displayName": "Default",
+      "displayName": "Debug (Clang)",
       "configurePreset": "wsl-clang",
       "configuration": "Debug"
     }
