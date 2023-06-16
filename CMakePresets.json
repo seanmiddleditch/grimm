@@ -11,31 +11,44 @@
       "cacheVariables": {
         "UP_OUTPUT_DIR": "${sourceDir}/out",
         "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-        "FETCHCONTENT_QUIET": true
+        "FETCHCONTENT_QUIET": true,
+        "CMAKE_CONFIGURATION_TYPES": "Debug;RelWithDebInfo"
       },
       "binaryDir": "${sourceDir}/out/${presetName}",
-      "generator": "Ninja"
+      "generator": "Ninja Multi-Config"
     },
     {
-      "name": "msvc",
+      "name": "windows-msvc",
       "hidden": true,
+      "inherits": "common",
       "environment": {
         "UP_CXXFLAGS": "/W3 /WX /w34295 /w34189",
         "CXXFLAGS": "/FC /Zi"
       },
       "cacheVariables": {
-        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/windows"
+        "BUILD_SHARED_LIBS": true,
+        "CMAKE_CXX_FLAGS_DEBUG": "$env{CXXFLAGS} /Od /Ob1"
       },
       "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { "hostOS": "Windows" } }
     },
     {
-      "name": "linux",
+      "name": "windows-msvc-shared",
+      "displayName": "Windows MSVC (Shared)",
+      "inherits": "windows-msvc"
+    },
+    {
+      "name": "windows-msvc-static",
+      "displayName": "Windows MSVC (Static)",
+      "inherits": "windows-msvc"
+    },
+    {
+      "name": "wsl-gcc",
       "hidden": true,
       "environment": {
-        "UP_CXXFLAGS": "-Wall -Werror"
-      },
-      "cacheVariables": {
-        "FETCHCONTENT_BASE_DIR": "${sourceDir}/out/deps/linux"
+        "UP_CXXFLAGS": "-Wall -Werror",
+        "CXXFLAGS": "-fcoroutines -mssse3 -Wno-volatile -Wno-maybe-uninitialized -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
+        "CXX": "g++-11",
+        "CC": "gcc-11"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
@@ -45,82 +58,58 @@
       }
     },
     {
-      "name": "clang",
+      "name": "wsl-clang",
       "hidden": true,
       "environment": {
-        "CXXFLAGS": "$penv{CXXFLAGS} -stdlib=libc++ -fdiagnostics-absolute-paths -mssse3 -Wno-deprecated-volatile -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
+        "UP_CXXFLAGS": "-Wall -Werror",
+        "CXXFLAGS": "-stdlib=libc++ -fdiagnostics-absolute-paths -mssse3 -Wno-deprecated-volatile -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
         "CXX": "clang++-12",
         "CC": "clang-12"
-      }
-    },
-    {
-      "name": "gcc",
-      "hidden": true,
-      "environment": {
-        "CXXFLAGS": "$penv{CXXFLAGS} -fcoroutines -mssse3 -Wno-volatile -Wno-maybe-uninitialized -Wno-deprecated-enum-enum-conversion -Wno-unknown-attributes",
-        "CXX": "g++-11",
-        "CC": "gcc-11"
-      }
-    },
-    {
-      "name": "msvc-debug",
-      "hidden": true,
-      "inherits": [ "msvc" ],
-      "environment": {
-        "CXXFLAGS": "$penv{CXXFLAGS} /Od /Ob1 /FC /Zi"
       },
-      "cacheVariables": {
-        "CMAKE_CXX_FLAGS_DEBUG": "$env{CXXFLAGS}"
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": "Linux",
+          "intelliSenseMode": "linux-gcc-x64"
+        }
       }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-msvc-static-debug",
+      "displayName": "Debug (Static)",
+      "configurePreset": "windows-msvc-static",
+      "configuration": "Debug"
     },
     {
-      "name": "msvc-release",
-      "hidden": true,
-      "inherits": [ "msvc" ],
-      "environment": {
-        "CXXFLAGS": "$penv{CXXFLAGS} /O2 /Ob3 /DNDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "$env{CXXFLAGS}"
-      }
+      "name": "windows-msvc-static-release",
+      "displayName": "Release (Static)",
+      "configurePreset": "windows-msvc-static",
+      "configuration": "RelWithDebInfo"
     },
     {
-      "name": "msvc-debug-shared",
-      "displayName": "Microsoft Debug Shared",
-      "inherits": [ "common", "msvc-debug" ],
-      "cacheVariables": {
-        "BUILD_SHARED_LIBS": true
-      }
+      "name": "windows-msvc-shared-debug",
+      "displayName": "Debug (DLL)",
+      "configurePreset": "windows-msvc-shared",
+      "configuration": "Debug"
     },
     {
-      "name": "msvc-debug-static",
-      "displayName": "Microsoft Debug Static",
-      "inherits": [ "common", "msvc-debug" ],
-      "cacheVariables": {
-        "BUILD_SHARED_LIBS": false
-      }
+      "name": "windows-msvc-shared-release",
+      "displayName": "Release (DLL)",
+      "configurePreset": "windows-msvc-shared",
+      "configuration": "RelWithDebInfo"
     },
     {
-      "name": "msvc-release-static",
-      "displayName": "Microsoft Release Static",
-      "inherits": [ "common", "msvc-release" ],
-      "cacheVariables": {
-        "BUILD_SHARED_LIBS": false
-      }
+      "name": "wsl-gcc-default",
+      "displayName": "Debug (GCC)",
+      "configurePreset": "wsl-gcc",
+      "configuration": "Debug"
     },
     {
-      "name": "wsl-clang-debug-static",
-      "displayName": "WSL-Clang Release Static",
-      "inherits": [ "common", "linux", "clang" ],
-      "cacheVariables": {
-        "BUILD_SHARED_LIBS": false
-      }
-    },
-    {
-      "name": "wsl-gcc-debug-static",
-      "displayName": "WSL-GCC Release Static",
-      "inherits": [ "common", "linux", "gcc" ],
-      "cacheVariables": {
-        "BUILD_SHARED_LIBS": false
-      }
+      "name": "wsl-clang-default",
+      "displayName": "Debug (Clang)",
+      "configurePreset": "wsl-clang",
+      "configuration": "Debug"
     }
   ]
 }
